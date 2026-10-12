@@ -3,7 +3,8 @@ name = "foresight"
 version = "0.1.0"
 description = "Agent-native financial intelligence: forecasts, checked advice, and a receipt for every number."
 readme = "README.md"
-# Kept compatible with 3.10+ syntax until the organiser's CI interpreter is confirmed (docs/10 PLT-02).
+# The organiser's checks compile every file with Python 3.11 (confirmed from their workflow);
+# keep syntax compatible with 3.10+ so that check can never fail.
 requires-python = ">=3.10"
 
 [tool.ruff]
