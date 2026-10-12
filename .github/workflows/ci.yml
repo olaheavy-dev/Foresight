@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: foresight
+          POSTGRES_PASSWORD: ci_only_password
+          POSTGRES_DB: foresight
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U foresight" --health-interval 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://foresight:ci_only_password@localhost:5432/foresight
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - run: pip install -r requirements-dev.txt
+      - name: Privacy scan of every tracked file
+        run: git ls-files -z | xargs -0 python -m tools.check_no_private_data
+      - name: Lint and format
+        run: ruff check . && ruff format --check .
+      - name: Types
+        run: mypy
+      - name: Mesh-only and module-boundary contracts
+        run: lint-imports
+      - name: Unit and integration tests (PostgreSQL)
+        run: python -m pytest
+      - name: Feature flags only on with green evals
+        run: python -m tools.check_feature_flags
+      - name: README status section is generated, not typed
+        run: python -m tools.render_readme_status --check
+
+  frontend:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - run: npm run typecheck
+      - run: npm test
+
+  e2e:
+    runs-on: ubuntu-24.04
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v5
+      - name: Start the real stack (postgres + api + web)
+        run: docker compose up --build -d
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - name: Wait for the stack
+        run: |
+          for i in $(seq 1 60); do curl -sf http://localhost:3000/healthz && exit 0; sleep 2; done
+          docker compose logs; exit 1
+      - name: Playwright journeys and accessibility checks
+        run: npx playwright test
+        working-directory: frontend
+      - if: failure()
+        run: docker compose logs

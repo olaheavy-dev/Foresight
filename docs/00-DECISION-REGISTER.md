@@ -221,7 +221,7 @@ Scope note: the user has explicitly confirmed **nothing in the original brief is
 
 | Layer | Hackathon choice | Production path |
 |---|---|---|
-| API | Python 3.12, FastAPI, Pydantic v2 | same |
+| API | Python 3.12 runtime (images, CI); source kept compatible with **3.11**, the interpreter the organiser's checks use to compile every file (confirmed 12 Oct from the organiser workflow); FastAPI, Pydantic v2 | same |
 | Orchestration | LangGraph (StateGraph, explicit nodes, `PostgresSaver` checkpointer) | same, workers separated |
 | LLM | `openai` SDK with `base_url=https://api.meshapi.ai/v1`, wrapped in one `mesh_client` module (the only place an LLM is called) | same + model routing/fallback via Mesh |
 | Finance engine | `finance_core` pure-Python package (NumPy, pandas) — no I/O, fully unit-tested | same |

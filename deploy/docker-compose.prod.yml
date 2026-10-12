@@ -1,0 +1,64 @@
+# Production on the owner's VPS (docs/05 §12). Only the frontend joins the Caddy network;
+# backend and postgres stay on the private app network. No host ports are published.
+# Watchtower (scope foresight-staging) pulls new :main images published after green CI.
+x-hardening: &hardening
+  restart: unless-stopped
+  security_opt:
+    - no-new-privileges:true
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "5"
+
+services:
+  postgres:
+    <<: *hardening
+    image: postgres:16-alpine
+    container_name: foresight-postgres
+    env_file: .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      retries: 10
+
+  backend:
+    <<: *hardening
+    image: ghcr.io/olaheavy-dev/foresight-backend:main
+    container_name: foresight-backend
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app_net
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.scope=foresight-staging
+
+  frontend:
+    <<: *hardening
+    image: ghcr.io/olaheavy-dev/foresight-frontend:main
+    container_name: foresight-frontend
+    environment:
+      - API_BASE_URL=http://backend:8000
+    depends_on:
+      - backend
+    networks:
+      - app_net
+      - caddy_net
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+      - com.centurylinklabs.watchtower.scope=foresight-staging
+
+volumes:
+  pgdata:
+
+networks:
+  app_net:
+  caddy_net:
+    external: true

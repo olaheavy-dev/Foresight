@@ -1,0 +1,47 @@
+# After images are published, wait for Watchtower to roll them out, then smoke-test the live URL
+# (docs/10 §6). A failure leaves the previous sha- tag available for rollback.
+name: Post-deploy smoke
+
+on:
+  workflow_run:
+    workflows: [Publish images]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  BASE_URL: https://foresight.olaheavy.dev
+
+jobs:
+  smoke:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: Wait for the new SHA to go live (up to 15 minutes)
+        env:
+          EXPECTED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          if [ -z "$EXPECTED_SHA" ]; then exit 0; fi
+          for i in $(seq 1 90); do
+            live=$(curl -sf "$BASE_URL/healthz" | python3 -c "import json,sys; print(json.load(sys.stdin)['sha'])" || true)
+            if [ "$live" = "$EXPECTED_SHA" ]; then echo "live: $live"; exit 0; fi
+            sleep 10
+          done
+          echo "Deploy did not reach $BASE_URL within 15 minutes (live: ${live:-unreachable})"; exit 1
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - name: Smoke journey against the live URL
+        working-directory: frontend
+        env:
+          EXPECTED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: npx playwright test --project=desktop

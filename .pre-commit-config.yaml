@@ -1,0 +1,18 @@
+repos:
+  - repo: local
+    hooks:
+      - id: no-private-data
+        name: block real personal financial data
+        entry: python -m tools.check_no_private_data
+        language: system
+        pass_filenames: true
+      - id: ruff
+        name: ruff
+        entry: ruff check
+        language: system
+        types: [python]
+      - id: ruff-format
+        name: ruff format
+        entry: ruff format --check
+        language: system
+        types: [python]

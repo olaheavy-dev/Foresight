@@ -1,0 +1,115 @@
+# Feature flags (docs/01 FR-86, docs/10 PLT-12).
+#
+# A feature is shown in the deployed app and claimed in the README only when `enabled: true`.
+# CI (tools/check_feature_flags.py) refuses any enabled feature whose linked eval suites are
+# not "pass" in evals/results/latest.json → "gates". Anything disabled is listed in the README
+# under "Not shipped (planned)" and hidden in the UI — never shown half-built.
+
+features:
+  # Stage 1 — deterministic single-account spine
+  csv_import:
+    stage: 1
+    title: CSV statement import with reconciliation
+    enabled: false
+    suites: [E-ING]
+  categorisation:
+    stage: 1
+    title: Transaction categorisation (rules + Ledger Agent)
+    enabled: false
+    suites: [E-CAT]
+  income_and_recurring:
+    stage: 1
+    title: Income and recurring-bill detection
+    enabled: false
+    suites: [E-INC, E-REC]
+  forecast:
+    stage: 1
+    title: 90-day cash-flow forecast with uncertainty band
+    enabled: false
+    suites: [E-FC]
+  simulation:
+    stage: 1
+    title: What-if simulation against the same engine
+    enabled: false
+    suites: [E-SIM]
+
+  # Stage 2 — agents and the checked-advice loop
+  agents:
+    stage: 2
+    title: Coordinator and five specialist agents (LangGraph, Mesh)
+    enabled: false
+    suites: [E-ORC]
+  anomaly_detection:
+    stage: 2
+    title: Behaviour trends and anomaly detection
+    enabled: false
+    suites: [E-ANOM]
+  checked_advice:
+    stage: 2
+    title: Advisor and Verifier loop (advice checked before you see it)
+    enabled: false
+    suites: [E-VER, E-GRD]
+  audit_trail:
+    stage: 2
+    title: Evidence and audit trail for every recommendation
+    enabled: false
+    suites: [E-AUD]
+  ask:
+    stage: 2
+    title: Ask — conversational analysis with generated UI
+    enabled: false
+    suites: [E-ORC, E-SCN, E-UI]
+
+  # Stage 3 — experiences, proactive delivery, goals
+  briefing:
+    stage: 3
+    title: Briefing (intelligence home)
+    enabled: false
+    suites: [E-ORC, E-UI]
+  decision_lab:
+    stage: 3
+    title: Decision Lab scenario comparison
+    enabled: false
+    suites: [E-SIM, E-SCN]
+  ledger:
+    stage: 3
+    title: Ledger, imports and categorisation review
+    enabled: false
+    suites: [E-CAT]
+  scheduled_digest:
+    stage: 3
+    title: Scheduled Telegram digest
+    enabled: false
+    suites: [E-ORC]
+  goals:
+    stage: 3
+    title: Goal tracking with adaptive advice
+    enabled: false
+    suites: [E-SIM, E-VER]
+  intervention_outcome:
+    stage: 3
+    title: Checking whether accepted advice worked
+    enabled: false
+    suites: [E-VER]
+
+  # Stage 4 — Tier 2, in build order
+  multi_account:
+    stage: 4
+    title: Multi-account and joint household layer
+    enabled: false
+    suites: [E-ACCT, E-XFER, E-ALIAS]
+  pdf_import:
+    stage: 4
+    title: Generic PDF statement import
+    enabled: false
+    suites: [E-ING]
+  india_locale:
+    stage: 4
+    title: India locale (INR, UPI narrations)
+    enabled: false
+    suites: [E-LOC]
+  extra_currencies:
+    stage: 4
+    title: Additional currency formats (EUR, JPY, mixed)
+    enabled: false
+    suites: [E-LOC]

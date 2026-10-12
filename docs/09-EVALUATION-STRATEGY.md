@@ -616,6 +616,21 @@ Metric: **case pass rate** (TARGET 100%) plus the agent coverage table.
 
 ---
 
+## 10a. Suite `E-UI`: generated UI quality (08)
+
+Measures the agent-generated interface, not just its rendering. Dataset: the 30 orchestration cases (§3.7) plus 40 user questions with a labelled **expected block set** (e.g. affordability → `ScenarioComparison` + `RiskAssessment` + `InterventionCard`; "where does my money go" → `SpendingBreakdownChart` + `TransactionTable`), written before prompts are tuned.
+
+| ID | Check | Target |
+|---|---|---|
+| UI-1 | **Schema validity**: share of agent responses whose plan and hydrated blocks validate (Pydantic server-side and Zod client-side) without fallback | ≥ 0.98 |
+| UI-2 | **Block-selection quality**: precision/recall of chosen block types vs the labelled expected set | P ≥ 0.85, R ≥ 0.80 |
+| UI-3 | **No LLM numbers**: every number rendered in a block resolves to a `calc_`/`txn_` reference (null-model check, §9) | 100% |
+| UI-4 | **Currency integrity**: no block mixes currencies (V-20, 08 validation) | 0 violations |
+| UI-5 | **Snapshot reload**: reopening a stored response renders identical blocks with zero agent calls | 100% |
+| UI-6 | **Fallback behaviour**: injected invalid blocks are dropped and replaced by a `Narrative` fallback, logged | 100% |
+
+Runs in replay (cassettes) on every push and live nightly; results in `summary.json → suites.ui`.
+
 ## 11. Suite `E-AUD`: audit completeness
 
 Walk the chain for every recommendation produced in `E-GRD`:
@@ -729,11 +744,14 @@ make eval-live
       "breach_brier": null
     }
   },
+  "gates": { "E-CAT": "pass | fail", "E-FC": "pass | fail" },
   "notes": []
 }
 ```
 
 `null` = not yet run. The renderer prints `—` and never marks a null target as met.
+
+`gates` maps every suite ID to `pass` or `fail` after comparing results with targets and the regression baseline (§16). `tools/check_feature_flags.py` reads it: a feature flag may be on only if all its linked suites are `pass` (01 FR-86).
 
 ---
 

@@ -1,0 +1,95 @@
+/* Broadsheet tokens (docs/00 §9). Fonts are self-hosted in a later stage; system fallbacks for now. */
+:root {
+  --paper: #f6f3ec;
+  --ink: #16181d;
+  --ink-2: #4a4e57;
+  --ink-3: #6b6e75;
+  --rule: #dad5c9;
+  --accent: #1f4fd1;
+  --font-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-ui: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0f1115;
+    --ink: #ece8df;
+    --ink-2: #b5b2aa;
+    --ink-3: #8e8c86;
+    --rule: #2a2d34;
+    --accent: #7ea2ff;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+}
+
+.page {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 64px 16px 96px;
+}
+
+.kicker {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin: 0 0 8px;
+}
+
+.headline {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 6vw, 64px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.deck {
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--ink-2);
+  max-width: 62ch;
+  margin: 16px 0 48px;
+}
+
+.status {
+  display: grid;
+  gap: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  border-top: 1px solid var(--rule);
+  padding-top: 24px;
+}
+
+.status ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.status li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.stage {
+  color: var(--ink-3);
+  font-size: 13px;
+  margin-right: 8px;
+}
+
+.note {
+  color: var(--ink-2);
+  max-width: 60ch;
+}

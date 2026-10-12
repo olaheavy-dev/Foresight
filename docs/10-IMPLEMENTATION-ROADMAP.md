@@ -95,6 +95,7 @@ Everything that makes later work submittable and visible: registration, public r
 | PLT-01 | Register the team; record `SUBMISSION_TOKEN`; obtain the Mesh key | 0.5 | — | Registration confirmed; both secrets set in GitHub Actions |
 | PLT-02 | Repo skeleton (00 §11). **First read the downloaded organiser workflow** and pin `requires-python` to the interpreter its compile step uses (avoid 3.12-only syntax until confirmed). Root `requirements.txt` lists `fastapi` and `openai` **directly** (no `-e .` / `-r` indirection); extras go in `requirements-dev.txt`. `.gitignore`: `.env`, `private/`, `node_modules/`, `.next/`, and the canonical statement-file rule (09 §17.1). `.env.example`; Makefile | 2 | — | Clean clone → `pip install -r requirements.txt` + `make test` succeed; every `.py` in the repo (incl. `evals/`, `tools/`) compiles under the organiser's interpreter |
 | PLT-03 | Add the organiser workflow `.github/workflows/agent-arena-2026-checks.yml` unmodified | 0.5 | PLT-01, 02 | Critical + advisory checks green on `main` |
+| PLT-03b | **Get the organiser check recorded.** The organiser workflow ran on 12 Oct: 4/4 critical and 3/3 advisory checks passed, but results are only recorded once submissions open (**15 Oct 2026 03:30 UTC / 09:00 IST**). Push to `main` after that time and confirm the dashboard shows the recorded result; repeat after the final submission push | 0.25 | PLT-03 | Dashboard shows a recorded passing run on or after 15 Oct |
 | PLT-08 | **Make the repo public** and confirm the organiser checks see it; README stub in place | 0.25 | PLT-03 | Repo visible logged-out; CI green on the public repo |
 | PLT-04 | `backend/mesh/mesh_client.py`, the **sole** LLM gateway (base URL `https://api.meshapi.ai/v1`, `MESH_API_KEY`, timeouts, retries ≤ 2, usage capture, structured output); read the Mesh model catalogue and record model IDs in 00 §12.1 | 3 | PLT-02 | Live smoke call returns usage; a grep test proves no other module imports `openai`; the import-linter forbidden contract (05 §3.1) and the `LANGSMITH_TRACING`-off test pass |
 | PLT-09 | **Mesh capacity**: check credits, rate limits and latency for the chosen models; pick **one fallback model per agent tier** and record both in 00 §12.1; budget alarm | 1 | PLT-04 | Fallback IDs recorded; a forced primary failure falls back in a smoke test |
@@ -293,9 +294,11 @@ After the freeze: bugs, the final eval, the generated README, the video, submiss
 | Mesh compliance | import-linter forbidden contract + egress allow-list (ORC-13) + tracing-off test | No outbound connection except `api.meshapi.ai`, Telegram, SMTP; no AI SDK imported outside `backend.mesh` |
 | Privacy | pre-commit hook test; redaction fixture test; cassette payload scan | No real PII in the repo or in LLM payloads |
 | API | pytest + httpx; schemathesis | Contract tests; 4xx on cross-workspace IDs |
+| API end-to-end | pytest + httpx against the running app and `postgres:16` (`tests/e2e_api/`) | Full flow over HTTP per stage: import CSV → categorise → forecast → simulate → evidence chain resolves to source rows; Stage 2 adds Ask with cassettes (verifier loop visible in the response) |
 | Contracts | JSON Schema ↔ Zod round-trip | All `08` fixtures valid both sides |
-| Frontend | Vitest + Testing Library; Playwright journeys; axe | Journeys green; 0 serious a11y issues |
-| Evals | `make eval` in CI (replay) | All suites complete; README drift check; manifest hash check |
+| Frontend | Vitest + Testing Library (every block renderer rendered from every `08` fixture, incl. invalid-block fallback); Playwright journeys run in CI **against the real `docker compose` stack** (postgres + api + web, demo workspace seeded, Mesh in replay); axe inside Playwright | Journeys green; 0 serious a11y issues; a disabled feature flag hides its surface (asserted) |
+| Post-deploy smoke | GitHub Actions job after each publish: poll `https://foresight.olaheavy.dev/healthz` until it reports the new SHA, then one Playwright smoke journey against the live URL | New SHA live within 15 min; smoke green; failure alerts the owner and keeps the previous `sha-` tag for rollback |
+| Evals | `make eval` in CI (replay) | All suites complete; README drift check; manifest hash check; includes `E-UI` (09 §10a) |
 
 ---
 
