@@ -9,9 +9,11 @@
  * never hardcode hex, px radii or shadows.
  *
  * Verified:
- * - WCAG text contrast. Light, on surface: text 15.9:1, secondary 7.0:1, tertiary 4.7:1,
- *   white on accent 5.4:1. Dark, on surface: text 14.4:1, secondary 8.2:1, tertiary 5.4:1,
- *   status colours 7.0–8.4:1, interactive border 3.2:1.
+ * - WCAG text contrast, checked against EVERY background token (canvas, surface, tertiary, sunk,
+ *   accent tint), not just the card surface: light tertiary text >= 4.88:1, dark tertiary >= 4.89:1;
+ *   light text 15.9:1 and secondary >= 6.5:1; white on accent 5.4:1; dark text 14.4:1, secondary
+ *   8.2:1, status colours 7.0–8.4:1, interactive border 3.2:1. (CI's axe check caught the earlier
+ *   tertiary values failing on the canvas background.)
  * - Chart series pair (dataviz validate_palette.js). Light #1F5EF0/#A63DB5 passes every check
  *   (CVD ΔE 9.8, normal 21.3). Dark #4C82F5/#C95BC4 passes every check (CVD ΔE 8.1); the scenario
  *   series is always dashed and directly labelled as a second cue.
@@ -29,7 +31,7 @@
   /* ---------- Colour: text ---------- */
   --color-text-primary: #0E1A3A;      /* deep navy ink */
   --color-text-secondary: #4A5570;
-  --color-text-tertiary: #69738B;     /* captions, placeholders (4.7:1) */
+  --color-text-tertiary: #5E6880;     /* captions, placeholders (>= 4.88:1 on every light background) */
   --color-text-inverse: #FFFFFF;
   --color-text-link: #1F5EF0;
 
@@ -168,7 +170,7 @@
 
   --color-text-primary: #E7EBF3;
   --color-text-secondary: #AAB4C8;
-  --color-text-tertiary: #8590A8;
+  --color-text-tertiary: #8D98AF;
   --color-text-inverse: #0B1222;
   --color-text-link: #8CB0FF;
 
@@ -221,7 +223,7 @@
     --color-surface-overlay: rgba(3, 7, 16, 0.6);
     --color-text-primary: #E7EBF3;
     --color-text-secondary: #AAB4C8;
-    --color-text-tertiary: #8590A8;
+    --color-text-tertiary: #8D98AF;
     --color-text-inverse: #0B1222;
     --color-text-link: #8CB0FF;
     --color-border-primary: #222D45;
