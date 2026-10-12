@@ -1,0 +1,74 @@
+[project]
+name = "foresight"
+version = "0.1.0"
+description = "Agent-native financial intelligence: forecasts, checked advice, and a receipt for every number."
+readme = "README.md"
+# Kept compatible with 3.10+ syntax until the organiser's CI interpreter is confirmed (docs/10 PLT-02).
+requires-python = ">=3.10"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = ["frontend", "design"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S", "PT"]
+ignore = ["S101"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S105", "S106"]
+
+[tool.mypy]
+python_version = "3.10"
+packages = ["backend", "tools"]
+ignore_missing_imports = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = "backend.finance_core.*"
+strict = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["postgres: needs a reachable PostgreSQL (DATABASE_URL)"]
+
+# Mesh-only rule (docs/05 §3.1): no AI SDK may be imported outside backend.mesh.
+[tool.importlinter]
+root_packages = ["backend"]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Only backend.mesh may talk to model providers"
+type = "forbidden"
+source_modules = [
+    "backend.app",
+    "backend.agents",
+    "backend.finance_core",
+    "backend.storage",
+    "backend.scheduler",
+    "backend.settings",
+]
+forbidden_modules = [
+    "openai",
+    "langchain_openai",
+    "langchain_community",
+    "litellm",
+    "anthropic",
+    "google",  # covers google.genai / generativeai; import-linter forbids top-level only
+    "cohere",
+    "transformers",
+    "sentence_transformers",
+    "tiktoken",
+]
+
+[[tool.importlinter.contracts]]
+name = "finance_core is pure: no storage, agents, mesh or app"
+type = "forbidden"
+source_modules = ["backend.finance_core"]
+forbidden_modules = ["backend.storage", "backend.agents", "backend.mesh", "backend.app"]
+
+[[tool.importlinter.contracts]]
+name = "storage and mesh never import app or agents"
+type = "forbidden"
+source_modules = ["backend.storage", "backend.mesh"]
+forbidden_modules = ["backend.app", "backend.agents"]

@@ -293,9 +293,11 @@ After the freeze: bugs, the final eval, the generated README, the video, submiss
 | Mesh compliance | import-linter forbidden contract + egress allow-list (ORC-13) + tracing-off test | No outbound connection except `api.meshapi.ai`, Telegram, SMTP; no AI SDK imported outside `backend.mesh` |
 | Privacy | pre-commit hook test; redaction fixture test; cassette payload scan | No real PII in the repo or in LLM payloads |
 | API | pytest + httpx; schemathesis | Contract tests; 4xx on cross-workspace IDs |
+| API end-to-end | pytest + httpx against the running app and `postgres:16` (`tests/e2e_api/`) | Full flow over HTTP per stage: import CSV → categorise → forecast → simulate → evidence chain resolves to source rows; Stage 2 adds Ask with cassettes (verifier loop visible in the response) |
 | Contracts | JSON Schema ↔ Zod round-trip | All `08` fixtures valid both sides |
-| Frontend | Vitest + Testing Library; Playwright journeys; axe | Journeys green; 0 serious a11y issues |
-| Evals | `make eval` in CI (replay) | All suites complete; README drift check; manifest hash check |
+| Frontend | Vitest + Testing Library (every block renderer rendered from every `08` fixture, incl. invalid-block fallback); Playwright journeys run in CI **against the real `docker compose` stack** (postgres + api + web, demo workspace seeded, Mesh in replay); axe inside Playwright | Journeys green; 0 serious a11y issues; a disabled feature flag hides its surface (asserted) |
+| Post-deploy smoke | GitHub Actions job after each publish: poll `https://foresight.olaheavy.dev/healthz` until it reports the new SHA, then one Playwright smoke journey against the live URL | New SHA live within 15 min; smoke green; failure alerts the owner and keeps the previous `sha-` tag for rollback |
+| Evals | `make eval` in CI (replay) | All suites complete; README drift check; manifest hash check; includes `E-UI` (09 §10a) |
 
 ---
 

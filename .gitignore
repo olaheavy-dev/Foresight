@@ -45,3 +45,9 @@ out/
 .DS_Store
 .idea/
 .vscode/
+
+# Next.js generated types
+frontend/next-env.d.ts
+frontend/test-results/
+frontend/playwright-report/
+*.tsbuildinfo
