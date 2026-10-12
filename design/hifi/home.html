@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foresight · Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" rel="stylesheet">
+<script src="assets/theme.js"></script>
+<link rel="stylesheet" href="assets/foresight.css">
+<link rel="stylesheet" href="assets/pages.css">
+</head>
+<body>
+<script src="assets/icons.js"></script>
+<div class="frame">
+  <aside class="sidebar">
+    <a class="logo" href="index.html" aria-label="Foresight home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 11.5 27 5.5l-2.4 6.2L4.6 17.7Z"/><path d="M5.6 19.4 21.8 14.6l-2.2 5.6L3.4 25Z"/><path d="M4.4 26.6 13.8 23.8l-1.6 4L2.8 30.6Z"/></svg>
+      <span class="wordmark">Foresight</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="home.html" aria-current="page"><svg aria-hidden="true"><use href="#i-home"/></svg><span>Home</span></a>
+      <a href="workspace.html"><svg aria-hidden="true"><use href="#i-grid"/></svg><span>Workspace</span></a>
+      <a href="#"><svg aria-hidden="true"><use href="#i-bars"/></svg><span class="long">Decision Lab</span><span class="short">Lab</span></a>
+      <a href="#"><svg aria-hidden="true"><use href="#i-swap"/></svg><span>Transactions</span></a>
+      <a href="#"><svg aria-hidden="true"><use href="#i-clock"/></svg><span>Activity</span></a>
+      <a class="nav-settings" href="#"><svg aria-hidden="true"><use href="#i-settings"/></svg><span>Settings</span></a>
+    </nav>
+    <div class="spacer"></div>
+    <section class="side-card" aria-labelledby="perf-h">
+      <div class="head"><span class="icon-chip sm"><svg aria-hidden="true"><use href="#i-flask"/></svg></span><h3 id="perf-h">Quality checks</h3></div>
+      <p>Categorisation and forecast accuracy: not measured yet.</p>
+      <a class="link" href="#">See evaluation results <svg aria-hidden="true"><use href="#i-arrowright"/></svg></a>
+    </section>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+    <a class="logo" href="index.html" aria-label="Foresight home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 11.5 27 5.5l-2.4 6.2L4.6 17.7Z"/><path d="M5.6 19.4 21.8 14.6l-2.2 5.6L3.4 25Z"/><path d="M4.4 26.6 13.8 23.8l-1.6 4L2.8 30.6Z"/></svg><span class="wordmark">Foresight</span></a>
+    <label class="search"><svg aria-hidden="true"><use href="#i-search"/></svg><span>Ask Foresight about your finances…</span></label>
+    <span class="proto-tag">Design prototype · fictional data</span>
+    <div class="right">
+      <button class="icon-btn search-toggle" type="button" aria-label="Search" aria-expanded="false"><svg aria-hidden="true"><use href="#i-search"/></svg></button>
+      <button class="icon-btn bell" type="button" aria-label="Notifications, 3 new"><svg aria-hidden="true"><use href="#i-bell"/></svg><span class="dot"></span></button>
+      <div class="user"><span class="avatar">AN</span><span class="name">Amara Nwosu</span><svg class="chev" aria-hidden="true"><use href="#i-chevdown"/></svg></div>
+    </div>
+  </header>
+
+    <main class="page home">
+      <section class="hero">
+        <div class="hero-art" aria-hidden="true"></div>
+        <blockquote class="quote serif">“A calm mind<br>builds a richer future.”<span></span></blockquote>
+        <p class="date">Mon 12 Oct 2026</p>
+        <p class="greet">Good morning, Amara</p>
+        <h1 class="serif">Your money, a few steps ahead.</h1>
+        <p class="lede">A clearer today, a calmer month. Foresight reads your transactions, forecasts what’s next and checks its advice before it reaches you.</p>
+      </section>
+
+      <section class="metrics" aria-label="Key figures">
+        <a class="card metric" href="#">
+          <span class="icon-chip"><svg><use href="#i-wallet"/></svg></span>
+          <div>
+            <p class="m-label">Current balance <svg class="chev"><use href="#i-chevright"/></svg></p>
+            <p class="m-value serif num">£2,184.50</p>
+            <p class="m-note">Monzo · as of 11 Oct</p>
+          </div>
+        </a>
+        <a class="card metric" href="#">
+          <span class="icon-chip red"><svg><use href="#i-bars"/></svg></span>
+          <div>
+            <p class="m-label">Lowest before payday <svg class="chev"><use href="#i-chevright"/></svg></p>
+            <p class="m-value serif num">£162 <span class="badge red"><svg><use href="#i-alert"/></svg>Below buffer</span></p>
+            <p class="m-note">27 Oct · likely £95–£224</p>
+          </div>
+        </a>
+        <a class="card metric" href="#">
+          <span class="icon-chip green"><svg><use href="#i-coins"/></svg></span>
+          <div>
+            <p class="m-label">Next salary <svg class="chev"><use href="#i-chevright"/></svg></p>
+            <p class="m-value serif num">£4,050</p>
+            <p class="m-note">Wed 28 Oct · Acme Analytics</p>
+          </div>
+        </a>
+        <a class="card metric" href="#">
+          <span class="icon-chip"><svg><use href="#i-bulb"/></svg></span>
+          <div>
+            <p class="m-label">Insights to review <svg class="chev"><use href="#i-chevright"/></svg></p>
+            <p class="m-value serif num">3</p>
+            <p class="m-note">1 needs attention</p>
+          </div>
+        </a>
+      </section>
+
+      <section class="row-2">
+        <article class="card forecast">
+          <div class="card-head">
+            <svg class="icon-bare"><use href="#i-pulse"/></svg>
+            <div>
+              <h2 class="card-title">Cash-flow forecast</h2>
+              <p class="card-sub">Lowest balance before each payday, to 31 Mar · middle of 500 simulated paths, after 14 days observed</p>
+            </div>
+            <button class="btn select">Next 6 months <svg><use href="#i-chevdown"/></svg></button>
+          </div>
+          <div class="chart" data-chart="home"></div>
+          <div class="legend">
+            <span><svg viewBox="0 0 26 10" aria-hidden="true"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--color-data-observed)" stroke-width="2"/></svg>Observed</span>
+            <span><svg viewBox="0 0 26 10" aria-hidden="true"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--color-data-forecast)" stroke-width="2"/></svg>Lowest balance before each payday</span>
+            <span><svg viewBox="0 0 26 10" aria-hidden="true"><rect x="1" y="1" width="24" height="8" rx="2" fill="var(--color-data-forecast-band)"/></svg>Likely range (P10–P90)</span>
+                        <span><svg viewBox="0 0 26 10" aria-hidden="true"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--color-data-buffer)" stroke-width="1.5" stroke-dasharray="2 4" stroke-linecap="round"/></svg>Your buffer · £500</span>
+          </div>
+          <p class="info-bar"><svg><use href="#i-info"/></svg><span>If nothing changes you’d have about <strong class="num">£8,345</strong> on 31 Mar 2027. The checked plan below keeps late October above your buffer.</span><a class="link" href="#">View full forecast <svg><use href="#i-arrowright"/></svg></a></p>
+        </article>
+
+        <article class="card briefing">
+          <div class="card-head">
+            <svg class="icon-bare"><use href="#i-filetext"/></svg>
+            <div><h2 class="card-title">Financial briefing</h2><p class="card-sub">Written this morning from your data to 11 Oct</p></div>
+          </div>
+          <ul class="brief-list">
+            <li><span class="icon-chip sm red"><svg><use href="#i-car"/></svg></span><p>A <strong class="num">£650</strong> car repair on 14 Oct takes your late-October low to <strong class="num">£162</strong>, below your £500 buffer.</p></li>
+            <li><span class="icon-chip sm amber"><svg><use href="#i-trendup"/></svg></span><p>Food delivery is <strong class="num">£286.40</strong> over the last 30 days, 41% above your 3-month median of £203.10.</p></li>
+            <li><span class="icon-chip sm green"><svg><use href="#i-shield"/></svg></span><p>A checked plan keeps 27 Oct at <strong class="num">£604</strong> by moving your £400 savings transfer to after payday.</p></li>
+            <li><span class="icon-chip sm"><svg><use href="#i-calendar"/></svg></span><p>With the plan you’re on course for about <strong class="num">£8,388</strong> by 31 Mar 2027.</p></li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="card insights" aria-labelledby="ins-h">
+        <div class="ins-head">
+          <svg class="icon-bare"><use href="#i-sparkles"/></svg>
+          <div><h2 id="ins-h" class="card-title">Proactive insights</h2><p class="card-sub">Things we’ve noticed, and suggested next steps.</p></div>
+          <a class="link" href="#">View all insights <svg><use href="#i-arrowright"/></svg></a>
+        </div>
+        <div class="ins-grid">
+          <article class="ins-card">
+            <span class="icon-chip red"><svg><use href="#i-alert"/></svg></span>
+            <div>
+              <div class="ins-title"><h3>Your late-October buffer may fall below £500</h3><span class="badge red">Needs attention</span></div>
+              <p>The £650 car repair leaves an expected low of £162 on Tue 27 Oct. A checked plan keeps you at £604.</p>
+              <a class="btn" href="workspace.html">Investigate <svg><use href="#i-arrowright"/></svg></a>
+            </div>
+          </article>
+          <article class="ins-card">
+            <span class="icon-chip"><svg><use href="#i-utensils"/></svg></span>
+            <div>
+              <div class="ins-title"><h3>Food delivery is up 41%</h3><span class="badge red"><svg><use href="#i-arrowup"/></svg>41%</span></div>
+              <p>£286.40 in the last 30 days, against a usual £203.10 a month.</p>
+              <a class="btn" href="#">Review spending <svg><use href="#i-arrowright"/></svg></a>
+            </div>
+          </article>
+          <article class="ins-card">
+            <span class="icon-chip"><svg><use href="#i-tv"/></svg></span>
+            <div>
+              <div class="ins-title"><h3>Subscriptions to review</h3><span class="badge blue">2 overlap</span></div>
+              <p>Sky TV (£46 a month) and Netflix (£12.99 a month) both cover TV streaming.</p>
+              <a class="btn" href="#">See subscriptions <svg><use href="#i-arrowright"/></svg></a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<script src="assets/data.js"></script>
+<script>
+window.CHARTS = {
+  home: {
+    history: true, mode: "lows",
+    series: [{ name: "current", label: "Lowest before payday", colorVar: "--color-data-forecast", band: true }],
+    height: 300, heightNarrow: 230, buffer: 500, bufferLabel: "£500 buffer",
+    callout: { series: "current", cycleIndex: 0, title: "Lowest · Tue 27 Oct", value: "£162" },
+    ariaLabel: "Observed balance from 28 September to 11 October 2026, then the lowest balance forecast before each payday to March 2027 if nothing changes. The first low is £162 on 27 October, below the £500 buffer; every later low is above it and they rise each month.",
+  },
+};
+</script>
+<script src="assets/charts.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -9,7 +9,23 @@ from __future__ import annotations
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-DESIGN_FIGURES = ("1,284.50", "1284.50", "116.39", "£640", "2,940", "286.40", "203.10", "£548")
+# Generated P1 figures from design/fixture/fixture.json (register rev 6).
+DESIGN_FIGURES = (
+    "2,184.50",
+    "2184.50",
+    "4,050",
+    "286.40",
+    "203.10",
+    "136.37",
+    "143.20",
+    "1,086",
+    "8,388",
+    "8,345",
+    "7,188",
+    "£604",
+    "£812",
+    "£162",
+)
 SCANNED = (ROOT / "backend", ROOT / "frontend" / "src", ROOT / "frontend" / "app")
 SUFFIXES = {".py", ".ts", ".tsx", ".js", ".jsx", ".json", ".yaml", ".yml"}
 

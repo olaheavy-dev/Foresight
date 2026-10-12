@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foresight · Direction B board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="studio.css">
+<style>
+  body { background: var(--canvas); }
+  .board { max-width: 1240px; margin: 0 auto; padding: 48px 40px 96px; }
+  .hero { display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: end; padding-bottom: 40px; border-bottom: 1px solid var(--border-strong); }
+  .hero .brand { font: 400 64px/1 var(--font-brand); letter-spacing: -0.01em; margin: 0 0 16px; color: var(--text); }
+  .hero .direction { font: 500 11px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 18px; display: flex; gap: 12px; align-items: center; }
+  .hero h1 { font-size: 34px; line-height: 1.15; letter-spacing: -0.02em; font-weight: 600; margin: 0; max-width: 22ch; }
+  .hero p { color: var(--text-muted); font-size: 17px; line-height: 1.6; margin: 0; max-width: 54ch; }
+  .sec { padding: 48px 0 8px; display: grid; grid-template-columns: 220px 1fr; gap: 40px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 48px; }
+  .sec > h2 { font-size: var(--t-sm); font-weight: 600; margin: 4px 0 0; }
+  .sec > h2 small { display: block; font-weight: 400; color: var(--text-faint); margin-top: 6px; line-height: 1.5; }
+  .principles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px 32px; }
+  .principles h3 { font-size: var(--t-md); margin: 0 0 6px; font-weight: 600; }
+  .principles p { margin: 0; font-size: var(--t-sm); color: var(--text-muted); line-height: 1.55; }
+  .swatches { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
+  .sw { border: 1px solid var(--border-subtle); border-radius: var(--r-block); overflow: hidden; background: var(--surface); }
+  .sw .chip-c { height: 84px; }
+  .sw .meta { padding: 10px 12px; font-size: var(--t-xs); color: var(--text-faint); line-height: 1.5; }
+  .sw .meta b { display: block; color: var(--text); font-size: var(--t-sm); font-weight: 500; }
+  .type-row { display: grid; grid-template-columns: 140px 1fr; gap: 24px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--border-subtle); }
+  .type-row:last-child { border-bottom: 0; }
+  .type-row .spec { font: 400 var(--t-xs)/1.5 var(--font-mono); color: var(--text-faint); }
+  .grammar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--border-subtle); border-radius: var(--r-block); background: var(--surface); overflow: hidden; }
+  .grammar > div { padding: 18px 20px; border-right: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }
+  .grammar > div:nth-child(3n) { border-right: 0; }
+  .grammar > div:nth-last-child(-n+3) { border-bottom: 0; }
+  .grammar h4 { margin: 10px 0 4px; font-size: var(--t-sm); font-weight: 600; }
+  .grammar p { margin: 0; font-size: var(--t-sm); color: var(--text-muted); line-height: 1.5; }
+  .grammar svg.sample { width: 100%; height: 34px; display: block; }
+  .comp-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+  .comp-name { font: 500 10px/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-hover); margin: 0 0 8px; }
+  .borrow { width: 100%; border-collapse: collapse; font-size: var(--t-sm); }
+  .borrow th { text-align: left; font-weight: 500; font-size: var(--t-xs); color: var(--text-faint); padding: 0 16px 8px 0; border-bottom: 1px solid var(--border-strong); }
+  .borrow td { padding: 12px 16px 12px 0; border-bottom: 1px solid var(--border-subtle); vertical-align: top; line-height: 1.5; }
+  .borrow td:first-child { font-weight: 500; white-space: nowrap; }
+  .borrow td:last-child { color: var(--text-muted); }
+  .wire { font: 400 12px/1.45 var(--font-mono); color: var(--text-muted); background: var(--surface); border: 1px solid var(--border-subtle); border-radius: var(--r-block); padding: 20px 24px; margin: 0; white-space: pre; overflow-x: auto; }
+  .links { display: flex; gap: 12px; margin-top: 28px; }
+</style>
+</head>
+<body>
+<main class="board">
+
+  <header class="hero">
+    <div>
+      <div class="direction"><span>Direction B · Agent-Native Analysis Studio</span><span class="concept-label">Design concept · fictional data</span></div>
+      <p class="brand">Foresight</p>
+      <h1>A canvas the agents build for you, block by block, each one stamped with what kind of truth it holds.</h1>
+    </div>
+    <div>
+      <p>Most finance apps give you fixed pages and a chat box on the side. In the Studio, every question, and every risk the agents spot on their own, produces a <strong>canvas</strong>: a forecast, a comparison, the transactions behind it, the options they tried and the check that approved one. The conversation stays in a narrow rail; the work takes the room.</p>
+      <div class="links">
+        <a class="btn primary" href="home.html" style="text-decoration:none">Open Home</a>
+        <a class="btn" href="workspace.html" style="text-decoration:none">Open Workspace</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="sec">
+    <h2>Structure<small>Three columns, in order of attention earned</small></h2>
+    <div>
+<pre class="wire">┌──────┬────────────────────────┬──────────────────────────────────────────────────────────────────┐
+│  F   │ AGENT RAIL             │ CANVAS                                                           │
+│      │ what happened, in      │ Title = the answer or the risk, in one sentence                  │
+│ Home │ tool summaries         │ ┌───────────────────────────────────────┬──────────────────────┐ │
+│ Work │ ● Ledger      07:02    │ │ CashFlowTimeline / ScenarioComparison │ MetricSummary        │ │
+│ Lab  │ ● Forecaster  07:03    │ │ observed · forecast+band · scenario   │ observed · forecast  │ │
+│ Data │ ⊖ Verifier rejected    │ └───────────────────────────────────────┴──────────────────────┘ │
+│ Act  │ ✓ Verifier checked     │ ┌──────────────────────┬───────────────────────────────────────┐ │
+│      │                        │ │ RiskInsight (AI)     │ InterventionOptions: checked/rejected │ │
+│      │ → suggested asks       │ └──────────────────────┴───────────────────────────────────────┘ │
+│ AN   │ [ Ask…          → ]    │ TransactionEvidence · AssumptionInspector · AgentActivity        │
+└──────┴────────────────────────┴──────────────────────────────────────────────────────────────────┘</pre>
+      <p class="explain" style="margin-top:16px">Hovering a step in the rail lights up the block it produced, so the audit trail and the analysis are the same object seen from two sides. Navigation is a 64px strip: it orients, it never competes.</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Principles</h2>
+    <div class="principles">
+      <div><h3>The answer is a surface</h3><p>A question returns a working canvas you can adjust and inspect, not a paragraph. Prose is one block among several.</p></div>
+      <div><h3>Every block declares its truth</h3><p>Observed, computed, forecast, hypothetical, AI-written or checked: a stamp on every block says which, before you read a number.</p></div>
+      <div><h3>Agents work while you are away</h3><p>Home is the canvas they assembled after the last change, with the steps they took listed beside it.</p></div>
+      <div><h3>Show the rejected option</h3><p>A plan you can trust shows the one that failed the check, and why. Rejection is part of the evidence, not an error.</p></div>
+      <div><h3>Numbers from the engine only</h3><p>Models write the words and the plans. Every figure is computed, recomputed by the Verifier, and traceable to rows.</p></div>
+      <div><h3>Suggestions, never movements</h3><p>Nothing moves money. Every action is “review and accept”, and dismissing is always one click.</p></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Palette<small>One accent. Status colours are never series colours.</small></h2>
+    <div class="swatches">
+      <div class="sw"><div class="chip-c" style="background:#151D31"></div><div class="meta"><b>Midnight ink</b>#151D31 · text, observed history</div></div>
+      <div class="sw"><div class="chip-c" style="background:#F7F8F5;border-bottom:1px solid #E6E8E3"></div><div class="meta"><b>Warm canvas</b>#F7F8F5 · app ground</div></div>
+      <div class="sw"><div class="chip-c" style="background:#FFFFFF;border-bottom:1px solid #E6E8E3"></div><div class="meta"><b>White</b>#FFFFFF · blocks</div></div>
+      <div class="sw"><div class="chip-c" style="background:#3868E9"></div><div class="meta"><b>Signal blue</b>#3868E9 · controls, focus, scenarios</div></div>
+      <div class="sw"><div class="chip-c" style="background:#168A78"></div><div class="meta"><b>Positive teal</b>#168A78 · checked plans · text #127566</div></div>
+      <div class="sw"><div class="chip-c" style="background:#C47B4D"></div><div class="meta"><b>Caution amber</b>#C47B4D · buffer, risk · text #A5613A</div></div>
+      <div class="sw"><div class="chip-c" style="background:#B4372F"></div><div class="meta"><b>Shortfall red</b>#B4372F · only real shortfalls, errors</div></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Type<small>Geist for the product, Geist Mono for provenance, a serif only for the name</small></h2>
+    <div>
+      <div class="type-row"><span class="spec">Brand · Instrument Serif 64</span><span style="font:400 52px/1 var(--font-brand)">Foresight</span></div>
+      <div class="type-row"><span class="spec">Hero figure · Geist 500 40</span><span class="num" style="font-size:40px;font-weight:500;letter-spacing:-.02em;line-height:1.1">£2,184<span class="pence">.50</span></span></div>
+      <div class="type-row"><span class="spec">Canvas title · Geist 600 28</span><span style="font-size:28px;font-weight:600;letter-spacing:-.015em">Your late-October buffer may fall below £500</span></div>
+      <div class="type-row"><span class="spec">Block title · Geist 600 13</span><span class="block-title">What the agents propose</span></div>
+      <div class="type-row"><span class="spec">Body · Geist 400 15</span><span class="explain">Paying on 6 Nov would take your late-November low to £180.</span></div>
+      <div class="type-row"><span class="spec">Stamp · Geist Mono 500 10</span><span><span class="stamp forecast">Forecast · probabilistic / 500 paths / as of 12 Oct</span></span></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Chart and data grammar<small>Line style carries meaning, so colour is never the only cue</small></h2>
+    <div class="grammar">
+      <div><svg class="sample" viewBox="0 0 200 34"><path d="M0 22 L40 18 L80 24 L120 12 L160 16 L200 14" fill="none" stroke="#151D31" stroke-width="2"/></svg><span class="stamp observed">Observed</span><h4>Solid ink</h4><p>What happened, from your statement rows.</p></div>
+      <div><svg class="sample" viewBox="0 0 200 34"><path d="M0 17 L200 9 L200 27 L0 19Z" fill="rgba(21,29,49,.08)"/><path d="M0 18 L200 18" stroke="#4A5367" stroke-width="2"/></svg><span class="stamp forecast">Forecast</span><h4>Ink line, widening band</h4><p>Likely range from 500 simulated paths, P10–P90.</p></div>
+      <div><svg class="sample" viewBox="0 0 200 34"><path d="M0 12 L200 26" stroke="#3868E9" stroke-width="2" stroke-dasharray="6 4"/></svg><span class="stamp scenario">Hypothetical</span><h4>Dashed blue</h4><p>Something you are testing. Never confused with what will happen.</p></div>
+      <div><svg class="sample" viewBox="0 0 200 34"><path d="M0 24 L200 10" stroke="#168A78" stroke-width="2"/></svg><span class="stamp checked">Checked</span><h4>Solid teal, always labelled</h4><p>A plan the Verifier recomputed and approved.</p></div>
+      <div><svg class="sample" viewBox="0 0 200 34"><path d="M0 17 L200 17" stroke="#C47B4D" stroke-width="1.5" stroke-dasharray="1 4" stroke-linecap="round"/></svg><span class="stamp computed">Threshold</span><h4>Dotted amber</h4><p>Your buffer. Dropping under it is what raises a risk.</p></div>
+      <div><svg class="sample" viewBox="0 0 200 34"><line x1="100" y1="2" x2="100" y2="32" stroke="#151D31"/><text x="106" y="12" style="font:500 9px Geist Mono" fill="#151D31">TODAY</text><rect x="100" y="2" width="100" height="30" fill="rgba(21,29,49,.03)"/></svg><span class="stamp ai">Boundary</span><h4>Today rule</h4><p>Left is observed, right is forecast. Always drawn, always labelled.</p></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Typed blocks<small>The only things a model may place on a canvas. It picks blocks and references; the engine fills numbers.</small></h2>
+    <div class="comp-grid">
+      <div class="span-4"><p class="comp-name">MetricSummary</p>
+        <div class="block"><div class="block-body figures-stack" style="padding-top:16px">
+          <div class="figure"><span class="stamp forecast">Forecast</span><span class="label" style="margin-top:8px">Lowest before payday</span><span class="value risk num">£162</span><span class="context">Tue 27 Oct · likely −£10 to £330</span></div>
+        </div></div></div>
+      <div class="span-8"><p class="comp-name">InterventionOptions</p>
+        <div class="block"><div class="block-body" style="padding-top:16px">
+          <div class="option checked"><span class="mark"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2"><path d="M5 12.5 10 17l9-10"/></svg></span><div><div class="title">Move the £300 savings transfer to 29 Oct and keep food delivery under £120</div><div class="verdict-line"><span class="ok">✓ Checked</span><span style="color:var(--text-faint)">after 1 revision</span></div></div><div class="effect"><span class="big num" style="color:var(--positive-text)">£532</span><span style="color:var(--text-faint)">low on 27 Oct</span></div></div>
+          <div class="option rejected"><span class="mark"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#B4372F" stroke-width="3.5"><path d="M6 6l12 12M18 6 6 18"/></svg></span><div><div class="title">Cap food delivery at £40 until payday</div><div class="why"><b>Rejected.</b> 79% below your pace; still a £312 low.</div></div><div class="effect"><span class="big num" style="color:var(--text-faint)">£312</span></div></div>
+        </div></div></div>
+      <div class="span-5"><p class="comp-name">RiskInsight</p>
+        <div class="block"><div class="block-body" style="padding-top:16px"><div class="risk-head"><span class="risk-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A5613A" stroke-width="2.2"><path d="M12 7v6M12 17h.01"/></svg></span><h3 style="font-size:16px">Your late-October buffer may fall below £500</h3></div>
+          <dl class="facts"><dt>Cause</dt><dd>£650 car repair · food delivery +41%</dd><dt>Impact</dt><dd>Low of £162 on Tue 27 Oct</dd></dl></div></div></div>
+      <div class="span-7"><p class="comp-name">TransactionEvidence</p>
+        <div class="block"><div class="block-body" style="padding-top:12px"><table class="rows"><tbody>
+          <tr class="group"><td colspan="3">Observed</td></tr>
+          <tr><td class="num">Sat 10 Oct</td><td>Deliveroo <span class="mono" style="margin-left:6px">row 182</span></td><td class="r num">−£24.80</td></tr>
+          <tr class="group"><td colspan="3">Upcoming</td></tr>
+          <tr class="upcoming"><td class="num">Wed 14 Oct</td><td>Car repair <span class="chip tag-new">New</span></td><td class="r num">−£650.00</td></tr>
+        </tbody></table></div></div></div>
+      <div class="span-6"><p class="comp-name">AgentActivityTimeline</p>
+        <div class="block" style="background:var(--rail)"><div class="block-body" style="padding-top:12px"><ol class="steps">
+          <li class="step done"><span class="step-dot"></span><span class="step-label"><span class="step-agent">Forecaster</span><b>Building forecast</b> · 500 paths</span><span class="step-time">1.8s</span></li>
+          <li class="step revised"><span class="step-dot"></span><span class="step-label"><span class="step-agent">Verifier</span>Rejected one option</span><span class="step-time">0.4s</span></li>
+          <li class="step checked"><span class="step-dot"></span><span class="step-label"><span class="step-agent">Verifier</span><b>Verifying recommendation</b> · checked</span><span class="step-time">0.6s</span></li>
+        </ol></div></div></div>
+      <div class="span-6"><p class="comp-name">AssumptionInspector</p>
+        <div class="block"><div class="block-body" style="padding-top:12px"><table class="rows"><tbody>
+          <tr><td>Salary arrives</td><td class="r">Wed 28 Oct · £2,940</td></tr>
+          <tr><td>Everyday spending</td><td class="r">about £27 a day</td></tr>
+          <tr><td>Uncertainty</td><td class="r">500 paths</td></tr>
+        </tbody></table></div></div></div>
+      <div class="span-12"><p class="comp-name">CashFlowTimeline · ScenarioComparison</p><p class="explain" style="font-size:14px">See the live charts on <a href="home.html">Home</a> and <a href="workspace.html">Workspace</a>: same grammar, hover for daily values, a hidden table view for screen readers.</p></div>
+    </div>
+  </section>
+
+  <section class="sec" style="border-bottom:0">
+    <h2>What we borrowed<small>Studied, not copied</small></h2>
+    <table class="borrow">
+      <thead><tr><th>Reference</th><th>Borrowed</th><th>Left behind</th></tr></thead>
+      <tbody>
+        <tr><td>Mercury</td><td>Superscript pence on hero balances; an upcoming list read against your balance; calm white panels on a tinted ground.</td><td>Banking actions (transfers, cards). Foresight never moves money.</td></tr>
+        <tr><td>Linear</td><td>“Don’t compete for attention you haven’t earned”: a receding nav strip, tight aligned rows, quiet hairlines, an inspector-like rail.</td><td>Issue-tracker density and dark-first styling.</td></tr>
+        <tr><td>Ramp</td><td>Functional reporting hierarchy: the number first, its context directly under it.</td><td>Corporate expense vocabulary.</td></tr>
+        <tr><td>Monarch</td><td>Plain-language cause and effect: what drove the change, in your own categories.</td><td>Historical category reports as the hero; history here is context for the future.</td></tr>
+        <tr><td>Causal</td><td>A base plan compared against named scenarios on one chart; “actuals until the last actual date, then forecast”; variance on demand.</td><td>Spreadsheet surfaces and model jargon.</td></tr>
+        <tr><td>Claude Artifacts</td><td>A question produces a substantial work surface beside the conversation, which keeps it.</td><td>A chat stream as the main surface; the canvas is the product.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="footnote"><span>Direction B · Stage 1 concept. All people, accounts and figures are fictional.</span><span>Foresight gives guidance, not regulated financial advice.</span></div>
+</main>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foresight · Stage 1 directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#151D31; --ink-2:#4B5367; --ink-3:#6B7285; --canvas:#F7F8F5; --surface:#FFFFFF; --rule:#E3E5E0; --blue:#3868E9; --teal:#127263; --amber:#9A5A30; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--canvas); color:var(--ink); font:15px/1.55 Geist, Inter, system-ui, sans-serif; }
+  main { max-width:1120px; margin:0 auto; padding:56px 24px 96px; }
+  .kicker { font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); margin:0 0 8px; }
+  h1 { font-size:36px; font-weight:600; letter-spacing:-.02em; margin:0 0 12px; }
+  h2 { font-size:20px; font-weight:600; margin:0 0 4px; }
+  h3 { font-size:14px; font-weight:600; margin:20px 0 6px; }
+  p.lead { font-size:17px; color:var(--ink-2); max-width:68ch; margin:0 0 40px; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .card { background:var(--surface); border:1px solid var(--rule); border-radius:10px; padding:24px; }
+  .links { display:flex; gap:8px; flex-wrap:wrap; margin:14px 0 4px; }
+  .links a { font-size:13px; color:var(--blue); text-decoration:none; border:1px solid var(--rule); border-radius:6px; padding:6px 10px; }
+  .links a:hover { border-color:var(--blue); }
+  ul { margin:0; padding-left:18px; }
+  li { margin:4px 0; color:var(--ink-2); }
+  .plus li::marker { color:var(--teal); }
+  .minus li::marker { color:var(--amber); }
+  .rec { margin-top:20px; border-left:3px solid var(--blue); }
+  .note { margin-top:20px; }
+  .tag { font-size:12px; color:var(--ink-3); }
+  @media (max-width: 860px) { .grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <p class="kicker">Stage 1 · design exploration · fictional data</p>
+  <h1>Two directions for Foresight</h1>
+  <p class="lead">Both follow the creative brief (Financial Intelligence Atelier palette, Geist, light-first) and the same demo story: a £650 car repair puts Amara's late-October buffer at risk, the Verifier rejects one fix and checks another, then she asks about a £1,200 November holiday. Pick a direction or a hybrid before anything is polished.</p>
+
+  <div class="grid">
+    <section class="card">
+      <h2>A · Intelligence Command Centre</h2>
+      <p class="tag">Calm, editorial briefing. Mercury-like hierarchy.</p>
+      <div class="links">
+        <a href="direction-a/home.html">Home</a>
+        <a href="direction-a/workspace.html">Workspace</a>
+        <a href="direction-a/board.html">Concept board</a>
+        <a href="direction-a/notes.md">Notes</a>
+      </div>
+      <h3>Strengths</h3>
+      <ul class="plus">
+        <li>Answers "what should I know today?" in one sentence, then three numbers with source and as-of date, then one chart. Fast to read.</li>
+        <li>The future chart is the hero, with the today line, likely range and buffer.</li>
+        <li>An event rail under the chart puts each dated payment below the day it hits.</li>
+        <li>The Workspace reads like a short report: verdict, three outcomes, chart, checked alternative.</li>
+        <li>Lowest build risk for a solo builder.</li>
+      </ul>
+      <h3>Weaknesses</h3>
+      <ul class="minus">
+        <li>Feels like a very good dashboard more than an agent-native product: the agents sit in a side panel.</li>
+        <li>The Workspace answer is a fixed report layout, so different questions risk looking the same.</li>
+        <li>History line has a sharp salary spike that pulls attention away from the forecast.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>B · Agent-Native Analysis Studio</h2>
+      <p class="tag">Agent rail plus a canvas built from typed outputs. Causal and Artifacts influence.</p>
+      <div class="links">
+        <a href="direction-b/home.html">Home</a>
+        <a href="direction-b/workspace.html">Workspace</a>
+        <a href="direction-b/board.html">Concept board</a>
+        <a href="direction-b/notes.md">Notes</a>
+      </div>
+      <h3>Strengths</h3>
+      <ul class="plus">
+        <li>"While you were away": the rail tells the agents' story (Ledger → Analyst → Forecaster → Coordinator → Verifier rejected → Verifier checked). Judges see orchestration and the core loop without opening anything.</li>
+        <li>Every block carries a provenance stamp: observed, computed, forecast, hypothetical, AI-written, checked.</li>
+        <li>The Workspace has live controls (amount, date) that update the chart, readout and compare table together.</li>
+        <li>Most distinctive; least like other FinPilot entries.</li>
+      </ul>
+      <h3>Weaknesses</h3>
+      <ul class="minus">
+        <li>Denser. Uppercase monospace labels lean technical for everyday users.</li>
+        <li>The rail takes width from the chart, and the hero chart is smaller.</li>
+        <li>Hard on mobile: the rail needs its own pattern.</li>
+        <li>Needs a fixed composition order, or agent-built layouts can feel random.</li>
+      </ul>
+    </section>
+  </div>
+
+  <section class="card rec">
+    <h2>Recommendation: a deliberate hybrid</h2>
+    <ul>
+      <li><strong>Home from A.</strong> The calm briefing: one-sentence answer, three numbers, a large future chart, then the insight and checked plan.</li>
+      <li><strong>Add B's "While you were away" as a compact, collapsible strip on Home</strong>, so the agent story is visible without a permanent rail.</li>
+      <li><strong>Workspace and Decision Lab from B.</strong> The rail and typed canvas, provenance stamps, live scenario controls and the compare table. This is where depth and the agent-native feel matter.</li>
+      <li><strong>Soften B's typography:</strong> sentence-case labels instead of uppercase monospace, and keep monospace only for IDs and timestamps.</li>
+      <li><strong>One chart language for both:</strong> A's large chart with the event rail, and B's stamps and live controls.</li>
+    </ul>
+  </section>
+
+  <section class="card note">
+    <h2>Known issue in the demo numbers</h2>
+    <p>The figures I gave the designers don't hold together across months: November implies far less daily spending than October. Re-running the story through a single daily cash-flow model changes the holiday answer. For Stage 2, every figure will be generated by one script and only then placed in the screens, so all views reconcile by construction. Numbers in these concepts are placeholders for layout review.</p>
+  </section>
+</main>
+</body>
+</html>

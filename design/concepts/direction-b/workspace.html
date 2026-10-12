@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foresight · Workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="studio.css">
+<style>
+  .verdict { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr)); gap: var(--s6); align-items: end; }
+  .verdict h2 { margin: 6px 0 0; font-size: var(--t-xl); line-height: 1.2; font-weight: 600; letter-spacing: -0.015em; }
+  .verdict .figure { border-left: 1px solid var(--border-subtle); padding-left: var(--s5); }
+  .compare td.scen { display: flex; align-items: center; gap: 8px; }
+  .compare svg { width: 22px; height: 10px; flex: none; }
+  .compare tr.selected td { background: var(--accent-tint); }
+  .compare tr.selected td:first-child { box-shadow: inset 2px 0 0 var(--accent); padding-left: 10px; }
+  .compare td:first-child { padding-left: 12px; }
+  .compare th:first-child { padding-left: 12px; }
+  .bad { color: var(--negative); font-weight: 500; }
+  .fine { color: var(--positive-text); font-weight: 500; }
+  .runlog { width: 100%; border-collapse: collapse; font-size: var(--t-sm); }
+  .runlog th { text-align: left; font-weight: 500; font-size: var(--t-xs); color: var(--text-faint); padding: 0 12px var(--s2) 0; border-bottom: 1px solid var(--border-subtle); }
+  .runlog td { padding: 10px 12px 10px 0; border-bottom: 1px solid var(--border-subtle); vertical-align: top; }
+  .runlog .mono { font: 400 var(--t-xs)/1.6 var(--font-mono); color: var(--text-faint); }
+  .kind { font: 500 10px/1 var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 6px; border-radius: var(--r-stamp); white-space: nowrap; }
+  .kind.model { color: var(--text-muted); border: 1px dotted var(--text-faint); }
+  .kind.engine { color: var(--text); border: 1px solid var(--text); }
+  .kind.check { color: #fff; background: var(--positive); }
+</style>
+</head>
+<body>
+<div class="studio">
+
+  <nav class="nav" aria-label="Main">
+    <div class="wordmark" aria-label="Foresight">F</div>
+    <a href="home.html"><svg viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1z"/></svg>Home</a>
+    <a href="workspace.html" aria-current="page"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9h16M10 9v11"/></svg>Workspace</a>
+    <a href="#"><svg viewBox="0 0 24 24"><path d="M5 19c4-1 5-6 7-9s4-4 7-4M5 19c4 0 7-2 9-4s3-3 5-3"/></svg>Lab</a>
+    <a href="#"><svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h9"/></svg>Data</a>
+    <a href="#"><svg viewBox="0 0 24 24"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg>Activity</a>
+    <div class="spacer"></div>
+    <button class="avatar" aria-label="Profile and settings">AN</button>
+  </nav>
+
+  <aside class="rail" aria-label="Conversation and agent activity">
+    <div class="rail-head">
+      <h2>Holiday in November</h2>
+      <span class="sub">Today, 09:41</span>
+    </div>
+    <div class="rail-body">
+      <div class="thread-q"><span class="who">You</span>Can I afford a £1,200 holiday in November?</div>
+
+      <ol class="steps" aria-live="polite">
+        <li class="step done" data-target="b-evidence"><span class="step-dot"></span><span class="step-label"><span class="step-agent">Ledger</span><b>Analysing transactions</b> · 214 rows, 3 months, all categorised</span><span class="step-time">1.1s</span></li>
+        <li class="step done" data-target="b-chart"><span class="step-dot"></span><span class="step-label"><span class="step-agent">Forecaster</span><b>Building forecast</b> · to 31 Dec, with your checked October plan</span><span class="step-time">1.8s</span></li>
+        <li class="step done" data-target="b-compare"><span class="step-dot"></span><span class="step-label"><span class="step-agent">Forecaster</span><b>Simulating</b> · holiday paid 6 Nov, 20 Nov or 28 Nov</span><span class="step-time">0.9s</span></li>
+        <li class="step revised" data-target="b-options"><span class="step-dot"></span><span class="step-label"><span class="step-agent">Verifier</span>Rejected <b>“Pause November savings”</b> · still £20 under your buffer</span><span class="step-time">0.4s</span></li>
+        <li class="step checked" data-target="b-options"><span class="step-dot"></span><span class="step-label"><span class="step-agent">Verifier</span><b>Verifying recommendation</b> · “pay after 27 Nov” checked to the pound</span><span class="step-time">0.6s</span></li>
+      </ol>
+
+      <p class="thread-a"><span class="ai-tag">Answer · written by the Advisor</span><br>
+        <strong>Not comfortably in November; fine from 28 Nov.</strong> Paying on 6 Nov would take your late-November low to £180. Paying the day after your 27 Nov salary keeps every low above your £500 buffer.</p>
+
+      <div class="rail-label">Follow up</div>
+      <div class="prompts">
+        <button>What if the holiday costs £900?</button>
+        <button>Could I split it across two months?</button>
+        <button>Set this up as a goal for December</button>
+      </div>
+    </div>
+    <div class="rail-foot">
+      <form class="ask" onsubmit="return false;">
+        <textarea rows="1" placeholder="Ask a follow-up…" aria-label="Ask a follow-up"></textarea>
+        <button type="submit" aria-label="Ask"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </form>
+      <div class="ask-note">The canvas updates as you ask. Earlier canvases stay in Activity.</div>
+    </div>
+  </aside>
+
+  <main class="canvas">
+    <div class="canvas-bar">
+      <div class="crumbs"><span>Workspace</span><span>/</span><b>Holiday in November</b></div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <span>Built from data to 11 Oct · forecast to 31 Dec</span>
+        <span class="concept-label">Design concept · fictional data</span>
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <!-- Verdict: the answer first, its numbers beside it -->
+      <section class="block span-12" id="b-verdict" aria-label="Answer">
+        <div class="block-body" style="padding:22px 24px">
+          <div class="verdict">
+            <div>
+              <span class="stamp checked">Answer · checked</span>
+              <h2 id="verdict-text">Not comfortably in November; fine from 28 Nov.</h2>
+            </div>
+            <div class="figure">
+              <span class="stamp computed">Without the holiday</span>
+              <span class="value num" style="margin-top:8px">£1,380</span>
+              <span class="context">lowest before 27 Nov payday</span>
+            </div>
+            <div class="figure">
+              <span class="stamp scenario">Paid 6 Nov</span>
+              <span class="value risk num" style="margin-top:8px">£180</span>
+              <span class="context">Thu 26 Nov · £320 under buffer</span>
+            </div>
+            <div class="figure">
+              <span class="stamp scenario">Paid 28 Nov</span>
+              <span class="value good num" style="margin-top:8px">£720</span>
+              <span class="context">Thu 17 Dec · above buffer</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ScenarioComparison chart -->
+      <section class="block span-8" id="b-chart" aria-labelledby="t-chart">
+        <div class="block-head">
+          <h2 class="block-title" id="t-chart">Balance with and without the holiday</h2>
+          <span class="stamp scenario">Hypothetical <span class="sep">/</span> your inputs</span>
+        </div>
+        <div class="block-body">
+          <div class="legend" aria-hidden="true">
+            <span class="key"><svg viewBox="0 0 22 10"><line x1="0" y1="5" x2="22" y2="5" stroke="#151D31" stroke-width="2"/></svg>Observed</span>
+            <span class="key"><svg viewBox="0 0 22 10"><rect x="0" y="1" width="22" height="8" fill="rgba(21,29,49,.09)"/><line x1="0" y1="5" x2="22" y2="5" stroke="#4A5367" stroke-width="2"/></svg>Your plan · likely range</span>
+            <span class="key"><svg viewBox="0 0 22 10"><line x1="0" y1="5" x2="22" y2="5" stroke="#3868E9" stroke-width="2" stroke-dasharray="6 4"/></svg><span id="legend-scen">With holiday paid 6 Nov</span></span>
+            <span class="key"><svg viewBox="0 0 22 10"><line x1="1" y1="5" x2="21" y2="5" stroke="#C47B4D" stroke-width="1.5" stroke-dasharray="1 4" stroke-linecap="round"/></svg>Your buffer</span>
+          </div>
+          <div class="chart" id="ws-chart"></div>
+        </div>
+      </section>
+
+      <!-- Scenario controls -->
+      <section class="block span-4" aria-labelledby="t-controls">
+        <div class="block-head">
+          <h2 class="block-title" id="t-controls">Try it</h2>
+          <span class="stamp scenario">Scenario</span>
+        </div>
+        <div class="block-body">
+          <div class="control">
+            <label for="amount"><span>Holiday cost</span><span class="num" id="amount-out">£1,200</span></label>
+            <input id="amount" type="range" min="400" max="2000" step="50" value="1200" aria-describedby="amount-out">
+          </div>
+          <div class="control">
+            <div class="label" id="date-label"><span>Paid on</span><span id="date-out">Fri 6 Nov</span></div>
+            <div class="seg" role="radiogroup" aria-labelledby="date-label">
+              <button role="radio" aria-checked="true" data-date="2026-11-06">6 Nov</button>
+              <button role="radio" aria-checked="false" data-date="2026-11-20">20 Nov</button>
+              <button role="radio" aria-checked="false" data-date="2026-11-28">28 Nov</button>
+            </div>
+          </div>
+          <div class="readout" aria-live="polite">
+            <div class="row"><span>Lowest in November</span><b class="num" id="r-nov">£180</b></div>
+            <div class="row"><span>Lowest in December</span><b class="num" id="r-dec">£720</b></div>
+            <div class="row"><span>Chance under £500</span><b class="num" id="r-p">—</b></div>
+          </div>
+          <p class="attribution" style="margin-top:12px">Recalculated by the engine as you move the controls. No AI is involved in these numbers.</p>
+        </div>
+      </section>
+
+      <!-- Comparison table -->
+      <section class="block span-7" id="b-compare" aria-labelledby="t-compare">
+        <div class="block-head">
+          <h2 class="block-title" id="t-compare">Compare</h2>
+          <span class="stamp computed">Computed <span class="sep">/</span> same seed for every row</span>
+        </div>
+        <div class="block-body" style="padding-left:8px">
+          <table class="rows compare">
+            <thead><tr><th>Scenario</th><th class="r">November low</th><th class="r">December low</th><th class="r">Under £500</th></tr></thead>
+            <tbody>
+              <tr><td class="scen"><svg viewBox="0 0 22 10"><line x1="0" y1="5" x2="22" y2="5" stroke="#4A5367" stroke-width="2"/></svg>Your plan</td><td class="r num" id="c0n">—</td><td class="r num" id="c0d">—</td><td class="r num" id="c0p">—</td></tr>
+              <tr class="selected"><td class="scen"><svg viewBox="0 0 22 10"><line x1="0" y1="5" x2="22" y2="5" stroke="#3868E9" stroke-width="2" stroke-dasharray="6 4"/></svg>Holiday, paid 6 Nov</td><td class="r num bad" id="c1n">—</td><td class="r num" id="c1d">—</td><td class="r num bad" id="c1p">—</td></tr>
+              <tr><td class="scen"><svg viewBox="0 0 22 10"><line x1="0" y1="5" x2="22" y2="5" stroke="#3868E9" stroke-width="1.5" stroke-dasharray="2 3" opacity=".55"/></svg>Holiday, paid 28 Nov</td><td class="r num" id="c2n">—</td><td class="r num fine" id="c2d">—</td><td class="r num" id="c2p">—</td></tr>
+            </tbody>
+          </table>
+          <p class="attribution" style="padding-left:12px">Lows are the day before each payday: Thu 26 Nov and Thu 17 Dec.</p>
+        </div>
+      </section>
+
+      <!-- InterventionOptions -->
+      <section class="block span-5" id="b-options" aria-labelledby="t-options">
+        <div class="block-head">
+          <h2 class="block-title" id="t-options">If you want to go</h2>
+          <span class="stamp checked">Checked <span class="sep">/</span> 1 rejected</span>
+        </div>
+        <div class="block-body">
+          <div class="option checked">
+            <span class="mark" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2"><path d="M5 12.5 10 17l9-10"/></svg></span>
+            <div>
+              <div class="title">Book now, pay on 28 Nov, the day after your salary</div>
+              <div class="verdict-line"><span class="ok">✓ Checked</span><span style="color:var(--text-faint)">every low stays above £500</span></div>
+            </div>
+            <div class="effect"><span class="big num" style="color:var(--positive-text)">£720</span><span style="color:var(--text-faint)">Dec low</span></div>
+          </div>
+          <div class="option rejected">
+            <span class="mark" aria-hidden="true"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#B4372F" stroke-width="3.5"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+            <div>
+              <div class="title">Pay on 6 Nov and pause November’s £300 savings</div>
+              <div class="why"><b>Rejected.</b> Still £20 under your buffer, and it stops a month of saving.</div>
+            </div>
+            <div class="effect"><span class="big num" style="color:var(--text-faint)">£480</span><span style="color:var(--text-faint)">Nov low</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TransactionEvidence -->
+      <section class="block span-7" id="b-evidence" aria-labelledby="t-evidence">
+        <div class="block-head">
+          <h2 class="block-title" id="t-evidence">What November already holds</h2>
+          <span class="stamp observed">Recurring, from your statements</span>
+        </div>
+        <div class="block-body">
+          <table class="rows">
+            <thead><tr><th>Date</th><th>What</th><th>Seen</th><th class="r">Amount</th></tr></thead>
+            <tbody>
+              <tr><td class="num">Thu 29 Oct</td><td>Savings transfer</td><td class="mono">moved by your Oct plan</td><td class="r num">−£300.00</td></tr>
+              <tr><td class="num">Sun 1 Nov</td><td>Rent</td><td class="mono">monthly · 12 times</td><td class="r num">−£1,395.00</td></tr>
+              <tr><td class="num">Sun 15 Nov</td><td>Council tax · family support</td><td class="mono">monthly · 12 times</td><td class="r num">−£412.00</td></tr>
+              <tr><td class="num">Various</td><td>7 subscriptions</td><td class="mono">monthly</td><td class="r num">−£84.93</td></tr>
+              <tr><td class="num">Fri 27 Nov</td><td>Salary · paid early, 28th is a Saturday</td><td class="mono">monthly · 12 times</td><td class="r num">+£2,940.00</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- AssumptionInspector -->
+      <section class="block span-5" aria-labelledby="t-assume">
+        <div class="block-head">
+          <h2 class="block-title" id="t-assume">Assumptions</h2>
+          <span class="stamp computed">Engine fc-1.0 <span class="sep">/</span> seed 1729</span>
+        </div>
+        <div class="block-body">
+          <table class="rows">
+            <tbody>
+              <tr><td>Holiday</td><td class="r">one payment, no refund</td></tr>
+              <tr><td>Your October plan</td><td class="r">accepted</td></tr>
+              <tr><td>Everyday spending</td><td class="r">about £27 a day</td></tr>
+              <tr><td>Paydays</td><td class="r">28 Oct · 27 Nov · 18 Dec</td></tr>
+              <tr><td>Uncertainty</td><td class="r">500 paths, P10–P90 shown</td></tr>
+            </tbody>
+          </table>
+          <div class="attribution"><button class="inspect">Change an assumption</button></div>
+        </div>
+      </section>
+
+      <!-- AgentActivityTimeline: the full audit, collapsed by default -->
+      <section class="block span-12" aria-labelledby="t-run">
+        <div class="block-head">
+          <h2 class="block-title" id="t-run">How this answer was made</h2>
+          <span class="stamp computed">Run ws_01JAH4 · 4.8s · 3 model calls via Mesh</span>
+        </div>
+        <div class="block-body">
+          <details class="history">
+            <summary>Show the full run: every step, what it used, and what it produced</summary>
+            <table class="runlog">
+              <thead><tr><th>Agent</th><th>Kind</th><th>What it did</th><th>Used</th><th>Produced</th><th class="r">Time</th></tr></thead>
+              <tbody>
+                <tr><td>Coordinator</td><td><span class="kind model">Model</span></td><td>Read the question as a one-off £1,200 cost in November</td><td class="mono">your question</td><td class="mono">scenario spec</td><td class="r mono">0.4s</td></tr>
+                <tr><td>Ledger</td><td><span class="kind engine">Engine</span></td><td>Checked all 214 transactions are categorised</td><td class="mono">statement 11 Oct</td><td class="mono">0 to review</td><td class="r mono">1.1s</td></tr>
+                <tr><td>Forecaster</td><td><span class="kind engine">Engine</span></td><td>Built the forecast to 31 Dec and simulated three payment dates</td><td class="mono">seed 1729</td><td class="mono">calc_7Q2 · calc_7Q3</td><td class="r mono">2.7s</td></tr>
+                <tr><td>Advisor</td><td><span class="kind model">Model</span></td><td>Proposed two ways to go; claimed lows of £720 and £480</td><td class="mono">calc_7Q3</td><td class="mono">2 proposals</td><td class="r mono">0.8s</td></tr>
+                <tr><td>Verifier</td><td><span class="kind check">Check</span></td><td>Recomputed both lows; rejected the £480 option as under buffer</td><td class="mono">rules V-04, V-06</td><td class="mono">1 checked</td><td class="r mono">0.6s</td></tr>
+              </tbody>
+            </table>
+          </details>
+        </div>
+      </section>
+    </div>
+
+    <div class="footnote">
+      <span>Model steps write words and plans. Every number comes from the engine and is recomputed before you see it.</span>
+      <span>Foresight gives guidance, not regulated financial advice.</span>
+    </div>
+  </main>
+</div>
+
+<script src="charts.js"></script>
+<script>
+  const C = ForesightCharts;
+  const history = C.daily([
+    ["2026-09-28", 3840], ["2026-09-30", 3765], ["2026-10-01", 2370], ["2026-10-03", 2322], ["2026-10-05", 2290],
+    ["2026-10-07", 2262], ["2026-10-08", 2231], ["2026-10-10", 2206], ["2026-10-11", 2184.5], ["2026-10-12", 2184.5]
+  ]);
+  const plan = C.daily([
+    ["2026-10-12", 2184.5], ["2026-10-13", 2155], ["2026-10-14", 1500], ["2026-10-15", 1088], ["2026-10-20", 834],
+    ["2026-10-27", 532], ["2026-10-28", 3472], ["2026-10-29", 3172], ["2026-11-01", 1777], ["2026-11-14", 1700],
+    ["2026-11-15", 1560], ["2026-11-26", 1380], ["2026-11-27", 4320], ["2026-11-29", 4020], ["2026-12-01", 2625],
+    ["2026-12-14", 2480], ["2026-12-15", 2100], ["2026-12-17", 1920], ["2026-12-18", 4860], ["2026-12-31", 4280]
+  ]);
+  const t0 = C.d("2026-10-12").getTime();
+  const halfWidth = (t) => Math.min(260, 9 * (t - t0) / 86400000);
+  const band = plan.map(([t, v]) => [t, v - halfWidth(t), v + halfWidth(t)]);
+  const NOV = C.d("2026-11-26").getTime(), DEC = C.d("2026-12-17").getTime();
+
+  // Chance under the buffer from the forecast band (P10–P90 ≈ ±1.28σ)
+  function chanceUnder(low, t) {
+    const sd = halfWidth(t) / 1.2816, z = (500 - low) / sd;
+    const p = 0.5 * (1 + erf(z / Math.SQRT2));
+    return p;
+  }
+  function erf(x) { const s = Math.sign(x); x = Math.abs(x); const t = 1 / (1 + 0.3275911 * x);
+    const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x); return s * y; }
+  const pct = (p) => p < 0.01 ? "under 1%" : Math.round(p * 100) + "%";
+
+  // Comparison table: the same engine function as the controls, so every view reconciles
+  [[null, "c0"], ["2026-11-06", "c1"], ["2026-11-28", "c2"]].forEach(([date, id]) => {
+    const series = date ? C.shift(plan, date, 1200) : plan;
+    const n = C.valueAt(series, NOV), dd = C.valueAt(series, DEC);
+    document.getElementById(id + "n").textContent = C.money(n);
+    document.getElementById(id + "d").textContent = C.money(dd);
+    document.getElementById(id + "p").textContent = pct(Math.max(chanceUnder(n, NOV), chanceUnder(dd, DEC)));
+  });
+
+  let amount = 1200, payDate = "2026-11-06";
+  const labels = { "2026-11-06": "Fri 6 Nov", "2026-11-20": "Fri 20 Nov", "2026-11-28": "Sat 28 Nov" };
+
+  function render() {
+    const scen = C.shift(plan, payDate, amount);
+    const fromT = C.d(payDate).getTime() - 86400000;
+    const scenVisible = scen.filter(([t]) => t >= fromT);
+    const nov = C.valueAt(scen, NOV), dec = C.valueAt(scen, DEC);
+    const worst = Math.max(chanceUnder(nov, NOV), chanceUnder(dec, DEC));
+    document.getElementById("amount-out").textContent = C.money(amount);
+    document.getElementById("date-out").textContent = labels[payDate];
+    document.getElementById("legend-scen").textContent = "With holiday paid " + labels[payDate].slice(4);
+    document.getElementById("r-nov").textContent = C.money(nov);
+    document.getElementById("r-dec").textContent = C.money(dec);
+    document.getElementById("r-p").textContent = pct(worst);
+    ["r-nov", "r-dec"].forEach((id, i) => {
+      const v = [nov, dec][i];
+      document.getElementById(id).style.color = v < 500 ? "var(--negative)" : "var(--text)";
+    });
+    const low = Math.min(nov, dec), lowDate = nov <= dec ? "2026-11-26" : "2026-12-17";
+    C.draw(document.getElementById("ws-chart"), {
+      start: "2026-09-28", end: "2026-12-31", yMin: -400, yMax: 5200,
+      yTicks: [0, 1000, 2000, 3000, 4000, 5000],
+      xTicks: ["2026-10-01", "2026-10-28", "2026-11-27", "2026-12-18"],
+      today: "2026-10-12", buffer: 500, height: 372,
+      ariaLabel: "Balance with and without the holiday, to 31 December",
+      series: [
+        { kind: "history", data: history, name: "Observed" },
+        { kind: "forecast", data: plan, band, name: "Your plan" },
+        { kind: "scenario", data: scenVisible, name: "With holiday" },
+      ],
+      markers: [
+        { date: lowDate, value: low, label: `${C.money(low)} · ${lowDate === "2026-11-26" ? "Thu 26 Nov" : "Thu 17 Dec"}`, tone: low < 500 ? "risk" : "scenario", align: "end", dy: 18 },
+        { date: payDate, value: C.valueAt(scen, C.d(payDate).getTime()), label: `Holiday −${C.money(amount)}`, tone: "scenario", align: "start", dy: -10 },
+      ],
+    });
+  }
+
+  document.getElementById("amount").addEventListener("input", (e) => { amount = +e.target.value; render(); });
+  document.querySelectorAll(".seg button").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll(".seg button").forEach((x) => x.setAttribute("aria-checked", "false"));
+    b.setAttribute("aria-checked", "true");
+    payDate = b.dataset.date; render();
+  }));
+  render();
+
+  document.querySelectorAll(".step[data-target]").forEach((s) => {
+    const target = document.getElementById(s.dataset.target);
+    s.addEventListener("mouseenter", () => target.classList.add("is-highlight"));
+    s.addEventListener("mouseleave", () => target.classList.remove("is-highlight"));
+    s.addEventListener("click", () => target.scrollIntoView({ behavior: "smooth", block: "center" }));
+  });
+</script>
+</body>
+</html>

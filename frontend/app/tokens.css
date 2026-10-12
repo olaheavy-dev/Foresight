@@ -1,0 +1,272 @@
+/*
+ * Foresight design tokens. Single source of truth.
+ *
+ * Philosophy: calm premium fintech, "Atelier light" (.design/foresight/DESIGN_BRIEF.md).
+ * Light-first; the dark palette is a deliberate cool-navy "night" variant, not an inversion.
+ *
+ * Copies: frontend/app/tokens.css and design/hifi/assets/tokens.css must be identical to this file
+ * (enforced by tests/unit/test_design_tokens.py). Components reference these semantic tokens only;
+ * never hardcode hex, px radii or shadows.
+ *
+ * Verified:
+ * - WCAG text contrast, checked against EVERY background token (canvas, surface, tertiary, sunk,
+ *   accent tint), not just the card surface: light tertiary text >= 4.88:1, dark tertiary >= 4.89:1;
+ *   light text 15.9:1 and secondary >= 6.5:1; white on accent 5.4:1; dark text 14.4:1, secondary
+ *   8.2:1, status colours 7.0–8.4:1, interactive border 3.2:1. (CI's axe check caught the earlier
+ *   tertiary values failing on the canvas background.)
+ * - Chart series pair (dataviz validate_palette.js). Light #1F5EF0/#A63DB5 passes every check
+ *   (CVD ΔE 9.8, normal 21.3). Dark #4C82F5/#C95BC4 passes every check (CVD ΔE 8.1); the scenario
+ *   series is always dashed and directly labelled as a second cue.
+ */
+
+:root {
+  /* ---------- Colour: backgrounds ---------- */
+  --color-bg-primary: #EEF2F8;        /* page canvas: pale blue-grey */
+  --color-bg-secondary: #FFFFFF;      /* cards, panels */
+  --color-bg-tertiary: #F6F8FC;       /* wells, inputs, table stripes */
+  --color-bg-sunk: #F1F4FA;           /* pressed / selected rows */
+  --color-bg-inverse: #0E1A3A;
+  --color-surface-overlay: rgba(14, 26, 58, 0.32);
+
+  /* ---------- Colour: text ---------- */
+  --color-text-primary: #0E1A3A;      /* deep navy ink */
+  --color-text-secondary: #4A5570;
+  --color-text-tertiary: #5E6880;     /* captions, placeholders (>= 4.88:1 on every light background) */
+  --color-text-inverse: #FFFFFF;
+  --color-text-link: #1F5EF0;
+
+  /* ---------- Colour: borders ---------- */
+  --color-border-primary: #E4E9F2;    /* hairlines between and around cards */
+  --color-border-secondary: #CFD7E5;  /* dividers needing more presence */
+  --color-border-interactive: #8E9AB3;/* inputs (>= 3:1) */
+  --color-border-focus: #1F5EF0;
+
+  /* ---------- Colour: accent ---------- */
+  --color-accent-primary: #1F5EF0;    /* royal blue: primary actions, active nav, forecast */
+  --color-accent-primary-hover: #1A50D1;
+  --color-accent-primary-active: #1644B3;
+  --color-accent-primary-tint: #EAF0FE;
+  --color-accent-on-primary: #FFFFFF;
+  --color-accent-secondary: #A63DB5;  /* hypothetical / scenario only */
+  --color-accent-secondary-tint: #F3E8F7;
+
+  /* ---------- Colour: status (always paired with an icon and a label) ---------- */
+  --color-status-success: #127A55;
+  --color-status-success-tint: #E5F5EE;
+  --color-status-warning: #A35F00;
+  --color-status-warning-tint: #FEF2DF;
+  --color-status-error: #C9302C;      /* genuine shortfall or validation error only */
+  --color-status-error-tint: #FDECEC;
+  --color-status-info: #1F5EF0;
+  --color-status-info-tint: #EAF0FE;
+
+  /* ---------- Colour: data (chart grammar) ---------- */
+  --color-data-observed: #0E1A3A;     /* history: solid ink */
+  --color-data-forecast: #1F5EF0;     /* forecast: solid blue + band */
+  --color-data-forecast-band: rgba(31, 94, 240, 0.12);
+  --color-data-scenario: #A63DB5;     /* hypothetical: dashed */
+  --color-data-scenario-band: rgba(166, 61, 181, 0.10);
+  --color-data-buffer: #8EA6E8;       /* threshold: dotted */
+  --color-data-today: #8E9AB3;        /* today rule */
+  --color-data-grid: #E4E9F2;
+
+  /* ---------- Spacing (4px base; balanced) ---------- */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+  --space-10: 64px;
+  --space-11: 80px;
+  --space-12: 96px;
+
+  /* ---------- Typography ---------- */
+  --font-family-display: var(--font-source-serif, "Source Serif 4"), "Iowan Old Style", Georgia, serif;
+  --font-family-body: var(--font-inter, "Inter"), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-family-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --font-size-xs: 12px;     /* captions, axis ticks, badges */
+  --font-size-sm: 13px;     /* metadata, table secondary */
+  --font-size-base: 15px;   /* body, table */
+  --font-size-md: 17px;     /* lead text, card titles (serif) */
+  --font-size-lg: 20px;     /* section titles (serif) */
+  --font-size-xl: 28px;     /* metric values */
+  --font-size-2xl: 36px;    /* verdict headline (mobile hero) */
+  --font-size-3xl: 44px;    /* verdict headline (desktop) */
+  --font-size-4xl: 52px;    /* page hero */
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.15;
+  --line-height-snug: 1.3;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.65;
+
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.08em;   /* uppercase kickers only */
+
+  /* ---------- Layout ---------- */
+  --max-width-content: 68ch;
+  --max-width-wide: 1120px;
+  --max-width-page: 1440px;
+  --sidebar-width: 216px;
+  --conversation-width: 320px;
+
+  --border-radius-sm: 8px;    /* inputs, small buttons, badges */
+  --border-radius-md: 12px;   /* nested tiles, table wrappers */
+  --border-radius-lg: 16px;   /* cards, panels */
+  --border-radius-xl: 20px;   /* page frame */
+  --border-radius-full: 999px;/* pills, chips, avatars */
+
+  --shadow-sm: 0 1px 2px rgba(14, 26, 58, 0.04);
+  --shadow-md: 0 1px 2px rgba(14, 26, 58, 0.04), 0 4px 16px rgba(14, 26, 58, 0.05);
+  --shadow-lg: 0 8px 32px rgba(14, 26, 58, 0.10);
+  --shadow-focus: 0 0 0 3px rgba(31, 94, 240, 0.28);
+
+  /* ---------- Motion ---------- */
+  --duration-instant: 50ms;
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --duration-slower: 600ms;
+  --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-in: cubic-bezier(0.4, 0, 1, 1);
+  --easing-out: cubic-bezier(0, 0, 0.2, 1);
+  --easing-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ---------- Breakpoints (reference values; media queries can't read variables) ----------
+     Mobile-first: write base styles for 375, then
+     @media (min-width: 768px)  tablet
+     @media (min-width: 1024px) small desktop: sidebar appears
+     @media (min-width: 1280px) desktop: three-column workspace
+     @media (min-width: 1440px) wide: mockup layout */
+  --breakpoint-sm: 375px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1440px;
+
+  color-scheme: light;
+}
+
+/* Night palette: cool navy, slightly reduced contrast, darker and more transparent shadows,
+   lifted accents for contrast. */
+[data-theme="dark"] {
+  --color-bg-primary: #0B1222;
+  --color-bg-secondary: #121B2F;
+  --color-bg-tertiary: #18233B;
+  --color-bg-sunk: #1C2843;
+  --color-bg-inverse: #E7EBF3;
+  --color-surface-overlay: rgba(3, 7, 16, 0.6);
+
+  --color-text-primary: #E7EBF3;
+  --color-text-secondary: #AAB4C8;
+  --color-text-tertiary: #8D98AF;
+  --color-text-inverse: #0B1222;
+  --color-text-link: #8CB0FF;
+
+  --color-border-primary: #222D45;
+  --color-border-secondary: #2C3854;
+  --color-border-interactive: #5D6A85;
+  --color-border-focus: #7AA2FF;
+
+  --color-accent-primary: #7AA2FF;
+  --color-accent-primary-hover: #93B4FF;
+  --color-accent-primary-active: #A9C3FF;
+  --color-accent-primary-tint: #1A2A4D;
+  --color-accent-on-primary: #0B1222;
+  --color-accent-secondary: #D383E3;
+  --color-accent-secondary-tint: #2C1F3A;
+
+  --color-status-success: #4CC79A;
+  --color-status-success-tint: #12302A;
+  --color-status-warning: #E8A94F;
+  --color-status-warning-tint: #33270F;
+  --color-status-error: #FF8078;
+  --color-status-error-tint: #3A1A1D;
+  --color-status-info: #7AA2FF;
+  --color-status-info-tint: #1A2A4D;
+
+  --color-data-observed: #E7EBF3;
+  --color-data-forecast: #4C82F5;
+  --color-data-forecast-band: rgba(76, 130, 245, 0.18);
+  --color-data-scenario: #C95BC4;
+  --color-data-scenario-band: rgba(201, 91, 196, 0.16);
+  --color-data-buffer: #6F86C2;
+  --color-data-today: #5D6A85;
+  --color-data-grid: #222D45;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.35), 0 6px 20px rgba(0, 0, 0, 0.30);
+  --shadow-lg: 0 10px 36px rgba(0, 0, 0, 0.45);
+  --shadow-focus: 0 0 0 3px rgba(122, 162, 255, 0.35);
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg-primary: #0B1222;
+    --color-bg-secondary: #121B2F;
+    --color-bg-tertiary: #18233B;
+    --color-bg-sunk: #1C2843;
+    --color-bg-inverse: #E7EBF3;
+    --color-surface-overlay: rgba(3, 7, 16, 0.6);
+    --color-text-primary: #E7EBF3;
+    --color-text-secondary: #AAB4C8;
+    --color-text-tertiary: #8D98AF;
+    --color-text-inverse: #0B1222;
+    --color-text-link: #8CB0FF;
+    --color-border-primary: #222D45;
+    --color-border-secondary: #2C3854;
+    --color-border-interactive: #5D6A85;
+    --color-border-focus: #7AA2FF;
+    --color-accent-primary: #7AA2FF;
+    --color-accent-primary-hover: #93B4FF;
+    --color-accent-primary-active: #A9C3FF;
+    --color-accent-primary-tint: #1A2A4D;
+    --color-accent-on-primary: #0B1222;
+    --color-accent-secondary: #D383E3;
+    --color-accent-secondary-tint: #2C1F3A;
+    --color-status-success: #4CC79A;
+    --color-status-success-tint: #12302A;
+    --color-status-warning: #E8A94F;
+    --color-status-warning-tint: #33270F;
+    --color-status-error: #FF8078;
+    --color-status-error-tint: #3A1A1D;
+    --color-status-info: #7AA2FF;
+    --color-status-info-tint: #1A2A4D;
+    --color-data-observed: #E7EBF3;
+    --color-data-forecast: #4C82F5;
+    --color-data-forecast-band: rgba(76, 130, 245, 0.18);
+    --color-data-scenario: #C95BC4;
+    --color-data-scenario-band: rgba(201, 91, 196, 0.16);
+    --color-data-buffer: #6F86C2;
+    --color-data-today: #5D6A85;
+    --color-data-grid: #222D45;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.35), 0 6px 20px rgba(0, 0, 0, 0.30);
+    --shadow-lg: 0 10px 36px rgba(0, 0, 0, 0.45);
+    --shadow-focus: 0 0 0 3px rgba(122, 162, 255, 0.35);
+    color-scheme: dark;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0ms;
+    --duration-fast: 0ms;
+    --duration-normal: 0ms;
+    --duration-slow: 0ms;
+    --duration-slower: 0ms;
+  }
+}

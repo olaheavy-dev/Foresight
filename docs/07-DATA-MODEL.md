@@ -88,7 +88,7 @@ Conventions: `id` is `<prefix>_<ULID>` (`00` §10a). `created_at` UTC on every t
 
 ### 3.1 Identity & preferences
 
-**User** (`usr_`) — *production only*. Managed-auth identity (`auth_subject`, `email`); owns ≥ 1 Workspace through `WorkspaceMembership{user_id, workspace_id, role ∈ {owner, member}}`. The hackathon build has one implicit local user and a workspace switcher; no auth tables are created.
+**User** (`usr_`) — *production only*. Managed-auth identity (`auth_subject`, `email`); owns ≥ 1 Workspace through `WorkspaceMembership{user_id, workspace_id, role ∈ {owner, member}}`. The hackathon build has one implicit local user and a profile switcher (UI term "Profile" for a workspace); no auth tables are created.
 
 **Workspace** (`wsp_`) — one person's or one household's financial space (`00` §6c). Replaces "profile" in rev 4. Every **[P]** row below carries `workspace_id`.
 
@@ -99,7 +99,7 @@ Conventions: `id` is `<prefix>_<ULID>` (`00` §10a). `created_at` UTC on every t
 | persona_key | str? | `P1`–`P4` for demo workspaces |
 | country | str(2) | ISO 3166-1, selects the `LocalePack`: `GB` → `uk`, `IN` → `in` |
 | locale_pack | str | `uk` \| `in` (denormalised from country; overridable for tests) |
-| home_currency | str(3) | ISO 4217; default from the pack (`GBP`, `INR`). Workspace-level views and the Briefing use it |
+| home_currency | str(3) | ISO 4217; default from the pack (`GBP`, `INR`). Workspace-level views and the Home briefing use it |
 | locale / timezone | str / str | `en-GB` / `Europe/London`; `en-IN` / `Asia/Kolkata` |
 | data_version | int | incremented on any ledger mutation; part of forecast cache keys |
 | prefs_version | int | incremented on buffer, goal, scope or projection-assumption edits; part of freshness/cache keys |
@@ -124,7 +124,7 @@ Conventions: `id` is `<prefix>_<ULID>` (`00` §10a). `created_at` UTC on every t
 
 | Field | Type | Notes |
 |---|---|---|
-| buffer_minor | int? | minimum comfortable balance in the workspace home currency (P1 £300 = 30000; P4 ₹40,000 = 4000000). Null → *suggested* default = one month of essential obligations computed from data, labelled `default` until the user accepts it |
+| buffer_minor | int? | minimum comfortable balance in the workspace home currency (P1 £500 = 50000; P4 ₹40,000 = 4000000). Null → *suggested* default = one month of essential obligations computed from data, labelled `default` until the user accepts it |
 | buffer_provenance | enum `default` \| `user_set` | |
 | horizon_days | int | default 90, allowed 30–180 (auto-extends to a goal's target date, max 365) |
 | default_forecast_scope | enum `mine` \| `household` | only meaningful when a joint account exists |
@@ -180,7 +180,7 @@ Conventions: `id` is `<prefix>_<ULID>` (`00` §10a). `created_at` UTC on every t
 |---|---|---|
 | account_id / as_of / amount_minor | | end-of-day balance on `as_of` |
 | source | enum `file_balance_column` \| `statement_closing` \| `statement_opening_derived` \| `user_entered` \| `demo_seed` | Monzo CSV has no balance → `user_entered` |
-| provenance | enum `observed` \| `declared` | `user_entered` ⇒ `declared` (shown with badge). P1: £1,284.50 on 12 Oct, declared |
+| provenance | enum `observed` \| `declared` | `user_entered` ⇒ `declared` (shown with badge). P1: £2,184.50 as of 11 Oct, declared |
 | source_row_id / import_batch_id | ? | provenance |
 
 **ImportBatch** (`imp_`) **[P]**
@@ -437,7 +437,7 @@ Every key is stable (used by evals and contracts). `bank_category` from Monzo/Re
 | trigger | enum `import` \| `manual_entry` \| `schedule` \| `user_request` \| `preference_change` \| `balance_update` | |
 | supersedes / is_current | fc? / bool | one current per (workspace, scope, account, currency); cache key additionally includes versions, as_of, horizon and parameters |
 
-**ForecastAssumption** **[P]** — `forecast_id, key, value, source (detected|confirmed|declared|default|user), label`. E.g. `starting_balance = £1,284.50 (declared)`, `salary.december_date = 18 Dec (detected from 2025)`, `discretionary.window = 90 days (default)`, `one_offs_excluded = [car insurance £410, 9 Oct]`.
+**ForecastAssumption** **[P]** — `forecast_id, key, value, source (detected|confirmed|declared|default|user), label`. E.g. `starting_balance = £2,184.50 (declared)`, `salary.december_date = 18 Dec (detected from 2025)`, `discretionary.window = 90 days (default)`, `one_offs_excluded = [car insurance £410, 9 Oct]`.
 
 **Scenario** (`scn_`) **[P]** — `name, origin (lab|conversation|advisor|verifier_recompute|eval), spec (ScenarioSpec §6.5), spec_hash, scope, natural_language?, parse_step_id?, saved`.
 
@@ -449,7 +449,7 @@ Every key is stable (used by evals and contracts). `bank_category` from Monzo/Re
 
 **RecommendationVersion** **[P]** — `recommendation_id, revision (0 = first draft), agent_step_id, title, rationale (placeholders), actions (typed InterventionAction list: cap_category, cancel_recurring, downgrade_recurring, defer_purchase, move_purchase_date, set_aside_amount, reschedule_transfer, build_buffer (`06` §4.4)), claimed_impact (Advisor's claim, kept to show disagreements), impact_calc_id (the engine's number — the only one displayed), critique_addressed (ver?)`.
 
-`InterventionImpactResult.monthly_saving_minor` is defined against the **last-30-day run-rate** (what the user is spending now), e.g. P1: £286.40 − £180 + £9.99 = £116.39. Forecast deltas (breach probability, lows) come from re-simulation and are therefore smaller when the bootstrap already expects some mean reversion. Both are shown, labelled.
+`InterventionImpactResult.monthly_saving_minor` is defined against the **last-30-day run-rate** (what the user is spending now), e.g. P1 food delivery is £286.40 over the last 30 days against a usual £203.10. Forecast deltas (breach probability, lows) come from re-simulation and are therefore smaller when the bootstrap already expects some mean reversion. Both are shown, labelled.
 
 **EvidenceLink** **[P]** — `owner_type, owner_id, ref_type (calc|finding|forecast|transaction|recurring|goal|scenario|income_stream|balance_anchor|reconciliation), ref_id, role (trigger|supporting|impact|counter)`.
 
@@ -460,7 +460,7 @@ Every key is stable (used by evals and contracts). `bank_category` from Monzo/Re
 - **AgentRun** (`run_`) — `workflow (ingestion|risk_detection|scenario|recommendation|conversation|digest|eval), trigger, status, thread_id?, graph_version, totals (tokens, cost_usd?), error?`.
 - **AgentStep** (`step_`) — `run_id, node, agent (coordinator|ledger|analyst|forecaster|advisor|verifier|system), attempt, kind llm|tool|control, provider (mesh for llm, null otherwise), model?, prompt_version?, input_hash, input_summary (redacted), output (validated), tokens_in/out, cost_usd?, latency_ms, status ok|retried|failed|skipped, tool_name?, calc_ids`.
 - **AgentResponse** (`rsp_`) — snapshot of a generated UI response (`08`): `run_id, thread_id?, surface, schema_version, plan, hydrated, data_version, prefs_version, as_of, engine_version`. `stale` computed on read.
-- **Briefing** (`brf_`) — `response_id, data_version, prefs_version, engine_version, as_of, forecast_id, generated_at, reason`. Home reads it; regenerated by events, never by a visit (§4.11).
+- **Briefing** (`brf_`, shown on Home) — `response_id, data_version, prefs_version, engine_version, as_of, forecast_id, generated_at, reason`. Home reads it; regenerated by events, never by a visit (§4.11).
 - **DigestDelivery** — `channel, scheduled_for, sent_at?, status, response_id, insight_finding_id, action_recommendation_id, provider_message_id?, error?`.
 
 ### 3.7 Governance
@@ -478,7 +478,7 @@ No opening balance is ever *required* when the data contains one.
 1. **Anchor discovery.** Revolut CSV and PDF statements have running balances → `file_balance_column` / `statement_closing` anchors (latest per account per day). **Monzo CSV has no balance column** → "Check what we found" asks once: *"What's your Monzo balance today?"* → `BalanceAnchor(source=user_entered, provenance=declared)`. Skipped → relative mode.
 2. **Reconstruction.** Balance on date *d* = nearest anchor ± transactions between, as `Calculation(kind=balance_reconstruction)`.
 3. **Reconciliation between anchors.** Mismatch >1% of the later anchor magnitude (minimum denominator one currency minor unit) → `balance_quality = inconsistent` ("balance may be off by £X — a statement may be missing"). This is a data-quality notice, not a behavioural finding.
-4. **Staleness.** Monthly PDF statements mean anchors can be weeks old (`00` §6b.8). Latest anchor > 7 days old with transactions after it → `reconstructed`; with no transactions after it → `stale`, forecast `as_of` = last data date, and Briefing prompts "add this month's statement".
+4. **Staleness.** Monthly PDF statements mean anchors can be weeks old (`00` §6b.8). Latest anchor > 7 days old with transactions after it → `reconstructed`; with no transactions after it → `stale`, forecast `as_of` = last data date, and Home prompts "add this month's statement".
 5. **Relative mode.** No anchor: start at 0, outputs labelled "vs today"; buffer-breach probability is **not computed** (it would be dishonest); one-tap "add today's balance" unlocks it.
 6. **Some banks' "Balance on <first day>"** headers can be end-of-day, not opening; `LayoutProfile.balance_semantics` handles it and the reconciliation chain detects a wrong assumption (first row fails by exactly that day's net flow → auto-retry with the other semantics, then report).
 
@@ -504,7 +504,7 @@ Pairing (`detect_transfer_pairs`): out on tracked A, in on tracked B ≠ A, `amo
 - **DD/SO** falling on a weekend or bank holiday post on the **next working day** (England & Wales bank holiday list 2025–27 shipped as data).
 - **Council tax**: 10 monthly instalments Apr–Jan (`seasonal_monthly`, `active_months`), learned from history (gap in Feb–Mar) or default for `housing.council_tax` if history < 12 months — flagged as an assumption. P1: £162 on the 15th, Apr–Jan.
 - **BNPL** (Klarna/Clearpay/PayPal Pay in 3): `instalments` with `remaining_instalments` inferred from equal amounts at ~monthly/biweekly gaps; ends automatically.
-- **Price change** (≥5%) raises `price_change`. **Overlap**: ≥ 2 active services in the same subscription family or a streaming add-on overlapping a TV package (P1: NOW Entertainment overlaps Sky TV) raises `subscription_overlap` — an *overlap*, never a claim of non-use.
+- **Price change** (≥5%) raises `price_change`. **Overlap**: ≥ 2 active services in the same subscription family or a streaming add-on overlapping a TV package (P1: Netflix overlaps Sky TV) raises `subscription_overlap` — an *overlap*, never a claim of non-use.
 
 ### 4.4 Duplicates and idempotency
 
@@ -516,7 +516,7 @@ Pairing (`detect_transfer_pairs`): out on tracked A, in on tracked B ≠ A, `amo
 ### 4.5 Income: detected, confirmed, declared, irregular
 
 - Detected from ≥3 recurring credits (regular cadence ±3 days, amount CV ≤20%; two observations are confirmation/declaration candidates only); payday rule inferred (P1: 28th, previous working day at weekends — 28 Nov 2026 is a Saturday → Fri 27 Nov). **Early December pay** is learned from the prior December's credit (P1: Fri 18 Dec 2026) or declared; this creates the **long January** (18 Dec → 28 Jan = 41 days) that the `long_pay_gap` detector surfaces.
-- Confirmation: "We found your salary: £2,940 on the 28th into Monzo — right?" → `confirmed`.
+- Confirmation: "We found your salary: £4,050 on the 28th into Monzo — right?" → `confirmed`.
 - Declaration only when unobservable; declared streams carry a badge and a divergence flag if later observations differ > 10%.
 - Collected: net take-home only — never gross pay, NI number, date of birth or bank credentials.
 - Bonus/back pay (> 1.5× median) excluded as one-off. Four-weekly pay supported (13 paydays/year).
@@ -570,7 +570,7 @@ Each account has exactly one currency. Multi-currency files (e.g. Revolut-style 
 
 | Currency | Exponent | `amount_minor` for one unit | Example |
 |---|---|---|---|
-| GBP | 2 | 100 | £1,284.50 → 128450 |
+| GBP | 2 | 100 | £2,184.50 → 218450 |
 | INR | 2 | 100 | ₹1,15,000.00 → 11500000 |
 | EUR | 2 | 100 | €1.234,56 → 123456 |
 | JPY | 0 | 1 | ¥12,800 → 12800 |
@@ -616,7 +616,7 @@ All functions are pure: `(inputs, params, seed) → result`. No I/O, no clock re
 
 - `today`, horizon `H` (default 90; extended to goal target ≤ 365), `seed`, `N = 500` paths, `scope` + resolved account set, **`currency`** (default workspace `home_currency`; accounts in other currencies are excluded and listed, §4.12).
 - Calendar from the workspace's `LocalePack` (holidays, payday conventions); the engine itself is locale-free.
-- `B₀`: sum of **cash** accounts in scope (current/savings/wallet/cash) **in the forecast currency** from anchors/reconstruction; card and loan balances are liabilities entering through settlements (§6.3a). P1: £1,284.50 (declared).
+- `B₀`: sum of **cash** accounts in scope (current/savings/wallet/cash) **in the forecast currency** from anchors/reconstruction; card and loan balances are liabilities entering through settlements (§6.3a). P1: £2,184.50 (declared).
 - Active `IncomeStream`s, `RecurringObligation`s (incl. commitments, savings transfers, BNPL instalments, seasonal council tax) and `DeclaredObligation`s that move tracked cash.
 - Discretionary pool: last `W = 90` days of active rows with `flow_kind ∈ {spending, fee, betting}` minus refunds, not recurring, not one-off, from all accounts in scope (cards included, routed via the card cycle).
 
@@ -648,20 +648,20 @@ Outputs (`Calculation.kind = forecast`):
 - `min_balance` (P50 path-wise minimum and modal date), `month_end` quantiles, `drivers` (top contributors to the change from today to the low: recurring by obligation, discretionary by category, commitments separately), `assumptions`.
 - Relative mode: same series offset to 0; no breach probability.
 
-Canonical P1 fixture (`00` §10a): pre-salary lows P50 27 Oct £242 (P10 £96 / P90 £388) · 26 Nov £572 · 17 Dec £1,050 · 27 Jan £900 · 25 Feb £1,396 · 25 Mar £1,892; `p_breach_buffer(12–27 Oct) = 0.78`.
+Canonical P1 fixture (`00` §10a, generated in `design/fixture/fixture.json`): before the car repair, P50 low 27 Oct £812 (P10 £745 / P90 £874), `p_breach_buffer = 0`; after the £650 repair on 14 Oct, pre-salary lows P50 27 Oct £162 (P10 £95 / P90 £224) · 26 Nov £1,009 · 17 Dec £2,243 · 27 Jan £2,660 · 25 Feb £3,551 · 25 Mar £4,448; `p_breach_buffer(12–27 Oct) = 1.00`.
 
 ### 6.5 `ScenarioSpec`
 
 ```json
 {
   "schema": "scenario_spec/1",
-  "name": "Flights home for Christmas",
+  "name": "Holiday",
   "scope": "mine",
   "currency": "GBP",
   "horizon_days": 170,
   "assumptions": [],
   "modifiers": [
-    {"type": "one_off_outflow", "date": "2026-12-01", "amount_minor": 64000, "label": "Flights home for Christmas", "category_key": "travel"}
+    {"type": "one_off_outflow", "date": "2026-11-06", "amount_minor": 120000, "label": "Holiday", "category_key": "travel"}
   ]
 }
 ```
@@ -669,10 +669,10 @@ Canonical P1 fixture (`00` §10a): pre-salary lows P50 27 Oct £242 (P10 £96 / 
 | `type` | Fields | Semantics |
 |---|---|---|
 | `one_off_outflow` / `one_off_inflow` | `date, amount_minor, label, category_key?` | fixed flow in every path |
-| `split_outflow` | `start_date, amount_minor, instalments, cadence` | e.g. pay flights with Klarna Pay in 3 |
+| `split_outflow` | `start_date, amount_minor, instalments, cadence` | e.g. pay a holiday with Klarna Pay in 3 |
 | `income_delay` | `income_stream_id, days, occurrences (1\|"all")` | shift next N paydays, business-day rule re-applied |
 | `income_change_pct` | `income_stream_id\|"all_income", pct, from_date, to_date?` | −100 = temporary income loss |
-| `recurring_add` / `recurring_change` / `recurring_cancel` | as named | e.g. rent £1,395 → £1,450 from 1 Feb |
+| `recurring_add` / `recurring_change` / `recurring_cancel` | as named | e.g. rent £1,250 → £1,300 from 1 Feb |
 | `category_cut_pct` | `category_key, pct, from_date, to_date?` | scale bootstrapped draws |
 | `category_cap` | `category_key, monthly_cap_minor, from_date` | per calendar month per path, truncate cumulative category spend at the cap |
 | `move_to_goal` | `goal_id, amount_minor, cadence, anchor_day` | for `fixed_monthly` goals |
@@ -682,7 +682,7 @@ Validation: `schema=scenario_spec/1`, `name`, `currency` (must equal baseline an
 
 `delta_summary`: Δ each pre-salary low, Δ month ends, Δ `p_breach_buffer` per cycle, first cycle whose P50 low < buffer, goal impact.
 
-Canonical P1 fixture: £640 on 1 Dec → P50 lows 17 Dec £410 (≥ buffer, affordable) and **27 Jan £260 (< £300 buffer)**; goal P50 £1,592 → £952 (£548 short).
+Canonical P1 fixture: £1,200 on 6 Nov → P50 low **26 Nov −£148** (P10 −£273 / P90 −£29), `p_breach_buffer` 1.00. The same £1,200 paid from 28 Nov → 17 Dec low £1,086 (£936–£1,218, £586 above the £500 buffer, 0%); end of March £7,188. What-if: £800 → £1,486 (0%, £7,588); £1,500 → £786 (1%, £6,888).
 
 ### 6.6 Behaviour detectors (summary; thresholds in `00` §13 / `01` FR-37–FR-41; agent tools in `06`)
 
@@ -695,7 +695,7 @@ Canonical P1 fixture: £640 on 1 Dec → P50 lows 17 Dec £410 (≥ buffer, affo
 - `fixed_monthly`: contributions on schedule, skipped in a path if they would take that path below buffer.
 - `residual` (earmarked): no money moves; `progress[p] = max(0, pre_salary_low[p, target cycle] − buffer)`. Any scenario outflow before the target lowers progress one-for-one and also appears in the cash dip — one pool of money seen two ways, not double counting. `progress_now` = P50 of the **next** pre-salary low − buffer (floored at 0) — honest "what is genuinely spare".
 - Output: P10/P50/P90 at target, `p_achieve`, band `on_track` (p ≥ 0.5, P50 meets target), `at_risk` (0.25–0.5), `off_track` (< 0.25), **required monthly change** to reach p ≥ 0.5 (bisection on a uniform monthly saving uplift, ≤ 20 iterations, rounded to the locale pack’s same-currency goal-change increment (UK: £10); unsupported currencies use one major unit, never an FX conversion).
-- P1 fixture: baseline P50 £1,592 (on track), with trip £952 (off track, ≈ £110/mo more needed); with trip + the checked change ≈ £1,418 (still £82 short: the +£116.39/mo accrues per month from November, 4 months by the 25 Mar low); moving the date to 30 Apr is the on-track option.
+- P1 fixture: no goal is defined. Goal behaviour is covered by unit tests and other personas; the P1 demo uses the March outlook (£8,388 with the checked plan vs £8,345 with no action).
 
 ### 6.8 Backtesting hook
 

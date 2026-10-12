@@ -58,12 +58,12 @@ Path grammar: dot-separated keys and integer indices (`result.month_end.2.p50`).
 
 ```jsonc
 // Money — always ISO 4217 minor units + currency + server-formatted display string (locale from the workspace; §3.2b)
-{ "kind": "money", "minor": 128450, "currency": "GBP", "display": "£1,284.50", "precision": "exact" }
-{ "kind": "money", "minor": 24200,  "currency": "GBP", "display": "£242", "precision": "rounded" }
+{ "kind": "money", "minor": 218450, "currency": "GBP", "display": "£2,184.50", "precision": "exact" }
+{ "kind": "money", "minor": 60400,  "currency": "GBP", "display": "£604", "precision": "rounded" }
 { "kind": "money", "minor": 11500000, "currency": "INR", "display": "₹1,15,000.00", "precision": "exact" }   // en-IN lakh grouping
 { "kind": "money", "minor": 286400, "currency": "JPY", "display": "¥286,400", "precision": "exact" }         // exponent 0
 // Percent / probability (stored 0–1, displayed rounded)
-{ "kind": "percent", "value": 0.78, "display": "78%" }
+{ "kind": "percent", "value": 0.02, "display": "2%" }
 // Percent change (signed)
 { "kind": "pct_change", "value": 0.41, "display": "+41%" }
 // Percentage-point change between two probabilities
@@ -73,7 +73,7 @@ Path grammar: dot-separated keys and integer indices (`result.month_end.2.p50`).
 { "kind": "days", "value": 18, "display": "18 days" }
 ```
 
-**Precision signals certainty** (hydrator rule, not LLM choice): observed and declared amounts (transactions, sums of transactions, balances, subscription prices, intervention savings computed from observed run-rates) display **exact minor units** (`£286.40`, `₹14,860.00`); forecast, simulation and goal-projection quantiles display **whole major units** (`£242`, `₹47,850`) because they are uncertain. `precision: "exact" | "rounded"` tells the client which was applied.
+**Precision signals certainty** (hydrator rule, not LLM choice): observed and declared amounts (transactions, sums of transactions, balances, subscription prices, intervention savings computed from observed run-rates) display **exact minor units** (`£286.40`, `₹14,860.00`); forecast, simulation and goal-projection quantiles display **whole major units** (`£604`, `₹47,850`) because they are uncertain. `precision: "exact" | "rounded"` tells the client which was applied.
 
 Every hydrated value additionally carries `"ref": "calc_…#path"` so the client can open the Evidence drawer for exactly that number.
 
@@ -101,9 +101,9 @@ format_money(minor: int, currency: ISO4217, locale: BCP47, precision: exact|roun
   exponent  = ISO4217[currency].exponent          // GBP 2, INR 2, EUR 2, JPY 0, KWD 3
   major     = minor / 10^exponent                  // exact Decimal arithmetic, never float
   exact     → exactly `exponent` decimals ("£286.40", "₹14,860.00", "¥286,400")
-  rounded   → whole major units (half-up), no decimals ("£242", "₹47,850")
+  rounded   → whole major units (half-up), no decimals ("£604", "₹47,850")
   grouping  → from locale: en-GB thousands (1,234,567); en-IN lakh/crore (12,34,567); de-DE "." groups + "," decimal
-  symbol    → locale placement: "£1,284.50", "₹1,15,000.00", "1.234,56 €" (de-DE), "¥286,400"
+  symbol    → locale placement: "£2,184.50", "₹1,15,000.00", "1.234,56 €" (de-DE), "¥286,400"
   negative  → U+2212 minus before the symbol: "−£122", "−₹4,500"
 ```
 
@@ -118,7 +118,7 @@ Implemented with Babel (CLDR) on the server; locale comes from `Workspace.locale
 ```text
 FollowUpAction {
   action_id: str                       // stable within response, e.g. "fu_1"
-  label: str (≤ 48 chars)              // "Simulate a £180 cap" — digits only via {{ }} placeholders in the plan
+  label: str (≤ 48 chars)              // "Simulate a £100 cap" — digits only via {{ }} placeholders in the plan
   kind: "ask" | "simulate" | "open_lab" | "open_evidence" | "filter_transactions"
         | "accept_recommendation" | "dismiss_recommendation" | "adjust_scenario"
         | "set_buffer" | "mark_unused" | "switch_scope"
@@ -194,7 +194,7 @@ The Coordinator does not invent a second routing taxonomy when composing blocks.
 AgentResponse {
   schema_version: "agent_response/1"
   response_id: rsp_…, run_id: run_…, thread_id?: str
-  surface: "ask" | "briefing" | "lab" | "digest"
+  surface: "workspace" | "home" | "insight" | "lab" | "digest"   // rev 6: "ask" → "workspace", "briefing" → "home"
   question?: str
   created_at: datetime (UTC)
   as_of: date                       // financial "today" used
@@ -207,6 +207,7 @@ AgentResponse {
   engine_version: str
   status: "complete" | "degraded"   // degraded = ≥1 block replaced by fallback (§9)
   blocks: Block[1..10]
+  evidence_line?: { agents: int, rejected_drafts: int, run_id: run_… }   // the Overview's one-line "Checked by N agents · M drafts rejected · View how"
   follow_ups: FollowUpAction[0..4]
   verification?: { recommendations: [{ recommendation_id, verdict, revisions }] }
   provenance: { calc_ids: calc_[], finding_ids: fnd_[], recommendation_ids: rec_[] }   // union of all refs
@@ -224,6 +225,9 @@ BlockBase {
   title?: str (≤ 80)         // e.g. "Your balance to payday"
   caption?: str (≤ 200)      // narrative with placeholders allowed
   currency?: str(3)          // † set by the hydrator on every block that contains money; exactly one currency per block
+  placement: { area: "overview", slot: "verdict" | "key_numbers" | "main_visual" | "what_to_do" }
+           | { area: "tab", tab: "details" | "recommendation" | "transactions" | "checked" }
+                             // set by the server from the answer skeleton (§7a), never by the LLM
   evidence: Ref[]            // refs the block was hydrated from (≥1 except Narrative-without-placeholders)
   actions: FollowUpAction[0..3]
 }
@@ -302,7 +306,7 @@ Each component lists: **purpose**, **plan fields** (what the LLM may say), **hyd
 
 | | |
 |---|---|
-| Purpose | One verified recommendation with impact and controls. |
+| Purpose | One checked (Verifier-approved) recommendation with impact and controls. UI label "Checked". |
 | Plan | `recommendation_ref: rec_…` (that's all — content comes from the persisted RecommendationVersion) |
 | Hydrated | `recommendation_id`, `version_id`, `title`, `rationale_segments` (Narrative segments), `actions[]: {type, label, detail}`, `impact: {monthly_saving: Money (exact; vs last-30-day run-rate — labelled "at your current rate"), p_breach_before: Percent, p_breach_after: Percent, p_breach_window: {from, to}, low_deltas?: [{cycle_label, before: Money, after: Money}], goal_delta?: Money}`, `verification: {verdict: "approved", revisions: int, checks_passed: int, checks_total: int, verification_id}`, `triggered_by: Ref[]`, `status` |
 | Constraints | **Only versions with a persisted APPROVE verdict can be rendered as InterventionCard**, including approved/shown/accepted and outcome states; drafting/withdrawn versions and expired unaccepted advice are excluded. Rejected/withdrawn versions are visible only via `AgentExecutionTimeline` / `EvidencePanel`. Default actions: Accept (confirm), Simulate in Lab, Not for me. |
@@ -322,7 +326,7 @@ Each component lists: **purpose**, **plan fields** (what the LLM may say), **hyd
 | Purpose | The receipts: what calculations and data support this answer. Inline in responses and the same contract powers the global Evidence drawer. |
 | Plan | `refs: Ref[1..8]` |
 | Hydrated | `items[]`: one per ref, `{ref, kind: "calculation"\|"finding"\|"recommendation"\|"forecast"\|"transactions"\|"verification"\|"income_stream"\|"declared_obligation"\|"balance_anchor"\|"reconciliation"\|"format_profile"\|"layout_profile"\|"account_coverage", title, provenance: observed\|detected\|confirmed\|declared\|user_set\|default, summary_lines: str[]†, scope?, engine_version?, inputs?: {transaction_count?, date_range?, params?}, source_chain?: {import_id, filename, importer: "csv_statement"\|"pdf_statement"\|"manual", source_type?: csv\|xlsx\|xls\|pdf, profile?: {kind: "format"\|"layout", id, name, source: builtin\|proposed\|user_confirmed}, rows: str, reconciliation?: {status, method}, format_inference?: {decimal_sep, group_sep, grouping: thousands\|lakh, date_order, date_format, source}}, checks?: VerificationCheck[], critique?: str, reproducible?: {seed?, inputs_hash, data_version}}` (`checks`/`critique` only on verification items) |
-| Constraints | Every forecast/simulation item lists its **inputs by provenance** (e.g. "Starting balance: £1,284.50 · declared", "Salary: £2,940 on the 28th · confirmed", "Council tax: £162, Apr–Jan · detected") and **coverage** (tracked vs untracked accounts in scope), so declared inputs are never hidden. Every ref must resolve; this block is also auto-appended (collapsed) by the composer when a response contains an InterventionCard or ScenarioComparison and the plan forgot it. |
+| Constraints | Every forecast/simulation item lists its **inputs by provenance** (e.g. "Starting balance: £2,184.50 · declared", "Salary: £4,050 on the 28th · confirmed", "Council tax: £162, Apr–Jan · detected") and **coverage** (tracked vs untracked accounts in scope), so declared inputs are never hidden. Every ref must resolve; this block is also auto-appended (collapsed) by the composer when a response contains an InterventionCard or ScenarioComparison and the plan forgot it. |
 
 ### 5.10 `AgentExecutionTimeline`
 
@@ -345,7 +349,7 @@ Each component lists: **purpose**, **plan fields** (what the LLM may say), **hyd
 | Every `Ref` matches the ULID regex and **exists for this workspace** | drop block |
 | `CalcRef` kind is compatible with the block (table below) | drop block |
 | Narrative numeral rule (§5.0) | 1 repair; then strip offending sentence and log `narrative.numeral_violation` |
-| ≤ 8 blocks, ≤ 1 `CashFlowForecastChart` + ≤ 1 `ScenarioComparison` per response | truncate by plan order |
+| ≤ 8 blocks; exactly 1 main visual in the Overview, slots in skeleton order (§7a); in tabs, ≤ 1 block of each type per tab | Overview overflow is moved to a tab (Step 2a); other excess is truncated by plan order |
 | `InterventionCard.recommendation_ref` must point to a version with APPROVE (eligible lifecycle states in §5.7) | drop block, log (this is a safety rule) |
 | Follow-up payloads valid (e.g. ScenarioSpec validation from `07` §6.5) | drop follow-up |
 | Joint-account scope: no text attributes household spending to a person (`no_person_attribution`: partner label / pronoun + spend verb) | 1 repair; then strip sentence |
@@ -368,6 +372,8 @@ Compatibility:
 | AgentExecutionTimeline | `run_` |
 
 **Step 2 — hydrated validation**: the hydrated object is validated against the `agent_response/1` schema before persistence (guards hydrator bugs). Failures are logged as `hydration_error` and the block is replaced by fallback.
+
+**Step 2a — composition (rev 6)**: the server assigns every block a `placement` from the §7a answer skeleton, puts Overview blocks in slot order, emits only the fixed tab set, enforces the Overview budget by moving overflow to the intent's tabs (never dropping it), and sets `evidence_line` from the run's agent count and rejected drafts. Moves are logged as `overview_overflow`.
 
 **Step 3 — client**: Zod validation per block; an invalid block renders `BlockError` ("This view couldn't be displayed — the underlying numbers are still available") with an Evidence link, never a blank screen.
 
@@ -393,6 +399,50 @@ The Coordinator's composer prompt contains this table; the validator enforces th
 Chart-type principles (aligned with `04` visual grammar): time → line/fan; part-to-whole of ≤ 8 → horizontal bars sorted descending (no pies/donuts); a category vs its own baseline → bar with baseline tick; scenario differences → overlaid lines on shared axes plus a delta table. Uncertainty is always shown as a band with the words "likely range (P10–P90)".
 
 ---
+
+## 7a. Answer composition contract: the answer skeleton (rev 6)
+
+**Owner decision (12 Oct 2026):** every `surface: "workspace"` answer uses the **same frame**, so users learn it once; only the content inside each slot varies with the question (IA: `.design/foresight/INFORMATION_ARCHITECTURE.md` §"Answer skeleton"). This replaces the earlier per-intent tab lists.
+
+**Overview slots, always in this order** (about one screen at 1440×900):
+
+| # | Slot (`placement.slot`) | Max | Allowed block types |
+|---|---|---|---|
+| 1 | `verdict` | 1 | `Narrative` (one serif line + a one-line explanation, ≤ 3 sentences) |
+| 2 | `key_numbers` | 1 group of ≤ 3 metrics | `FinancialMetricGroup` |
+| 3 | `main_visual` | **exactly 1** | `ScenarioComparison` · `CashFlowForecastChart` · `SpendingBreakdownChart` · `GoalProjection` · `RiskAssessment` · `TransactionTable` (≤ 10 rows) · `EvidencePanel` (summary) · `InterventionCard` ×≤3 (`advice_request` only) |
+| 4 | `what_to_do` | ≤ 1 (optional) | `InterventionCard` (Checked only). Omitted when the intent gives no advice: **the slot collapses, nothing moves up out of order** |
+| 5 | Evidence line | 1 | `evidence_line` on the envelope (not a block): "Checked by N agents · M drafts rejected · View how" |
+
+**Tabs: one fixed set, always this order and these names:**
+
+| Tab | `placement.tab` | URL hash | Holds |
+|---|---|---|---|
+| Overview | (`area: "overview"`) | `#overview` | The five slots above |
+| Details | `details` | `#details` | The deeper view for the question (weekly cash flow for affordability and scenarios; trend and breakdown for spending; goal path for goals) |
+| Recommendation | `recommendation` | `#recommendation` | What-if table, options, rejected drafts with reasons |
+| Transactions | `transactions` | `#transactions` | The relevant transactions |
+| How it was checked | `checked` | `#checked` | `AgentExecutionTimeline` and the methodology note (replaces "Methodology"); shown for every answer that ran agents |
+
+A tab with no content for this answer is **hidden, never reordered or renamed**. Never varies: the conversation column, the pinned input, the tab bar position, the chart grammar, the "Checked" and "Rejected draft" badges and the evidence-line wording.
+
+**Per-intent slot table** (routing intents from `06` §4.0; the ResponsePlan intent of §4.1 in brackets):
+
+| Routing intent | Main visual (slot 3) | What to do (slot 4) | Details | Recommendation | Transactions |
+|---|---|---|---|---|---|
+| `affordability` | ScenarioComparison (lows before each payday) | InterventionCard | CashFlowForecastChart, weekly with paydays | What-if table (ScenarioComparison) + rejected drafts | Relevant transactions |
+| `scenario` | ScenarioComparison | omitted unless `needs_advice` | Weekly cash flow | shown if advice | Relevant transactions |
+| `spending_breakdown` / `trend_or_change` (`spending_question`) | SpendingBreakdownChart (weekly vs usual, or `by_merchant`) | InterventionCard if `needs_advice` | Breakdown by merchant + trend (`over_time`) | shown if advice | Recent orders |
+| `transaction_lookup` | TransactionTable (first 10) | omitted | Full filtered list | hidden | hidden (the main visual is the list) |
+| `subscription_review` (`spending_question`) | Overlap list | InterventionCard | Price changes over time | Options + rejected | Subscription payments |
+| `goal_status` (`goal_check`) | GoalProjection (FinancialMetricGroup outlook if no goal exists) | InterventionCard if off track | Goal path with paydays | shown if advice | Contributions |
+| `risk_check` (`risk_review`) | RiskAssessment with CashFlowForecastChart | InterventionCard if risk | Weekly cash flow | shown if advice | Upcoming bills |
+| `advice_request` (`risk_review`) | Up to 3 InterventionCards | (the main visual is the advice) | Effect of each option | Options + rejected | Evidence transactions |
+| `explain_recommendation` (`recommendation_review` / `explain_number`) | EvidencePanel summary | omitted | Calculation inputs | The recommendation | Source transactions |
+| `smalltalk_or_out_of_scope` | Narrative only (scope statement) | none | none | none | none |
+| Low confidence (< 0.6) | Clarifying question: Narrative + 2–4 `ask` follow-ups | none | none | none | none |
+
+**Server-side enforcement (§6 Step 2a):** after hydration, the composer assigns each block a `placement` (`{area: "overview", slot}` or `{area: "tab", tab}`) from this table; the LLM never chooses placement. The validator **rejects or trims** any plan that breaks the skeleton: Overview blocks are re-ordered into slot order, a missing main visual falls back to the intent's deterministic template (§9), and anything over the Overview budget is **moved** to its intent's tab (or to *How it was checked* if none fits), never dropped. Tabs are emitted only from the fixed set, in the fixed order. Each move is logged as `overview_overflow` on the AgentStep, and `E-UI` (`09`) checks every response against the skeleton (slot order + tab set). Surfaces `home` and `insight` use their own fixed layouts (IA "Content Hierarchy"); `lab` and `digest` are unaffected.
 
 ## 8. Hydration from Calculation records
 
@@ -431,9 +481,9 @@ Because numbers never depend on the LLM, every fallback still shows correct figu
 
 ## 10. Snapshots, reload and staleness
 
-- On completion, `AgentResponse(plan, hydrated, data_version, schema_version)` is persisted. **Opening a past thread, briefing or Lab result reads the hydrated snapshot — no agent or engine re-run.**
+- On completion, `AgentResponse(plan, hydrated, data_version, schema_version)` is persisted. **Opening a past thread, Home snapshot or Lab result reads the hydrated snapshot — no agent or engine re-run.**
 - `stale` is computed on read. Stale responses keep their numbers (they are true *as of* their date) and show a quiet "as of 12 Oct · data has changed" label with two actions: **Re-run with current data** (new run, new `rsp_`, linked via `supersedes`) and **Compare** (opens both).
-- Briefing (`surface: briefing`) uses the same snapshot mechanism; the Home page performs one read.
+- Home (`surface: home`) uses the same snapshot mechanism; the Home page performs one read.
 - Digests render from the same hydrated JSON into Telegram Markdown/email HTML via server-side templates (subset of blocks: Narrative, FinancialMetricGroup, InterventionCard rendered as text + link).
 
 ## 11. Versioning
@@ -450,15 +500,15 @@ Because numbers never depend on the LLM, every fallback still shows correct figu
 
 ## 13. Example payloads
 
-All in [`design/contracts/`](../design/contracts/), as of 12 Oct 2026. Files 01–05: fictional persona P1 (Amara Nwosu, one Monzo account, GBP). File 06: fictional persona P4 (Aanya Rao, one Indian savings account, INR, `en-IN`). Each file contains `plan` (what the LLM produced) and `response` (what the client receives), so the plan → hydration relationship is visible.
+All in [`design/contracts/`](../design/contracts/), as of 12 Oct 2026. Files 01–05: fictional persona P1 (Amara Nwosu, one Monzo account, GBP; rev 6 story). File 06: fictional persona P4 (Aanya Rao, one Indian savings account, INR, `en-IN`). Each file contains `plan` (what the LLM produced) and `response` (what the client receives), so the plan → hydration relationship is visible.
 
-| File | Scenario | Blocks |
+| File | Scenario | Blocks (placement) |
 |---|---|---|
-| `01-spending-question.json` | "Why is my food spending so high?" | Narrative, FinancialMetricGroup, SpendingBreakdownChart (`over_time`), TransactionTable, EvidencePanel |
-| `02-trip-affordability.json` | "Can I afford £640 flights home for Christmas?" — fine in December, January low under buffer | Narrative, ScenarioComparison (baseline · flights · flights + verified change), CashFlowForecastChart, GoalProjection, EvidencePanel |
-| `03-proactive-risk-alert.json` | Briefing: buffer risk before payday + verified intervention | Narrative, CashFlowForecastChart, RiskAssessment, InterventionCard, AgentExecutionTimeline |
-| `04-goal-projection.json` | "Am I on track for my emergency fund?" | Narrative, GoalProjection, FinancialMetricGroup |
-| `05-verification-loop-timeline.json` | "Why did you recommend this?" — rejected-then-revised trail | Narrative, AgentExecutionTimeline (`full`), EvidencePanel |
-| `06-india-spending-question.json` | P4: "Why is my food delivery so high?" — INR, lakh grouping, UPI narrations, equivalent XLSX variant via a proposed format profile (primary generated export: XLS) | Narrative, FinancialMetricGroup, SpendingBreakdownChart, TransactionTable, EvidencePanel |
+| `01-spending-question.json` | "Why is my food delivery spending higher?" (+41%, by app) | Overview: verdict, key numbers, SpendingBreakdownChart `by_merchant`, what to do · Tabs: Details (weekly), Transactions, How it was checked |
+| `02-holiday-affordability.json` | "Can I afford a £1,200 holiday next month?": yes after 27 Nov; 6 Nov would leave −£148 | Overview: verdict, key numbers, ScenarioComparison (pay-cycle lows), what to do · Tabs: Details (weekly cash flow), Recommendation (what-if), How it was checked |
+| `03-proactive-risk-alert.json` | Home / Insight: the £650 car repair puts late October below the buffer; checked plan | Narrative, CashFlowForecastChart (pay-cycle lows), RiskAssessment, InterventionCard, AgentExecutionTimeline (How it was checked) |
+| `04-plan-outlook.json` | "Am I on track for March?" with no goal set yet | Narrative, FinancialMetricGroup (31 March outlook) |
+| `05-verification-loop-timeline.json` | "Why did you recommend this?": the £40 cap rejected, then the checked plan | Overview: verdict, EvidencePanel (main visual) · How it was checked: AgentExecutionTimeline (`full`) |
+| `06-india-spending-question.json` | P4: "Why is my food delivery so high?" in INR (lakh grouping, UPI narrations, an XLSX variant via a proposed format profile; primary generated export XLS) | Overview: verdict, key numbers, SpendingBreakdownChart · Tabs: Transactions, How it was checked |
 
-Figures in the examples are the **design fixtures** from `00` §10a (P1) and `07` §10a (P4), not engine results. Series are `resolution: "sampled"` (a handful of points) to keep files readable; real responses carry daily points (≤ 200).
+Files 01–05 are **generated** by `design/fixture/build_contracts.py` from `design/fixture/fixture.json` (register §10a). File 06 uses the P4 fixtures in `07` §10a. None are engine results. Series are `resolution: "sampled"` (a handful of points) to keep files readable; real responses carry daily points (≤ 200).

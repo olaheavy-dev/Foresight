@@ -56,14 +56,14 @@ features:
     suites: [E-AUD]
   ask:
     stage: 2
-    title: Ask — conversational analysis with generated UI
+    title: AI Workspace — conversational analysis with generated answers
     enabled: false
     suites: [E-ORC, E-SCN, E-UI]
 
   # Stage 3 — experiences, proactive delivery, goals
   briefing:
     stage: 3
-    title: Briefing (intelligence home)
+    title: Home (cached financial briefing and proactive insights)
     enabled: false
     suites: [E-ORC, E-UI]
   decision_lab:
@@ -73,7 +73,7 @@ features:
     suites: [E-SIM, E-SCN]
   ledger:
     stage: 3
-    title: Ledger, imports and categorisation review
+    title: Transactions, imports and categorisation review
     enabled: false
     suites: [E-CAT]
   scheduled_digest:

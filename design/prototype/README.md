@@ -1,3 +1,5 @@
+> **SUPERSEDED (12 Oct 2026).** This "Broadsheet" prototype is replaced by `design/hifi/` ("Atelier light"). Screen names (Briefing, Ask, Ledger) and figures here are out of date; see `docs/04-UX-UI-DESIGN.md` and `design/fixture/fixture.json`.
+
 # Foresight: static hi-fi prototype
 
 Open `index.html` in a browser. No build step and no server needed. It needs internet only for Google Fonts.
