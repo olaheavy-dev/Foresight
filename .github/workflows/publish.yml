@@ -36,12 +36,26 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/build-push-action@v6
+      - name: Build (not pushed yet)
+        uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.context }}
           file: ${{ matrix.dockerfile }}
-          push: true
+          load: true
+          push: false
           build-args: BUILD_SHA=${{ github.event.workflow_run.head_sha }}
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/foresight-${{ matrix.name }}:sha-${{ github.event.workflow_run.head_sha }}
-            ghcr.io/${{ github.repository_owner }}/foresight-${{ matrix.name }}:main
+          tags: foresight-${{ matrix.name }}:candidate
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Refuse to publish an image with secrets or private files
+        run: python -m tools.check_image_secrets foresight-${{ matrix.name }}:candidate
+      - name: Push exactly the image that was checked
+        env:
+          IMAGE: ghcr.io/${{ github.repository_owner }}/foresight-${{ matrix.name }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          for tag in "sha-$SHA" main; do
+            docker tag "foresight-${{ matrix.name }}:candidate" "$IMAGE:$tag"
+            docker push "$IMAGE:$tag"
+          done

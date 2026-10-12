@@ -1,0 +1,17 @@
+# The frontend image is built from this folder, so the root .dockerignore does not apply.
+# Never bake local secrets, dependencies or build output into a (public) image.
+.env
+.env.*
+node_modules
+.next
+out
+test-results
+playwright-report
+coverage
+*.tsbuildinfo
+*.pem
+*.key
+*.pdf
+*.csv
+*.xls
+*.xlsx
