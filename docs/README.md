@@ -2,7 +2,7 @@
 
 Phase: product definition, UX/UI, architecture and planning. **No production code exists yet.**
 Track: Agent Arena 2026 · FinPilot · submission deadline 20 Oct 2026 23:00 IST (registration closes 17 Oct).
-Markets: **UK (primary demo, GBP) and India (second locale, INR, synthetic-validated only)**; a **currency-agnostic engine** tested on GBP, EUR, JPY and INR (plus KWD unit tests), forecast per currency with no FX conversion. Each user's financial space is a **workspace** (formerly "profile"). Stance: **single-account first**. One account with everything flowing through it is the default and the judge's path; multi-account and joint features appear only when the data has them. Register revision: 5.1.
+Markets: **UK (primary demo, GBP) and India (second locale, INR, synthetic-validated only)**; a **currency-agnostic engine** tested on GBP, EUR, JPY and INR (plus KWD unit tests), forecast per currency with no FX conversion. Each user's financial space is a **workspace** (formerly "profile"). Stance: **single-account first**. One account with everything flowing through it is the default and the judge's path; multi-account and joint features appear only when the data has them. Register revision: 5.2.
 
 ## Reading order
 
@@ -54,7 +54,8 @@ Status values: **built** · **built, partial** (what's missing) · **not shipped
 |---|---|---|---|
 | 1 | Exact Mesh model IDs per agent tier (from Mesh's catalogue; never guessed) | Small fast model for Coordinator/Ledger; stronger reasoning model for Advisor/Verifier | Stage 0 (12 Oct) |
 | 2 | Visx vs Recharts for charts | Visx for forecast/scenario charts, plain SVG elsewhere | Stage 2 start (15 Oct) |
-| 3 | ~~Deployment target~~ | **Resolved (rev 5):** continuously deployed from Stage 0 — Render (always-on + persistent disk) for the API, Vercel for Next.js; auto-deploy on green CI; demo data only (05 §12) | Resolved |
+| 3 | ~~Deployment target~~ | **Resolved (rev 5.2):** the owner's VPS platform, continuously deployed from Stage 0 — Docker Compose (frontend, backend, PostgreSQL), Caddy TLS, GHCR images published only on green CI, Watchtower rollout; demo data only (05 §12) | Resolved |
+| 8 | ~~Exact public subdomain~~ | **Resolved (rev 5.2):** https://foresight.olaheavy.dev (Caddy route added in the onboarding PR, PLT-13) | Resolved |
 | 4 | Telegram vs email as primary digest channel | Telegram primary, SMTP secondary | Stage 3 (17 Oct) |
 | 5 | Holdout size (300 vs 500 rows; ≥150 double-labelled by end of Stage 1) | 300 | Stage 1 (13 Oct) |
 | 7 | Library for rendering fictional test PDFs, and number of layouts (≥3) | ReportLab, 4 layouts plus 1 unseen | Stage 4(b) start |
@@ -77,10 +78,10 @@ The fictional prototype depicts one Monzo CSV imported in three steps. Its desig
 **Highest-risk architectural decision — the deterministic engine / LLM boundary, specifically the forecast model's quality.**
 Making all numbers deterministic is the right call, but it makes forecast accuracy fully exposed: block-bootstrap Monte Carlo on 3–12 months of data may not beat naive baselines, especially for irregular income (P2). Mitigations: baselines B0–B3 and honest reporting (09), P2 reported separately, and Stage 1 puts the engine and backtest first, so any weakness surfaces on day 1, not day 7. Close second: **ingestion generality**. The claim "works with any text-based statement whose layout passes the reconciliation gate (tested on the listed layouts)" rests on the table locator, FormatProfiles/LayoutProfiles and the reconciliation gate. It is tested on unseen fictional layouts (09 `E-ING`), and the codebase must contain no bank-specific importer, but real-world variety will exceed what we test. The same applies to **currency and locale detection**: a separator or exponent mistake scales every amount ×100, so the ISO table, the detection ladder with a confirm on ambiguity, and the reconciliation gate are all on the critical path. India formats are reconstructed, not observed. The README must claim only what is measured.
 
-**Build order (rev 5 — replaces the cut list).** One builder, one stream, in score order; every feature behind a flag that turns on (in the deployed app and the README) only when its eval suite is green; unfinished work listed under "Not shipped (planned)" (10 §11). Capacity is ≈ 85–100 h against ≈ 279 h of mandatory-stage work and ≈ 70 h of Tier 2 (10 §2), so the order — not hope — decides what ships.
+**Build order (rev 5 — replaces the cut list).** One builder, one stream, in score order; every feature behind a flag that turns on (in the deployed app and the README) only when its eval suite is green; unfinished work listed under "Not shipped (planned)" (10 §11). Capacity is ≈ 85–100 h against ≈ 283 h of mandatory-stage work and ≈ 70 h of Tier 2 (10 §2), so the order — not hope — decides what ships.
 
 **Recommended implementation sequence:**
-0. **Stage 0 (12 Oct)**: register (closes 17 Oct), public repo, organiser CI + secrets green, Mesh catalogue + fallback model per agent, holdout annotator named, `features.yaml`, **deployment pipeline live** (Render API + Vercel web, auto-deploy on green CI, demo data only).
+0. **Stage 0 (12 Oct)**: register (closes 17 Oct), public repo, organiser CI + secrets green, Mesh catalogue + fallback model per agent, holdout annotator named, `features.yaml`, **deployment pipeline live** on the owner's VPS (Docker Compose with PostgreSQL, Caddy TLS, GHCR images published only on green CI, Watchtower rollout, demo data only; onboarding PR in the private infra repo, PLT-13).
 1. **Stage 1 (13–14 Oct): deterministic single-account spine.** Generator P1/P2, `csv_statement` + Monzo profile + generic mapper, `uk` pack + any-currency core, income/recurring, forecast + simulation, first committed eval numbers, persistence + calc store, thin engine-only API **deployed**. No LLM calls.
 2. **Stage 2 (15–16 Oct)**: LangGraph Coordinator + 5 agents through Mesh, Advisor⇄Verifier loop with mandatory claimed impact, audit chain, cassettes, LLM suites, Ask **deployed** → **`submittable-1` by Fri 16 Oct 23:00**.
 3. **Stage 3 (17–18 Oct)**: Onboarding, Briefing, scheduler + Telegram digest, Decision Lab, adaptive goals, live eval, Ledger, Evidence drawer, states — each **deployed** when green; `submittable-N` moves forward daily.

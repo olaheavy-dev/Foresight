@@ -4,7 +4,7 @@
 > If a later document needs to deviate, it changes this file first and records why.
 > Status key: **DECIDED** (build against it) · **PROPOSED** (default unless overturned) · **OPEN** (see §12).
 
-Last updated: 2026-10-12 (rev 5.1: end-to-end review fixes — Tier 1 CSV reconciliation, honest demo close-out, freezes defined, private run split, accept/outcome task, "Checked" copy; rev 5: owner decisions — solo builder, staged release, non-blocking real-data gate, continuous deployment; rev 4.3: review fixes — Mesh-only enforcement, honest claims, dependency fixes, submission checkpoint; rev 4.2: cross-document alignment, import-profile identifiers, ambiguity gates and currency contracts; rev 4.1: external synthetic India test set; rev 4: Workspace replaces Profile; any currency; UK + India locales; XLS re-added; rev 3.5: documentation alignment — shared thresholds, schemas, immutable snapshots, scheduling and submission dependencies; rev 3.4: real-data validation is a submission gate; rev 3.3: P3 banks/city changed, no-income state; rev 3.2: unconfirmed-inflow policy; rev 3: UK market, single-account-first, bank adapters, 3-step onboarding; rev 3.1: P1 payday/low dates corrected to real 2026–27 weekdays — 19 Dec 2026, 28 Nov, 28 Feb and 28 Mar fall on weekends — and Feb low smoothed to £1,396 so Jan→Feb→Mar growth is a steady ~£496/mo) · Phase: design (no production code)
+Last updated: 2026-10-12 (rev 5.2: PostgreSQL everywhere; deployment on the owner's VPS; rev 5.1: end-to-end review fixes — Tier 1 CSV reconciliation, honest demo close-out, freezes defined, private run split, accept/outcome task, "Checked" copy; rev 5: owner decisions — solo builder, staged release, non-blocking real-data gate, continuous deployment; rev 4.3: review fixes — Mesh-only enforcement, honest claims, dependency fixes, submission checkpoint; rev 4.2: cross-document alignment, import-profile identifiers, ambiguity gates and currency contracts; rev 4.1: external synthetic India test set; rev 4: Workspace replaces Profile; any currency; UK + India locales; XLS re-added; rev 3.5: documentation alignment — shared thresholds, schemas, immutable snapshots, scheduling and submission dependencies; rev 3.4: real-data validation is a submission gate; rev 3.3: P3 banks/city changed, no-income state; rev 3.2: unconfirmed-inflow policy; rev 3: UK market, single-account-first, bank adapters, 3-step onboarding; rev 3.1: P1 payday/low dates corrected to real 2026–27 weekdays — 19 Dec 2026, 28 Nov, 28 Feb and 28 Mar fall on weekends — and Feb low smoothed to £1,396 so Jan→Feb→Mar growth is a steady ~£496/mo) · Phase: design (no production code)
 
 ---
 
@@ -42,10 +42,10 @@ The three pillars, in priority order (they map directly onto the judging criteri
 | Goal tracking with adaptive advice (bonus). | DECIDED (in scope; built in **Stage 3**, `10` ENG-06/PRO-02) |
 | Conversational analysis (bonus). | DECIDED (core experience) |
 | Multi-user production auth. | Out of scope — see §8 |
-| **Team: one builder** (the owner) with AI coding assistance; the holdout annotator is a separate person (labelling only). Capacity ≈ 85–100 h to 20 Oct vs ≈ 279 h of mandatory-stage work and ≈ 70 h of Tier 2 (`10` §2). | DECIDED (rev 5) |
+| **Team: one builder** (the owner) with AI coding assistance; the holdout annotator is a separate person (labelling only). Capacity ≈ 85–100 h to 20 Oct vs ≈ 283 h of mandatory-stage work and ≈ 70 h of Tier 2 (`10` §2). | DECIDED (rev 5) |
 | **Staged release.** Full scope stays the target, built as one stream in score order (Stage 0 → 5, `10` §1, §5). Every feature sits behind a flag in `features.yaml`; a flag is switched on in the deployed app, and the feature is claimed in the README, **only when its eval suite is green**. Unfinished work is listed under **"Not shipped (planned)"** in the generated README and never shown half-built. This replaces the cut list / "never cut" framing. | DECIDED (rev 5) |
 | **Real-data check (PRV-06) is time-boxed and non-blocking.** It runs before the 19 Oct 18:00 code freeze (feature freeze 19 Oct 12:00; both defined in `10` §1) and reports exactly what was measured (e.g. "11/12 statements reconciled; reason"; or "CSV half only" if the PDF importer did not ship), generated from `private_summary.json`. **Its privacy scan is always blocking.** The README and submission never wait for it. | DECIDED (rev 5) |
-| **Continuous deployment from day one.** API on a container host with a persistent SQLite volume (default Render; Fly.io/Railway equivalent) and Next.js on Vercel; auto-deploy `main` on green CI; demo workspaces seeded on every deploy; **no real data ever deployed**; secrets via host env vars; the deployed URL is in the README from Stage 0 and grows feature by feature as flags turn on (`05` §12). | DECIDED (rev 5) |
+| **Continuous deployment from day one, on the owner's VPS.** Docker Compose project `foresight` (frontend on the Caddy network; backend and PostgreSQL on a private app network, no host ports) on the owner's single-VPS platform: Cloudflare → Caddy TLS → frontend at **https://foresight.olaheavy.dev**; images built by GitHub Actions to GHCR (`sha-<commit>`, `main`, never `latest`) and **published only after CI is green on `main`**; Watchtower scope `foresight-staging` rolls them out; admin only over WireGuard. Demo workspaces seeded on every deploy; **no real data ever on the VPS**; secrets in a server-side `.env`; the deployed URL is in the README from Stage 0 and grows feature by feature as flags turn on; kept up until results on 22 Nov 2026 (`05` §12). *(rev 5.2: replaces Render/Vercel.)* | DECIDED (rev 5.2) |
 | **Design stance: single-account first.** One account with everything flowing through it is the default, the primary demo and the judge's path. Multi-account, joint accounts and coverage gaps are progressive enhancements that appear only when the data contains them. The product owner's own banking set-up is one private validation case (n=1), never the template. | DECIDED (rev 3) |
 
 ## 4. Markets & persona assumptions (rev 4: UK + India, any currency, single-account first)
@@ -222,14 +222,15 @@ Scope note: the user has explicitly confirmed **nothing in the original brief is
 | Layer | Hackathon choice | Production path |
 |---|---|---|
 | API | Python 3.12, FastAPI, Pydantic v2 | same |
-| Orchestration | LangGraph (StateGraph, explicit nodes, checkpointer) | same + durable checkpointer (Postgres) |
+| Orchestration | LangGraph (StateGraph, explicit nodes, `PostgresSaver` checkpointer) | same, workers separated |
 | LLM | `openai` SDK with `base_url=https://api.meshapi.ai/v1`, wrapped in one `mesh_client` module (the only place an LLM is called) | same + model routing/fallback via Mesh |
 | Finance engine | `finance_core` pure-Python package (NumPy, pandas) — no I/O, fully unit-tested | same |
-| Storage | **SQLite** via SQLAlchemy 2.0 + Alembic-ready models, every row scoped by `workspace_id` | PostgreSQL + row-level security |
+| Storage | **PostgreSQL 16 everywhere** (CI service container, `docker compose up` for local/judges, the VPS) via SQLAlchemy 2.0 + Alembic (migrations on boot); `BIGINT` minor units, `JSONB` snapshots; every row scoped by `workspace_id` in the repository layer, with row-level security policies added in Stage 3. SQLite rejected (rev 5.2): concurrent API + scheduler + LangGraph writes, one engine everywhere, RLS | Managed PostgreSQL with RLS and PITR |
 | Frontend | **Next.js (App Router) + TypeScript**, Tailwind with custom tokens, Visx/D3 for charts (Recharts acceptable fallback) | same |
-| Scheduling | APScheduler in the API process (persisted job store in SQLite) | Dedicated worker (Celery/RQ/Arq) |
+| Scheduling | APScheduler in the always-on backend container (job store in PostgreSQL) | Dedicated worker (Celery/RQ/Arq) |
 | Digest | Telegram Bot API + SMTP email | + push |
 | Auth | Single local user with a **workspace switcher**; signed session cookie; all queries workspace-scoped | Managed auth (Clerk/Auth0/Supabase); a `User` owns ≥ 1 `Workspace` |
+| Hosting | Owner's VPS (Docker Compose, Caddy, GHCR, Watchtower; `05` §12); Docker Compose also for judges' local runs | Separate managed services |
 | Observability | Every agent node writes `AgentStep` rows (model, tokens, latency, cost, inputs hash, output) + structured logs | + OpenTelemetry/Langfuse |
 
 ## 9. Visual direction (DECIDED for prototype) — "Broadsheet"
@@ -305,12 +306,13 @@ foresight/
 
 1. Exact Mesh model IDs per agent (must be read from Mesh's model catalogue; do not assume names). Default intent: a small fast model for Coordinator/Ledger, a stronger reasoning model for Advisor/Verifier.
 2. Charts: Visx (control, more work) vs Recharts (speed, less distinctive). Default: Visx for the forecast/scenario charts, simple SVG elsewhere.
-3. ~~Deployment target~~ — resolved rev 5: continuously deployed from Stage 0 (default Render for the API + SQLite volume, Vercel for Next.js; Fly.io/Railway acceptable equivalents); Docker Compose stays for local runs and judges' fresh clones.
+3. ~~Deployment target~~ — resolved rev 5.2: the owner's VPS platform (Docker Compose + Caddy + GHCR + Watchtower), continuously deployed from Stage 0; Docker Compose also for local runs and judges' fresh clones. Render/Vercel rejected (`05` §12).
 4. Telegram vs email as the *primary* digest demo channel.
 5. Whether the hand-labelled holdout set is 300 or 500 transactions (labelling cost vs. statistical confidence).
 6. ~~Whether XLS import ships in v1~~ — resolved rev 4: yes, via `csv_statement` (table read), for Indian bank exports.
 7. PDF layout library used to render fictional test statements (default ReportLab): L1–L4 plus unseen L5; L6 when India ships.
-8–9. Reserved; no active decisions.
+8. ~~Exact public subdomain~~ — resolved rev 5.2: **https://foresight.olaheavy.dev**.
+9. Reserved; no active decision.
 10. Source/annotator for the independent constructed India UPI holdout (default: independently authored fictional rows, §6c / `09` §3.4a).
 11. Whether to seek a consented real Indian sample (default no; India remains synthetic-only).
 12. Pinned upstream revisions and independent annotator for the external India set (`09` §3.4b; EVL-20).

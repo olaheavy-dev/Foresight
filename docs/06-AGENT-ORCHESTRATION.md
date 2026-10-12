@@ -395,7 +395,7 @@ class ForesightState(TypedDict):
     needs_user_input: ClarifyingQuestion | None   # human-in-the-loop interrupt
 ```
 
-Checkpointing: the LangGraph SQLite checkpointer, keyed by `run_id`. Human-in-the-loop points use `interrupt()` and resume when the user answers (§9).
+Checkpointing: the LangGraph `PostgresSaver` checkpointer (same PostgreSQL database, its own tables), keyed by `run_id`. Human-in-the-loop points use `interrupt()` and resume when the user answers (§9).
 
 ---
 

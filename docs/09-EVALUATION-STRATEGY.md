@@ -608,7 +608,7 @@ Uses the real LangGraph graph (live or replay). Assertions read the persisted `A
 | ORC-10 | Budget guard | a run that would exceed **12 LLM calls / 60k tokens** (01 FR-60) aborts gracefully with an audit event. Deterministic partial results are still returned |
 | ORC-11 | Scheduler | APScheduler job (freezegun clock) triggers a digest run without HTTP. The content references a current `brf_`/`rec_` |
 | ORC-12 | Snapshot reload | reopening `rsp_…` performs **0** agent steps |
-| ORC-13 | Mesh-only egress (allow-list) | socket guard allows only `api.meshapi.ai`, the Telegram Bot API and the configured SMTP host; **every other outbound connection** fails. A full live run succeeds; an injected call to any other host fails the run; `LANGSMITH_TRACING`/`LANGCHAIN_TRACING_V2` asserted off |
+| ORC-13 | Mesh-only egress (allow-list) | socket guard allows only `api.meshapi.ai`, the Telegram Bot API and the configured SMTP host (the PostgreSQL connection is internal to the app network and not egress); **every other outbound connection** fails. A full live run succeeds; an injected call to any other host fails the run; `LANGSMITH_TRACING`/`LANGCHAIN_TRACING_V2` asserted off |
 | ORC-14 | PDF LayoutProfile path | an `L5` PDF → Ledger Agent `propose_layout_profile` step → reconciliation gate → first-use H11 confirmation (simulated) → accepted, with the LayoutProfile saved. A second `L5` file → 0 layout-proposal LLM steps |
 | ORC-15 | CSV FormatProfile path | a `C1` CSV → no built-in match → Ledger Agent `propose_format_profile` step → user confirmation (simulated) → parse with P/R 1.000 → profile saved. A second `C1` file → 0 format-proposal LLM steps |
 
@@ -797,8 +797,9 @@ Where we fall short: <auto-listed>
 | Job | Trigger | Runs | Blocks? |
 |---|---|---|---|
 | `agent-arena-2026-checks` | push | organiser checks | yes (eligibility) |
-| `unit` | push | `pytest backend/`, incl. E-SIM properties and leakage guards | yes |
-| `eval-replay` | push | `evals.run --suite all --mode replay` + README drift check + manifest hash check | yes |
+| `unit` | push | `pytest backend/` against a `services: postgres:16` container (transactional rollback per test), incl. E-SIM properties and leakage guards | yes |
+| `eval-replay` | push | `evals.run --suite all --mode replay` (throwaway PostgreSQL schema per run) + README drift check + manifest hash check | yes |
+| `publish` | `workflow_run` success of the above on `main` | build and push `foresight-backend` / `foresight-frontend` images to GHCR (`sha-<commit>`, `main`); the owner's VPS rolls them out (`05` §12), so only green builds are ever deployed | n/a |
 | `eval-live` | manual + nightly until submission | live run with the `MESH_API_KEY` secret | no |
 
 **Evaluation is part of the daily workflow, not a final step:**

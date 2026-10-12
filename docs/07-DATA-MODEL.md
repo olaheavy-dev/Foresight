@@ -1,7 +1,7 @@
 # 07 — Data Model & Financial Modelling
 
 > Phase E. Conceptual data model, edge-case handling, the two generic importers and their format/layout profiles, the forecasting/simulation maths specification, and storage choice.
-> Canonical decisions live in [`00-DECISION-REGISTER.md`](00-DECISION-REGISTER.md) (rev 5.1: Workspace, any currency, UK + India locale packs, single-account first). ID prefixes and P1 figures come from §10a there; this document **owns the P3 fixture figures** (§10).
+> Canonical decisions live in [`00-DECISION-REGISTER.md`](00-DECISION-REGISTER.md) (rev 5.2: PostgreSQL everywhere; Workspace, any currency, UK + India locale packs, single-account first). ID prefixes and P1 figures come from §10a there; this document **owns the P3 fixture figures** (§10).
 > This is a design document. Field names are normative for implementation; types are logical (mapped to SQLAlchemy in Stage 1, task ING-05).
 
 ---
@@ -749,19 +749,20 @@ Single-account workspaces: one scope, selector hidden. Each scope and currency h
 5. **Uploaded files are not stored** — only parsed `SourceRow.raw` and the file hash.
 6. **Deletion**: soft-delete then hard purge of all workspace rows (immediate in the hackathon build); a non-identifying deletion counter remains.
 7. **Export**: JSON + CSV bundle of facts, interpretations, recommendations, verification results and audit log.
-8. **No real data in the repo**: public fixtures/eval rows are synthetic or independently authored fictional holdout rows; transformed private rows remain in the private vault (`00` §4); the owner's private validation runs are local only.
+8. **No real data on the server**: the deployed database (owner's VPS, `05` §12) holds only demo workspaces re-seeded from the generator on each deploy and short-lived public-demo uploads purged daily; the Postgres volume is not exposed outside the app's private network.
+9. **No real data in the repo**: public fixtures/eval rows are synthetic or independently authored fictional holdout rows; transformed private rows remain in the private vault (`00` §4); the owner's private validation runs are local only.
 
 ## 9. Storage evaluation
 
 | Option | Pros | Cons | Verdict |
 |---|---|---|---|
-| **SQLite** (WAL) via SQLAlchemy 2.0 | zero-ops, one file, one-command reproduction for judges, ample for single-user analytics | single writer (fine), no RLS, weaker JSON querying | **Hackathon** |
-| **PostgreSQL** | RLS, JSONB, concurrency, durable LangGraph checkpointer | needs a server; higher reproduction bar | **Production**; models written portable |
+| **PostgreSQL 16** via SQLAlchemy 2.0 + Alembic | concurrent writers (API, scheduler, LangGraph checkpoints), row-level security, JSONB, `PostgresSaver`; one engine in CI, local, judge and deployed environments | needs a server: Docker Compose locally and on the VPS, a service container in CI | **Chosen (rev 5.2), everywhere** |
+| SQLite (WAL) | zero-ops, one file | single writer under concurrent scheduler + API + checkpoint writes; no RLS; a second engine to keep identical | Rejected (rev 5.2) |
 | DuckDB | fast analytics | not an app DB; two stores | Rejected (pandas over thousands of rows suffices) |
 | Event store | perfect audit semantics | complexity | Rejected; append-only tables + hash-chained audit |
 | Vector DB | — | no semantic retrieval need; answers come from deterministic queries | Rejected |
 
-Portability: SQLAlchemy `JSON`; enums as strings + check constraints; money `BigInteger`; ULIDs `String(32)`; LangGraph `SqliteSaver` → `PostgresSaver`.
+Physical mapping: `JSONB` for snapshot/evidence payloads (never filtered on); enums as strings + check constraints; money `BIGINT` minor units; ULIDs `String(32)`; `timestamptz` for `*_at`, `DATE` for posting dates; LangGraph `PostgresSaver` and APScheduler's job store share the database in their own tables. Alembic migrations run on backend boot. Workspace isolation: repository layer (`WorkspaceContext`) from Stage 1; Postgres row-level security policies on `current_setting('app.workspace_id')` added in Stage 3 (hardening).
 
 ## 10. P3 fixture figures (owned here; fictional, GBP)
 

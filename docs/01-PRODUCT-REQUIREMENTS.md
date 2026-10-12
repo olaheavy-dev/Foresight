@@ -192,9 +192,9 @@ There are exactly **two generic importers**, `csv_statement` and `pdf_statement`
 | F-60 | Eval runner `python -m evals.run --suite all` → `evals/results/*.json` and a markdown report | M |
 | F-61 | Baselines: rules-only and LLM-only categorisation; naive forecasts | M |
 | F-62 | Single LLM gateway `mesh/mesh_client.py` and a CI-passing Mesh configuration | M |
-| F-63 | One-command local run (Docker Compose or `make dev`) with demo data | M |
+| F-63 | One-command local run (`docker compose up` / `make demo`: PostgreSQL + backend + frontend) with demo data | M |
 | F-73 | **Feature flags + generated release notes**: one `features.yaml`; each flag linked to the eval suites that must be green before it can be switched on; the README's "Built / Not shipped (planned)" sections and the UI's visible surfaces are generated from it (rev 5) | M |
-| F-74 | **Continuous deployment from day one**: API + Next.js auto-deployed from `main` on green CI; demo workspaces seeded from the generator on every deploy; no real data on the host; deploy SHA shown in the app footer and README (rev 5) | M |
+| F-74 | **Continuous deployment from day one** on the owner's VPS (Docker Compose: frontend, backend, PostgreSQL; Caddy TLS; GHCR images published only on green CI; Watchtower rollout): demo workspaces seeded from the generator on every deploy; no real data on the host; deploy SHA shown in the app footer and README (rev 5) | M |
 
 ### 5.8a Workspaces, currencies and locales (rev 4.2)
 
@@ -375,7 +375,7 @@ Each FR is testable. The test type is noted: **U** = unit, **I** = integration, 
 ### 7.12 Release and deployment (FR-86 – FR-87) — rev 5
 
 - **FR-86** A feature is visible in the deployed app and claimed in the README only if its flag in `features.yaml` is on, and CI rejects any commit that turns a flag on while one of its linked eval suites is red or missing in `latest.json`. The README's "Built" and "Not shipped (planned)" sections are generated from `features.yaml` + `latest.json`; no claim is hand-typed.
-- **FR-87** `main` auto-deploys to the public URL only when CI is green. Each deploy seeds the demo workspaces from the seeded generator through the real importers, never contains real data, and shows its commit SHA in the app footer; the README links the URL from Stage 0 onward.
+- **FR-87** `main` auto-deploys to the public URL only when CI is green (images are published to GHCR only after a successful CI run on `main`; Watchtower rolls them out on the owner's VPS; `05` §12). Each deploy seeds the demo workspaces from the seeded generator through the real importers, never contains real data, and shows its commit SHA in the app footer; the README links the URL from Stage 0 onward.
 
 ## 8. Non-functional requirements
 
@@ -386,7 +386,7 @@ Each FR is testable. The test type is noted: **U** = unit, **I** = integration, 
 | NFR-03 | Latency | Ask: first streamed block < 3 s; complete response P50 < 15 s, P95 < 30 s including the verifier loop. |
 | NFR-04 | Latency | Single-file onboarding (12 months, ~1,000 txns, CSV) from drop to Briefing < 60 s, incl. LLM categorisation of the unresolved remainder. A PDF statement (≤ 10 pages, known layout) parses in < 5 s; an unknown layout adds one LLM call. |
 | NFR-05 | Reproducibility | Same inputs + seed + engine version → identical forecast/simulation JSON (hash compared in tests). The eval runner pins seeds and records model IDs and prompt versions. |
-| NFR-06 | Reproducibility | A fresh clone reaches a running demo with `make dev` (or `docker compose up`) plus a `.env` holding `MESH_API_KEY` in ≤ 10 minutes. Evals run with `python -m evals.run --suite all`; deterministic suites (forecast, simulation, detectors, importers with built-in profiles, reconciliation) need no key. |
+| NFR-06 | Reproducibility | A fresh clone reaches a running demo with `make demo` (or `docker compose up`: PostgreSQL 16 + backend + frontend, migrations and demo seeding automatic) plus a `.env` holding `MESH_API_KEY` in ≤ 10 minutes. Requires Docker; the same PostgreSQL engine runs in CI and in the deployed app. Evals run with `python -m evals.run --suite all`; deterministic suites (forecast, simulation, detectors, importers with built-in profiles, reconciliation) need no key. |
 | NFR-07 | Cost | Per-run budget enforced (FR-60). Targets ≤ US$0.02 per Ask turn and ≤ US$0.05 per 1,000-txn ingestion. Actual cost is measured from Mesh usage and recorded in `AgentStep`, not assumed. |
 | NFR-08 | Reliability | No agent failure blocks deterministic output. If every LLM call fails, the user still sees the forecast, findings (template text) and ledger. |
 | NFR-09 | Accessibility | WCAG 2.2 AA: text contrast ≥ 4.5:1 (using the measured token amendments in `00` §9); series distinguished by line style and label as well as colour; full keyboard navigation; every chart has a data-table alternative; `prefers-reduced-motion` respected; tabular figures. |
@@ -440,7 +440,7 @@ Each FR is testable. The test type is noted: **U** = unit, **I** = integration, 
 | R-05 | Mesh model unavailability or rate limits | M | M | Mesh failover; per-node degradations (FR-59); eval LLM outputs cached by input hash, with cache use disclosed. |
 | R-06 | LLM puts invented numbers in narrative | M | H | Numeral post-check (FR-42, FR-49) and server-side hydration. |
 | R-07 | CI critical checks fail at submission | L | H | CI set up in Stage 0 (`10`) and green on every deploy. |
-| R-08 | Scope breadth vs one builder and the 20 Oct deadline (≈ 262 h of mandatory-stage work + ≈ 78 h Tier 2 vs ≈ 85–100 h available, `10` §2) | H | H | Single stream in score order; feature flags (ship only when green); daily deploys; `submittable-N` tags from 16 Oct; freeze 19 Oct 12:00; unfinished work listed as "Not shipped (planned)". The owner chose full scope as the target with a staged release. |
+| R-08 | Scope breadth vs one builder and the 20 Oct deadline (≈ 283 h of mandatory-stage work + ≈ 70 h Tier 2 vs ≈ 85–100 h available, `10` §2) | H | H | Single stream in score order; feature flags (ship only when green); daily deploys; `submittable-N` tags from 16 Oct; freeze 19 Oct 12:00; unfinished work listed as "Not shipped (planned)". The owner chose full scope as the target with a staged release. |
 | R-09 | CSV formats and PDF layouts vary more than the header-synonym approach handles | H | M | LLM-proposed `FormatProfile`/`LayoutProfile` confirmed once by the user; reconciliation rejects arithmetic inconsistencies; independent truth comparisons and previews check semantics that reconciliation alone cannot prove; ≥ 3 fictional layouts in evals; OCR out of scope. |
 | R-10 | Untracked accounts and cards make a forecast silently incomplete | M | H | Coverage-gap detection (FR-32, FR-33); a coverage indicator on forecasts; `DeclaredObligation`. |
 | R-11 | Income misdetected (partner contribution, refund or reimbursement as salary; salary split across accounts) | M | H | Detect → confirm (FR-29); partner/reimbursement classes (FR-31, FR-34); income-detection metric in evals. |

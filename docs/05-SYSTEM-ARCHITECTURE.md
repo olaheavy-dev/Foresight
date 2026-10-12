@@ -17,7 +17,7 @@ Status: design. No production code exists yet. Code snippets are pseudocode that
 | A4 | **Reproducible by default.** | Seeded simulations, `engine_version` stamped on every calculation, the same input hash gives the same output, and eval results are committed. |
 | A5 | **Read paths are cheap.** | Briefing, past analyses and scenarios are persisted snapshots. Opening a page never triggers an LLM call. |
 | A6 | **Workspace isolation everywhere.** | Every workspace-owned table has `workspace_id`; system Category rows and built-in profiles are read-only reference-data exceptions. Every repository method requires it. No query can be constructed without it. Forecast cache keys include data/prefs versions, currency, scope/account, as_of, horizon, parameters and engine version (`00` §13). |
-| A7 | **Small number of moving parts.** | One API process (FastAPI + LangGraph + APScheduler), one SQLite file, one Next.js app. Production splits these apart along clearly marked seams. |
+| A7 | **Small number of moving parts.** | One API process (FastAPI + LangGraph + APScheduler), one PostgreSQL 16 database, one Next.js app: three containers in one Docker Compose project. Production splits these apart along clearly marked seams. |
 
 ---
 
@@ -28,7 +28,7 @@ flowchart LR
     U[User<br/>browser] -->|HTTPS| WEB[Next.js web app<br/>TypeScript]
     WEB -->|REST + SSE<br/>JSON| API[FastAPI backend<br/>Python 3.12]
     API -->|OpenAI-compatible<br/>HTTPS| MESH[(Mesh API<br/>api.meshapi.ai/v1)]
-    API --> DB[(SQLite<br/>→ Postgres)]
+    API --> DB[(PostgreSQL 16)]
     API -->|Bot API| TG[Telegram]
     API -->|SMTP| MAIL[Email provider]
     MESH --> LLMS[Underlying LLM providers<br/>chosen per agent tier]
@@ -124,7 +124,7 @@ Enforced with `import-linter` contracts in CI.
 | `storage` | SQLAlchemy | `agents`, `mesh`, `app` | Models, repositories, migrations, the workspace-scoping guard |
 | `app` | everything above | — | HTTP, auth/session, request validation, SSE streaming, error mapping |
 | `scheduler` | `agents`, `storage`, delivery adapters | `app` | Job definitions, digest rendering, delivery |
-| `evals` | `finance_core`, `agents`, `storage` (temp DB) | `app` | Datasets, metric computation, reports |
+| `evals` | `finance_core`, `agents`, `storage` (throwaway Postgres schema per run) | `app` | Datasets, metric computation, reports |
 
 The **Mesh-only rule** (rev 4.3), enforced three ways:
 1. **Import contract.** An `import-linter` *forbidden* contract applies to every package except `backend.mesh`: no imports of `openai`, `langchain_openai`, `langchain_community`, `litellm`, `anthropic`, `google.genai`, `cohere`, `transformers`, `sentence_transformers` or `tiktoken`. LangGraph is used **only** for the graph (`langgraph` core); no LangChain model wrappers anywhere. Test stubs fake `mesh_client`; they never construct an `OpenAI()` client.
@@ -351,15 +351,21 @@ def complete(tier, messages, response_schema, *, run_id, step_id, timeout_s, max
 - **Failover**: Mesh offers provider failover. We also keep a per-tier fallback model list in config.
 - **No-credit key check**: CI and app startup call a Mesh metadata endpoint (e.g. a model-list call) to validate `MESH_API_KEY`, matching the organiser's critical check.
 
-### 5.4 Storage — **SQLite now, Postgres-ready** (decided)
+### 5.4 Storage — **PostgreSQL 16 everywhere** (decided, rev 5.2)
 
 | Option | For | Against | Verdict |
 |---|---|---|---|
-| **SQLite** (WAL mode) | No setup; judges can run `make demo`; single file can be checked into eval fixtures; fast enough for one user and about 10⁵ transactions | No row-level security; single-writer; JSON functions are weaker | **Chosen for hackathon** |
-| PostgreSQL | RLS for real isolation, concurrency, JSONB | Reproduction needs Docker or a hosted DB, adding friction for judges | **Production target** |
+| **PostgreSQL 16** | Concurrent writers (API requests, APScheduler jobs and LangGraph checkpoints write at the same time); row-level security for workspace isolation; JSONB for snapshots; `PostgresSaver` for LangGraph; **one engine in CI, local, judge and deployed environments** | Needs a server: provided by Docker Compose locally and on the VPS, and by a `services: postgres` container in GitHub Actions | **Chosen** |
+| SQLite (WAL) | Zero setup | Single writer ("database is locked" under scheduler + API + checkpointer writes); no RLS; a second engine to keep behaviourally identical | Rejected (rev 5.2) |
 | DuckDB | Excellent analytics | Not an OLTP store; awkward with the ORM | Rejected (could be used inside evals only) |
 
-Portability rules: SQLAlchemy 2.0 typed models; no SQLite-only SQL; money stored as **integer minor units (ISO 4217 exponent)** plus a currency code (GBP default); never floats in the DB. Timestamps are UTC, and dates are local calendar `DATE` values for transaction posting. JSON columns only for snapshots (`result`, `blocks`), never for anything we filter on.
+Rules:
+- SQLAlchemy 2.0 typed models + **Alembic** migrations, applied automatically when the backend container boots (`alembic upgrade head`) and before tests.
+- Money is `BIGINT` **integer minor units (ISO 4217 exponent)** plus a currency code; never floats. Timestamps are `timestamptz` (UTC); transaction posting dates are local calendar `DATE` values.
+- `JSONB` only for snapshots (`result`, `blocks`, evidence payloads), never for anything we filter on.
+- **Workspace isolation**: enforced in the repository layer (`WorkspaceContext`, A6) from Stage 1; Postgres **row-level security** policies keyed on `current_setting('app.workspace_id')` are added as a Stage 3 hardening task (defence in depth, not blocking).
+- LangGraph uses `PostgresSaver` (same database, its own tables); APScheduler uses `SQLAlchemyJobStore` on the same database.
+- CI and tests: GitHub Actions `services: postgres:16`; each test runs in a transaction that is rolled back (or a per-test schema for tests that need commits); evals use a throwaway schema per run.
 
 ### 5.5 Frontend — **Next.js (App Router) + TypeScript** (decided)
 
@@ -386,7 +392,7 @@ Decision rule: the four "hero" charts (CashFlowForecast, ScenarioComparison, Goa
 
 | Option | For | Against | Verdict |
 |---|---|---|---|
-| **APScheduler** (AsyncIOScheduler + SQLAlchemyJobStore) | No extra infrastructure; jobs persisted in the same DB; real cron triggers (satisfies "real scheduler, not a button") | Runs inside the API process; multiple API replicas would double-fire | **Chosen**: a single process plus a DB-lock row to guard against double-firing |
+| **APScheduler** (AsyncIOScheduler + SQLAlchemyJobStore on PostgreSQL) | No extra infrastructure; jobs persisted in the same database; real cron triggers (satisfies "real scheduler, not a button") | Runs inside the API process; multiple API replicas would double-fire | **Chosen**: a single process plus a DB-lock row to guard against double-firing |
 | Celery + Redis | Scales; retries; separate workers | Redis plus a worker process makes judge reproduction harder | Production |
 | OS cron / GitHub Actions cron | Simple | Cannot reach a local DB; not part of the app | Rejected |
 
@@ -416,10 +422,11 @@ The architecture keeps an `AuthContext → workspace_id` seam in `app/deps.py`. 
 ### 6.1 Processes (hackathon)
 
 ```
-docker compose up        # or: make dev
-├── api   : uvicorn backend.app.main:app  (FastAPI + LangGraph + APScheduler, one worker)
-├── web   : next start                    (or next dev)
-└── volume: ./data/foresight.db           (SQLite, WAL)
+docker compose up        # or: make demo (same stack, then seeds demo workspaces)
+├── postgres : postgres:16                       (named volume, no host port in production)
+├── backend  : uvicorn backend.app.main:app      (FastAPI + LangGraph + APScheduler, one worker;
+│                                                 runs `alembic upgrade head` on boot)
+└── frontend : Next.js standalone server         (proxies /api/* to backend → one origin)
 ```
 
 ### 6.2 Concurrency
@@ -569,38 +576,43 @@ Key invariants under property tests:
 | Workflow | Trigger | Jobs |
 |---|---|---|
 | `.github/workflows/agent-arena-2026-checks.yml` | as defined by organiser (downloaded verbatim, **never modified**) | Compile all Python; requirements list a web framework and LLM client; Mesh base URL used; `MESH_API_KEY` valid (metadata call) |
-| `ci.yml` (ours) | push, PR | feature-flag check (a flag may be on only if its linked suites are green in `latest.json`), ruff + mypy (backend), `import-linter` contracts, Mesh-only import contract + tracing-off test, pytest (unit, integration, contract; Mesh stubbed), frontend typecheck + lint + unit, Playwright smoke against a seeded demo DB |
+| `ci.yml` (ours) | push, PR | feature-flag check (a flag may be on only if its linked suites are green in `latest.json`), ruff + mypy (backend), `import-linter` contracts, Mesh-only import contract + tracing-off test, pytest against a `services: postgres:16` container (unit, integration, contract; Mesh stubbed; transactional rollback per test), frontend typecheck + lint + unit, Playwright smoke against a seeded demo database |
+| `publish.yml` (ours) | `workflow_run` of CI on `main` with success; PRs build only | Build and push `foresight-backend` / `foresight-frontend` to GHCR with `sha-<commit>` and `main` tags (never `latest`) |
 | `evals.yml` (ours) | push/PR replay; `workflow_dispatch` + nightly live until submission | Replay all on push/PR; live `python -m evals.run --suite all --mode live --seeds 1729,2024,31415,4242,8128`; uploads report artefacts. Committed results are produced locally and committed deliberately (09 §13) |
 
 `requirements` placement: the organiser's check scans for a requirements file listing a web framework and an LLM client, so the **repo root** keeps `pyproject.toml` and an exported `requirements.txt` listing `fastapi` and `openai`, even though code lives under `backend/`. This must be verified against the downloaded workflow on day one (roadmap Stage 0, PLT-02).
 
 ---
 
-## 12. Deployment — continuous, feature by feature, from day one (rev 5)
+## 12. Deployment — continuous, on the owner's VPS, from day one (rev 5.2)
 
-**Decision (resolves 00 §12 open decision #3):** the app is deployed from **Stage 0** and grows as feature flags turn on. Human judges review a live URL for shortlisted entries, and deploying daily keeps the deployed app and the submitted code identical.
+**Decision (resolves 00 §12 open decision #3):** Foresight is deployed from **Stage 0** onto the owner's existing single-VPS platform and grows as feature flags turn on. Human judges review a live URL for shortlisted entries; deploying continuously keeps the deployed app and the submitted code identical. The hackathon does not prescribe a host (the deployed URL is optional and reviewed only for shortlisted entries).
 
-| Environment | Hackathon | Production |
+**Platform pattern (generic description; the platform's own configuration lives in a separate private repository):** public traffic → Cloudflare DNS → **Caddy** (TLS, hostname routing) → the app's public container; images built by GitHub Actions and stored in **GHCR**; **Watchtower** pulls new images for the app's own scope; operator/admin access only over **WireGuard**; app secrets in a server-side `.env`, never in Git or images.
+
+| Component | Hackathon deployment | Production |
 |---|---|---|
-| Local / judge fresh clone | `make demo`: creates venv, installs, seeds demo workspaces from the generator, runs API + web; or `docker compose up` | — |
-| API (deployed) | **Default: Render** web service from the repo's Dockerfile, **always-on instance** (free tiers sleep, which would stop APScheduler) with a **persistent disk** for the SQLite file. Fly.io (volume + always-on machine) or Railway (volume) are acceptable equivalents. | Containers behind a load balancer; workers separated; managed Postgres |
-| Web (deployed) | **Vercel** for Next.js; `NEXT_PUBLIC_API_URL` points at the API; preview deploys per branch | Vercel / CDN |
-| Scheduler | In-process APScheduler on the always-on API instance (persistent job store in SQLite) | Dedicated worker plus a queue (Celery/Arq) with idempotent jobs |
-| Secrets | Host env vars only (`MESH_API_KEY`, Telegram bot token, SMTP); never in the repo or the image | Secret manager (Doppler/AWS SM) with rotation |
-| Data on the host | **Demo workspaces only**, re-seeded from the seeded generator through the real importers on every deploy (DEMO-01). **No real data is ever deployed**; uploads in the public demo are per-session and purged daily | Per-user data with retention policy |
+| Compose project `foresight` | Three services. `frontend`: Next.js standalone server, the **only** service on the Caddy network; proxies `/api/*` to the backend through Next.js rewrites, so the browser sees one origin (no CORS). `backend`: FastAPI + in-process APScheduler, always on, private app network only. `postgres`: PostgreSQL 16, private app network only, named volume, **no host ports**. All services: `restart: unless-stopped`, `security_opt: no-new-privileges:true`, json-file log rotation, Watchtower labels with scope `foresight-staging`. | Separate API/worker/web deployments; managed Postgres with PITR |
+| Images | `ghcr.io/<owner>/foresight-backend` and `foresight-frontend`, tags `sha-<commit>` and `main` (**never `latest`**). Built in CI, not on the server. | Same, plus signed images |
+| Publishing | **Only after CI is green on `main`**: the publish workflow runs on `workflow_run` of the CI workflow (organiser checks + tests + replay evals) with `conclusion == success`. PRs build images without pushing. Watchtower therefore only ever sees green builds. | Same, plus staged rollout |
+| Rollback | Pin the compose image to a previous `sha-<commit>` tag | Same |
+| Public URL | **https://foresight.olaheavy.dev** via Cloudflare DNS → Caddy TLS | Same |
+| Secrets | Server-side `/…/foresight/.env`: `MESH_API_KEY`, `POSTGRES_PASSWORD`, `DATABASE_URL`, `TELEGRAM_BOT_TOKEN`, `SMTP_*`. Only `.env.example` is committed. | Secret manager with rotation |
+| Scheduler | In-process APScheduler on the always-on backend container (job store in Postgres) | Dedicated worker + queue with idempotent jobs |
+| Data on the server | **Demo workspaces only**, re-seeded from the seeded generator through the real importers on every deploy (DEMO-01). **Real data never goes to the VPS**; uploads in the public demo are per-session and purged daily. Because demo data is reproducible from the generator, backups are optional; a nightly `pg_dump` kept off-server is enough if useful. | Per-user data, retention policy, PITR backups |
+| Resources | ~1–1.5 GB RAM in total (Postgres ~256 MB, backend ~512 MB, Next.js ~256 MB) on a small shared VPS | Sized per load |
+| Availability | Kept up until results are announced on **22 Nov 2026**; `/healthz` monitored | SLOs |
 
-| Trade-off | Render | Fly.io | Railway | Vercel (web) |
-|---|---|---|---|---|
-| For | Simple Docker deploy from GitHub, persistent disks, auto-deploy on green checks | Volumes, always-on machines, close to the metal | Fastest setup, volumes | Native Next.js, previews |
-| Against | Always-on instance and disk need a paid plan | More CLI/ops work | Volume and sleep behaviour vary by plan | Separate origin from the API (CORS) |
+Rejected hosts (one line each): Render — always-on instance and persistent disk need a paid plan; Vercel — separate origin from the API (CORS) and a second platform; Fly.io/Railway — extra platforms with volume/sleep caveats; all add cost and moving parts the owner's VPS already covers.
 
 Pipeline:
 1. `main` is protected; GitHub Actions runs the organiser workflow, `ci.yml` and replay evals.
-2. **Deploy only on green**: the host's auto-deploy is gated on the GitHub checks (Render "after CI checks pass"; Vercel ignores builds when checks fail via a required-checks setting).
-3. On boot the API runs migrations, re-seeds demo workspaces, and exposes the **deploy SHA** at `/healthz` and in the app footer; the README shows the URL from Stage 0.
-4. **Feature flags** (`features.yaml`, FR-86) decide what the deployed app shows; CI refuses a flag turned on while its eval suites are red, so the public app never shows a half-built feature.
+2. **Publish only on green**: `publish.yml` (triggered by `workflow_run` on success) builds and pushes both images with `sha-<commit>` and `main` tags.
+3. Watchtower (scope `foresight-staging`) pulls the new `main` images; the backend boots, runs `alembic upgrade head`, re-seeds demo workspaces, and exposes the **deploy SHA** at `/healthz` and in the app footer. The README shows the URL from Stage 0.
+4. Smoke tests follow the platform's onboarding checklist: the public URL returns 200, `/healthz` reports the expected SHA, no container publishes host ports, logs show no startup errors.
+5. **Feature flags** (`features.yaml`, FR-86) decide what the deployed app shows; CI refuses a flag turned on while its eval suites are red, so the public app never shows a half-built feature.
 
-Readiness probe `/healthz` (DB reachable, deploy SHA), and `/healthz/mesh`, which runs the metadata call and is cached for 5 minutes.
+Readiness probe `/healthz` (database reachable, migrations at head, deploy SHA), and `/healthz/mesh`, which runs the metadata call and is cached for 5 minutes. Postgres is internal to the app network, so the egress allow-list (Mesh, Telegram, SMTP; 09 ORC-13) is unchanged.
 
 ---
 
@@ -608,9 +620,9 @@ Readiness probe `/healthz` (DB reachable, deploy SHA), and `/healthz/mesh`, whic
 
 | Concern | Hackathon (build this) | Production (designed seam) |
 |---|---|---|
-| Data store | SQLite, workspace_id scoping | Postgres + RLS, PITR backups, field-level encryption for narrations |
+| Data store | PostgreSQL 16 in Docker Compose, repository-layer `workspace_id` scoping (RLS policies added in Stage 3) | Managed Postgres + RLS, PITR backups, field-level encryption for narrations |
 | Auth | Signed cookie, workspace switcher (demo workspaces P1–P4) | Managed auth, MFA, sessions in DB; `User` 1→n `Workspace` |
-| Agent runtime | In-process LangGraph, SQLite checkpointer | Worker pool, Postgres checkpointer, durable retries |
+| Agent runtime | In-process LangGraph, `PostgresSaver` checkpointer | Worker pool, durable retries |
 | Scheduling | APScheduler + DB lock | Queue + idempotent jobs + dead-letter |
 | Ingestion | generic `csv_statement` (CSV + XLS/XLSX; built-in Monzo/Revolut profiles), manual, demo; generic PDF with reconciliation gate (Tier 2); locale packs `uk`, `in`; any currency, forecasts per currency | + Open Banking (UK AIS; India Account Aggregator), OCR for scanned statements, more locale packs, FX conversion with a rates source |
 | Observability | DB tables + JSON logs + UI timeline | OTel → Langfuse/Grafana, alerting on verifier-rejection spikes |
@@ -625,7 +637,8 @@ Readiness probe `/healthz` (DB reachable, deploy SHA), and `/healthz/mesh`, whic
 |---|---|---|
 | Structured-output support differs across Mesh models | Parse failures, retries, cost | Schema-validated outputs, JSON-mode fallback, one repair attempt, per-tier fallback model list; contract tests on recorded responses |
 | LLM latency makes conversation slow (3–5 sequential calls) | Poor demo feel | SSE streaming of step events; skip unnecessary agents through routing; cache findings and forecasts by data_version |
-| SQLite write contention between scheduler and ingestion | `database is locked` errors | WAL mode, a single write lock per workspace, short transactions |
+| Concurrent writes from scheduler, ingestion and checkpoints | Lock waits or duplicate work | PostgreSQL row-level locking, a `workspace_run_lock` row per workspace, short transactions |
+| VPS is a single shared host | Downtime during judging | `restart: unless-stopped`, `/healthz` monitoring, rollback by `sha-<commit>` tag, demo data reproducible from the generator |
 | Organiser CI expects files in specific places | Ineligible submission | Download and run the workflow in Stage 0 before any feature work |
 | Forecast quality on irregular income (P2) | Weak eval numbers | Report honestly per persona; baseline comparisons make the trade-offs visible |
 | India support validated only on synthetic data and a constructed holdout | Real Indian exports may break inference or categorisation | README states the limitation; generic importers + LLM-proposed profiles + reconciliation make failures loud; add real samples when available |

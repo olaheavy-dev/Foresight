@@ -57,7 +57,8 @@
 | `.gitignore` ignores `.env` | Advisory | Yes, plus all statement files (`*.pdf`, `*.csv`, `*.xls`, `*.xlsx`) except under `evals/datasets/**` and `evals/external/datasets/**` (explicit negations; canonical rule in 09 §17.1) to prevent real statements being committed (TSP-14) | `.gitignore` |
 | Public GitHub repo | Required | Made public in Stage 0 (PLT-08), not at the end | — |
 | Python backend (FastAPI/Flask) | Rule | FastAPI | `backend/app/` |
-| Deployed URL (reviewed for shortlisted entries) | Optional (judging) | Continuously deployed from Stage 0; auto-deploy on green CI; demo workspaces only; deploy SHA in the footer (FR-87) | README link, app footer |
+| Deployed URL (reviewed for shortlisted entries) | Optional (judging); no host is prescribed | Continuously deployed from Stage 0 on the owner's VPS (Docker Compose with PostgreSQL, Caddy TLS, images published only on green CI, Watchtower rollout); demo workspaces only; deploy SHA in the footer and `/healthz` (FR-87, `05` §12) | README link, app footer |
+| Database (suggested stack: SQLite or PostgreSQL) | Suggested | PostgreSQL 16 everywhere: CI service container, `docker compose up` for judges, the deployed app (`05` §5.4) | `docker-compose.yml`, `alembic/` |
 
 ## 5. "Faked or stubbed features" penalty: how each is avoided
 
