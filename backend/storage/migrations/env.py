@@ -10,7 +10,9 @@ target_metadata = Base.metadata
 
 
 def run_migrations_online() -> None:
-    url = get_settings().database_url
+    # An explicit URL on the Alembic config wins (tests point it at a disposable database);
+    # otherwise use DATABASE_URL.
+    url = context.config.get_main_option("sqlalchemy.url") or get_settings().database_url
     if not url:
         raise RuntimeError("DATABASE_URL is not set")
     engine = create_engine(url)

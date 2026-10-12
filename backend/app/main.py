@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from fastapi import FastAPI, Response, status
 
-from backend.app.features import load_features
+from backend.features import load_features
 from backend.settings import get_settings
 from backend.storage.db import database_reachable
 
@@ -23,7 +23,7 @@ def create_app() -> FastAPI:
             response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
         return {
             "status": "ok" if ready else "unavailable",
-            "sha": settings.deploy_sha,
+            "sha": settings.build_sha,
             "database": db_ok,
         }
 

@@ -10,7 +10,7 @@ from backend.settings import get_settings
 @pytest.fixture
 def client(monkeypatch: pytest.MonkeyPatch) -> TestClient:
     monkeypatch.setenv("DATABASE_URL", "")
-    monkeypatch.setenv("DEPLOY_SHA", "abc1234")
+    monkeypatch.setenv("FORESIGHT_BUILD_SHA", "abc1234")
     get_settings.cache_clear()
     return TestClient(create_app())
 
@@ -36,3 +36,17 @@ def test_healthz_fails_when_database_is_unreachable(monkeypatch: pytest.MonkeyPa
     response = TestClient(create_app()).get("/healthz")
     assert response.status_code == 503
     assert response.json()["database"] is False
+
+
+def test_runtime_env_files_cannot_override_the_build_sha() -> None:
+    """Review finding: a DEPLOY_SHA/FORESIGHT_BUILD_SHA in .env would mask the image's commit
+    and make post-deploy smoke time out. Neither the template nor production compose sets it."""
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    env_template = (root / ".env.example").read_text(encoding="utf-8")
+    prod_compose = (root / "deploy" / "docker-compose.prod.yml").read_text(encoding="utf-8")
+    for text in (env_template, prod_compose):
+        assert "FORESIGHT_BUILD_SHA=" not in text
+        assert "DEPLOY_SHA=" not in text
+    assert "ENV FORESIGHT_BUILD_SHA=" in (root / "backend" / "Dockerfile").read_text()

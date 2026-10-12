@@ -16,8 +16,8 @@ RUN chmod +x /usr/local/bin/entrypoint.sh \
     && useradd --system --uid 10001 foresight
 USER foresight
 
-ARG DEPLOY_SHA=local
-ENV DEPLOY_SHA=${DEPLOY_SHA}
+ARG BUILD_SHA=local
+ENV FORESIGHT_BUILD_SHA=${BUILD_SHA}
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=4)"

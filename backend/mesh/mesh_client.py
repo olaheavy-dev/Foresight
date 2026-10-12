@@ -53,12 +53,20 @@ class MeshResult:
 
 
 # Patterns removed before any text leaves the app (docs/07 §8). Order matters: longer
-# numbers first so a card number is not partly matched as an account number.
+# numbers first so a card number is not partly matched as a phone or account number.
 _REDACTIONS: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"\b(?:\d[ -]?){13,19}\b"), "[CARD]"),
     (re.compile(r"\b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b"), "[IBAN]"),
+    # UK numbers: 07700 900123, 0161 496 0000, +44 7700 900123, +44 (0)20 7946 0000
+    (
+        re.compile(r"(?<![\w+])(?:\+44\s?(?:\(0\)\s?)?|0)\d{2,4}[\s-]?\d{3,4}[\s-]?\d{3,4}(?!\d)"),
+        "[PHONE]",
+    ),
+    # Indian mobiles: 98765 43210, +91 98765 43210, +91-9876543210
+    (re.compile(r"(?<![\w+])(?:\+91[\s-]?)?[6-9]\d{4}[\s-]?\d{5}(?!\d)"), "[PHONE]"),
     (re.compile(r"(?<![\d-])\d{2}-\d{2}-\d{2}(?![\d-])"), "[SORT_CODE]"),
-    (re.compile(r"\b\d{8}\b"), "[ACCOUNT]"),
+    # Account numbers: 41234567 or grouped as 4123 4567
+    (re.compile(r"\b\d{4} ?\d{4}\b"), "[ACCOUNT]"),
     (re.compile(r"\b[A-CEGHJ-PR-TW-Z]{2}\d{6}[A-D]\b"), "[NI_NUMBER]"),
     (re.compile(r"\b[\w.+-]+@[\w-]+(?:\.[\w-]+)+\b"), "[EMAIL]"),
     (re.compile(r"\b[\w.-]{2,}@[a-z]{2,}\b", re.IGNORECASE), "[UPI_ID]"),

@@ -41,7 +41,7 @@ jobs:
           context: ${{ matrix.context }}
           file: ${{ matrix.dockerfile }}
           push: true
-          build-args: DEPLOY_SHA=${{ github.event.workflow_run.head_sha }}
+          build-args: BUILD_SHA=${{ github.event.workflow_run.head_sha }}
           tags: |
             ghcr.io/${{ github.repository_owner }}/foresight-${{ matrix.name }}:sha-${{ github.event.workflow_run.head_sha }}
             ghcr.io/${{ github.repository_owner }}/foresight-${{ matrix.name }}:main

@@ -34,7 +34,7 @@ markers = ["postgres: needs a reachable PostgreSQL (DATABASE_URL)"]
 
 # Mesh-only rule (docs/05 §3.1): no AI SDK may be imported outside backend.mesh.
 [tool.importlinter]
-root_packages = ["backend"]
+root_packages = ["backend", "tools"]
 include_external_packages = true
 
 [[tool.importlinter.contracts]]
@@ -47,6 +47,8 @@ source_modules = [
     "backend.storage",
     "backend.scheduler",
     "backend.settings",
+    "backend.features",
+    "tools",
 ]
 forbidden_modules = [
     "openai",
@@ -66,6 +68,12 @@ name = "finance_core is pure: no storage, agents, mesh or app"
 type = "forbidden"
 source_modules = ["backend.finance_core"]
 forbidden_modules = ["backend.storage", "backend.agents", "backend.mesh", "backend.app"]
+
+[[tool.importlinter.contracts]]
+name = "tools never depend on the HTTP layer"
+type = "forbidden"
+source_modules = ["tools"]
+forbidden_modules = ["backend.app"]
 
 [[tool.importlinter.contracts]]
 name = "storage and mesh never import app or agents"

@@ -6,14 +6,40 @@ export type Feature = {
 };
 
 const apiBaseUrl = process.env.API_BASE_URL ?? "http://backend:8000";
+const TIMEOUT_MS = 3000;
 
-/** Reads feature flags from the backend. Disabled features are never shown as working. */
-export async function fetchFeatures(): Promise<Feature[] | null> {
+function isFeature(value: unknown): value is Feature {
+  if (typeof value !== "object" || value === null) return false;
+  const f = value as Record<string, unknown>;
+  return (
+    typeof f.key === "string" &&
+    typeof f.stage === "number" &&
+    typeof f.title === "string" &&
+    typeof f.enabled === "boolean"
+  );
+}
+
+/** Validates the /api/features payload. Anything malformed is treated as unavailable, so the UI
+ * never shows a feature as shipped on the strength of a bad response. */
+export function parseFeatures(body: unknown): Feature[] | null {
+  if (typeof body !== "object" || body === null) return null;
+  const features = (body as { features?: unknown }).features;
+  if (!Array.isArray(features) || !features.every(isFeature)) return null;
+  return features;
+}
+
+/** Reads feature flags from the backend, giving up after a short timeout. */
+export async function fetchFeatures(
+  fetchImpl: typeof fetch = fetch,
+  timeoutMs: number = TIMEOUT_MS,
+): Promise<Feature[] | null> {
   try {
-    const response = await fetch(`${apiBaseUrl}/api/features`, { cache: "no-store" });
+    const response = await fetchImpl(`${apiBaseUrl}/api/features`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(timeoutMs),
+    });
     if (!response.ok) return null;
-    const body = (await response.json()) as { features: Feature[] };
-    return body.features;
+    return parseFeatures(await response.json());
   } catch {
     return null;
   }

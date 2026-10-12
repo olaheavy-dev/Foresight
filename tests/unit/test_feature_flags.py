@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from backend.app.features import Feature, load_features
+from backend.features import Feature, load_features
 from tools.check_feature_flags import violations
 from tools.render_readme_status import END, START, render, update
 

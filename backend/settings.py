@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 from functools import lru_cache
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # No run traces may leave the app: LangGraph/LangChain would send them to LangSmith if these
@@ -29,7 +30,9 @@ class Settings(BaseSettings):
     mesh_max_retries: int = 2
 
     database_url: str = ""
-    deploy_sha: str = "local"
+    # Baked into the image at build time (backend/Dockerfile). Deliberately a name that no
+    # .env file uses, so runtime configuration cannot mask the build being served.
+    build_sha: str = Field(default="local", validation_alias="FORESIGHT_BUILD_SHA")
     features_file: str = "features.yaml"
 
 

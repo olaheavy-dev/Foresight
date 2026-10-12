@@ -12,7 +12,7 @@ import json
 import sys
 from pathlib import Path
 
-from backend.app.features import Feature, load_features
+from backend.features import Feature, load_features
 
 
 def violations(features: list[Feature], gates: dict[str, str]) -> list[str]:

@@ -90,3 +90,13 @@ def test_outgoing_messages_are_redacted() -> None:
     sent = completions.calls[0]["messages"][0]["content"]
     assert sort_code not in sent
     assert "41234567" not in sent
+
+
+def test_phone_and_grouped_account_never_reach_the_transport() -> None:
+    """Review finding, checked at the transport boundary rather than in redact() alone."""
+    completions = StubCompletions()
+    _ask(_client(completions), content="ring 07700 900123, account 4123 4567, thanks")
+    sent = completions.calls[0]["messages"][0]["content"]
+    assert "07700 900123" not in sent
+    assert "4123 4567" not in sent
+    assert "thanks" in sent
