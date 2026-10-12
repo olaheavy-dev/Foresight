@@ -70,6 +70,11 @@ jobs:
       - uses: actions/checkout@v5
       - name: Start the real stack (postgres + api + web)
         run: docker compose up --build -d
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Images contain no secrets or private files
+        run: python -m tools.check_image_secrets $(docker compose config --images | grep -v postgres)
       - uses: actions/setup-node@v5
         with:
           node-version: "22"
