@@ -27,3 +27,12 @@ def test_features_endpoint_lists_flags(client: TestClient) -> None:
     keys = {f["key"] for f in features}
     assert {"forecast", "checked_advice", "ask"} <= keys
     assert all(isinstance(f["enabled"], bool) for f in features)
+
+
+def test_healthz_fails_when_database_is_unreachable(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Review finding: readiness must fail (503) so health checks never pass a broken deploy."""
+    monkeypatch.setenv("DATABASE_URL", "postgresql+psycopg://nobody:nothing@127.0.0.1:1/none")
+    get_settings.cache_clear()
+    response = TestClient(create_app()).get("/healthz")
+    assert response.status_code == 503
+    assert response.json()["database"] is False

@@ -8,6 +8,8 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[2]
 FORBIDDEN = {
     "openai",
@@ -52,9 +54,13 @@ def test_no_ai_sdk_outside_mesh() -> None:
     assert offenders == []
 
 
-def test_mesh_client_targets_mesh_base_url() -> None:
-    from backend.mesh.mesh_client import MESH_BASE_URL
+def test_mesh_base_url_cannot_be_overridden(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Review finding: an environment variable must not be able to route calls elsewhere."""
+    from backend.mesh.mesh_client import MESH_BASE_URL, MeshClient
     from backend.settings import Settings
 
+    monkeypatch.setenv("MESH_BASE_URL", "https://example.invalid/v1")
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://example.invalid/v1")
+    client = MeshClient(settings=Settings(mesh_api_key="rsk_test"))
     assert MESH_BASE_URL == "https://api.meshapi.ai/v1"
-    assert Settings().mesh_base_url == MESH_BASE_URL
+    assert client.base_url == MESH_BASE_URL

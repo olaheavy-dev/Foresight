@@ -3,9 +3,12 @@ itself never contains a pattern the hook would block."""
 
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 
-from tools.check_no_private_data import luhn_valid, scan_file, scan_text
+import pytest
+
+from tools.check_no_private_data import load_manifests, luhn_valid, scan_file, scan_text
 
 
 def test_sort_code_with_cue_is_blocked() -> None:
@@ -32,8 +35,48 @@ def test_denylist_terms_are_blocked() -> None:
     assert scan_text("payment to someone private", ["someone private"]) != []
 
 
-def test_statement_files_only_allowed_in_fixture_folders(tmp_path: Path) -> None:
+def test_statement_files_outside_fixtures_are_blocked(tmp_path: Path) -> None:
     stray = tmp_path / "statement.pdf"
     stray.write_bytes(b"%PDF-1.4")
     assert scan_file(str(stray), []) != []
-    assert scan_file("evals/datasets/p1/monzo.csv", []) == []
+
+
+@pytest.fixture
+def fixture_repo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "evals" / "datasets").mkdir(parents=True)
+    return tmp_path
+
+
+def _register(root: Path, rel: str) -> None:
+    path = root / "evals" / "datasets" / rel
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    with (root / "evals" / "datasets" / "MANIFEST.sha256").open("a") as manifest:
+        manifest.write(f"{digest}  {rel}\n")
+
+
+def test_unregistered_file_in_fixture_folder_is_blocked(fixture_repo: Path) -> None:
+    """Review finding: the fixture folder alone must not exempt a file."""
+    planted = fixture_repo / "evals" / "datasets" / "copied.csv"
+    planted.write_text("date,desc\n01/10/2026,sort code " + "-".join(["40", "11", "62"]))
+    findings = scan_file("evals/datasets/copied.csv", [], load_manifests(fixture_repo))
+    assert findings != []
+
+
+def test_registered_fixture_is_allowed_but_still_checked_against_denylist(
+    fixture_repo: Path,
+) -> None:
+    fixture = fixture_repo / "evals" / "datasets" / "p1.csv"
+    fixture.write_text("date,desc\n01/10/2026,DELIVEROO\n")
+    _register(fixture_repo, "p1.csv")
+    manifest = load_manifests(fixture_repo)
+    assert scan_file("evals/datasets/p1.csv", [], manifest) == []
+    assert scan_file("evals/datasets/p1.csv", ["deliveroo"], manifest) != []
+
+
+def test_modified_fixture_is_no_longer_trusted(fixture_repo: Path) -> None:
+    fixture = fixture_repo / "evals" / "datasets" / "p1.csv"
+    fixture.write_text("date,desc\n01/10/2026,DELIVEROO\n")
+    _register(fixture_repo, "p1.csv")
+    fixture.write_text("date,desc\n01/10/2026,a real row added later\n")
+    assert scan_file("evals/datasets/p1.csv", [], load_manifests(fixture_repo)) != []

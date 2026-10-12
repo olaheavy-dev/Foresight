@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response, status
 
 from backend.app.features import load_features
 from backend.settings import get_settings
@@ -14,11 +14,15 @@ def create_app() -> FastAPI:
     app = FastAPI(title="Foresight API", version="0.1.0")
 
     @app.get("/healthz")
-    def healthz() -> dict[str, object]:
-        """Readiness probe: deploy SHA and database reachability (docs/05 §12)."""
+    def healthz(response: Response) -> dict[str, object]:
+        """Readiness probe (docs/05 §12): 503 if a configured database is unreachable, so
+        Docker health checks, CI and post-deploy smoke tests never pass a broken deploy."""
         db_ok = database_reachable(settings.database_url) if settings.database_url else None
+        ready = db_ok is not False
+        if not ready:
+            response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
         return {
-            "status": "ok" if db_ok is not False else "degraded",
+            "status": "ok" if ready else "unavailable",
             "sha": settings.deploy_sha,
             "database": db_ok,
         }

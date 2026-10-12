@@ -21,7 +21,6 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     mesh_api_key: str = ""
-    mesh_base_url: str = "https://api.meshapi.ai/v1"
     mesh_model_fast: str = ""
     mesh_model_fast_fallback: str = ""
     mesh_model_reasoning: str = ""

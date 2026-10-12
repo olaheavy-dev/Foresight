@@ -17,6 +17,8 @@ from openai import APIConnectionError, APIStatusError, APITimeoutError, OpenAI, 
 
 from backend.settings import Settings, get_settings
 
+# Fixed, not configurable: the hackathon requires every model call to go through Mesh, so no
+# environment variable or setting can point the client anywhere else.
 MESH_BASE_URL = "https://api.meshapi.ai/v1"
 
 
@@ -78,11 +80,15 @@ class MeshClient:
                 raise MeshConfigError("MESH_API_KEY is not set")
             client = OpenAI(
                 api_key=self._settings.mesh_api_key,
-                base_url=self._settings.mesh_base_url,
+                base_url=MESH_BASE_URL,
                 timeout=self._settings.mesh_timeout_seconds,
                 max_retries=self._settings.mesh_max_retries,
             )
         self._client = client
+
+    @property
+    def base_url(self) -> str:
+        return str(self._client.base_url).rstrip("/")
 
     def _models_for(self, tier: ModelTier) -> tuple[str, str]:
         if tier is ModelTier.FAST:

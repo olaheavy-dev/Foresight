@@ -4,11 +4,19 @@ Blocks (docs/09 §17.1): UK sort codes next to a sort-code/account cue, 16-digit
 that pass the Luhn check, NI numbers, statement files outside fixture folders, and any term on
 a private deny-list kept OUTSIDE the repo (default ~/.foresight-private/denylist.txt, one term
 per line). Dates such as 12-10-26 do not match the sort-code rule unless a cue is present.
+
+Fixture folders are NOT a blanket exemption. A file there is treated as a fixture only if it is
+registered in that folder's MANIFEST.sha256 ("<sha256>  <relative path>" per line) with a
+matching hash; the generator writes the manifest and CI checks it against regenerated output
+(docs/09 §16). Unregistered or modified files are scanned like any other file, and statement
+files among them are blocked. Registered fixtures skip the identifier patterns (fictional data
+may contain fake sort codes) but are still checked against the private deny-list.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 import re
 import sys
@@ -43,13 +51,13 @@ def load_denylist(path: Path) -> list[str]:
     return [t.strip().lower() for t in lines if t.strip() and not t.startswith("#")]
 
 
-def scan_text(text: str, denylist: list[str]) -> list[str]:
+def scan_text(text: str, denylist: list[str], patterns: bool = True) -> list[str]:
     findings = []
-    if SORT_CODE.search(text):
+    if patterns and SORT_CODE.search(text):
         findings.append("UK sort code next to an account cue")
-    if NI_NUMBER.search(text):
+    if patterns and NI_NUMBER.search(text):
         findings.append("National Insurance number pattern")
-    for match in CARD_CANDIDATE.finditer(text):
+    for match in CARD_CANDIDATE.finditer(text) if patterns else ():
         if luhn_valid(match.group()):
             findings.append("card number (passes Luhn)")
             break
@@ -58,18 +66,46 @@ def scan_text(text: str, denylist: list[str]) -> list[str]:
     return findings
 
 
-def scan_file(path: str, denylist: list[str]) -> list[str]:
+MANIFEST_NAME = "MANIFEST.sha256"
+
+
+def load_manifests(root: Path) -> dict[str, str]:
+    """Map repo-relative fixture paths to their registered sha256."""
+    registered: dict[str, str] = {}
+    for fixture_dir in FIXTURE_DIRS:
+        manifest = root / fixture_dir / MANIFEST_NAME
+        if not manifest.exists():
+            continue
+        for line in manifest.read_text(encoding="utf-8").splitlines():
+            if not line.strip() or line.startswith("#"):
+                continue
+            digest, _, rel = line.strip().partition("  ")
+            registered[fixture_dir + rel.strip()] = digest.lower()
+    return registered
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def is_registered_fixture(normalised: str, path: Path, manifest: dict[str, str]) -> bool:
+    expected = manifest.get(normalised)
+    return expected is not None and path.is_file() and _sha256(path) == expected
+
+
+def scan_file(path: str, denylist: list[str], manifest: dict[str, str] | None = None) -> list[str]:
     normalised = path.replace(os.sep, "/")
     if any(part in normalised for part in SKIP_DIRS):
         return []
-    in_fixtures = normalised.startswith(FIXTURE_DIRS)
-    if Path(path).suffix.lower() in STATEMENT_SUFFIXES and not in_fixtures:
-        return ["statement file outside evals/datasets or evals/external/datasets"]
+    file_path = Path(path)
+    fixture = is_registered_fixture(normalised, file_path, manifest or {})
+    if file_path.suffix.lower() in STATEMENT_SUFFIXES and not fixture:
+        return ["statement file that is not a registered fixture (see MANIFEST.sha256)"]
     try:
-        text = Path(path).read_text(encoding="utf-8")
+        text = file_path.read_text(encoding="utf-8")
     except (UnicodeDecodeError, FileNotFoundError, IsADirectoryError):
         return []
-    return [] if in_fixtures else scan_text(text, denylist)
+    return scan_text(text, denylist, patterns=not fixture)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -79,9 +115,10 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     denylist = load_denylist(args.denylist)
+    manifest = load_manifests(Path.cwd())
     failed = False
     for path in args.files:
-        for finding in scan_file(path, denylist):
+        for finding in scan_file(path, denylist, manifest):
             print(f"{path}: {finding}", file=sys.stderr)
             failed = True
     return 1 if failed else 0
