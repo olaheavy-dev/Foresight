@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foresight India Workspace</title>
+<meta name="description" content="Foresight prototype — India workspace (P4, fictional Aanya Rao): en-IN formatting, UPI/NEFT/NACH narrations, XLS import.">
+<script>try{var q=new URLSearchParams(location.search).get("theme"),t=q||localStorage.getItem("fs-theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/foresight.css">
+<script src="assets/app.js" defer></script>
+<style>
+  .in-import { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+  .in-import li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr) auto; gap: 4px 16px; padding: 12px 0; border-bottom: 1px solid var(--rule); align-items: baseline; font-size: 14px; }
+  .in-import .fname { font-family: var(--font-mono); font-size: 13px; overflow-wrap: anywhere; }
+  .in-pack { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--ink); }
+  .in-pack div { padding: 14px 16px 14px 0; border-bottom: 1px solid var(--rule); font-size: 14px; }
+  .in-pack div + div { padding-left: 16px; border-left: 1px solid var(--rule); }
+  .in-pack div:nth-child(4n+1) { padding-left: 0; border-left: 0; }
+  .in-pack b { display: block; font-size: 12px; color: var(--ink-3); font-weight: 500; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 4px; }
+  .table-scroll { overflow-x: auto; }
+  @media (max-width: 860px) {
+    .in-import li { grid-template-columns: 1fr; }
+    .in-pack { grid-template-columns: 1fr 1fr; }
+    .in-pack div:nth-child(odd) { padding-left: 0; border-left: 0; }
+    .in-pack div:nth-child(even) { padding-left: 16px; border-left: 1px solid var(--rule); }
+  }
+</style>
+</head>
+<body data-page="india">
+<main>
+<div class="page">
+
+  <header class="masthead">
+    <div class="edition">
+      <span><b>The Briefing</b></span>
+      <span>Aanya · India workspace · ₹</span>
+      <span>Data to 11-10-2026 · Written 10:42 IST</span>
+    </div>
+    <span class="faint" style="font-size:12px">Locale pack <span class="mono">in</span> · en-IN · Asia/Kolkata</span>
+  </header>
+
+  <div class="notice info" style="margin-top:24px"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 7v4M8 4.8v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span><b>India support is validated on test data, not yet on real statements.</b> Indian bank formats are read through the same two generic importers, with columns confirmed once. Accuracy figures for India are reported separately from the UK.</span></div>
+
+  <p class="kicker" style="margin-top:32px;letter-spacing:.06em">MONDAY 12 OCTOBER 2026 · AANYA’S EDITION</p>
+  <h1 class="headline" style="margin-top:12px">Food delivery is running 41% above your usual.</h1>
+  <p class="deck">₹14,860 on Swiggy, Zomato and similar in the last 30 days, against a three-month median of ₹10,540. Salary arrives on the last working day, Fri 30 Oct.</p>
+
+  <section aria-labelledby="h-standing" style="margin-top:40px">
+    <h2 id="h-standing" class="sr-only">Where you stand</h2>
+    <div class="section-head" style="margin-bottom:0;border-top-width:1px"><h2 class="kicker" style="font-family:var(--font-ui);font-size:12px;letter-spacing:.06em">WHERE YOU STAND</h2></div>
+    <div class="metrics" style="--cols:4;border-top:0">
+      <div class="metric">
+        <div class="metric-label">Salary (detected)</div>
+        <div class="metric-value">₹1,15,000</div>
+        <div class="metric-sub">NEFT · last working day · next 30-10-2026</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Rent</div>
+        <div class="metric-value">₹32,000</div>
+        <div class="metric-sub">UPI to landlord · 3rd</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">SIP</div>
+        <div class="metric-value">₹5,000</div>
+        <div class="metric-sub">NACH mandate · 5th · savings, not spending</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Food delivery, 30 days</div>
+        <div class="metric-value">₹14,860</div>
+        <div class="metric-sub">median ₹10,540 · <span class="neg">+41%</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-import" style="margin-top:48px">
+    <div class="section-head"><h2 id="h-import">How this statement was read</h2><span class="aside">Step ① of onboarding, as it appeared</span></div>
+    <ul class="in-import">
+      <li>
+        <span class="fname">aanya-savings-apr-sep-2026.xls</span>
+        <span>Bank statement (XLS) · columns confirmed once · <b>₹ detected</b></span>
+        <span class="status status-verified">Reconciled</span>
+      </li>
+    </ul>
+    <p class="hint" style="margin-top:8px">The XLS sheet is read as a table and passed to the CSV importer. Dates read as dd-mm-yyyy (a day above 12 settled it); amounts use lakh grouping. Row and file details are illustrative.</p>
+  </section>
+
+  <section aria-labelledby="h-ledger" style="margin-top:48px">
+    <div class="section-head"><h2 id="h-ledger">Ledger excerpt</h2><span class="aside">UPI, NEFT, IMPS and NACH narrations, categorised</span></div>
+    <div class="table-scroll">
+      <table class="ledger">
+        <thead><tr><th>Date</th><th>Description</th><th>Payment type</th><th>Category</th><th>How we know</th><th class="num">Amount</th></tr></thead>
+        <tbody>
+          <tr><td class="date">11-10-2026</td><td><div class="merchant">Swiggy</div><div class="narr">UPI/DR/412345678901/SWIGGY/YESB/swiggy.order@ybl/Payment</div></td><td><span class="badge-pt">UPI</span></td><td><span class="cat">Food delivery</span></td><td><span class="src">rule · merchant list</span></td><td class="num out">−₹486.00</td></tr>
+          <tr><td class="date">10-10-2026</td><td><div class="merchant">Zomato</div><div class="narr">UPI/DR/412398765432/ZOMATO/HDFC/zomato.pay@hdfc/Order</div></td><td><span class="badge-pt">UPI</span></td><td><span class="cat">Food delivery</span></td><td><span class="src">rule · merchant list</span></td><td class="num out">−₹612.00</td></tr>
+          <tr><td class="date">09-10-2026</td><td><div class="merchant">Blinkit</div><div class="narr">UPI/DR/412377001122/BLINKIT/ICIC/blinkit@icici/Grocery</div></td><td><span class="badge-pt">UPI</span></td><td><span class="cat">Groceries</span></td><td><span class="src">rule · merchant list</span></td><td class="num out">−₹1,284.00</td></tr>
+          <tr class="is-flagged"><td class="date">08-10-2026</td><td><div class="merchant">Priya S</div><div class="narr">IMPS/P2A/428011223344/PRIYA S/XXXX5521</div></td><td><span class="badge-pt">IMPS</span></td><td><select class="input" aria-label="Category for Priya S"><option>Choose…</option><option>Split bill</option><option>Friends &amp; family</option><option>Gift</option></select></td><td><span class="conf low"><span class="conf-bar"><i style="width:25%"></i></span>person · ?</span></td><td class="num out">−₹1,500.00</td></tr>
+          <tr><td class="date">07-10-2026</td><td><div class="merchant">Uber</div><div class="narr">UPI/DR/412366554433/UBER INDIA/AXIS/uber.rides@axis/Trip</div></td><td><span class="badge-pt">UPI</span></td><td><span class="cat">Transport</span></td><td><span class="src">memory · 0.97</span></td><td class="num out">−₹348.00</td></tr>
+          <tr><td class="date">06-10-2026</td><td><div class="merchant">Cash</div><div class="narr">ATM WDL/BLR KORAMANGALA 5TH BLK</div></td><td><span class="badge-pt">ATM</span></td><td><span class="cat">Cash</span></td><td><span class="src">rule · ATM</span></td><td class="num out">−₹2,000.00</td></tr>
+          <tr><td class="date">05-10-2026</td><td><div class="merchant">SIP · mutual fund</div><div class="narr">NACH/DR/SIP NORTHSTAR MF/UMRN0123456789</div></td><td><span class="badge-pt">NACH</span></td><td><span class="cat">Savings &amp; investments</span></td><td><span class="src">rule · NACH mandate</span></td><td class="num out">−₹5,000.00</td></tr>
+          <tr><td class="date">03-10-2026</td><td><div class="merchant">Rent · R Kumar</div><div class="narr">UPI/DR/412311112222/R KUMAR/SBIN/rkumar.rent@oksbi/Rent Oct</div></td><td><span class="badge-pt">UPI</span></td><td><span class="cat">Rent</span></td><td><span class="src">confirmed · recurring</span></td><td class="num out">−₹32,000.00</td></tr>
+          <tr><td class="date">30-09-2026</td><td><div class="merchant">Salary · Northwind Design</div><div class="narr">NEFT/CR/N274261234567/NORTHWIND DESIGN PVT LTD/SALARY SEP</div></td><td><span class="badge-pt">NEFT</span></td><td><span class="cat">Income</span></td><td><span class="src">detected · recurring</span></td><td class="num in">+₹1,15,000.00</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="hint" style="margin-top:8px">Salary, rent, SIP and the food-delivery totals are register fixtures (docs/00 §4, P4). Individual transactions, merchants and references are illustrative.</p>
+  </section>
+
+  <section aria-labelledby="h-pack" style="margin-top:48px">
+    <div class="section-head"><h2 id="h-pack">What the India locale pack changes</h2><span class="aside">Data, not code. The engine is the same as the UK.</span></div>
+    <div class="in-pack">
+      <div><b>Money</b>₹ with lakh grouping: ₹1,15,000.00</div>
+      <div><b>Dates</b>dd-mm-yyyy · Asia/Kolkata</div>
+      <div><b>Narrations</b>UPI, NEFT, IMPS, NACH/ECS, ATM parsers</div>
+      <div><b>Calendar</b>National + Karnataka holidays; salary on the last working day</div>
+      <div><b>Categories</b>Rent via UPI, EMI, SIP/RD/FD/PPF, GST/advance tax, school fees</div>
+      <div><b>Imports</b>XLS via the CSV importer; password-protected PDFs prompt, decrypted in memory</div>
+      <div><b>Wording</b>Neutral; no fund or product recommendations</div>
+      <div><b>Evidence</b>Scored on a hand-written UPI holdout, labelled “constructed”</div>
+    </div>
+  </section>
+
+  <footer class="fixture-note">
+    <span>Design prototype. Persona, bank and figures are fictional (docs/00 §4, P4). India support is shown here as a second locale, not the main demo.</span>
+    <span class="mono">wsp_aanya · locale in</span>
+  </footer>
+</div>
+</main>
+</body>
+</html>

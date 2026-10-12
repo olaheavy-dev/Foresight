@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foresight States</title>
+<meta name="description" content="Foresight prototype — loading, empty, error, streaming, partial and proactive event states.">
+<script>try{var q=new URLSearchParams(location.search).get("theme"),t=q||localStorage.getItem("fs-theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/foresight.css">
+<script src="assets/app.js" defer></script>
+<script src="assets/charts.js" defer></script>
+<style>
+  .st-nav { display: flex; gap: 8px 20px; flex-wrap: wrap; font-size: 14px; margin-top: 16px; }
+  .ni-panel { border-left: 3px solid var(--accent); background: var(--accent-tint); padding: 20px 24px; display: grid; gap: 12px; }
+  .ni-moneyin { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+  .ni-moneyin li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; padding: 10px 0; border-bottom: 1px solid var(--rule); align-items: baseline; font-size: 14px; }
+  .ni-moneyin .amt { font-family: var(--font-display); font-size: 20px; font-variant-numeric: tabular-nums; text-align: right; }
+  .ni-moneyin .muted-amt { color: var(--ink-2); }
+  .ni-q { list-style: none; margin: 0; padding: 0; }
+  .ni-q li { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 8px 16px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+  .ni-q .amt { font-family: var(--font-display); font-size: 20px; font-variant-numeric: tabular-nums; }
+  .ni-q .chips { grid-column: 2; }
+  .ni-q .chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .ni-cols { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 40px; margin-top: 32px; }
+  @media (max-width: 860px) { .ni-cols { grid-template-columns: 1fr; gap: 32px; } .ni-q li { grid-template-columns: 1fr; } .ni-q .chips { grid-column: 1; } }
+</style>
+</head>
+<body data-page="states">
+<main>
+<div class="page">
+  <header class="masthead"><h1 class="page-title">States</h1><div class="edition"><span>Every surface that waits on data has these states</span></div></header>
+  <nav class="st-nav" aria-label="On this page"><a href="#tiles">Loading, empty &amp; error</a><a href="#currency">Currencies</a><a href="#no-income">No regular income found</a><a href="india.html">India workspace</a><a href="#proactive">Proactive events</a><a href="#digest">Telegram digest</a></nav>
+
+  <div class="state-grid" id="tiles" style="margin-top:32px">
+    <section class="state-tile" aria-labelledby="st1">
+      <span class="kicker" id="st1">Loading · Briefing being rewritten</span>
+      <p class="hint">Numbers are deterministic and show immediately. Only the written layer waits, and the last edition stays readable underneath.</p>
+      <div aria-busy="true" aria-label="Loading briefing">
+        <div class="skeleton sk-head"></div>
+        <div class="skeleton sk-line" style="width:92%"></div>
+        <div class="skeleton sk-line" style="width:78%"></div>
+        <div class="metrics" style="--cols:2;margin-top:16px">
+          <div class="metric"><div class="metric-label">Cash today</div><div class="metric-value">£1,284.50</div></div>
+          <div class="metric"><div class="metric-label">Expected low</div><div class="metric-value is-forecast">£242</div></div>
+        </div>
+        <p class="hint" style="margin-top:8px">Writing today’s briefing · Behaviour Analyst done · Advisor working… <button class="btn btn-sm btn-quiet">Cancel</button></p>
+      </div>
+    </section>
+
+    <section class="state-tile" aria-labelledby="st2">
+      <span class="kicker" id="st2">Streaming · Ask answer arriving</span>
+      <p class="hint">Blocks appear in a fixed order. Text streams, but figures only appear once their calculation is stored.</p>
+      <div class="prose" aria-live="polite"><p><span class="serif" style="font-size:20px">Yes, you can pay for it, but it uses up your</span><span class="caret-live"></span></p></div>
+      <div class="metrics" style="--cols:2">
+        <div class="metric"><div class="metric-label">Lowest balance, with trip</div><div class="skeleton sk-line" style="width:60%;height:28px"></div><div class="metric-sub">simulating · 500 paths</div></div>
+        <div class="metric"><div class="metric-label">Chance of overdraft</div><div class="skeleton sk-line" style="width:40%;height:28px"></div><div class="metric-sub">waiting for simulation</div></div>
+      </div>
+      <p class="hint">Forecaster ✓ · Advisor drafting · Verifier queued <button class="btn btn-sm btn-quiet">Stop</button></p>
+    </section>
+
+    <section class="state-tile" aria-labelledby="st3">
+      <span class="kicker" id="st3">Empty · Briefing before any data</span>
+      <h3 class="serif" style="font-size:28px;line-height:1.2;max-width:22ch">Your first briefing needs about three months of transactions.</h3>
+      <p class="muted">Import a CSV from net banking, add transactions by hand, or open a demo workspace to see what a briefing looks like.</p>
+      <div class="ds-row"><a class="btn btn-primary" href="onboarding.html">Import a statement</a><a class="btn" href="onboarding.html">Try the demo</a></div>
+    </section>
+
+    <section class="state-tile" aria-labelledby="st4">
+      <span class="kicker" id="st4">Empty · Decision Lab, no scenarios yet</span>
+      <h3 class="serif" style="font-size:28px;line-height:1.2;max-width:24ch">Test a decision before you make it.</h3>
+      <div class="chips"><button class="chip">Can I afford £640 flights home in December?</button><button class="chip">What if my pay is 5 days late?</button><button class="chip">What if rent goes up £60?</button></div>
+    </section>
+
+    <section class="state-tile" aria-labelledby="st5">
+      <span class="kicker" id="st5">Error · model gateway unreachable</span>
+      <div class="notice err" role="alert"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 4.5v4.2M8 11v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span><b>Couldn’t reach Mesh, so this briefing wasn’t rewritten.</b> Your numbers and forecast are current (11 Oct data). The written summary is from 5 Oct. We’ll retry at 07:00. <button class="btn btn-sm" style="margin-left:4px">Retry now</button></span></div>
+      <p class="hint">Deterministic sections never depend on the LLM, so a model outage degrades the prose, not the figures.</p>
+    </section>
+
+    <section class="state-tile" aria-labelledby="st6">
+      <span class="kicker" id="st6">Error · CSV can’t be read</span>
+      <div class="notice err" role="alert"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 4.5v4.2M8 11v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span><b>We couldn’t find a date column in “statement.csv”.</b> Choose which column holds the date, or download the file again as CSV from net banking.</span></div>
+      <div class="ds-row"><select class="input" aria-label="Date column"><option>Choose the date column…</option><option>Value Dt</option><option>Txn Posted Date</option></select><button class="btn">Try again</button></div>
+    </section>
+
+    <section class="state-tile" aria-labelledby="st7">
+      <span class="kicker" id="st7">Partial · no balance anywhere (relative mode)</span>
+      <div class="metrics" style="--cols:2">
+        <div class="metric"><div class="metric-label">Cash today</div><div class="metric-value faint">—</div><div class="metric-sub">No balance in this file</div></div>
+        <div class="metric"><div class="metric-label">Change by payday</div><div class="metric-value is-forecast">+£1,862</div><div class="metric-sub">compared with today (illustrative)</div></div>
+      </div>
+      <div class="notice info"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 7v4M8 4.8v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>Forecasts are shown as change from today. <b>Add today’s balance</b> to see actual amounts and buffer risk. <button class="btn btn-sm" style="margin-left:4px">Add balance</button></span></div>
+    </section>
+
+    <section class="state-tile" aria-labelledby="st8">
+      <span class="kicker" id="st8">Partial · stale balance</span>
+      <div class="notice warn"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2l6.5 11.5h-13z" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 6.5v3.2M8 11.6v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span><b>Your balance may be out of date.</b> Your latest statement ends 30 Sep. Add October’s for an up-to-date forecast. <a href="#">Import newer transactions</a> or <a href="#">confirm today’s balance</a>.</span></div>
+    </section>
+
+    <section class="state-tile" id="currency" aria-labelledby="st9">
+      <span class="kicker" id="st9">Confirm · ambiguous currency</span>
+      <p class="serif" style="font-size:20px;margin:0">This file uses <b>$</b>. Which currency?</p>
+      <div class="chips" role="group" aria-label="Currency for checking-2026-09.csv">
+        <button class="chip" aria-pressed="false">USD</button><button class="chip" aria-pressed="false">CAD</button><button class="chip" aria-pressed="false">AUD</button><button class="chip" aria-pressed="false">Other…</button>
+      </div>
+      <p class="hint">Asked once per account, only when the symbol is ambiguous ($, kr, ¥). £, ₹, € and ISO codes are detected without asking. Number and date styles (1.234,56 · dd/mm) are inferred from the data.</p>
+    </section>
+
+    <section class="state-tile" aria-labelledby="st10">
+      <span class="kicker" id="st10">Partial · second currency in a workspace</span>
+      <ul class="ni-moneyin" style="border-top-color:var(--rule)">
+        <li><span>Monzo current account · GBP<br><small class="faint">in the £ forecast</small></span><span class="amt">£1,284.50</span></li>
+        <li><span>Revolut EUR pocket · EUR<br><small class="faint">shown separately, not included in the £ forecast</small></span><span class="amt muted-amt">€212.40</span></li>
+      </ul>
+      <p class="hint">Each currency forecasts on its own. Foresight doesn’t convert or forecast exchange rates, so it never adds £ and € together. Illustrative figures.</p>
+    </section>
+  </div>
+
+  <section id="no-income" aria-labelledby="h-noinc" style="margin-top:64px">
+    <div class="section-head"><h2 id="h-noinc">No regular income found</h2><span class="aside">docs/00 §6a · one side account, no pay in it · fictional “Sam Patel”</span></div>
+    <p class="hint" style="max-width:70ch">The account imported cleanly (Revolut statement · built-in format · running balance reconciled), but nothing in it looks like pay. Foresight still forecasts from what it can see, says so plainly, and never counts money it can’t place as income.</p>
+
+    <div class="masthead" style="margin-top:24px;padding:0;border:0"><div class="edition"><span><b>Sam Patel</b></span><span>Revolut account</span><span>Data to 11 Oct · Written 10:42</span></div></div>
+
+    <div class="ni-panel" style="margin-top:16px" role="region" aria-labelledby="ni-h">
+      <h3 id="ni-h" class="serif" style="font-size:26px;line-height:1.2;max-width:28ch">We didn’t find regular income in this account.</h3>
+      <p class="prose" style="max-width:64ch">Money comes in as top-ups from your own name, payments from one person and occasional PayPal transfers. None of it looks like pay, so none of it counts as income. The forecast below only assumes money that has arrived regularly.</p>
+      <div class="ds-row"><a class="btn btn-primary" href="onboarding.html">Add the account your pay goes into</a><button class="btn">Tell us your take-home</button><button class="btn btn-quiet">Continue without income</button></div>
+      <span class="hint">If you tell us your take-home, it’s marked <span class="badge-pt">DECLARED</span> and replaced by the real figure once that account is added.</span>
+    </div>
+
+    <div class="metrics" style="--cols:3;margin-top:24px">
+      <div class="metric"><div class="metric-label">Balance today</div><div class="metric-value">£212.40</div><div class="metric-sub">from the statement · 11 Oct</div></div>
+      <div class="metric"><div class="metric-label">Lowest point ahead</div><div class="metric-value is-forecast">£78</div><div class="metric-sub">14 Dec · below your £100 buffer</div></div>
+      <div class="metric"><div class="metric-label">Income found</div><div class="metric-value">£0</div><div class="metric-sub">no pay-like money in · last 12 months</div></div>
+    </div>
+
+    <div class="ni-cols">
+      <div>
+        <div class="legend" aria-hidden="true">
+          <span class="key"><svg viewBox="0 0 24 10"><line x1="0" x2="24" y1="5" y2="5" stroke="var(--series-history)" stroke-width="2"/></svg>Balance (history)</span>
+          <span class="key"><svg viewBox="0 0 24 10"><rect x="0" y="1" width="24" height="8" fill="var(--series-band)"/><line x1="0" x2="24" y1="5" y2="5" stroke="var(--series-forecast)" stroke-width="2"/></svg>Forecast, middle estimate with likely range</span>
+          <span class="key"><svg viewBox="0 0 24 10"><line x1="0" x2="24" y1="5" y2="5" stroke="var(--caution)" stroke-width="1.5" stroke-dasharray="1.5 3"/></svg>Your buffer</span>
+        </div>
+        <div class="chart" aria-label="Side account balance for the last 30 days and forecast to 31 December, using only regular inflows" data-chart='{"fixture":"side","height":280,"ymin":-250,"ymax":600,"bufferLabelLeft":true,"bufferLabelBelow":true,"annotateCompact":true,"annotate":[["2026-12-14","base","£78 · 14 Dec","lowest point","left"]]}'></div>
+        <div class="chart-foot"><span>Built from 12 months of this account only · 500 paths</span><span class="mono">fc_01JAG2S7DE4Q</span></div>
+
+        <h3 class="kicker" style="margin-top:28px">MONEY IN · LAST 30 DAYS</h3>
+        <ul class="ni-moneyin" aria-label="Money in, last 30 days">
+          <li><span><b>Income</b><br><span class="hint">Pay, benefits, tax refunds</span></span><span class="amt">£0.00</span></li>
+          <li><span><b>From your other account</b> · S PATEL, 1st and 15th<br><span class="hint">Your own money moving between banks. Not income. <a href="#">Add that account</a></span></span><span class="amt muted-amt">£300.00</span></li>
+          <li><span><b>Other money in (not confirmed)</b> · T. OKAFOR £200, PayPal £85<br><span class="hint">Counted in your balance. Not income, and never relied on by advice.</span></span><span class="amt muted-amt">£285.00</span></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="kicker">THIS FORECAST ASSUMES</h3>
+        <ul class="assumptions" style="margin-top:8px">
+          <li><span>Top-ups of £150 from your own other account continue on the 1st and 15th</span><span class="src">own transfer · repeated 8 times</span></li>
+          <li><span>Assumes £200/mo from T. Okafor continues, around the 20th</span><span class="src">unconfirmed · repeated 5 times</span></li>
+          <li><span>PayPal transfers are <b>not</b> projected</span><span class="src">irregular · 4 since July</span></li>
+          <li><span>Everyday spending about £18 a day</span><span class="src">last 90 days</span></li>
+        </ul>
+        <div class="notice warn" style="margin-top:16px"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2l6.5 11.5h-13z" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 6.5v3.2M8 11.4v.1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>If T. Okafor’s £200 stopped, the 14 Dec low would be about <b>−£122</b>. Foresight won’t call anything affordable because of money it can’t confirm (Verifier rule V-19).</span></div>
+      </div>
+    </div>
+
+    <div style="margin-top:48px;max-width:860px">
+      <div class="story-label kicker">Step ② · Check what we found · money in we couldn’t place</div>
+      <h3 class="serif" style="font-size:24px;line-height:1.25;margin-top:8px">Help us place these. Largest first, three at most.</h3>
+      <ul class="ni-q" style="margin-top:12px" aria-label="Money in we couldn't place">
+        <li><span class="amt">£1,000</span><span><b>T. OKAFOR</b> · £200, 5 times since May, around the 20th</span>
+          <div class="chips" role="group" aria-label="What is the money from T. Okafor?"><button class="chip" aria-pressed="false">Salary / income</button><button class="chip" aria-pressed="false">From my other account</button><button class="chip" aria-pressed="false">Partner / household</button><button class="chip" aria-pressed="false">Paid back</button><button class="chip" aria-pressed="false">Refund</button><button class="chip" aria-pressed="false">Other</button></div></li>
+        <li><span class="amt">£340</span><span><b>PAYPAL</b> · 4 transfers since July, £40 to £120</span>
+          <div class="chips" role="group" aria-label="What are the PayPal transfers?"><button class="chip" aria-pressed="false">Salary / income</button><button class="chip" aria-pressed="false">From my other account</button><button class="chip" aria-pressed="false">Partner / household</button><button class="chip" aria-pressed="false">Paid back</button><button class="chip" aria-pressed="false">Refund</button><button class="chip" aria-pressed="false">Other</button></div></li>
+        <li><span class="amt">£120</span><span><b>J REID</b> · £60, twice in September</span>
+          <div class="chips" role="group" aria-label="What is the money from J Reid?"><button class="chip" aria-pressed="false">Salary / income</button><button class="chip" aria-pressed="false">From my other account</button><button class="chip" aria-pressed="false">Partner / household</button><button class="chip" aria-pressed="false">Paid back</button><button class="chip" aria-pressed="false">Refund</button><button class="chip" aria-pressed="false">Other</button></div></li>
+      </ul>
+      <div class="ds-row" style="justify-content:space-between;margin-top:12px"><a class="hint" href="ledger.html">3 more in Ledger → Review</a><span class="hint">Answers are saved per person, so we never ask twice. Skipping keeps them “not confirmed”.</span></div>
+    </div>
+  </section>
+
+  <div class="section-head" id="proactive" style="margin-top:64px"><h2>Proactive events</h2><span class="aside">How Foresight speaks up without being asked: Briefing items, Telegram digest, Ask inbox</span></div>
+  <div class="table-wrap" style="border-top:0">
+    <table class="ledger">
+      <thead><tr><th>Event</th><th>Example (Amara)</th><th>Marker</th><th>Where it appears</th></tr></thead>
+      <tbody>
+        <tr><td class="merchant">New risk detected</td><td>78% chance of going under your £300 buffer before 28 Oct</td><td><span class="status status-revised">Risk</span></td><td>Briefing headline · digest</td></tr>
+        <tr><td class="merchant">Behaviour changed</td><td>Food delivery +41% on your three-month norm</td><td><span class="status status-pending">Finding</span></td><td>What changed</td></tr>
+        <tr><td class="merchant">Forecast updated</td><td>Forecast updated with 38 new transactions. Your lowest point moved from £315 to £242.</td><td><span class="status status-forecast">Forecast</span></td><td>What’s likely next · changelog</td></tr>
+        <tr><td class="merchant">Recommendation generated</td><td>Cap food delivery at £180 this month and cancel NOW Entertainment</td><td><span class="status status-verified">Checked</span></td><td>Act on this</td></tr>
+        <tr><td class="merchant">Recommendation revised or rejected</td><td>£90 cap rejected: 56% below your usual spend, and its claimed saving didn’t match</td><td><span class="status status-rejected">Rejected</span></td><td>Evidence drawer · timeline</td></tr>
+        <tr><td class="merchant">Goal at risk</td><td>Emergency fund would be £548 short if you book £640 flights in December</td><td><span class="status status-sim">Simulated</span></td><td>Goals · Lab</td></tr>
+        <tr><td class="merchant">Intervention worked (outcome checked)<br><span class="hint">Behind flag <code>intervention_outcome</code>: hidden until its outcome check is green</span></td><td>Since 12 Oct, food delivery averaged £172 a month, under your £180 cap. Your pre-payday low improved.</td><td><span class="status status-verified">Worked</span></td><td>Briefing · digest</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-head" id="digest" style="margin-top:64px"><h2>Telegram digest</h2><span class="aside">Sent by the scheduler, Mondays 08:00 · one insight, one action</span></div>
+  <div style="max-width:380px;border:1px solid var(--rule-strong);border-radius:3px;padding:16px;background:var(--paper-raised);font-size:14px;display:grid;gap:8px">
+    <b>Foresight · week of 12 Oct</b>
+    <p>You’ll probably dip under your £300 buffer before payday (78%). Lowest point about £242 on 27 Oct.</p>
+    <p><b>One thing to do:</b> cap food delivery at £180 this month and cancel NOW Entertainment before 4 Nov. That brings the risk to 41%.</p>
+    <p class="hint">Checked · <span class="mono">rec_01JAF8A1K0D2</span> · Open Foresight to see why</p>
+  </div>
+
+  <footer class="fixture-note"><span>Design prototype · fictional data.</span><span><a href="components.html">Design system</a></span></footer>
+</div>
+</main>
+</body>
+</html>

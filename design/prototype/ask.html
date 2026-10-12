@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foresight Ask</title>
+<meta name="description" content="Foresight prototype — Agent Workspace answering an affordability question with structured blocks.">
+<script>try{var q=new URLSearchParams(location.search).get("theme"),t=q||localStorage.getItem("fs-theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/foresight.css">
+<script src="assets/app.js" defer></script>
+<script src="assets/charts.js" defer></script>
+</head>
+<body data-page="ask">
+<main>
+<div class="page" style="max-width:920px">
+
+  <header class="masthead">
+    <h1 class="page-title">Ask</h1>
+    <div class="edition"><span>Thread: <b>Flights home for Christmas</b></span><span class="mono">rsp_01JAFB3F8W2T</span><span>Saved 12 Oct, 09:14 · reopening it doesn’t re-run the agents</span></div>
+  </header>
+
+  <div class="thread" style="margin-top:40px">
+
+    <div class="q"><p>Can I afford £640 flights home for Christmas? I’d book on 1 December.<span class="q-meta">You · 09:13</span></p></div>
+
+    <article class="answer" aria-labelledby="a1">
+      <div class="answer-head">
+        <span class="by">Foresight</span><span>Forecaster · Behaviour Analyst · Advisor · Verifier</span><span>11.8 s</span>
+        <span class="status status-verified"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.2 2.2 4.8-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Advice checked</span>
+      </div>
+
+      <div class="prose" id="a1">
+        <p><span class="serif" style="font-size:22px;line-height:1.35">December can take it. January is where it pinches.</span></p>
+        <p>After the flights, your lowest December balance would be <button class="fig" data-ev="sim_trip_dec">£410 on 17 Dec</button>, still above your £300 buffer. But December’s pay arrives early, on 18 Dec, and has to last <button class="fig" data-ev="fnd_jan">41 days</button>. With £640 less, you’d reach <button class="fig" data-ev="sim_trip_jan">£260 on 27 Jan</button>, £40 under your buffer, the day before January pay.</p>
+        <p>It also sets back your emergency fund: <button class="fig" data-ev="goal_fund">£952</button> by March instead of £1,592, which is £548 short of £1,500. If you start the food-delivery plan, January’s low comes back to about <button class="fig" data-ev="sim_plan_jan">£493</button>.</p>
+      </div>
+
+      <section class="block" aria-label="Key figures">
+        <div class="block-head"><h3>At a glance</h3><span class="ref">FinancialMetricGroup · sim_01JAFB2K7Y4C</span></div>
+        <div class="metrics" style="--cols:4;border-top:0">
+          <div class="metric"><div class="metric-label">Lowest in December</div><div class="metric-value is-sim"><button class="fig" data-ev="sim_trip_dec">£410</button></div><div class="metric-sub">17 Dec · baseline £1,050</div></div>
+          <div class="metric"><div class="metric-label">Lowest in January</div><div class="metric-value" style="color:var(--negative)"><button class="fig" data-ev="sim_trip_jan">£260</button></div><div class="metric-sub">27 Jan · £40 under buffer</div></div>
+          <div class="metric"><div class="metric-label">December pay has to last</div><div class="metric-value"><button class="fig" data-ev="fnd_jan">41 days</button></div><div class="metric-sub">18 Dec → 28 Jan</div></div>
+          <div class="metric"><div class="metric-label">Emergency fund by 31 Mar</div><div class="metric-value is-sim"><button class="fig" data-ev="goal_fund">£952</button></div><div class="metric-sub">£548 short of £1,500</div></div>
+        </div>
+      </section>
+
+      <section class="block" aria-label="Baseline versus flights">
+        <div class="block-head"><h3>Your balance to the end of January, with and without the flights</h3><span class="ref">ScenarioComparison · scn_01JAFB2H3P vs fc_01JAF7R0X6NN</span></div>
+        <div class="legend" aria-hidden="true">
+          <span class="key"><svg viewBox="0 0 24 10"><rect x="0" y="1" width="24" height="8" fill="var(--series-band)"/><line x1="0" x2="24" y1="5" y2="5" stroke="var(--series-forecast)" stroke-width="2"/></svg>Forecast, no flights</span>
+          <span class="key"><svg viewBox="0 0 24 10"><line x1="0" x2="24" y1="5" y2="5" stroke="var(--series-simulated)" stroke-width="2" stroke-dasharray="6 4"/></svg>With £640 flights (simulated)</span>
+          <span class="key"><svg viewBox="0 0 24 10"><line x1="0" x2="24" y1="5" y2="5" stroke="var(--series-simulated)" stroke-width="2" stroke-dasharray="1.5 4" stroke-linecap="round"/></svg>Flights + food-delivery plan</span>
+          <span class="key"><svg viewBox="0 0 24 10"><line x1="0" x2="24" y1="5" y2="5" stroke="var(--caution)" stroke-width="1.5" stroke-dasharray="1.5 3"/></svg>Buffer £300</span>
+        </div>
+        <div class="chart" aria-label="Forecast with and without the flights, 12 Oct 2026 to 31 Jan 2027" data-chart='{"history":false,"bufferLabelLeft":true,"height":300,"sims":["trip","plan"],"bracket":["2026-12-18","2027-01-28","41 days"],"annotate":[["2027-01-27","trip","£260 · 27 Jan","Under your buffer","left above"]],"events":[["2026-12-01"],["2026-12-18"],["2027-01-28"]]}'></div>
+        <div class="chart-foot"><span>Same seed for every line, so the gaps come only from the flights and the plan.</span><span class="mono">engine finance_core 0.4.0</span></div>
+        <div class="block-actions"><a class="btn btn-sm" href="lab.html">Open in Decision Lab</a><button class="btn btn-sm btn-quiet">Show as table</button></div>
+      </section>
+
+      <section class="block" aria-label="Risk">
+        <div class="block-head"><h3>Risk if you book as planned</h3><span class="ref">RiskAssessment · calc_01JAFB2M0QH</span></div>
+        <div class="risk">
+          <div>
+            <div class="risk-level elevated">Elevated</div>
+            <div class="risk-scale" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i></div>
+            <p class="hint" style="margin-top:8px">2 of 4 · buffer breached for a few days, no overdraft expected</p>
+          </div>
+          <ul class="drivers">
+            <li><span>December pay must cover 41 days, including January rent <span class="mono faint">fnd_01JAF3QJ7N</span></span><span class="num">£1,395</span></li>
+            <li><span>The flights come out of the same pay cycle</span><span class="num">−£640</span></li>
+            <li><span>Food delivery is already above your norm <span class="mono faint">fnd_01JAF3Q8ZK</span></span><span class="num">+£83.30/mo</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="block" aria-label="Recommendation" style="border-top:0;padding-top:0">
+        <article class="intervention">
+          <div class="ds-row" style="justify-content:space-between">
+            <span class="kicker">Recommended before you book</span>
+            <span class="status status-verified"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.2 2.2 4.8-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Checked · 1 revision</span>
+          </div>
+          <h3>Book the flights, and cap food delivery at £180 a month from now on.</h3>
+          <div class="impact">
+            <div><div class="metric-label">January low</div><div class="metric-value pos"><button class="fig" data-ev="sim_plan_jan">≈ £493</button></div><div class="metric-sub">from £260, back above buffer</div></div>
+            <div><div class="metric-label">Keeps each month</div><div class="metric-value"><button class="fig" data-ev="rec_plan">+£116.39</button></div><div class="metric-sub">£180 cap + cancel NOW</div></div>
+            <div><div class="metric-label">Buffer risk before 28 Oct</div><div class="metric-value">78% → 41%</div><div class="metric-sub">starts helping this month</div></div>
+          </div>
+          <div class="why"><span><b>Grounded in:</b> <span class="mono">fnd_01JAF3Q8ZK</span>, <span class="mono">fnd_01JAF3QB4R</span>, <span class="mono">fnd_01JAF3QJ7N</span>, <span class="mono">sim_01JAFB3C1V8E</span>. Every figure above was recomputed by the Verifier. Your £250 family support was not touched.</span></div>
+          <div class="block-actions"><button class="btn btn-primary">Start this plan</button><button class="btn">Save flights as a goal</button><button class="btn btn-quiet">Dismiss</button></div>
+        </article>
+      </section>
+
+      <section class="block" aria-label="Evidence">
+        <div class="block-head"><h3>Evidence</h3><span class="ref">EvidencePanel · 6 records</span></div>
+        <div class="chips">
+          <button class="chip chip-evidence" data-kind="forecast" data-ev="fc_low">fc_01JAF7R0X6NN · baseline</button>
+          <button class="chip chip-evidence" data-kind="simulation" data-ev="sim_trip_dec">sim_01JAFB2K7Y4C · flights</button>
+          <button class="chip chip-evidence" data-kind="simulation" data-ev="sim_plan_jan">sim_01JAFB3C1V8E · flights + plan</button>
+          <button class="chip chip-evidence" data-kind="finding" data-ev="fnd_jan">fnd_01JAF3QJ7N · long January</button>
+          <button class="chip chip-evidence" data-kind="finding" data-ev="fnd_food">fnd_01JAF3Q8ZK · food delivery</button>
+          <button class="chip chip-evidence" data-kind="verification" data-ev="rec_plan">ver_01JAF8A5H1 · approved</button>
+        </div>
+      </section>
+
+      <details class="timeline">
+        <summary><span class="caret" aria-hidden="true">›</span><b style="color:var(--ink)">How this answer was made</b><span>8 steps · 5 agents · Verifier rejected 1 draft · 11.8 s</span></summary>
+        <ol class="steps-list">
+          <li class="step ok"><span class="node"></span><span class="agent">Coordinator<small>mesh · fast tier</small></span><span class="what">Intent <span class="mono">what_if.affordability</span>, slots: £640 on 1 Dec → routed to Forecaster</span><span class="meta">0.6 s</span></li>
+          <li class="step ok"><span class="node"></span><span class="agent">Forecaster<small>mesh · fast tier</small></span><span class="what">Parsed question → <span class="mono">ScenarioSpec{one_off_outflow: 640, 2026-12-01}</span></span><span class="meta">0.9 s</span></li>
+          <li class="step ok"><span class="node"></span><span class="agent">Forecaster<small>tool · simulate()</small></span><span class="what">500 paths, seed 0x4F1C → <span class="mono">sim_01JAFB2K7Y4C</span>. No model involved.</span><span class="meta">0.4 s</span></li>
+          <li class="step ok"><span class="node"></span><span class="agent">Behaviour Analyst<small>tool · list_findings()</small></span><span class="what">3 findings relevant to January: long gap, food delivery, NOW overlap</span><span class="meta">0.1 s</span></li>
+          <li class="step reject"><span class="node"></span><span class="agent">Advisor · draft 1<small>mesh · reasoning tier</small></span><span class="what">“Cap food delivery at £90/mo (+£220/mo)” · <b>Verifier rejected:</b> 56% below median (bound 40%); recomputed impact £196.40 ≠ £220</span><span class="meta">3.8 s</span></li>
+        </ol>
+        <div class="loop-mark"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M9.5 4.5A3.6 3.6 0 0 0 2.6 5M2.5 7.5A3.6 3.6 0 0 0 9.4 7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Sent back to the Advisor with the critique · revision 1 of 2</div>
+        <ol class="steps-list" style="margin-top:0">
+          <li class="step loop"><span class="node"></span><span class="agent">Advisor · draft 2<small>mesh · reasoning tier</small></span><span class="what">£180 cap + cancel NOW Entertainment; impact filled by <span class="mono">simulate()</span> → <span class="mono">sim_01JAFB3C1V8E</span></span><span class="meta">3.1 s</span></li>
+          <li class="step ok"><span class="node"></span><span class="agent">Verifier<small>tools + mesh · reasoning tier</small></span><span class="what">Refs resolve 4/4 · impact recomputed, matches · feasible (−11%) · commitments untouched · not generic → <b>approved</b> <span class="mono">ver_01JAF8A5H1</span></span><span class="meta">2.2 s</span></li>
+          <li class="step ok"><span class="node"></span><span class="agent">Coordinator<small>compose · no model numbers</small></span><span class="what">Chose 7 blocks; filled every figure from stored calculations; snapshot saved <span class="mono">rsp_01JAFB3F8W2T</span></span><span class="meta">0.7 s</span></li>
+        </ol>
+        <p class="hint" style="margin-top:12px">Model tiers are placeholders until Mesh model IDs are chosen (docs/00 §12.1). Timings are design fixtures.</p>
+      </details>
+
+      <div class="chips" aria-label="Follow-up questions">
+        <button class="chip">What if I book in January instead?</button>
+        <button class="chip">Show the 23 food-delivery orders</button>
+        <button class="chip">How much could I spend in December without dipping under £300?</button>
+        <button class="chip">Make the flights a goal</button>
+      </div>
+    </article>
+
+    <div class="q"><p>Show the 23 food-delivery orders.<span class="q-meta">You · 09:16</span></p></div>
+
+    <article class="answer">
+      <div class="answer-head"><span class="by">Foresight</span><span>Ledger Agent</span><span>0.4 s · no model call needed</span></div>
+      <section class="block" aria-label="Transactions" style="border-top:0;padding-top:0">
+        <div class="block-head"><h3>Food delivery · 12 Sep – 11 Oct · 23 orders · £286.40</h3><span class="ref">TransactionTable · query fnd_01JAF3Q8ZK.txns</span></div>
+        <div class="table-wrap">
+          <table class="ledger">
+            <thead><tr><th>Date</th><th>Merchant</th><th>Statement description</th><th class="num">Amount</th></tr></thead>
+            <tbody>
+              <tr><td class="date">11 Oct</td><td class="merchant">Deliveroo</td><td class="narr">DELIVEROO.CO.UK LONDON</td><td class="num">£18.45</td></tr>
+              <tr><td class="date">10 Oct</td><td class="merchant">Uber Eats</td><td class="narr">UBER* EATS AMSTERDAM</td><td class="num">£14.20</td></tr>
+              <tr><td class="date">8 Oct</td><td class="merchant">Deliveroo</td><td class="narr">DELIVEROO.CO.UK LONDON</td><td class="num">£11.80</td></tr>
+              <tr><td class="date">7 Oct</td><td class="merchant">Just Eat</td><td class="narr">JUST EAT.CO.UK LTD LONDON</td><td class="num">£16.35</td></tr>
+              <tr><td class="date">5 Oct</td><td class="merchant">Deliveroo</td><td class="narr">DELIVEROO.CO.UK LONDON</td><td class="num">£12.10</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="block-actions"><button class="btn btn-sm">Show all 23</button><button class="btn btn-sm btn-quiet">Group by week</button><button class="btn btn-sm btn-quiet">Compare with last year</button></div>
+      </section>
+    </article>
+  </div>
+
+  <div class="composer">
+    <form onsubmit="return false" aria-label="Ask Foresight">
+      <label for="ask" class="sr-only">Ask about your money</label>
+      <textarea id="ask" rows="1" placeholder="Ask about your spending, a purchase, or what happens if…"></textarea>
+      <button class="btn btn-accent" type="submit">Ask</button>
+    </form>
+    <div class="scope"><span>Answers use your Monzo data up to 11 Oct</span><span>Every number links to its calculation</span></div>
+  </div>
+
+  <footer class="fixture-note"><span>Design prototype · fictional data (docs/00 §10a).</span><span class="mono">run_01JAFB2G0R5D</span></footer>
+</div>
+</main>
+</body>
+</html>

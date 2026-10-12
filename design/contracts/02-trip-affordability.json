@@ -1,0 +1,1276 @@
+{
+  "_note": "FICTIONAL design fixture for persona P1 (Amara Nwosu, one Monzo current account, GBP). Figures are illustrative values from docs/00-DECISION-REGISTER.md §10a, not engine output. Series use resolution 'sampled' to stay readable.",
+  "plan": {
+    "schema": "response_plan/1",
+    "intent": "affordability",
+    "blocks": [
+      {
+        "type": "Narrative",
+        "text": "December is fine; January is the problem. After the flights your lowest point before the December payday is about {{calc_01JA93WM43ANTFDCZER4HJV641#result.pay_cycles.2.low.p50|money}}, but because December pay comes early, the long wait to the January payday takes you to about {{calc_01JA93WM43ANTFDCZER4HJV641#result.pay_cycles.3.low.p50|money}} on {{calc_01JA93WM43ANTFDCZER4HJV641#result.pay_cycles.3.low.date|date}}, under your buffer. It also sets your emergency fund back. The checked food-delivery change would keep January above your buffer. {{rec_01JA9DQKVBZQMASMYGMJDQJJSQ}}"
+      },
+      {
+        "type": "ScenarioComparison",
+        "baseline_ref": "fc_01JA9GPT19X465Z83BS4P5PMTF",
+        "simulation_refs": [
+          "sim_01JA9ZYSAVNTMM1HJEJMS9CS6P",
+          "sim_01JA9ZD2CMS1QBFJ947N2TV35B"
+        ],
+        "emphasis_metric": "min_balance"
+      },
+      {
+        "type": "CashFlowForecastChart",
+        "forecast_ref": "fc_01JA9GPT19X465Z83BS4P5PMTF",
+        "history_days": 30,
+        "horizon_days": 170,
+        "annotate": [
+          "scn_01JA9ZYSAVNTMM1HJEJMS9CS6P"
+        ],
+        "highlight_window": {
+          "from": "2026-12-18",
+          "to": "2027-01-28"
+        }
+      },
+      {
+        "type": "GoalProjection",
+        "goal_ref": "goal_01JA99A9AQ291XCAKN8WSRQNE7",
+        "projection_ref": "calc_01JA9T7H7W8VM9Y78CPEZ9BZQZ",
+        "scenario_projection_refs": [
+          "calc_01JA9QPSTP764T41AFZ1TMEPBM"
+        ]
+      },
+      {
+        "type": "EvidencePanel",
+        "refs": [
+          "calc_01JA93WM43ANTFDCZER4HJV641",
+          "calc_01JA9BTTWCK00W1CD0T328AXDP",
+          "calc_01JA9QPSTP764T41AFZ1TMEPBM",
+          "bal_01JA9BKWC1R1PFX3B39ZHD1TRF",
+          "inc_01JA9TWNSGPP6Y0A9B8HGCKMBC"
+        ]
+      }
+    ],
+    "follow_ups": [
+      {
+        "label": "Try it in the Decision Lab",
+        "kind": "open_lab",
+        "payload": {
+          "scenario_id": "scn_01JA9ZYSAVNTMM1HJEJMS9CS6P"
+        }
+      },
+      {
+        "label": "What if I paid in three parts?",
+        "kind": "simulate",
+        "payload": {
+          "scenario_spec": {
+            "schema": "scenario_spec/1",
+            "name": "Flights in three instalments",
+            "scope": "mine",
+            "horizon_days": 170,
+            "modifiers": [
+              {
+                "type": "split_outflow",
+                "start_date": "2026-12-01",
+                "amount_minor": 64000,
+                "instalments": 3,
+                "cadence": "monthly"
+              }
+            ],
+            "currency": "GBP"
+          }
+        }
+      }
+    ]
+  },
+  "response": {
+    "schema_version": "agent_response/1",
+    "as_of": "2026-10-12",
+    "data_version": 21,
+    "engine_version": "0.3.0",
+    "response_id": "rsp_01JA9JS1V6JN6ATMM2M0DDTADT",
+    "workspace_id": "wsp_01JA8ZK2Q4AMARA0P1DEM0WSP0",
+    "currency": "GBP",
+    "locale": "en-GB",
+    "run_id": "run_01JA9JS1V6JN6ATMM2M0DDTADT",
+    "thread_id": "thr_trip_01",
+    "surface": "ask",
+    "question": "Can I afford £640 flights home for Christmas?",
+    "created_at": "2026-10-12T14:12:09Z",
+    "forecast_id": "fc_01JA9GPT19X465Z83BS4P5PMTF",
+    "status": "complete",
+    "blocks": [
+      {
+        "block_id": "b1",
+        "type": "Narrative",
+        "currency": "GBP",
+        "evidence": [
+          "calc_01JA93WM43ANTFDCZER4HJV641",
+          "rec_01JA9DQKVBZQMASMYGMJDQJJSQ"
+        ],
+        "actions": [],
+        "segments": [
+          {
+            "kind": "text",
+            "text": "December is fine; January is the problem. After the flights your lowest point before the December payday is about "
+          },
+          {
+            "kind": "value",
+            "value": {
+              "kind": "money",
+              "minor": 41000,
+              "currency": "GBP",
+              "display": "£410",
+              "precision": "rounded",
+              "ref": "calc_01JA93WM43ANTFDCZER4HJV641#result.pay_cycles.2.low.p50"
+            }
+          },
+          {
+            "kind": "text",
+            "text": ", but because December pay comes early, the long wait to the January payday takes you to about "
+          },
+          {
+            "kind": "value",
+            "value": {
+              "kind": "money",
+              "minor": 26000,
+              "currency": "GBP",
+              "display": "£260",
+              "precision": "rounded",
+              "ref": "calc_01JA93WM43ANTFDCZER4HJV641#result.pay_cycles.3.low.p50"
+            }
+          },
+          {
+            "kind": "text",
+            "text": " on "
+          },
+          {
+            "kind": "value",
+            "value": {
+              "kind": "date",
+              "value": "2027-01-27",
+              "display": "27 Jan 2027",
+              "ref": "calc_01JA93WM43ANTFDCZER4HJV641#result.pay_cycles.3.low.date"
+            }
+          },
+          {
+            "kind": "text",
+            "text": ", under your buffer. It also sets your emergency fund back. The checked food-delivery change would keep January above your buffer. "
+          },
+          {
+            "kind": "entity",
+            "ref": "rec_01JA9DQKVBZQMASMYGMJDQJJSQ",
+            "label": "Recommendation"
+          }
+        ]
+      },
+      {
+        "block_id": "b2",
+        "type": "ScenarioComparison",
+        "currency": "GBP",
+        "title": "Baseline vs flights home",
+        "evidence": [
+          "calc_01JA9BTTWCK00W1CD0T328AXDP",
+          "calc_01JA93WM43ANTFDCZER4HJV641",
+          "calc_01JA94CC1C937BVE6MAX6G4EEX"
+        ],
+        "actions": [
+          {
+            "action_id": "b2a1",
+            "label": "Open in Decision Lab",
+            "kind": "open_lab",
+            "payload": {
+              "scenario_id": "scn_01JA9ZYSAVNTMM1HJEJMS9CS6P"
+            },
+            "requires_confirmation": false
+          }
+        ],
+        "scope": {
+          "kind": "mine",
+          "label": "Monzo Current ••4417",
+          "account_ids": [
+            "acct_01JA93PEEV3W4SVQXTQC9AQDCF"
+          ],
+          "switchable": false
+        },
+        "baseline": {
+          "label": "Baseline",
+          "series": {
+            "dates": [
+              "2026-10-12",
+              "2026-10-15",
+              "2026-10-20",
+              "2026-10-27",
+              "2026-10-28",
+              "2026-11-02",
+              "2026-11-15",
+              "2026-11-26",
+              "2026-11-27",
+              "2026-12-01",
+              "2026-12-17",
+              "2026-12-18",
+              "2027-01-04",
+              "2027-01-27",
+              "2027-01-28",
+              "2027-02-25",
+              "2027-03-25"
+            ],
+            "p50": [
+              128450,
+              96000,
+              64000,
+              24200,
+              318200,
+              176000,
+              118000,
+              57200,
+              350000,
+              208000,
+              105000,
+              399000,
+              233000,
+              90000,
+              384000,
+              139600,
+              189200
+            ]
+          }
+        },
+        "scenarios": [
+          {
+            "simulation_id": "sim_01JA9ZYSAVNTMM1HJEJMS9CS6P",
+            "scenario_id": "scn_01JA9ZYSAVNTMM1HJEJMS9CS6P",
+            "label": "Flights on 1 Dec",
+            "series": {
+              "dates": [
+                "2026-10-12",
+                "2026-10-15",
+                "2026-10-20",
+                "2026-10-27",
+                "2026-10-28",
+                "2026-11-02",
+                "2026-11-15",
+                "2026-11-26",
+                "2026-11-27",
+                "2026-12-01",
+                "2026-12-17",
+                "2026-12-18",
+                "2027-01-04",
+                "2027-01-27",
+                "2027-01-28",
+                "2027-02-25",
+                "2027-03-25"
+              ],
+              "p50": [
+                128450,
+                96000,
+                64000,
+                24200,
+                318200,
+                176000,
+                118000,
+                57200,
+                350000,
+                144000,
+                41000,
+                335000,
+                169000,
+                26000,
+                320000,
+                75600,
+                125200
+              ],
+              "p10": [
+                128450,
+                93000,
+                56000,
+                9600,
+                303600,
+                161000,
+                100000,
+                38000,
+                330000,
+                124000,
+                19000,
+                312000,
+                144000,
+                0,
+                292000,
+                47000,
+                94000
+              ],
+              "p90": [
+                128450,
+                99000,
+                72000,
+                38800,
+                332800,
+                191000,
+                135000,
+                76000,
+                369000,
+                164000,
+                63000,
+                357000,
+                194000,
+                52000,
+                348000,
+                104000,
+                156000
+              ]
+            },
+            "modifiers_summary": [
+              "One-off £640.00 on 1 Dec (travel)"
+            ]
+          },
+          {
+            "simulation_id": "sim_01JA9ZD2CMS1QBFJ947N2TV35B",
+            "scenario_id": "scn_01JA9ZD2CMS1QBFJ947N2TV35B",
+            "label": "Flights + checked food-delivery change",
+            "series": {
+              "dates": [
+                "2026-10-12",
+                "2026-10-15",
+                "2026-10-20",
+                "2026-10-27",
+                "2026-10-28",
+                "2026-11-02",
+                "2026-11-15",
+                "2026-11-26",
+                "2026-11-27",
+                "2026-12-01",
+                "2026-12-17",
+                "2026-12-18",
+                "2027-01-04",
+                "2027-01-27",
+                "2027-01-28",
+                "2027-02-25",
+                "2027-03-25"
+              ],
+              "p50": [
+                128450,
+                96500,
+                66000,
+                30400,
+                324400,
+                183000,
+                127500,
+                69000,
+                361800,
+                156500,
+                56000,
+                350000,
+                185500,
+                49300,
+                343300,
+                105100,
+                160900
+              ],
+              "p10": [
+                128450,
+                70500,
+                40000,
+                4400,
+                298400,
+                157000,
+                101500,
+                43000,
+                335800,
+                130500,
+                30000,
+                324000,
+                159500,
+                23300,
+                317300,
+                79100,
+                134900
+              ],
+              "p90": [
+                128450,
+                122500,
+                92000,
+                56400,
+                350400,
+                209000,
+                153500,
+                95000,
+                387800,
+                182500,
+                82000,
+                376000,
+                211500,
+                75300,
+                369300,
+                131100,
+                186900
+              ]
+            },
+            "modifiers_summary": [
+              "One-off £640.00 on 1 Dec",
+              "Food delivery capped at £180.00 a month from 13 Oct",
+              "NOW Entertainment cancelled from 13 Oct"
+            ]
+          }
+        ],
+        "comparison_rows": [
+          {
+            "metric_label": "Lowest point before 18 Dec payday",
+            "baseline": {
+              "kind": "money",
+              "minor": 105000,
+              "currency": "GBP",
+              "display": "£1,050",
+              "precision": "rounded",
+              "ref": "calc_01JA9BTTWCK00W1CD0T328AXDP#result.pay_cycles.2.low.p50"
+            },
+            "scenarios": [
+              {
+                "kind": "money",
+                "minor": 41000,
+                "currency": "GBP",
+                "display": "£410",
+                "precision": "rounded",
+                "ref": "calc_01JA93WM43ANTFDCZER4HJV641#result.pay_cycles.2.low.p50"
+              },
+              {
+                "kind": "money",
+                "minor": 56000,
+                "currency": "GBP",
+                "display": "£560",
+                "precision": "rounded",
+                "ref": "calc_01JA94CC1C937BVE6MAX6G4EEX#result.pay_cycles.2.low.p50"
+              }
+            ],
+            "delta": [
+              {
+                "kind": "money",
+                "minor": -64000,
+                "currency": "GBP",
+                "display": "−£640",
+                "precision": "rounded"
+              },
+              {
+                "kind": "money",
+                "minor": -49000,
+                "currency": "GBP",
+                "display": "−£490",
+                "precision": "rounded"
+              }
+            ],
+            "tone": [
+              "neutral",
+              "neutral"
+            ]
+          },
+          {
+            "metric_label": "Lowest point before 28 Jan payday",
+            "baseline": {
+              "kind": "money",
+              "minor": 90000,
+              "currency": "GBP",
+              "display": "£900",
+              "precision": "rounded",
+              "ref": "calc_01JA9BTTWCK00W1CD0T328AXDP#result.pay_cycles.3.low.p50"
+            },
+            "scenarios": [
+              {
+                "kind": "money",
+                "minor": 26000,
+                "currency": "GBP",
+                "display": "£260",
+                "precision": "rounded",
+                "ref": "calc_01JA93WM43ANTFDCZER4HJV641#result.pay_cycles.3.low.p50"
+              },
+              {
+                "kind": "money",
+                "minor": 49300,
+                "currency": "GBP",
+                "display": "£493",
+                "precision": "rounded",
+                "ref": "calc_01JA94CC1C937BVE6MAX6G4EEX#result.pay_cycles.3.low.p50"
+              }
+            ],
+            "delta": [
+              {
+                "kind": "money",
+                "minor": -64000,
+                "currency": "GBP",
+                "display": "−£640",
+                "precision": "rounded"
+              },
+              {
+                "kind": "money",
+                "minor": -40700,
+                "currency": "GBP",
+                "display": "−£407",
+                "precision": "rounded"
+              }
+            ],
+            "tone": [
+              "negative",
+              "neutral"
+            ]
+          },
+          {
+            "metric_label": "Chance of dipping under £300 in January",
+            "baseline": {
+              "kind": "percent",
+              "value": 0.03,
+              "display": "3%",
+              "ref": "calc_01JA9BTTWCK00W1CD0T328AXDP#result.p_breach_buffer.3.value"
+            },
+            "scenarios": [
+              {
+                "kind": "percent",
+                "value": 0.58,
+                "display": "58%",
+                "ref": "calc_01JA93WM43ANTFDCZER4HJV641#result.p_breach_buffer.3.value"
+              },
+              {
+                "kind": "percent",
+                "value": 0.22,
+                "display": "22%",
+                "ref": "calc_01JA94CC1C937BVE6MAX6G4EEX#result.p_breach_buffer.3.value"
+              }
+            ],
+            "delta": [
+              {
+                "kind": "pp_change",
+                "value": 0.55,
+                "display": "+55 pts"
+              },
+              {
+                "kind": "pp_change",
+                "value": 0.19,
+                "display": "+19 pts"
+              }
+            ],
+            "tone": [
+              "negative",
+              "caution"
+            ]
+          },
+          {
+            "metric_label": "Emergency fund on 25 Mar 2027",
+            "baseline": {
+              "kind": "money",
+              "minor": 159200,
+              "currency": "GBP",
+              "display": "£1,592",
+              "precision": "rounded",
+              "ref": "calc_01JA9T7H7W8VM9Y78CPEZ9BZQZ#result.p50"
+            },
+            "scenarios": [
+              {
+                "kind": "money",
+                "minor": 95200,
+                "currency": "GBP",
+                "display": "£952",
+                "precision": "rounded",
+                "ref": "calc_01JA9QPSTP764T41AFZ1TMEPBM#result.p50"
+              },
+              {
+                "kind": "money",
+                "minor": 141800,
+                "currency": "GBP",
+                "display": "£1,418",
+                "precision": "rounded",
+                "ref": "calc_01JA94CC1C937BVE6MAX6G4EEX#result.goal.p50"
+              }
+            ],
+            "delta": [
+              {
+                "kind": "money",
+                "minor": -64000,
+                "currency": "GBP",
+                "display": "−£640",
+                "precision": "rounded"
+              },
+              {
+                "kind": "money",
+                "minor": -17400,
+                "currency": "GBP",
+                "display": "−£174",
+                "precision": "rounded"
+              }
+            ],
+            "tone": [
+              "negative",
+              "caution"
+            ]
+          }
+        ],
+        "verdict": {
+          "kind": "breaches_buffer",
+          "text": "Affordable in December, but the January low (27 Jan) falls about £40 under your £300 buffer."
+        },
+        "assumptions": [
+          {
+            "label": "Starting balance",
+            "value": "£1,284.50 on 12 Oct",
+            "source": "declared"
+          },
+          {
+            "label": "Salary",
+            "value": "£2,940 on the 28th (previous working day at weekends); December paid 18 Dec",
+            "source": "confirmed"
+          },
+          {
+            "label": "Rent",
+            "value": "£1,395 standing order on the 1st",
+            "source": "detected"
+          },
+          {
+            "label": "Council tax",
+            "value": "£162 on the 15th, April to January",
+            "source": "detected"
+          },
+          {
+            "label": "Family support (LemFi)",
+            "value": "about £250 a month — a commitment, never cut",
+            "source": "detected"
+          },
+          {
+            "label": "One-off excluded",
+            "value": "Car insurance renewal £410.00 on 9 Oct",
+            "source": "detected"
+          },
+          {
+            "label": "Everyday spending",
+            "value": "Resampled from your last 90 days",
+            "source": "default"
+          }
+        ]
+      },
+      {
+        "block_id": "b3",
+        "type": "CashFlowForecastChart",
+        "currency": "GBP",
+        "title": "Your balance to March",
+        "evidence": [
+          "calc_01JA9BTTWCK00W1CD0T328AXDP",
+          "calc_01JA93WM43ANTFDCZER4HJV641"
+        ],
+        "actions": [],
+        "as_of": "2026-10-12",
+        "scope": {
+          "kind": "mine",
+          "label": "Monzo Current ••4417",
+          "account_ids": [
+            "acct_01JA93PEEV3W4SVQXTQC9AQDCF"
+          ],
+          "switchable": false
+        },
+        "balance_mode": "absolute",
+        "resolution": "sampled",
+        "history": {
+          "dates": [
+            "2026-09-12",
+            "2026-09-25",
+            "2026-09-28",
+            "2026-10-01",
+            "2026-10-09",
+            "2026-10-12"
+          ],
+          "balance_minor": [
+            131280,
+            48620,
+            342620,
+            203120,
+            147190,
+            128450
+          ]
+        },
+        "forecast": {
+          "dates": [
+            "2026-10-12",
+            "2026-10-15",
+            "2026-10-20",
+            "2026-10-27",
+            "2026-10-28",
+            "2026-11-02",
+            "2026-11-15",
+            "2026-11-26",
+            "2026-11-27",
+            "2026-12-01",
+            "2026-12-17",
+            "2026-12-18",
+            "2027-01-04",
+            "2027-01-27",
+            "2027-01-28",
+            "2027-02-25",
+            "2027-03-25"
+          ],
+          "p10": [
+            128450,
+            93000,
+            56000,
+            9600,
+            303600,
+            161000,
+            100000,
+            38000,
+            330000,
+            188000,
+            83000,
+            376000,
+            208000,
+            64000,
+            356000,
+            111000,
+            158000
+          ],
+          "p50": [
+            128450,
+            96000,
+            64000,
+            24200,
+            318200,
+            176000,
+            118000,
+            57200,
+            350000,
+            208000,
+            105000,
+            399000,
+            233000,
+            90000,
+            384000,
+            139600,
+            189200
+          ],
+          "p90": [
+            128450,
+            99000,
+            72000,
+            38800,
+            332800,
+            191000,
+            135000,
+            76000,
+            369000,
+            228000,
+            127000,
+            421000,
+            258000,
+            116000,
+            412000,
+            168000,
+            220000
+          ]
+        },
+        "buffer_minor": 30000,
+        "events": [
+          {
+            "date": "2026-10-14",
+            "label": "LemFi — family support",
+            "amount": {
+              "kind": "money",
+              "minor": -25000,
+              "currency": "GBP",
+              "display": "−£250.00",
+              "precision": "exact"
+            },
+            "kind": "commitment"
+          },
+          {
+            "date": "2026-10-15",
+            "label": "Council tax",
+            "amount": {
+              "kind": "money",
+              "minor": -16200,
+              "currency": "GBP",
+              "display": "−£162.00",
+              "precision": "exact"
+            },
+            "kind": "obligation"
+          },
+          {
+            "date": "2026-10-28",
+            "label": "Salary",
+            "amount": {
+              "kind": "money",
+              "minor": 294000,
+              "currency": "GBP",
+              "display": "£2,940.00",
+              "precision": "exact"
+            },
+            "kind": "income"
+          },
+          {
+            "date": "2026-11-02",
+            "label": "Rent",
+            "amount": {
+              "kind": "money",
+              "minor": -139500,
+              "currency": "GBP",
+              "display": "−£1,395.00",
+              "precision": "exact"
+            },
+            "kind": "obligation"
+          },
+          {
+            "date": "2026-12-01",
+            "label": "Flights home",
+            "amount": {
+              "kind": "money",
+              "minor": -64000,
+              "currency": "GBP",
+              "display": "−£640.00",
+              "precision": "exact"
+            },
+            "kind": "scenario"
+          },
+          {
+            "date": "2026-12-18",
+            "label": "Early December pay",
+            "amount": {
+              "kind": "money",
+              "minor": 294000,
+              "currency": "GBP",
+              "display": "£2,940.00",
+              "precision": "exact"
+            },
+            "kind": "income"
+          }
+        ],
+        "pay_cycles": [
+          {
+            "payday": "2026-10-28",
+            "low": {
+              "kind": "money",
+              "minor": 24200,
+              "currency": "GBP",
+              "display": "£242",
+              "precision": "rounded"
+            },
+            "low_date": "2026-10-27",
+            "below_buffer": true
+          },
+          {
+            "payday": "2026-11-27",
+            "low": {
+              "kind": "money",
+              "minor": 57200,
+              "currency": "GBP",
+              "display": "£572",
+              "precision": "rounded"
+            },
+            "low_date": "2026-11-26",
+            "below_buffer": false
+          },
+          {
+            "payday": "2026-12-18",
+            "low": {
+              "kind": "money",
+              "minor": 105000,
+              "currency": "GBP",
+              "display": "£1,050",
+              "precision": "rounded"
+            },
+            "low_date": "2026-12-17",
+            "below_buffer": false
+          },
+          {
+            "payday": "2027-01-28",
+            "low": {
+              "kind": "money",
+              "minor": 90000,
+              "currency": "GBP",
+              "display": "£900",
+              "precision": "rounded"
+            },
+            "low_date": "2027-01-27",
+            "below_buffer": false
+          },
+          {
+            "payday": "2027-02-26",
+            "low": {
+              "kind": "money",
+              "minor": 139600,
+              "currency": "GBP",
+              "display": "£1,396",
+              "precision": "rounded"
+            },
+            "low_date": "2027-02-25",
+            "below_buffer": false
+          },
+          {
+            "payday": "2027-03-26",
+            "low": {
+              "kind": "money",
+              "minor": 189200,
+              "currency": "GBP",
+              "display": "£1,892",
+              "precision": "rounded"
+            },
+            "low_date": "2027-03-25",
+            "below_buffer": false
+          }
+        ],
+        "summary": {
+          "min_balance": {
+            "kind": "money",
+            "minor": 24200,
+            "currency": "GBP",
+            "display": "£242",
+            "precision": "rounded",
+            "ref": "calc_01JA9BTTWCK00W1CD0T328AXDP#result.min_balance.p50_minor"
+          },
+          "min_date": {
+            "kind": "date",
+            "value": "2026-10-27",
+            "display": "27 Oct",
+            "ref": "calc_01JA9BTTWCK00W1CD0T328AXDP#result.min_balance.date"
+          },
+          "p_breach_buffer": {
+            "kind": "percent",
+            "value": 0.78,
+            "display": "78%",
+            "ref": "calc_01JA9BTTWCK00W1CD0T328AXDP#result.p_breach_buffer.0.value"
+          },
+          "breach_window_end": "2026-10-27",
+          "starting_balance": {
+            "kind": "money",
+            "minor": 128450,
+            "currency": "GBP",
+            "display": "£1,284.50",
+            "precision": "exact",
+            "ref": "calc_01JA9BTTWCK00W1CD0T328AXDP#result.starting_balance.minor",
+            "provenance": "declared"
+          }
+        },
+        "highlight_window": {
+          "from": "2026-12-18",
+          "to": "2027-01-28"
+        }
+      },
+      {
+        "block_id": "b4",
+        "type": "GoalProjection",
+        "currency": "GBP",
+        "title": "Emergency fund",
+        "evidence": [
+          "calc_01JA9T7H7W8VM9Y78CPEZ9BZQZ",
+          "calc_01JA9QPSTP764T41AFZ1TMEPBM"
+        ],
+        "actions": [],
+        "scope": {
+          "kind": "mine",
+          "label": "Monzo Current ••4417",
+          "account_ids": [
+            "acct_01JA93PEEV3W4SVQXTQC9AQDCF"
+          ],
+          "switchable": false
+        },
+        "goal": {
+          "goal_id": "goal_01JA99A9AQ291XCAKN8WSRQNE7",
+          "name": "Emergency fund",
+          "target": {
+            "kind": "money",
+            "minor": 150000,
+            "currency": "GBP",
+            "display": "£1,500.00",
+            "precision": "exact"
+          },
+          "target_date": {
+            "kind": "date",
+            "value": "2027-03-31",
+            "display": "31 Mar 2027"
+          },
+          "funding_rule": "residual"
+        },
+        "progress_now": {
+          "kind": "money",
+          "minor": 0,
+          "currency": "GBP",
+          "display": "£0",
+          "precision": "rounded",
+          "ref": "calc_01JA9T7H7W8VM9Y78CPEZ9BZQZ#result.progress_now_minor"
+        },
+        "projection": {
+          "p10": {
+            "kind": "money",
+            "minor": 128000,
+            "currency": "GBP",
+            "display": "£1,280",
+            "precision": "rounded",
+            "ref": "calc_01JA9T7H7W8VM9Y78CPEZ9BZQZ#result.p10"
+          },
+          "p50": {
+            "kind": "money",
+            "minor": 159200,
+            "currency": "GBP",
+            "display": "£1,592",
+            "precision": "rounded",
+            "ref": "calc_01JA9T7H7W8VM9Y78CPEZ9BZQZ#result.p50"
+          },
+          "p90": {
+            "kind": "money",
+            "minor": 190000,
+            "currency": "GBP",
+            "display": "£1,900",
+            "precision": "rounded",
+            "ref": "calc_01JA9T7H7W8VM9Y78CPEZ9BZQZ#result.p90"
+          },
+          "p_achieve": {
+            "kind": "percent",
+            "value": 0.58,
+            "display": "58%",
+            "ref": "calc_01JA9T7H7W8VM9Y78CPEZ9BZQZ#result.p_achieve"
+          },
+          "status_band": "on_track"
+        },
+        "trajectory": {
+          "dates": [
+            "2026-10-27",
+            "2026-11-26",
+            "2026-12-17",
+            "2027-01-27",
+            "2027-02-25",
+            "2027-03-25"
+          ],
+          "p10": [
+            0,
+            8000,
+            53000,
+            34000,
+            81000,
+            128000
+          ],
+          "p50": [
+            0,
+            27200,
+            75000,
+            60000,
+            109600,
+            159200
+          ],
+          "p90": [
+            8800,
+            46000,
+            97000,
+            86000,
+            138000,
+            190000
+          ]
+        },
+        "scenarios": [
+          {
+            "label": "With flights home",
+            "p50": {
+              "kind": "money",
+              "minor": 95200,
+              "currency": "GBP",
+              "display": "£952",
+              "precision": "rounded",
+              "ref": "calc_01JA9QPSTP764T41AFZ1TMEPBM#result.p50"
+            },
+            "p_achieve": {
+              "kind": "percent",
+              "value": 0.04,
+              "display": "4%",
+              "ref": "calc_01JA9QPSTP764T41AFZ1TMEPBM#result.p_achieve"
+            },
+            "status_band": "off_track"
+          }
+        ],
+        "required_monthly_change": {
+          "kind": "money",
+          "minor": 11000,
+          "currency": "GBP",
+          "display": "£110",
+          "precision": "rounded",
+          "ref": "calc_01JA9QPSTP764T41AFZ1TMEPBM#result.required_monthly_change_minor"
+        }
+      },
+      {
+        "block_id": "b5",
+        "type": "EvidencePanel",
+        "evidence": [
+          "calc_01JA93WM43ANTFDCZER4HJV641",
+          "calc_01JA9BTTWCK00W1CD0T328AXDP",
+          "calc_01JA9QPSTP764T41AFZ1TMEPBM",
+          "bal_01JA9BKWC1R1PFX3B39ZHD1TRF",
+          "inc_01JA9TWNSGPP6Y0A9B8HGCKMBC"
+        ],
+        "actions": [],
+        "items": [
+          {
+            "ref": "calc_01JA93WM43ANTFDCZER4HJV641",
+            "kind": "calculation",
+            "title": "Simulation: flights on 1 Dec",
+            "provenance": "user_set",
+            "scope": {
+              "kind": "mine",
+              "label": "Monzo Current ••4417",
+              "account_ids": [
+                "acct_01JA93PEEV3W4SVQXTQC9AQDCF"
+              ],
+              "switchable": false
+            },
+            "summary_lines": [
+              "Same 500 paths and seed as the baseline; only the flights differ",
+              "Pre-payday lows: 17 Dec £410 (baseline £1,050) · 27 Jan £260 (baseline £900)"
+            ],
+            "engine_version": "0.3.0",
+            "inputs": {
+              "params": {
+                "schema": "scenario_spec/1",
+                "name": "Flights home for Christmas",
+                "scope": "mine",
+                "horizon_days": 170,
+                "modifiers": [
+                  {
+                    "type": "one_off_outflow",
+                    "date": "2026-12-01",
+                    "amount_minor": 64000,
+                    "label": "Flights home for Christmas",
+                    "category_key": "travel"
+                  }
+                ],
+                "currency": "GBP"
+              }
+            },
+            "reproducible": {
+              "seed": 3172604417,
+              "inputs_hash": "sha256:6f20…b81d",
+              "data_version": 21
+            }
+          },
+          {
+            "ref": "calc_01JA9BTTWCK00W1CD0T328AXDP",
+            "kind": "forecast",
+            "title": "Baseline forecast v9 (165 days)",
+            "provenance": "observed",
+            "scope": {
+              "kind": "mine",
+              "label": "Monzo Current ••4417",
+              "account_ids": [
+                "acct_01JA93PEEV3W4SVQXTQC9AQDCF"
+              ],
+              "switchable": false
+            },
+            "summary_lines": [
+              "Coverage: one tracked account (Monzo Current ••4417)",
+              "Inputs: starting balance declared · salary confirmed · rent, council tax, bills detected · family support detected (commitment)",
+              "Excluded one-off: car insurance £410.00 on 9 Oct"
+            ],
+            "engine_version": "0.3.0",
+            "inputs": {
+              "transaction_count": 1178,
+              "date_range": {
+                "from": "2026-04-01",
+                "to": "2026-10-12"
+              }
+            },
+            "source_chain": {
+              "import_id": "imp_01JA9B4JF1XAVPFXHADVXAF6NK",
+              "filename": "monzo_export_2026-04-01_2026-10-12.csv",
+              "importer": "csv_statement",
+              "profile": {
+                "kind": "format",
+                "id": "fmt_01JA90HD4TBEWE604M8QJFMC6D",
+                "name": "Monzo current account export",
+                "source": "builtin"
+              },
+              "rows": "1,184 rows (6 £0.00 card checks skipped)",
+              "reconciliation": {
+                "status": "passed",
+                "method": "none"
+              }
+            },
+            "reproducible": {
+              "seed": 3172604417,
+              "inputs_hash": "sha256:91ac…3e57",
+              "data_version": 21
+            }
+          },
+          {
+            "ref": "calc_01JA9QPSTP764T41AFZ1TMEPBM",
+            "kind": "calculation",
+            "title": "Emergency fund with flights",
+            "provenance": "user_set",
+            "summary_lines": [
+              "Earmarked in your Monzo account: progress = March pre-payday low minus your £300 buffer",
+              "About £110 a month more would bring it back on track"
+            ],
+            "reproducible": {
+              "seed": 3172604417,
+              "inputs_hash": "sha256:0c9e…d4a2",
+              "data_version": 21
+            }
+          },
+          {
+            "ref": "bal_01JA9BKWC1R1PFX3B39ZHD1TRF",
+            "kind": "balance_anchor",
+            "title": "Balance £1,284.50 on 12 Oct",
+            "provenance": "declared",
+            "summary_lines": [
+              "Monzo CSV exports have no balance column, so you told us this on 12 Oct",
+              "Balances on other days are reconstructed from it"
+            ]
+          },
+          {
+            "ref": "inc_01JA9TWNSGPP6Y0A9B8HGCKMBC",
+            "kind": "income_stream",
+            "title": "Salary · £2,940 net",
+            "provenance": "confirmed",
+            "summary_lines": [
+              "Detected from 6 Bacs credits on the 28th or the previous working day",
+              "Last December's pay arrived on 19 Dec 2025 → December assumed early again (18 Dec 2026)",
+              "Confirmed by you on 12 Oct"
+            ]
+          }
+        ]
+      }
+    ],
+    "follow_ups": [
+      {
+        "action_id": "fu_1",
+        "label": "Try it in the Decision Lab",
+        "kind": "open_lab",
+        "payload": {
+          "scenario_id": "scn_01JA9ZYSAVNTMM1HJEJMS9CS6P"
+        },
+        "requires_confirmation": false
+      },
+      {
+        "action_id": "fu_2",
+        "label": "What if I paid in three parts?",
+        "kind": "simulate",
+        "payload": {
+          "scenario_spec": {
+            "schema": "scenario_spec/1",
+            "name": "Flights in three instalments",
+            "scope": "mine",
+            "horizon_days": 170,
+            "modifiers": [
+              {
+                "type": "split_outflow",
+                "start_date": "2026-12-01",
+                "amount_minor": 64000,
+                "instalments": 3,
+                "cadence": "monthly"
+              }
+            ],
+            "currency": "GBP"
+          }
+        },
+        "requires_confirmation": false
+      }
+    ],
+    "provenance": {
+      "calc_ids": [
+        "calc_01JA9BTTWCK00W1CD0T328AXDP",
+        "calc_01JA93WM43ANTFDCZER4HJV641",
+        "calc_01JA94CC1C937BVE6MAX6G4EEX",
+        "calc_01JA9T7H7W8VM9Y78CPEZ9BZQZ",
+        "calc_01JA9QPSTP764T41AFZ1TMEPBM"
+      ],
+      "finding_ids": [],
+      "recommendation_ids": [
+        "rec_01JA9DQKVBZQMASMYGMJDQJJSQ"
+      ]
+    },
+    "prefs_version": 1
+  }
+}

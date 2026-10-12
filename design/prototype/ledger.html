@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foresight Ledger</title>
+<meta name="description" content="Foresight prototype — Ledger: transactions, recurring obligations and imports for one Monzo account.">
+<script>try{var q=new URLSearchParams(location.search).get("theme"),t=q||localStorage.getItem("fs-theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/foresight.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="ledger">
+<main>
+<div class="page">
+  <header class="masthead">
+    <h1 class="page-title">Ledger</h1>
+    <div class="edition"><span><b>1,163</b> transactions</span><span>Monzo current account</span><span>13 Oct 2025 – 11 Oct 2026</span></div>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Ledger sections" style="margin-top:24px">
+    <button role="tab" id="t-tx" aria-controls="p-tx" aria-selected="true">Transactions <span class="mono">1,163</span></button>
+    <button role="tab" id="t-rev" aria-controls="p-rev" aria-selected="false" tabindex="-1">Review <span class="mono">38</span></button>
+    <button role="tab" id="t-rec" aria-controls="p-rec" aria-selected="false" tabindex="-1">Recurring <span class="mono">15</span></button>
+    <button role="tab" id="t-imp" aria-controls="p-imp" aria-selected="false" tabindex="-1">Statements <span class="mono">1</span></button>
+    <button role="tab" id="t-act" aria-controls="p-act" aria-selected="false" tabindex="-1">Activity</button>
+  </div>
+
+  <section id="p-tx" role="tabpanel" aria-labelledby="t-tx">
+    <div class="ds-row" style="justify-content:space-between;margin-bottom:16px">
+      <div class="ds-row">
+        <label class="sr-only" for="q">Search transactions</label>
+        <input id="q" class="input" placeholder="Search merchant, description or amount" style="width:280px;max-width:100%">
+        <select class="input" aria-label="Category"><option>All categories</option><option>Food delivery</option><option>Groceries</option><option>Subscriptions</option><option>Family support</option></select>
+      </div>
+      <div class="ds-row"><button class="chip">Needs review · 38</button><button class="btn btn-sm">Add transaction</button><button class="btn btn-sm">Add a statement</button></div>
+    </div>
+    <div class="table-wrap">
+      <table class="ledger">
+        <thead><tr><th>Date</th><th>Description</th><th>Payment type</th><th>Category</th><th>How we know</th><th class="num">Amount</th></tr></thead>
+        <tbody>
+          <tr><td class="date">11 Oct</td><td><div class="merchant">Deliveroo</div><div class="narr">DELIVEROO.CO.UK LONDON</div></td><td><span class="badge-pt">CARD</span></td><td><span class="cat">Food delivery</span></td><td><span class="src">memory · 0.99</span></td><td class="num out">−£18.45</td></tr>
+          <tr><td class="date">10 Oct</td><td><div class="merchant">Uber Eats</div><div class="narr">UBER* EATS AMSTERDAM</div></td><td><span class="badge-pt">CARD</span></td><td><span class="cat">Food delivery</span></td><td><span class="src">memory · 0.98</span></td><td class="num out">−£14.20</td></tr>
+          <tr><td class="date">10 Oct</td><td><div class="merchant">Tesco</div><div class="narr">TESCO STORES 2045 LEEDS</div></td><td><span class="badge-pt">CARD</span></td><td><span class="cat">Groceries</span></td><td><span class="src">rule · merchant list</span></td><td class="num out">−£41.72</td></tr>
+          <tr class="is-flagged"><td class="date">10 Oct</td><td><div class="merchant">J Okafor</div><div class="narr">FPO J OKAFOR REF DINNER</div></td><td><span class="badge-pt">FPO</span></td><td><select class="input" aria-label="Category for J Okafor"><option>Choose…</option><option>Split bill</option><option>Friends &amp; family</option><option>Gift</option></select></td><td><span class="conf low"><span class="conf-bar"><i style="width:25%"></i></span>person · ?</span></td><td class="num out">−£22.50</td></tr>
+          <tr><td class="date">9 Oct</td><td><div class="merchant">Admiral</div><div class="narr">ADMIRAL INSURANCE CARDIFF</div></td><td><span class="badge-pt">CARD</span></td><td><span class="cat">Insurance</span> <span class="status status-pending" style="margin-left:4px">one-off</span></td><td><span class="src">rule · annual</span></td><td class="num out">−£410.00</td></tr>
+          <tr><td class="date">8 Oct</td><td><div class="merchant">Sky TV</div><div class="narr">DD SKY DIGITAL</div></td><td><span class="badge-pt">DD</span></td><td><span class="cat">TV &amp; streaming</span></td><td><span class="src">rule · DD</span></td><td class="num out">−£46.00</td></tr>
+          <tr class="is-flagged"><td class="date">6 Oct</td><td><div class="merchant">Headrow Kitchen?</div><div class="narr">SQ *HEADROW KITCHEN LEEDS</div></td><td><span class="badge-pt">CARD</span></td><td><select class="input" aria-label="Category for Headrow Kitchen"><option>Eating out</option><option>Groceries</option><option>Food delivery</option></select></td><td><span class="conf low"><span class="conf-bar"><i style="width:68%"></i></span>model · 0.68</span></td><td class="num out">−£27.60</td></tr>
+          <tr><td class="date">5 Oct</td><td><div class="merchant">Broadband</div><div class="narr">DD PLUSNET PLC</div></td><td><span class="badge-pt">DD</span></td><td><span class="cat">Bills</span></td><td><span class="src">rule · DD</span></td><td class="num out">−£31.00</td></tr>
+          <tr><td class="date">4 Oct</td><td><div class="merchant">NOW Entertainment</div><div class="narr">NOWTV.COM LONDON</div></td><td><span class="badge-pt">CARD</span></td><td><span class="cat">Subscriptions</span> <span class="status status-revised" style="margin-left:4px">overlaps Sky</span></td><td><span class="src">rule · recurring</span></td><td class="num out">−£9.99</td></tr>
+          <tr><td class="date">1 Oct</td><td><div class="merchant">Rent · Holland Lettings</div><div class="narr">SO HOLLAND LETTINGS REF FLAT 4B</div></td><td><span class="badge-pt">SO</span></td><td><span class="cat">Rent</span></td><td><span class="src">confirmed · recurring</span></td><td class="num out">−£1,395.00</td></tr>
+          <tr><td class="date">29 Sep</td><td><div class="merchant">LemFi</div><div class="narr">LEMFI * TRANSFER LONDON</div></td><td><span class="badge-pt">CARD</span></td><td><span class="cat">Family support abroad</span></td><td><span class="src">confirmed · commitment</span></td><td class="num out">−£250.00</td></tr>
+          <tr><td class="date">28 Sep</td><td><div class="merchant">Salary · Northgate Systems</div><div class="narr">BGC NORTHGATE SYSTEMS LTD SALARY</div></td><td><span class="badge-pt">BGC</span></td><td><span class="cat">Salary</span></td><td><span class="src">confirmed · income</span></td><td class="num in">+£2,940.00</td></tr>
+          <tr><td class="date">20 Sep</td><td><div class="merchant">J Okafor</div><div class="narr">FPI J OKAFOR REF CINEMA</div></td><td><span class="badge-pt">FPI</span></td><td><span class="cat">Settling up</span></td><td><span class="src">confirmed · not income</span></td><td class="num muted">+£14.00</td></tr>
+          <tr><td class="date">15 Sep</td><td><div class="merchant">Council tax</div><div class="narr">DD LEEDS CITY COUNCIL</div></td><td><span class="badge-pt">DD</span></td><td><span class="cat">Council tax</span></td><td><span class="src">rule · DD · Apr–Jan</span></td><td class="num out">−£162.00</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="hint" style="margin-top:12px">Money from friends settling up isn’t counted as income. Family support is kept as a commitment: Foresight never suggests cutting it unless you ask.</p>
+  </section>
+
+  <section id="p-rev" role="tabpanel" aria-labelledby="t-rev" hidden>
+    <div class="section-head"><h2>Check 38 transactions we weren’t sure about</h2><span class="aside">Grouped by merchant · least certain first</span></div>
+    <div class="table-wrap" style="border-top:0">
+      <table class="ledger">
+        <thead><tr><th>Merchant</th><th>Statement description (sample)</th><th class="num">Rows</th><th>Category</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr class="is-flagged"><td class="merchant">J Okafor</td><td class="narr">FPO J OKAFOR REF DINNER</td><td class="num">6</td><td><div class="chips"><button class="chip">Split bill</button><button class="chip">Friends &amp; family</button><button class="chip">Gift</button><button class="chip">Other</button></div></td><td><span class="conf low"><span class="conf-bar"><i style="width:20%"></i></span>person · unknown</span></td></tr>
+          <tr class="is-flagged"><td class="merchant">Headrow Kitchen</td><td class="narr">SQ *HEADROW KITCHEN LEEDS</td><td class="num">9</td><td><select class="input" aria-label="Category"><option>Eating out</option><option>Groceries</option></select></td><td><span class="conf low"><span class="conf-bar"><i style="width:68%"></i></span>model · 0.68</span></td></tr>
+          <tr><td class="merchant">Amazon</td><td class="narr">AMZNMKTPLACE AMAZON.CO.UK</td><td class="num">17</td><td><select class="input" aria-label="Category"><option>Shopping</option><option>Household</option><option>Gifts</option></select></td><td><span class="conf"><span class="conf-bar"><i style="width:74%"></i></span>model · 0.74</span></td></tr>
+          <tr><td class="merchant">PayPal</td><td class="narr">PAYPAL *EBAY 35314369001</td><td class="num">6</td><td><select class="input" aria-label="Category"><option>Shopping</option></select></td><td><span class="conf"><span class="conf-bar"><i style="width:61%"></i></span>model · 0.61</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="ds-row" style="margin-top:16px"><button class="btn">Accept the rest</button><span class="hint">Corrections teach Foresight: “Applied to 6 similar transactions · Undo”.</span></div>
+  </section>
+
+  <section id="p-rec" role="tabpanel" aria-labelledby="t-rec" hidden>
+    <div class="table-wrap">
+      <table class="ledger">
+        <thead><tr><th>Obligation</th><th>Cadence</th><th>Next</th><th>Payment type</th><th>Status</th><th class="num">Amount</th></tr></thead>
+        <tbody>
+          <tr><td class="merchant">Salary · Northgate Systems</td><td>28th · Friday before at weekends · Dec early</td><td>Wed 28 Oct</td><td><span class="badge-pt">BGC</span></td><td><span class="status status-verified">Confirmed</span></td><td class="num in"><button class="fig" data-ev="salary">+£2,940.00</button></td></tr>
+          <tr><td class="merchant">Rent · Holland Lettings</td><td>Monthly · 1st</td><td>1 Nov</td><td><span class="badge-pt">SO</span></td><td><span class="status status-verified">Confirmed</span></td><td class="num">£1,395.00</td></tr>
+          <tr><td class="merchant">Family support · LemFi</td><td>Monthly · after payday</td><td>29 Oct</td><td><span class="badge-pt">CARD</span></td><td><span class="status status-verified">Commitment</span></td><td class="num">≈ £250.00</td></tr>
+          <tr><td class="merchant">Council tax · Leeds</td><td>15th · April to January</td><td>15 Oct</td><td><span class="badge-pt">DD</span></td><td><span class="status status-pending">Detected</span></td><td class="num">£162.00</td></tr>
+          <tr><td class="merchant">Energy</td><td>Monthly · 20th</td><td>20 Oct</td><td><span class="badge-pt">DD</span></td><td><span class="status status-pending">Detected</span></td><td class="num">£78.00</td></tr>
+          <tr><td class="merchant">Sky TV</td><td>Monthly · 8th</td><td>8 Nov</td><td><span class="badge-pt">DD</span></td><td><span class="status status-pending">Detected</span></td><td class="num">£46.00</td></tr>
+          <tr><td class="merchant">Water</td><td>Monthly · 22nd</td><td>22 Oct</td><td><span class="badge-pt">DD</span></td><td><span class="status status-pending">Detected</span></td><td class="num">£42.00</td></tr>
+          <tr><td class="merchant">Broadband</td><td>Monthly · 5th</td><td>5 Nov</td><td><span class="badge-pt">DD</span></td><td><span class="status status-pending">Detected</span></td><td class="num">£31.00</td></tr>
+          <tr><td class="merchant">PureGym</td><td>Monthly · 2nd</td><td>2 Nov</td><td><span class="badge-pt">DD</span></td><td><span class="status status-pending">Detected</span></td><td class="num">£27.99</td></tr>
+          <tr><td class="merchant">Netflix</td><td>Monthly · 14th</td><td>14 Oct</td><td><span class="badge-pt">CARD</span></td><td><span class="status status-pending">Detected</span></td><td class="num">£12.99</td></tr>
+          <tr><td class="merchant">Spotify</td><td>Monthly · 19th</td><td>19 Oct</td><td><span class="badge-pt">CARD</span></td><td><span class="status status-pending">Detected</span></td><td class="num">£12.99</td></tr>
+          <tr><td class="merchant">NOW Entertainment</td><td>Monthly · 4th</td><td>4 Nov</td><td><span class="badge-pt">CARD</span></td><td><span class="status status-revised">Overlaps Sky TV</span></td><td class="num">£9.99</td></tr>
+          <tr><td class="merchant">Disney+</td><td>Monthly · 23rd</td><td>23 Oct</td><td><span class="badge-pt">CARD</span></td><td><span class="status status-pending">Detected</span></td><td class="num">£8.99</td></tr>
+          <tr><td class="merchant">Amazon Prime</td><td>Monthly · 17th</td><td>17 Oct</td><td><span class="badge-pt">CARD</span></td><td><span class="status status-pending">Detected</span></td><td class="num">£8.99</td></tr>
+          <tr><td class="merchant">iCloud+</td><td>Monthly · 26th</td><td>26 Oct</td><td><span class="badge-pt">CARD</span></td><td><span class="status status-pending">Detected</span></td><td class="num">£2.99</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="hint" style="margin-top:12px">Subscriptions total <button class="fig" data-ev="subs_total">£84.93/mo</button>. Detected items become Confirmed when you tick them.</p>
+  </section>
+
+  <section id="p-imp" role="tabpanel" aria-labelledby="t-imp" hidden>
+    <div class="table-wrap">
+      <table class="ledger">
+        <thead><tr><th>Imported</th><th>File</th><th>Detected format</th><th class="num">Rows</th><th>Result</th><th></th></tr></thead>
+        <tbody>
+          <tr><td class="date">12 Oct, 08:39</td><td class="mono">monzo-2025-2026.csv</td><td>Monzo CSV · current account</td><td class="num">1,163</td><td>✓ Read · 13 Oct 2025 – 11 Oct 2026 · £0.00 card checks dropped · balance not in file, so you told us £1,284.50</td><td><button class="btn btn-sm btn-quiet">Undo</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="hint" style="margin-top:12px">Accepted: Monzo and Revolut exports, other banks’ CSVs whose columns you confirm once, and text-based PDF statements, which must reconcile row by row before they’re imported.</p>
+  </section>
+
+  <section id="p-act" role="tabpanel" aria-labelledby="t-act" hidden>
+    <ul class="assumptions">
+      <li><span><b>Recommendation checked</b> · cap food delivery at £180 + cancel NOW · after 1 revision</span><span class="src">12 Oct 10:41 · rec_01JAF8A1K0D2</span></li>
+      <li><span><b>Recommendation rejected by Verifier</b> · £90 cap · infeasible, impact mismatch</span><span class="src">12 Oct 10:41 · ver_01JAF8A2Q9</span></li>
+      <li><span><b>Briefing written</b> · No. 41</span><span class="src">12 Oct 10:42 · brf_01JAF7S0P4QE</span></li>
+      <li><span><b>Forecast built</b> · 500 paths · seed 0x4F1C</span><span class="src">12 Oct 10:40 · fc_01JAF7R0X6NN</span></li>
+      <li><span><b>Statement imported</b> · monzo-2025-2026.csv · 1,163 transactions</span><span class="src">12 Oct 08:39 · imp_01JAF0YQ2C</span></li>
+      <li><span><b>Ask thread</b> · Flights home for Christmas</span><span class="src">12 Oct 09:14 · rsp_01JAFB3F8W2T</span></li>
+    </ul>
+  </section>
+
+  <footer class="fixture-note"><span>Design prototype · fictional person, account and payees (docs/00 §10a).</span><span class="mono">wsp_01JA9V…</span></footer>
+</div>
+</main>
+</body>
+</html>
