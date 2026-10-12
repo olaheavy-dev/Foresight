@@ -1,0 +1,24 @@
+{
+  "as_of": "2026-10-11",
+  "buffer_minor": 50000,
+  "closing_balance_minor": 218450,
+  "country": "GB",
+  "dataset": "S1-sparse",
+  "declared_balance": {
+    "account": "acct_main",
+    "amount_minor": 218450,
+    "as_of": "2026-10-11"
+  },
+  "discretionary_scale": "1.473",
+  "display_name": "Amara Nwosu",
+  "generator_version": "gen-1.0.0",
+  "history_start": "2026-07-12",
+  "home_currency": "GBP",
+  "locale": "en-GB",
+  "min_balance_minor": 15061,
+  "notes": [],
+  "opening_balance_minor": 203579,
+  "seed": 1729,
+  "timezone": "Europe/London",
+  "today": "2026-10-12"
+}

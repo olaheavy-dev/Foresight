@@ -1,0 +1,55 @@
+{
+  "exports/monzo.csv": {
+    "delimiter": ",",
+    "format": "monzo",
+    "tables": [
+      {
+        "balance_column": null,
+        "columns": {
+          "amount": "Amount",
+          "bank_category": "Category",
+          "currency": "Currency",
+          "date": "Date",
+          "description": "Name",
+          "id": "Transaction ID",
+          "time": "Time",
+          "type": "Type"
+        },
+        "currency": "GBP",
+        "currency_source": "column",
+        "date_format": "%d/%m/%Y",
+        "decimal": ".",
+        "first_row": 1,
+        "header_row": 0,
+        "headers": [
+          "Transaction ID",
+          "Date",
+          "Time",
+          "Type",
+          "Name",
+          "Emoji",
+          "Category",
+          "Amount",
+          "Currency",
+          "Local amount",
+          "Local currency",
+          "Notes and #tags",
+          "Address",
+          "Receipt",
+          "Description",
+          "Category split",
+          "Money Out",
+          "Money In"
+        ],
+        "last_row": 1047,
+        "n_rows": 1047,
+        "sign_convention": "signed",
+        "skip_rules": [
+          "zero_amount_card_check"
+        ],
+        "table": "acct_main",
+        "title": null
+      }
+    ]
+  }
+}

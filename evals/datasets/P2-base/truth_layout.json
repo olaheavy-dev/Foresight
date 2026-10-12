@@ -1,0 +1,35 @@
+{
+  "exports/statement.csv": {
+    "delimiter": ",",
+    "format": "generic_signed",
+    "tables": [
+      {
+        "balance_column": "Balance",
+        "columns": {
+          "amount": "Amount",
+          "balance": "Balance",
+          "date": "Date",
+          "description": "Description"
+        },
+        "currency": "GBP",
+        "currency_source": "home_default",
+        "date_format": "%d/%m/%Y",
+        "decimal": ".",
+        "first_row": 1,
+        "header_row": 0,
+        "headers": [
+          "Date",
+          "Description",
+          "Amount",
+          "Balance"
+        ],
+        "last_row": 1252,
+        "n_rows": 1252,
+        "sign_convention": "signed",
+        "skip_rules": [],
+        "table": "acct_main",
+        "title": null
+      }
+    ]
+  }
+}

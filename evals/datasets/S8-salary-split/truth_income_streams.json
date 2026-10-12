@@ -1,0 +1,46 @@
+{
+  "income_streams": [
+    {
+      "account": "acct_main",
+      "cadence": "monthly",
+      "key": "inc_salary",
+      "net_amount_minor": 405000,
+      "payday_rule": {
+        "day_of_month": 28,
+        "december_day": 18,
+        "kind": "fixed_day",
+        "prev_working_day": true
+      },
+      "paydays": [
+        "2026-04-28",
+        "2026-05-28",
+        "2026-06-26",
+        "2026-07-28",
+        "2026-08-28",
+        "2026-09-28"
+      ],
+      "provenance_expected": "detected",
+      "source": "Acme Analytics Ltd",
+      "split_pct": {
+        "acct_main": 70,
+        "acct_second": 30
+      }
+    },
+    {
+      "account": "acct_main",
+      "cadence": "one_off",
+      "date": "2026-07-28",
+      "key": "inc_salary_bonus",
+      "net_amount_minor": 150000,
+      "source": "Acme Analytics Ltd"
+    },
+    {
+      "account": "acct_main",
+      "cadence": "one_off",
+      "date": "2026-05-28",
+      "key": "inc_salary_arrears",
+      "net_amount_minor": 22000,
+      "source": "Acme Analytics Ltd"
+    }
+  ]
+}

@@ -1,0 +1,233 @@
+# Foresight locale pack: United Kingdom (`uk`). DATA ONLY — no engine code may hard-code any of it.
+#
+# Schema (v1). Consumers: backend/finance_core/locale.py (general loader, fork B) and
+# backend/finance_core/categorise/pack.py (categorisation/detection subset). Unknown keys are ignored.
+#
+#   id, country, currency, locale       identity
+#   formats                             date_orders (preferred first), decimal/grouping separators
+#   holidays                            {source, country, subdiv} for python-holidays
+#   payday                              weekend/holiday shift for pay, December early-pay handling
+#   debit_posting                       weekend/holiday shift for DD/SO posting
+#   channels                            [{channel, bank_types: [exact bank "Type" strings],
+#                                         codes: [narration tokens]}]  -> types.Channel values
+#   noise_tokens                        tokens dropped when deriving a counterparty
+#   payroll_markers / government_payers  inflow-ladder signals (docs/00 §6a)
+#   refund_markers, card_bill_markers, self_transfer_markers, savings_markers
+#   subscription_families               {family: [merchant tokens]} for overlap detection
+#   categories                          [{key, nature, default_flow_kind}]  (docs/07 §3.3 taxonomy)
+#   rules                               [{category, flow_kind?, direction: out|in|any,
+#                                         merchants: [tokens], patterns: [regex]}]
+#   bank_category_priors                {bank: {bank_category: category_key}}  (weak prior only)
+#   protected_categories                never targeted by cut/cap/cancel advice
+#   seasonal_defaults                   {category_key: [active months]} when history < 12 months
+#   wording                             regulator + tone notes
+
+id: uk
+country: GB
+currency: GBP
+locale: en-GB
+
+formats:
+  date_orders: [DMY, YMD]
+  decimal_separator: "."
+  grouping_separator: ","
+
+holidays:
+  source: python-holidays
+  country: GB
+  subdiv: ENG
+
+payday:
+  weekend_shift: previous_working_day
+  december_early_pay: learn_from_history
+  one_off_multiple: 1.5          # credits > 1.5x the stream median are bonus/arrears one-offs
+
+debit_posting:
+  weekend_shift: next_working_day
+
+channels:
+  - channel: card
+    bank_types: ["Card payment", "Card Payment", "Merchant", "Debit card"]
+    codes: [DEB, POS, CARD]
+  - channel: direct_debit
+    bank_types: ["Direct Debit", "Direct debit"]
+    codes: [DD]
+  - channel: standing_order
+    bank_types: ["Standing order", "Standing Order"]
+    codes: [SO, STO]
+  - channel: faster_payment_out
+    bank_types: ["Faster payment", "Faster Payment", "Transfer"]
+    codes: [FPO, FP]
+  - channel: faster_payment_in
+    bank_types: ["Top up", "Top-up"]
+    codes: [FPI]
+  - channel: bacs_credit
+    bank_types: ["Bacs (Direct Credit)", "BACS", "Bacs"]
+    codes: [BGC, BACS]
+  - channel: transfer
+    bank_types: ["Pot transfer", "Exchange"]
+    codes: [TFR]
+  - channel: cash
+    bank_types: ["ATM", "Cash"]
+    codes: [CPT, ATM, CASH]
+
+noise_tokens: [GB, GBR, UK, LONDON, LTD, LIMITED, PLC, "&", CO, COM, WWW, "THE"]
+
+payroll_markers: [SALARY, PAYROLL, WAGES, PAY, LTD, LIMITED, PLC, LLP]
+government_payers:
+  - {pattern: "\\bDWP\\b|UNIVERSAL CREDIT", category: income.benefits}
+  - {pattern: "HMRC CHILD BENEFIT|CHILD BENEFIT", category: income.benefits}
+  - {pattern: "HMRC.*(REFUND|REPAYMENT)|TAX REFUND", category: income.other}
+  - {pattern: "COUNCIL.*(REFUND|REBATE)", category: income.other}
+
+refund_markers: [REFUND, REFD, RETURN, REVERSAL]
+card_bill_markers: ["CAPITAL ONE", "TESCO BANK", BARCLAYCARD, "AMERICAN EXPRESS", AMEX, "MBNA", "VANQUISH", "AQUA CARD", "PAYMENT RECEIVED THANK YOU"]
+self_transfer_markers: ["TO SELF", "OWN ACCOUNT", "PERSONAL ACCOUNT"]
+savings_markers: ["POT TRANSFER", "SAVINGS POT", "TO POT", "PREMIUM BONDS", "NS&I", "MONEYBOX", "VANGUARD", "TRADING 212", "CHIP", "PLUM", "ISA"]
+
+subscription_families:
+  tv_and_streaming: ["SKY TV", "SKY DIGITAL", "NOW TV", "NOW ENTERTAINMENT", NETFLIX, "DISNEY PLUS", "DISNEY+", "PRIME VIDEO", "PARAMOUNT", "APPLE TV", "DAZN", "BRITBOX"]
+  music: [SPOTIFY, "APPLE MUSIC", "YOUTUBE MUSIC", "AMAZON MUSIC", TIDAL, DEEZER]
+  cloud_storage: [ICLOUD, "GOOGLE ONE", DROPBOX, "MICROSOFT 365"]
+  fitness: [PUREGYM, "THE GYM GROUP", "DAVID LLOYD", "NUFFIELD", "BANNATYNE", STRAVA, PELOTON]
+
+categories:
+  - {key: income.salary, nature: income, default_flow_kind: income}
+  - {key: income.self_employed, nature: income, default_flow_kind: income}
+  - {key: income.benefits, nature: income, default_flow_kind: income}
+  - {key: income.interest, nature: income, default_flow_kind: income}
+  - {key: income.other, nature: income, default_flow_kind: income}
+  - {key: refund, nature: refund, default_flow_kind: refund}
+  - {key: housing.rent, nature: essential, default_flow_kind: spending}
+  - {key: housing.mortgage, nature: essential, default_flow_kind: spending}
+  - {key: housing.council_tax, nature: essential, default_flow_kind: spending}
+  - {key: utilities.energy, nature: essential, default_flow_kind: spending}
+  - {key: utilities.water, nature: essential, default_flow_kind: spending}
+  - {key: utilities.broadband_tv, nature: essential, default_flow_kind: spending}
+  - {key: utilities.mobile, nature: essential, default_flow_kind: spending}
+  - {key: utilities.tv_licence, nature: essential, default_flow_kind: spending}
+  - {key: insurance, nature: essential, default_flow_kind: spending}
+  - {key: groceries, nature: essential, default_flow_kind: spending}
+  - {key: food.delivery, nature: discretionary, default_flow_kind: spending}
+  - {key: food.eating_out, nature: discretionary, default_flow_kind: spending}
+  - {key: transport.public, nature: essential, default_flow_kind: spending}
+  - {key: transport.fuel, nature: essential, default_flow_kind: spending}
+  - {key: transport.car, nature: essential, default_flow_kind: spending}
+  - {key: transport.taxi, nature: discretionary, default_flow_kind: spending}
+  - {key: shopping.general, nature: discretionary, default_flow_kind: spending}
+  - {key: shopping.clothing, nature: discretionary, default_flow_kind: spending}
+  - {key: shopping.home, nature: discretionary, default_flow_kind: spending}
+  - {key: subscriptions.streaming, nature: discretionary, default_flow_kind: spending}
+  - {key: subscriptions.software_cloud, nature: discretionary, default_flow_kind: spending}
+  - {key: subscriptions.fitness, nature: discretionary, default_flow_kind: spending}
+  - {key: subscriptions.other, nature: discretionary, default_flow_kind: spending}
+  - {key: health, nature: essential, default_flow_kind: spending}
+  - {key: personal_care, nature: discretionary, default_flow_kind: spending}
+  - {key: childcare, nature: essential, default_flow_kind: spending}
+  - {key: education, nature: essential, default_flow_kind: spending}
+  - {key: family_support_abroad, nature: commitment, default_flow_kind: commitment}
+  - {key: gifts, nature: discretionary, default_flow_kind: spending}
+  - {key: charity, nature: discretionary, default_flow_kind: spending}
+  - {key: entertainment, nature: discretionary, default_flow_kind: spending}
+  - {key: travel, nature: discretionary, default_flow_kind: spending}
+  - {key: betting, nature: discretionary, default_flow_kind: betting}
+  - {key: betting_return, nature: discretionary, default_flow_kind: betting_return}
+  - {key: debt.bnpl, nature: debt, default_flow_kind: loan_repayment}
+  - {key: debt.loan, nature: debt, default_flow_kind: loan_repayment}
+  - {key: credit_card_bill_unitemised, nature: discretionary, default_flow_kind: credit_card_bill_unitemised}
+  - {key: tax.self_assessment, nature: tax, default_flow_kind: tax}
+  - {key: tax.other, nature: tax, default_flow_kind: tax}
+  - {key: savings_investment, nature: savings, default_flow_kind: savings_investment}
+  - {key: cash.withdrawal, nature: discretionary, default_flow_kind: spending}
+  - {key: fees.bank, nature: essential, default_flow_kind: fee}
+  - {key: transfer.own, nature: transfer, default_flow_kind: transfer_own}
+  - {key: transfer.untracked, nature: transfer, default_flow_kind: transfer_to_untracked}
+  - {key: transfer.from_untracked, nature: transfer, default_flow_kind: transfer_from_untracked}
+  - {key: transfer.card_settlement, nature: transfer, default_flow_kind: card_settlement}
+  - {key: partner_contribution, nature: transfer, default_flow_kind: partner_contribution}
+  - {key: transfer.reimbursement, nature: transfer, default_flow_kind: reimbursement}
+  - {key: transfer.other_person, nature: transfer, default_flow_kind: spending}
+  - {key: inflow_unconfirmed, nature: transfer, default_flow_kind: inflow_unconfirmed}
+  - {key: other, nature: discretionary, default_flow_kind: spending}
+  - {key: uncategorised, nature: discretionary, default_flow_kind: spending}
+
+# Order matters within a direction: more specific rules first. Merchant tokens match whole words of
+# the normalised narration (multi-word tokens match as a phrase).
+rules:
+  - {category: food.delivery, direction: out, merchants: [DELIVEROO, "UBER EATS", UBEREATS, "JUST EAT", JUSTEAT]}
+  - {category: family_support_abroad, flow_kind: commitment, direction: out, merchants: [LEMFI, WISE, WORLDREMIT, REMITLY, "WESTERN UNION", "LEBARA MONEY", TAPTAP, "SENDWAVE"]}
+  - {category: housing.council_tax, direction: out, merchants: ["COUNCIL TAX", "CITY COUNCIL", "BOROUGH COUNCIL"], patterns: ["\\b[A-Z]+ (CC|MBC|DC) DD\\b"]}
+  - {category: housing.rent, direction: out, merchants: [LETTINGS, "LETTING AGENT", RENT, "PROPERTY MANAGEMENT", OPENRENT, FOXTONS, "NORTHSIDE LETTINGS"]}
+  - {category: housing.mortgage, direction: out, merchants: [MORTGAGE, NATIONWIDE MORTGAGE, "HALIFAX MORTGAGE", "SANTANDER MORTGAGE"]}
+  - {category: utilities.energy, direction: out, merchants: ["OCTOPUS ENERGY", OCTOPUS, "BRITISH GAS", EDF, "OVO", "E.ON", EON, "SCOTTISH POWER", "SO ENERGY"]}
+  - {category: utilities.water, direction: out, merchants: ["YORKSHIRE WATER", "THAMES WATER", "UNITED UTILITIES", "SEVERN TRENT", "ANGLIAN WATER", "SOUTHERN WATER", WATER]}
+  - {category: utilities.tv_licence, direction: out, merchants: ["TV LICENCE", "TV LICENSING"]}
+  - {category: utilities.broadband_tv, direction: out, merchants: ["SKY TV", "SKY DIGITAL", "SKY BROADBAND", "BT GROUP", "BT BROADBAND", "VIRGIN MEDIA", PLUSNET, TALKTALK, HYPEROPTIC, COMMUNITYFIBRE, BROADBAND]}
+  - {category: utilities.mobile, direction: out, merchants: [EE, VODAFONE, GIFFGAFF, "O2", THREE, LEBARA, "SMARTY", "VOXI", "ID MOBILE", "TESCO MOBILE"]}
+  - {category: insurance, direction: out, merchants: [ADMIRAL, AVIVA, "DIRECT LINE", "LV=", "LV INSURANCE", "CHURCHILL", "HASTINGS", "MORE THAN", "ESURE", INSURANCE]}
+  - {category: subscriptions.streaming, direction: out, merchants: [NETFLIX, SPOTIFY, "NOW TV", "NOW ENTERTAINMENT", "DISNEY PLUS", "DISNEY+", "PRIME VIDEO", "AMAZON PRIME", "APPLE MUSIC", "YOUTUBE PREMIUM", "PARAMOUNT", DAZN, BRITBOX]}
+  - {category: subscriptions.software_cloud, direction: out, merchants: [ICLOUD, "APPLE.COM/BILL", "GOOGLE ONE", "GOOGLE STORAGE", DROPBOX, "MICROSOFT 365", OPENAI, "ADOBE"]}
+  - {category: subscriptions.fitness, direction: out, merchants: [PUREGYM, "THE GYM GROUP", "GYM GROUP", "DAVID LLOYD", NUFFIELD, BANNATYNE, STRAVA, PELOTON]}
+  - {category: groceries, direction: out, merchants: [TESCO, SAINSBURYS, "SAINSBURY'S", ASDA, ALDI, LIDL, MORRISONS, "CO-OP", COOP, WAITROSE, OCADO, ICELAND, "M&S SIMPLY FOOD", "MARKS & SPENCER FOOD"]}
+  - {category: food.eating_out, direction: out, merchants: [PRET, GREGGS, NANDOS, "NANDO'S", STARBUCKS, COSTA, "CAFFE NERO", MCDONALDS, "MCDONALD'S", KFC, WAGAMAMA, LEON, "FIVE GUYS", PIZZA]}
+  - {category: transport.public, direction: out, merchants: [TFL, "TRANSPORT FOR LONDON", NORTHERN, LNER, TRAINLINE, "FIRST BUS", STAGECOACH, ARRIVA, "NATIONAL EXPRESS", AVANTI, "GWR", CROSSCOUNTRY]}
+  - {category: transport.fuel, direction: out, merchants: [SHELL, BP, ESSO, TEXACO, JET, GULF]}
+  - {category: transport.car, direction: out, merchants: [KWIKFIT, "KWIK FIT", HALFORDS, NCP, RINGGO, "PAYBYPHONE", "DVLA", "MOT", GARAGE, "CAR WASH"]}
+  - {category: transport.taxi, direction: out, merchants: [UBER, BOLT, "ADDISON LEE", FREENOW]}
+  - {category: travel, direction: out, merchants: [RYANAIR, EASYJET, "BRITISH AIRWAYS", "BA.COM", JET2, "BOOKING.COM", AIRBNB, EXPEDIA, "PREMIER INN", TRAVELODGE, "TUI"]}
+  - {category: shopping.clothing, direction: out, merchants: [PRIMARK, ZARA, "H&M", "NEXT RETAIL", ASOS, UNIQLO, "JD SPORTS", "TK MAXX"]}
+  - {category: shopping.home, direction: out, merchants: [IKEA, "B&Q", WICKES, DUNELM, SCREWFIX, "HOMEBASE"]}
+  - {category: shopping.general, direction: out, merchants: [AMAZON, "AMZN MKTP", ARGOS, EBAY, CURRYS, "JOHN LEWIS", BOOTS ONLINE, ETSY]}
+  - {category: health, direction: out, merchants: ["NHS PRESCRIPTION", "LLOYDS PHARMACY", SPECSAVERS, "VISION EXPRESS", DENTAL, BOOTS]}
+  - {category: personal_care, direction: out, merchants: [SUPERDRUG, BARBER, SALON, "TONI&GUY"]}
+  - {category: childcare, direction: out, merchants: [NURSERY, CHILDMINDER, "BRIGHT HORIZONS"]}
+  - {category: education, direction: out, merchants: [UDEMY, COURSERA, "OPEN UNIVERSITY", UNIVERSITY]}
+  - {category: charity, direction: out, merchants: [JUSTGIVING, "CANCER RESEARCH", OXFAM, "BRITISH RED CROSS", GOFUNDME]}
+  - {category: entertainment, direction: out, merchants: [ODEON, CINEWORLD, VUE, TICKETMASTER, "SEE TICKETS", STEAM, PLAYSTATION, XBOX, NINTENDO]}
+  - {category: betting, flow_kind: betting, direction: out, merchants: [BET365, "SKY BET", SKYBET, "PADDY POWER", BETFAIR, "WILLIAM HILL", LADBROKES, CORAL, "NATIONAL LOTTERY", BETFRED]}
+  - {category: debt.bnpl, flow_kind: loan_repayment, direction: out, merchants: [KLARNA, CLEARPAY, "PAYPAL PAY IN 3", "PAYPAL PAY", LAYBUY, ZILCH]}
+  - {category: debt.loan, flow_kind: loan_repayment, direction: out, merchants: [ZOPA, "CLOSE BROTHERS", "BLACK HORSE", "SANTANDER CONSUMER", "MONEYBARN", "MOTONOVO", "CAR FINANCE", LOAN]}
+  - {category: tax.self_assessment, flow_kind: tax, direction: out, merchants: ["HMRC SELF ASSESSMENT", "HMRC SA"], patterns: ["HMRC.*\\bSA\\b"]}
+  - {category: tax.other, flow_kind: tax, direction: out, merchants: [HMRC]}
+  - {category: fees.bank, flow_kind: fee, direction: out, merchants: ["OVERDRAFT FEE", "NON-STERLING", "ARRANGED OVERDRAFT", "UNARRANGED", "FOREIGN TRANSACTION FEE", "MONTHLY FEE"]}
+  - {category: cash.withdrawal, direction: out, merchants: [ATM, "CASH WITHDRAWAL", "LINK ATM"]}
+  - {category: income.interest, direction: in, merchants: [INTEREST, "INT PAID", "GROSS INTEREST"]}
+  - {category: betting_return, flow_kind: betting_return, direction: in, merchants: [BET365, "SKY BET", SKYBET, "PADDY POWER", BETFAIR, "WILLIAM HILL", LADBROKES, CORAL, "NATIONAL LOTTERY", BETFRED]}
+
+bank_category_priors:
+  monzo:
+    eating_out: food.eating_out
+    groceries: groceries
+    transport: transport.public
+    bills: other
+    entertainment: entertainment
+    shopping: shopping.general
+    holidays: travel
+    personal_care: personal_care
+    family: gifts
+    charity: charity
+    finances: other
+    general: other
+    expenses: other
+    cash: cash.withdrawal
+    gifts: gifts
+    savings: savings_investment
+  revolut:
+    Restaurants: food.eating_out
+    Groceries: groceries
+    Transport: transport.public
+    Shopping: shopping.general
+    Entertainment: entertainment
+    Travel: travel
+    Health: health
+    Cash: cash.withdrawal
+
+protected_categories: [family_support_abroad, savings_investment]
+
+seasonal_defaults:
+  housing.council_tax: [4, 5, 6, 7, 8, 9, 10, 11, 12, 1]   # 10 monthly instalments Apr–Jan
+
+wording:
+  regulator: FCA
+  advice_boundary: "Guidance, not regulated financial advice."
+  tone: "Neutral and factual; no moralising, especially for betting."

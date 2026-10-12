@@ -1,0 +1,21 @@
+{
+  "accounts": [
+    {
+      "closing_balance_minor": 218450,
+      "currency": "GBP",
+      "file": "exports/monzo.csv",
+      "has_balance_column": false,
+      "id": "acct_main",
+      "institution": "Monzo",
+      "label": "Monzo current account",
+      "min_balance_minor": 15061,
+      "n_transactions": 254,
+      "opening_balance_minor": 203579
+    }
+  ],
+  "row_defaults": {
+    "currency": "GBP",
+    "file": "exports/monzo.csv",
+    "table": "acct_main"
+  }
+}

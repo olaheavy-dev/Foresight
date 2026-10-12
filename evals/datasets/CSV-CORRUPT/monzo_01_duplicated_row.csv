@@ -1,0 +1,16 @@
+Transaction ID,Date,Time,Type,Name,Emoji,Category,Amount,Currency,Local amount,Local currency,Notes and #tags,Address,Receipt,Description,Category split,Money Out,Money In
+tx_0000cjyIM2lsXFg7XJrK1hoDT3,03/09/2026,09:00:00,Card payment,Amazon,,Shopping,-14.83,GBP,-14.83,GBP,,,,AMAZON.CO.UK*K2B7Q,,-14.83,
+tx_0000pLOQA9eRBlJWbnpYHJJcTI,04/09/2026,10:07:00,Card payment,Costa,,Eating out,-3.63,GBP,-3.63,GBP,,,,COSTA COFFEE 22,,-3.63,
+tx_0000OkAXtuZDSPSU8vxXNnGXOU,06/09/2026,11:14:00,Card payment,Tesco,,Groceries,-24.00,GBP,-24.00,GBP,,,,TESCO STORES 3021,,-24.00,
+tx_0000peukplJfMzDSrUYYDur2oG,06/09/2026,12:21:00,Bacs (Direct Credit),Acme Analytics Ltd,,Income,2100.00,GBP,2100.00,GBP,,,,ACME ANALYTICS LTD SALARY,,,2100.00
+tx_0000Kyl32itb32NMjoVRfwSBJl,08/09/2026,13:28:00,Card payment,Boots,,Personal care,-14.20,GBP,-14.20,GBP,,,,BOOTS 1180,,-14.20,
+tx_0000Kyl32itb32NMjoVRfwSBJl,08/09/2026,13:28:00,Card payment,Boots,,Personal care,-14.20,GBP,-14.20,GBP,,,,BOOTS 1180,,-14.20,
+tx_0000yAPwcjIL58DJV2kuEJwoy9,08/09/2026,14:35:00,Card payment,Boots,,Personal care,-7.10,GBP,-7.10,GBP,,,,BOOTS 1180,,-7.10,
+tx_0000p8wIkguPQ51fHq1QGvahCM,09/09/2026,15:42:00,Card payment,Amazon,,Shopping,-30.84,GBP,-30.84,GBP,,,,AMAZON.CO.UK*K2B7Q,,-30.84,
+tx_0000YsMsK9R7A6c9b38PQ4WmrE,10/09/2026,16:49:00,Card payment,Northern,,Transport,-6.82,GBP,-6.82,GBP,,,,NORTHERN TRAINS,,-6.82,
+tx_0000ctzEcK19Z0VfsajHg03XWB,11/09/2026,17:56:00,Card payment,Pret,,Eating out,-5.10,GBP,-5.10,GBP,,,,PRET A MANGER 0412,,-5.10,
+tx_0000TxSiwRw65Sl5h8YNE331EW,12/09/2026,18:03:00,Card payment,Boots,,Personal care,-7.71,GBP,-7.71,GBP,,,,BOOTS 1180,,-7.71,
+tx_0000aZyQBi0RLYek0lVmT7Dx8N,12/09/2026,19:10:00,Card payment,Pret,,Eating out,-8.62,GBP,-8.62,GBP,,,,PRET A MANGER 0412,,-8.62,
+tx_0000JIfUYzRcCt1IrzGg3QcpNO,13/09/2026,20:17:00,Card payment,Amazon,,Shopping,-29.95,GBP,-29.95,GBP,,,,AMAZON.CO.UK*K2B7Q,,-29.95,
+tx_00003l6V2asaMKNAbtNUOmInSr,13/09/2026,09:24:00,Card payment,Boots,,Personal care,-14.16,GBP,-14.16,GBP,,,,BOOTS 1180,,-14.16,
+tx_0000jw1u5ilwQVzCiIe5iEq3u6,15/09/2026,10:31:00,Card payment,Tesco,,Groceries,-15.50,GBP,-15.50,GBP,,,,TESCO STORES 3021,,-15.50,

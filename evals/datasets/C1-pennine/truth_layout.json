@@ -1,0 +1,39 @@
+{
+  "exports/pennine_statement.csv": {
+    "delimiter": ",",
+    "format": "C1_pennine",
+    "tables": [
+      {
+        "balance_column": "Running Total",
+        "columns": {
+          "balance": "Running Total",
+          "date": "Posting Date",
+          "description": "Narrative",
+          "in": "Lodgements",
+          "out": "Withdrawals"
+        },
+        "currency": "GBP",
+        "currency_source": "home_default",
+        "date_format": "%d/%m/%y",
+        "decimal": ".",
+        "first_row": 6,
+        "header_row": 5,
+        "headers": [
+          "Posting Date",
+          "Narrative",
+          "Withdrawals",
+          "Lodgements",
+          "Running Total"
+        ],
+        "last_row": 1068,
+        "n_rows": 1063,
+        "sign_convention": "split_out_in",
+        "skip_rules": [
+          "preamble_rows"
+        ],
+        "table": "acct_main",
+        "title": null
+      }
+    ]
+  }
+}

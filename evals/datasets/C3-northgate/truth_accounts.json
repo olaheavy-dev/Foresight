@@ -1,0 +1,33 @@
+{
+  "accounts": [
+    {
+      "closing_balance_minor": 254023,
+      "currency": "GBP",
+      "file": "exports/northgate.csv",
+      "has_balance_column": false,
+      "id": "acct_main",
+      "institution": "Northgate",
+      "label": "Northgate current",
+      "min_balance_minor": 15000,
+      "n_transactions": 1058,
+      "opening_balance_minor": 363930
+    },
+    {
+      "closing_balance_minor": 741097,
+      "currency": "GBP",
+      "file": "exports/northgate.csv",
+      "has_balance_column": false,
+      "id": "acct_savings",
+      "institution": "Northgate",
+      "label": "Northgate savings",
+      "min_balance_minor": 250000,
+      "n_transactions": 24,
+      "opening_balance_minor": 250000
+    }
+  ],
+  "row_defaults": {
+    "currency": "GBP",
+    "file": "exports/northgate.csv",
+    "table": "acct_main"
+  }
+}

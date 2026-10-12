@@ -1,0 +1,35 @@
+{
+  "anomalies": [
+    {
+      "arrived_on": "2026-07-20",
+      "days_late": 45,
+      "expected_findings": [
+        "income_late"
+      ],
+      "expected_on": "2026-06-05",
+      "key": "late_payment",
+      "subject": "inc_client_lumen",
+      "type": "late_income"
+    },
+    {
+      "actual_minor": -590000,
+      "expected_findings": [
+        "amount_jump"
+      ],
+      "key": "tax_jump",
+      "normal_minor": -310000,
+      "subject": "rob_self_assessment",
+      "type": "amount_jump"
+    },
+    {
+      "amount_minor": -245000,
+      "date": "2026-08-14",
+      "expected_findings": [
+        "new_merchant"
+      ],
+      "key": "new_merchant_spike",
+      "subject": "cpty_wex",
+      "type": "new_merchant"
+    }
+  ]
+}

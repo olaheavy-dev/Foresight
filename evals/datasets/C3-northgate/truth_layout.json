@@ -1,0 +1,72 @@
+{
+  "exports/northgate.csv": {
+    "delimiter": ",",
+    "format": "C3_northgate",
+    "tables": [
+      {
+        "balance_column": null,
+        "columns": {
+          "date": "When",
+          "description": "What",
+          "id": "Txn Ref",
+          "in": "In(£)",
+          "out": "Out(£)"
+        },
+        "currency": "GBP",
+        "currency_source": "header_symbol",
+        "date_format": "%d-%b-%y",
+        "decimal": ".",
+        "first_row": 4,
+        "header_row": 3,
+        "headers": [
+          "Txn Ref",
+          "When",
+          "What",
+          "Out(£)",
+          "In(£)"
+        ],
+        "last_row": 1061,
+        "n_rows": 1058,
+        "sign_convention": "dr_cr_suffix",
+        "skip_rules": [
+          "title_rows",
+          "totals_block"
+        ],
+        "table": "acct_main",
+        "title": "Current Account"
+      },
+      {
+        "balance_column": null,
+        "columns": {
+          "date": "When",
+          "description": "What",
+          "id": "Txn Ref",
+          "in": "In(£)",
+          "out": "Out(£)"
+        },
+        "currency": "GBP",
+        "currency_source": "header_symbol",
+        "date_format": "%d-%b-%y",
+        "decimal": ".",
+        "first_row": 1065,
+        "header_row": 1064,
+        "headers": [
+          "Txn Ref",
+          "When",
+          "What",
+          "Out(£)",
+          "In(£)"
+        ],
+        "last_row": 1088,
+        "n_rows": 24,
+        "sign_convention": "dr_cr_suffix",
+        "skip_rules": [
+          "title_rows",
+          "totals_block"
+        ],
+        "table": "acct_savings",
+        "title": "Savings Account"
+      }
+    ]
+  }
+}

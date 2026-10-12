@@ -1,0 +1,90 @@
+{
+  "exports/monzo.csv": {
+    "delimiter": ",",
+    "format": "monzo",
+    "tables": [
+      {
+        "balance_column": null,
+        "columns": {
+          "amount": "Amount",
+          "bank_category": "Category",
+          "currency": "Currency",
+          "date": "Date",
+          "description": "Name",
+          "id": "Transaction ID",
+          "time": "Time",
+          "type": "Type"
+        },
+        "currency": "GBP",
+        "currency_source": "column",
+        "date_format": "%d/%m/%Y",
+        "decimal": ".",
+        "first_row": 1,
+        "header_row": 0,
+        "headers": [
+          "Transaction ID",
+          "Date",
+          "Time",
+          "Type",
+          "Name",
+          "Emoji",
+          "Category",
+          "Amount",
+          "Currency",
+          "Local amount",
+          "Local currency",
+          "Notes and #tags",
+          "Address",
+          "Receipt",
+          "Description",
+          "Category split",
+          "Money Out",
+          "Money In"
+        ],
+        "last_row": 543,
+        "n_rows": 543,
+        "sign_convention": "signed",
+        "skip_rules": [
+          "zero_amount_card_check"
+        ],
+        "table": "acct_main",
+        "title": null
+      }
+    ]
+  },
+  "exports/second_account.csv": {
+    "delimiter": ",",
+    "format": "generic_in_out",
+    "tables": [
+      {
+        "balance_column": "Balance",
+        "columns": {
+          "balance": "Balance",
+          "date": "Date",
+          "description": "Details",
+          "in": "Paid in",
+          "out": "Paid out"
+        },
+        "currency": "GBP",
+        "currency_source": "home_default",
+        "date_format": "%d %b %Y",
+        "decimal": ".",
+        "first_row": 1,
+        "header_row": 0,
+        "headers": [
+          "Date",
+          "Details",
+          "Paid out",
+          "Paid in",
+          "Balance"
+        ],
+        "last_row": 30,
+        "n_rows": 30,
+        "sign_convention": "split_out_in",
+        "skip_rules": [],
+        "table": "acct_second",
+        "title": null
+      }
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "income_streams": [
+    {
+      "account": "acct_main",
+      "cadence": "four_weekly",
+      "key": "inc_salary",
+      "net_amount_minor": 373800,
+      "payday_rule": {
+        "anchor_date": "2025-10-24",
+        "kind": "four_weekly",
+        "prev_working_day": true
+      },
+      "paydays": [
+        "2025-10-24",
+        "2025-11-21",
+        "2025-12-19",
+        "2026-01-16",
+        "2026-02-13",
+        "2026-03-13",
+        "2026-04-10",
+        "2026-05-08",
+        "2026-06-05",
+        "2026-07-03",
+        "2026-07-31",
+        "2026-08-28",
+        "2026-09-25"
+      ],
+      "provenance_expected": "detected",
+      "source": "Acme Analytics Ltd",
+      "split_pct": null
+    }
+  ]
+}

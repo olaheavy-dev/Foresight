@@ -1,0 +1,20 @@
+{
+  "as_of": "2026-10-11",
+  "buffer_minor": 50000,
+  "closing_balance_minor": 325758,
+  "country": "GB",
+  "dataset": "S14-side-account",
+  "declared_balance": null,
+  "discretionary_scale": "1.0",
+  "display_name": "Sam Patel",
+  "generator_version": "gen-1.0.0",
+  "history_start": "2025-10-12",
+  "home_currency": "GBP",
+  "locale": "en-GB",
+  "min_balance_minor": 4947,
+  "notes": [],
+  "opening_balance_minor": 8500,
+  "seed": 1729,
+  "timezone": "Europe/London",
+  "today": "2026-10-12"
+}

@@ -1,0 +1,18 @@
+Transaction ID,Date,Time,Type,Name,Emoji,Category,Amount,Currency,Local amount,Local currency,Notes and #tags,Address,Receipt,Description,Category split,Money Out,Money In
+tx_0000jYRl8papEMlNkU3q4OT9Yc,01/09/2026,09:00:00,Card payment,Octopus Energy,,Bills,-50.57,GBP,-50.57,GBP,,,,OCTOPUS ENERGY,,-50.57,
+tx_00008WxFhTOL0FB0AGIXLy41VE,01/09/2026,10:07:00,Card payment,Tesco,,Groceries,-14.02,GBP,-14.02,GBP,,,,TESCO STORES 3021,,-14.02,
+tx_0000HxYtqJL8xwj9EKsVr2s2C6,02/09/2026,11:14:00,Card payment,Pret,,Eating out,-7.27,GBP,-7.27,GBP,,,,PRET A MANGER 0412,,-7.27,
+tx_0000xHFsL9n6paMaVHKdrqgGnh,02/09/2026,12:21:00,Bacs (Direct Credit),Acme Analytics Ltd,,Income,2100.00,GBP,2100.00,GBP,,,,ACME ANALYTICS LTD SALARY,,,2100.00
+tx_000086sS6GxG8SwiSogyYEcxud,03/09/2026,13:28:00,Card payment,Pret,,Eating out,-4.53,GBP,-4.53,GBP,,,,PRET A MANGER 0412,,-4.53,
+tx_0000beIIyVoOVKzIJbkvuBTCma,04/09/2026,14:35:00,Card payment,Costa,,Eating out,-4.42,GBP,-4.42,GBP,,,,COSTA COFFEE 22,,-4.42,
+tx_0000afrJuSFfktHcSRnCXfhISt,06/09/2026,15:42:00,Card payment,Deliveroo,,Eating out,-19.47,GBP,-19.47,GBP,,,,DELIVEROO,,-19.47,
+tx_0000RYqbcsWqCQsj0y7nwCBuP6,06/09/2026,16:49:00,Card payment,Deliveroo,,Eating out,-18.56,GBP,-18.56,GBP,,,,DELIVEROO,,-18.56,
+tx_000048QjTL0dRX672blXzMP0Xe,07/09/2026,17:56:00,Card payment,Northern,,Transport,-4.38,GBP,-4.38,GBP,,,,NORTHERN TRAINS,,-4.38,
+tx_0000Meg2SflQldWNLNyqEVsvXH,07/09/2026,18:03:00,Card payment,Amazon,,Shopping,-18.01,GBP,-18.01,GBP,,,,AMAZON.CO.UK*K2B7Q,,-18.01,
+tx_0000YioqTunlXk0xWIFUiHtAam,07/09/2026,19:10:00,Card payment,Octopus Energy,,Bills,-78.78,GBP,-78.78,GBP,,,,OCTOPUS ENERGY,,-78.78,
+tx_0000YioqTunlXk0xWIFUiHtAam,07/09/2026,19:10:00,Card payment,Octopus Energy,,Bills,-78.78,GBP,-78.78,GBP,,,,OCTOPUS ENERGY,,-78.78,
+tx_0000Cr9aWSrosSgpdZOyoFGowi,09/09/2026,20:17:00,Card payment,Boots,,Personal care,-11.42,GBP,-11.42,GBP,,,,BOOTS 1180,,-11.42,
+tx_0000bvezynRXNAhuJ5PV40MXg0,11/09/2026,09:24:00,Card payment,Pret,,Eating out,-5.78,GBP,-5.78,GBP,,,,PRET A MANGER 0412,,-5.78,
+tx_00007uGqh9kD0iiCogQBM5K60L,13/09/2026,10:31:00,Card payment,Octopus Energy,,Bills,-84.42,GBP,-84.42,GBP,,,,OCTOPUS ENERGY,,-84.42,
+tx_00004450VPeGDand6nf3Flnbks,14/09/2026,11:38:00,Card payment,Pret,,Eating out,-7.56,GBP,-7.56,GBP,,,,PRET A MANGER 0412,,-7.56,
+tx_0000b94T9Aw3td4y5M77ZRfrmM,15/09/2026,12:45:00,Card payment,Costa,,Eating out,-4.42,GBP,-4.42,GBP,,,,COSTA COFFEE 22,,-4.42,

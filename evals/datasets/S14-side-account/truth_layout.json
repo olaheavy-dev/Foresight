@@ -1,0 +1,128 @@
+{
+  "exports/revolut_consolidated.csv": {
+    "delimiter": ",",
+    "format": "revolut_consolidated",
+    "tables": [
+      {
+        "balance_column": "Balance",
+        "columns": {
+          "amount": "Money in/out",
+          "balance": "Balance",
+          "bank_category": "Category",
+          "date": "Date",
+          "description": "Description"
+        },
+        "currency": "GBP",
+        "currency_source": "table_title",
+        "date_format": "%-d %b %Y (Sept)",
+        "decimal": ".",
+        "first_row": 9,
+        "header_row": 8,
+        "headers": [
+          "Date",
+          "Description",
+          "Category",
+          "Money in/out",
+          "Balance",
+          "Tax withheld",
+          "Other taxes",
+          "Fees",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "last_row": 332,
+        "n_rows": 324,
+        "sign_convention": "signed",
+        "skip_rules": [
+          "total_row",
+          "separator_row",
+          "summary_section"
+        ],
+        "table": "acct_gbp",
+        "title": "Personal Account (GBP)"
+      },
+      {
+        "balance_column": "Balance",
+        "columns": {
+          "amount": "Money in/out",
+          "balance": "Balance",
+          "bank_category": "Category",
+          "date": "Date",
+          "description": "Description"
+        },
+        "currency": "USD",
+        "currency_source": "table_title",
+        "date_format": "%-d %b %Y (Sept)",
+        "decimal": ".",
+        "first_row": 338,
+        "header_row": 337,
+        "headers": [
+          "Date",
+          "Description",
+          "Category",
+          "Money in/out",
+          "Balance",
+          "Tax withheld",
+          "Other taxes",
+          "Fees",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "last_row": 337,
+        "n_rows": 0,
+        "sign_convention": "signed",
+        "skip_rules": [
+          "total_row",
+          "separator_row",
+          "summary_section"
+        ],
+        "table": "acct_usd",
+        "title": "Personal Account (USD)"
+      },
+      {
+        "balance_column": "Balance",
+        "columns": {
+          "amount": "Money in/out",
+          "balance": "Balance",
+          "bank_category": "Category",
+          "date": "Date",
+          "description": "Description"
+        },
+        "currency": "EUR",
+        "currency_source": "table_title",
+        "date_format": "%-d %b %Y (Sept)",
+        "decimal": ".",
+        "first_row": 343,
+        "header_row": 342,
+        "headers": [
+          "Date",
+          "Description",
+          "Category",
+          "Money in/out",
+          "Balance",
+          "Tax withheld",
+          "Other taxes",
+          "Fees",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "last_row": 346,
+        "n_rows": 4,
+        "sign_convention": "signed",
+        "skip_rules": [
+          "total_row",
+          "separator_row",
+          "summary_section"
+        ],
+        "table": "acct_eur",
+        "title": "Personal Account (EUR)"
+      }
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "clean_data_rows": 14,
+  "data_rows": 14,
+  "defect": "shifted_column",
+  "expected_outcome": "rejected",
+  "file": "generic_08_shifted_column.csv",
+  "first_failing_row": 4,
+  "format": "generic"
+}

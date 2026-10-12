@@ -1,0 +1,61 @@
+{
+  "recurring": [
+    {
+      "active_months": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "amount_minor": 15000,
+      "anchor_day": [
+        1,
+        15
+      ],
+      "cadence": "semimonthly",
+      "category": "transfer.from_untracked",
+      "counterparty": "Sam Patel",
+      "day_rule": "calendar_day",
+      "flow": "transfer_from_untracked",
+      "is_commitment": false,
+      "key": "rob_topup",
+      "label": "Own-name top-up",
+      "price_changes": []
+    },
+    {
+      "active_months": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "amount_minor": 20000,
+      "anchor_day": 20,
+      "cadence": "monthly",
+      "category": "inflow_unconfirmed",
+      "counterparty": "T Okafor",
+      "day_rule": "jitter_19_21",
+      "flow": "inflow_unconfirmed",
+      "is_commitment": false,
+      "key": "rob_okafor_in",
+      "label": "T Okafor",
+      "price_changes": []
+    }
+  ]
+}

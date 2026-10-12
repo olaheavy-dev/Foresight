@@ -1,0 +1,15 @@
+Transaction ID,Date,Time,Type,Name,Emoji,Category,Amount,Currency,Local amount,Local currency,Notes and #tags,Address,Receipt,Description,Category split,Money Out,Money In
+tx_0000qEgnCDrqF38G8FyRGKOIjK,03/09/2026,09:00:00,Card payment,Northern,,Transport,-7.05,GBP,-7.05,GBP,,,,NORTHERN TRAINS,,-7.05,
+tx_0000jSTmxMllCiEyefVDOQ6SMb,05/09/2026,10:07:00,Card payment,Deliveroo,,Eating out,-16.09,GBP,-16.09,GBP,,,,DELIVEROO,,-16.09,
+tx_0000hly2bGIBLZDIsQYkjjdLCw,06/09/2026,11:14:00,Card payment,Deliveroo,,Eating out,-18.35,GBP,-18.35,GBP,,,,DELIVEROO,,-18.35,
+tx_0000gnGuM1JkZlDGOP9VglzdF9,07/09/2026,12:21:00,Bacs (Direct Credit),Acme Analytics Ltd,,Income,2100.00,GBP,2100.00,GBP,,,,ACME ANALYTICS LTD SALARY,,,2100.00
+tx_0000gnGuM1JkZlDGOP9VglzdF9,07/09/2026,12:21:00,Bacs (Direct Credit),Acme Analytics Ltd,,Income,2100.00,GBP,2100.00,GBP,,,,ACME ANALYTICS LTD SALARY,,,2100.00
+tx_00002vxNglUjb7UtNpgQ8o9OnF,09/09/2026,13:28:00,Card payment,Amazon,,Shopping,-31.96,GBP,-31.96,GBP,,,,AMAZON.CO.UK*K2B7Q,,-31.96,
+tx_0000Y74mGgLW3H0B1VwDJdBF5R,11/09/2026,14:35:00,Card payment,Northern,,Transport,-5.62,GBP,-5.62,GBP,,,,NORTHERN TRAINS,,-5.62,
+tx_0000q1mkjdQEkky7n1opuoZV1P,11/09/2026,15:42:00,Card payment,Costa,,Eating out,-4.56,GBP,-4.56,GBP,,,,COSTA COFFEE 22,,-4.56,
+tx_0000JcYpVqi7dAivMF5zTZ02iC,11/09/2026,16:49:00,Card payment,Octopus Energy,,Bills,-85.79,GBP,-85.79,GBP,,,,OCTOPUS ENERGY,,-85.79,
+tx_0000EysbMfA31ELfbsGRlNIOFw,13/09/2026,17:56:00,Card payment,Boots,,Personal care,-14.12,GBP,-14.12,GBP,,,,BOOTS 1180,,-14.12,
+tx_0000WSLaAoBIFhLrP8UNyBUfaz,15/09/2026,18:03:00,Card payment,Deliveroo,,Eating out,-13.86,GBP,-13.86,GBP,,,,DELIVEROO,,-13.86,
+tx_0000Rh5sbsjCLW4HOgTyYfGTDf,17/09/2026,19:10:00,Card payment,Tesco,,Groceries,-12.68,GBP,-12.68,GBP,,,,TESCO STORES 3021,,-12.68,
+tx_0000BYN3Ewx3bGLMRYaGxFJnvF,18/09/2026,20:17:00,Card payment,Octopus Energy,,Bills,-81.19,GBP,-81.19,GBP,,,,OCTOPUS ENERGY,,-81.19,
+tx_0000OI5o4VmAusbHq4RsCzbajC,19/09/2026,09:24:00,Card payment,Boots,,Personal care,-7.10,GBP,-7.10,GBP,,,,BOOTS 1180,,-7.10,

@@ -1,0 +1,38 @@
+{
+  "exports/fenwick.csv": {
+    "delimiter": ",",
+    "format": "C4_fenwick",
+    "tables": [
+      {
+        "balance_column": "Balance",
+        "columns": {
+          "amount": "Amount",
+          "balance": "Balance",
+          "date": "Date",
+          "description": "Transaction details"
+        },
+        "currency": "GBP",
+        "currency_source": "home_default",
+        "date_format": "%d %b %Y",
+        "decimal": ".",
+        "first_row": 9,
+        "group": ",",
+        "header_row": 8,
+        "headers": [
+          "Date",
+          "Transaction details",
+          "Amount",
+          "Balance"
+        ],
+        "last_row": 1101,
+        "n_rows": 1093,
+        "sign_convention": "brackets_negative",
+        "skip_rules": [
+          "address_block"
+        ],
+        "table": "acct_main",
+        "title": null
+      }
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "as_of": "2026-10-11",
+  "buffer_minor": 50000,
+  "closing_balance_minor": 262259,
+  "country": "GB",
+  "dataset": "G5-ambiguous-date",
+  "declared_balance": null,
+  "discretionary_scale": "1.1023",
+  "display_name": "Alex Morgan",
+  "generator_version": "gen-1.0.0",
+  "history_start": "2026-07-01",
+  "home_currency": "GBP",
+  "locale": "en-GB",
+  "min_balance_minor": 180148,
+  "notes": [
+    "Every day is 1–12: DD/MM vs MM/DD cannot be inferred; the importer must ask. Truth is DD/MM."
+  ],
+  "opening_balance_minor": 498604,
+  "seed": 1729,
+  "timezone": "Europe/London",
+  "today": "2026-10-12"
+}
