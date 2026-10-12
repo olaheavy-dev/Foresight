@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foresight · Studio home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="studio.css">
+</head>
+<body>
+<div class="studio">
+
+  <!-- Navigation recedes: it orients, it does not compete -->
+  <nav class="nav" aria-label="Main">
+    <div class="wordmark" aria-label="Foresight">F</div>
+    <a href="home.html" aria-current="page"><svg viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1z"/></svg>Home</a>
+    <a href="workspace.html"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9h16M10 9v11"/></svg>Workspace</a>
+    <a href="#"><svg viewBox="0 0 24 24"><path d="M5 19c4-1 5-6 7-9s4-4 7-4M5 19c4 0 7-2 9-4s3-3 5-3"/></svg>Lab</a>
+    <a href="#"><svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h9"/></svg>Data</a>
+    <a href="#"><svg viewBox="0 0 24 24"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg>Activity</a>
+    <div class="spacer"></div>
+    <button class="avatar" aria-label="Profile and settings">AN</button>
+  </nav>
+
+  <!-- Agent rail: what the agents did, in plain tool summaries -->
+  <aside class="rail" aria-label="Agent activity">
+    <div class="rail-head">
+      <h2>While you were away</h2>
+      <span class="sub">Today, 07:02–07:04</span>
+    </div>
+    <div class="rail-body">
+      <p class="thread-a" style="margin-top:0">You added a <strong>£650 car repair</strong> last night. Six agents re-checked the next three weeks and arranged this canvas.</p>
+      <ol class="steps">
+        <li class="step done" data-target="b-evidence"><span class="step-dot"></span><span class="step-label"><span class="step-agent">Ledger</span>Recorded <b>Car repair, £650</b> as Vehicle, paying 14 Oct</span><span class="step-time">07:02</span></li>
+        <li class="step done" data-target="b-evidence"><span class="step-dot"></span><span class="step-label"><span class="step-agent">Behaviour analyst</span>Found food delivery <b>41% above</b> your usual pace</span><span class="step-time">07:02</span></li>
+        <li class="step done" data-target="b-forecast"><span class="step-dot"></span><span class="step-label"><span class="step-agent">Forecaster</span>Rebuilt the forecast · low before payday <b>£812 → £162</b></span><span class="step-time">07:03</span></li>
+        <li class="step done" data-target="b-risk"><span class="step-dot"></span><span class="step-label"><span class="step-agent">Coordinator</span>Raised a buffer risk for <b>27 Oct</b></span><span class="step-time">07:03</span></li>
+        <li class="step revised" data-target="b-options"><span class="step-dot"></span><span class="step-label"><span class="step-agent">Verifier</span>Rejected <b>“Cap food delivery at £40”</b> · not realistic, still below buffer</span><span class="step-time">07:03</span></li>
+        <li class="step checked" data-target="b-options"><span class="step-dot"></span><span class="step-label"><span class="step-agent">Verifier</span>Checked the revised plan · low <b>£532</b>, recomputed to the pound</span><span class="step-time">07:04</span></li>
+      </ol>
+
+      <div class="rail-label">Ask about this canvas</div>
+      <div class="prompts">
+        <button>Why is food delivery higher this month?</button>
+        <button>What if my salary arrives a few days late?</button>
+        <button>Can I afford a £1,200 holiday in November?</button>
+      </div>
+    </div>
+    <div class="rail-foot">
+      <form class="ask" onsubmit="location.href='workspace.html'; return false;">
+        <textarea rows="1" placeholder="Ask about your money…" aria-label="Ask a question"></textarea>
+        <button type="submit" aria-label="Ask"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </form>
+      <div class="ask-note">Answers are built from your data and checked before you see them.</div>
+    </div>
+  </aside>
+
+  <!-- Canvas in orientation mode: blocks the agents assembled unprompted -->
+  <main class="canvas">
+    <div class="canvas-bar">
+      <div class="crumbs"><b>This morning’s canvas</b><span>·</span><span>Monday 12 October 2026</span></div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <span>Monzo current account · CSV imported 11 Oct</span>
+        <span class="concept-label">Design concept · fictional data</span>
+      </div>
+    </div>
+
+    <div class="canvas-title">
+      <h1>Your late-October buffer may fall below £500</h1>
+      <div class="meta">Assembled by 6 agents at 07:04<br>after you added a £650 car repair</div>
+    </div>
+
+    <div class="grid">
+
+      <!-- CashFlowTimeline -->
+      <section class="block span-8" id="b-forecast" aria-labelledby="t-forecast">
+        <div class="block-head">
+          <h2 class="block-title" id="t-forecast">Balance, 14 Sep → 6 Nov</h2>
+          <span class="stamp forecast">Forecast · probabilistic <span class="sep">/</span> 500 paths <span class="sep">/</span> as of 12 Oct</span>
+        </div>
+        <div class="block-body">
+          <div class="legend" aria-hidden="true">
+            <span class="key"><svg viewBox="0 0 22 10"><line x1="0" y1="5" x2="22" y2="5" stroke="#151D31" stroke-width="2"/></svg>Observed</span>
+            <span class="key"><svg viewBox="0 0 22 10"><rect x="0" y="1" width="22" height="8" fill="rgba(21,29,49,.09)"/><line x1="0" y1="5" x2="22" y2="5" stroke="#4A5367" stroke-width="2"/></svg>Forecast with car repair · likely range</span>
+            <span class="key"><svg viewBox="0 0 22 10"><line x1="0" y1="5" x2="22" y2="5" stroke="#168A78" stroke-width="2"/></svg>With checked plan</span>
+            <span class="key"><svg viewBox="0 0 22 10"><line x1="0" y1="5" x2="22" y2="5" stroke="#9AA1AE" stroke-width="1.5" stroke-dasharray="2 3"/></svg>Before the repair</span>
+            <span class="key"><svg viewBox="0 0 22 10"><line x1="1" y1="5" x2="21" y2="5" stroke="#C47B4D" stroke-width="1.5" stroke-dasharray="1 4" stroke-linecap="round"/></svg>Your buffer</span>
+          </div>
+          <div class="chart" id="home-chart"></div>
+        </div>
+      </section>
+
+      <!-- MetricSummary -->
+      <section class="block span-4" aria-label="Key figures">
+        <div class="block-body figures-stack" style="padding-top:20px">
+          <div class="figure">
+            <span class="stamp observed">Observed <span class="sep">/</span> statement</span>
+            <span class="label" style="margin-top:8px">Last known balance</span>
+            <span class="value hero num">£2,184<span class="pence">.50</span></span>
+            <span class="context">As of Sun 11 Oct, from your imported statement · <button class="inspect">Source rows</button></span>
+          </div>
+          <div class="figure">
+            <span class="stamp forecast">Forecast</span>
+            <span class="label" style="margin-top:8px">Lowest before payday</span>
+            <span class="value risk num">£162</span>
+            <span class="context">Tue 27 Oct · likely −£10 to £330 · <button class="inspect">Assumptions</button></span>
+          </div>
+          <div class="figure">
+            <span class="stamp computed">Computed</span>
+            <span class="label" style="margin-top:8px">Chance of going below £500</span>
+            <span class="value num">91<span style="font-size:.6em">%</span></span>
+            <span class="context">Was 6% before the repair · share of 500 forecast paths</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- RiskInsight -->
+      <section class="block span-5" id="b-risk" aria-labelledby="t-risk">
+        <div class="block-head">
+          <h2 class="block-title" id="t-risk">Why this was raised</h2>
+          <span class="stamp ai">Written by the Analyst <span class="sep">/</span> AI</span>
+        </div>
+        <div class="block-body">
+          <div class="risk-head">
+            <span class="risk-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A5613A" stroke-width="2.2"><path d="M12 7v6M12 17h.01"/></svg></span>
+            <h3>Two things land before your 28 Oct payday</h3>
+          </div>
+          <dl class="facts">
+            <dt>Cause</dt><dd>The £650 car repair on 14 Oct, plus food delivery running at £286 a month, against a usual £203.</dd>
+            <dt>Impact</dt><dd>Your balance is likely to bottom out at <b class="num">£162</b> on Tue 27 Oct, £338 under your buffer.</dd>
+            <dt>Next step</dt><dd>Review the checked plan. Nothing moves until you approve it.</dd>
+          </dl>
+          <div class="actions">
+            <a class="btn primary" href="workspace.html" style="text-decoration:none">Investigate</a>
+            <button class="btn quiet">Dismiss for this cycle</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- InterventionOptions -->
+      <section class="block span-7" id="b-options" aria-labelledby="t-options">
+        <div class="block-head">
+          <h2 class="block-title" id="t-options">What the agents propose</h2>
+          <span class="stamp checked">Checked by the Verifier <span class="sep">/</span> 1 revision</span>
+        </div>
+        <div class="block-body">
+          <div class="option checked">
+            <span class="mark" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2"><path d="M5 12.5 10 17l9-10"/></svg></span>
+            <div>
+              <div class="title">Move your £300 savings transfer from 15 Oct to 29 Oct, and keep food delivery under £120 until payday</div>
+              <div class="why">The transfer still happens, one day after your salary. Food delivery at £120 is about where you were in August.</div>
+              <div class="verdict-line"><span class="ok">✓ Checked</span><span class="muted" style="color:var(--text-faint)">low recomputed by the engine · feasible · no new risk created</span><button class="inspect">See the check</button></div>
+            </div>
+            <div class="effect"><span class="big good num" style="color:var(--positive-text)">£532</span><span style="color:var(--text-faint)">low on 27 Oct</span><br><span style="color:var(--text-faint)">34% chance under £500</span></div>
+          </div>
+          <div class="option rejected">
+            <span class="mark" aria-hidden="true"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#B4372F" stroke-width="3.5"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+            <div>
+              <div class="title">Cap food delivery at £40 until payday</div>
+              <div class="why"><b>Rejected by the Verifier.</b> £40 is 79% below your current pace, past the 40% limit for a realistic change, and it would still leave a £312 low, below your buffer.</div>
+            </div>
+            <div class="effect"><span class="big num" style="color:var(--text-faint)">£312</span><span style="color:var(--text-faint)">would-be low</span></div>
+          </div>
+          <div class="actions" style="margin-top:4px">
+            <button class="btn primary">Review and accept plan</button>
+            <a class="btn" href="workspace.html" style="text-decoration:none">Try other options</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- TransactionEvidence -->
+      <section class="block span-7" id="b-evidence" aria-labelledby="t-evidence">
+        <div class="block-head">
+          <h2 class="block-title" id="t-evidence">What’s driving it</h2>
+          <span class="stamp observed">Observed + upcoming <span class="sep">/</span> 6 of 214 rows</span>
+        </div>
+        <div class="block-body">
+          <table class="rows">
+            <thead><tr><th>Date</th><th>What</th><th>Source</th><th class="r">Amount</th></tr></thead>
+            <tbody>
+              <tr class="group"><td colspan="4">Observed · from your statement</td></tr>
+              <tr><td class="num">Thu 8 Oct</td><td>Uber Eats</td><td class="mono">statement row 176</td><td class="r num">−£31.15</td></tr>
+              <tr><td class="num">Sat 10 Oct</td><td>Deliveroo</td><td class="mono">statement row 182</td><td class="r num">−£24.80</td></tr>
+              <tr class="group"><td colspan="4">Upcoming · scheduled or forecast</td></tr>
+              <tr class="upcoming"><td class="num">Wed 14 Oct</td><td>Car repair · garage invoice <span class="chip tag-new">New</span></td><td class="mono">entered by you</td><td class="r num">−£650.00</td></tr>
+              <tr class="upcoming"><td class="num">Thu 15 Oct</td><td>Savings transfer</td><td class="mono">recurring · monthly</td><td class="r num">−£300.00</td></tr>
+              <tr class="upcoming"><td class="num">Thu 15 Oct</td><td>Council tax · family support</td><td class="mono">recurring · 2 bills</td><td class="r num">−£412.00</td></tr>
+              <tr class="upcoming"><td class="num">Wed 28 Oct</td><td>Salary</td><td class="mono">recurring · expected</td><td class="r num">+£2,940.00</td></tr>
+            </tbody>
+          </table>
+          <div class="actions" style="margin-top:12px"><button class="inspect">Open all 23 food delivery rows</button></div>
+        </div>
+      </section>
+
+      <!-- AssumptionInspector -->
+      <section class="block span-5" aria-labelledby="t-assume">
+        <div class="block-head">
+          <h2 class="block-title" id="t-assume">Assumptions in this forecast</h2>
+          <span class="stamp computed">Engine fc-1.0 <span class="sep">/</span> seed 1729</span>
+        </div>
+        <div class="block-body">
+          <table class="rows">
+            <tbody>
+              <tr><td>Salary arrives</td><td class="r">Wed 28 Oct · £2,940</td></tr>
+              <tr><td>Everyday spending</td><td class="r">about £27 a day</td></tr>
+              <tr><td>Bills included</td><td class="r">9 recurring</td></tr>
+              <tr><td>One-offs</td><td class="r">car repair only</td></tr>
+              <tr><td>Uncertainty</td><td class="r">500 simulated paths</td></tr>
+            </tbody>
+          </table>
+          <div class="attribution">Same inputs always give the same numbers. <button class="inspect">Change an assumption</button></div>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="footnote">
+      <span>Every number on this canvas comes from the forecasting engine, not from the AI. Click any figure to see where it came from.</span>
+      <span>Foresight gives guidance, not regulated financial advice.</span>
+    </div>
+  </main>
+</div>
+
+<script src="charts.js"></script>
+<script>
+  const C = ForesightCharts;
+  const history = C.daily([
+    ["2026-09-14", 1612], ["2026-09-15", 1200], ["2026-09-17", 1158], ["2026-09-19", 1092], ["2026-09-20", 1070],
+    ["2026-09-22", 1031], ["2026-09-24", 984], ["2026-09-26", 941], ["2026-09-27", 900],
+    ["2026-09-28", 3840], ["2026-09-30", 3765], ["2026-10-01", 2370], ["2026-10-03", 2322], ["2026-10-05", 2290],
+    ["2026-10-07", 2262], ["2026-10-08", 2231], ["2026-10-10", 2206], ["2026-10-11", 2184.5], ["2026-10-12", 2184.5]
+  ]);
+  const withRepair = C.daily([
+    ["2026-10-12", 2184.5], ["2026-10-13", 2155], ["2026-10-14", 1500], ["2026-10-15", 788], ["2026-10-20", 520],
+    ["2026-10-27", 162], ["2026-10-28", 3102], ["2026-11-01", 1640], ["2026-11-06", 1520]
+  ]);
+  const before = C.daily([
+    ["2026-10-12", 2184.5], ["2026-10-13", 2155], ["2026-10-14", 2150], ["2026-10-15", 1438], ["2026-10-20", 1170],
+    ["2026-10-27", 812], ["2026-10-28", 3752], ["2026-11-01", 2290], ["2026-11-06", 2170]
+  ]);
+  const plan = C.daily([
+    ["2026-10-12", 2184.5], ["2026-10-13", 2155], ["2026-10-14", 1500], ["2026-10-15", 1088], ["2026-10-20", 834],
+    ["2026-10-27", 532], ["2026-10-28", 3472], ["2026-10-29", 3172], ["2026-11-01", 1710], ["2026-11-06", 1590]
+  ]);
+  const t0 = C.d("2026-10-12").getTime();
+  const band = withRepair.map(([t, v]) => {
+    const days = (t - t0) / 86400000;
+    const w = Math.min(220, 12 * days);
+    return [t, v - w, v + w];
+  });
+  C.draw(document.getElementById("home-chart"), {
+    start: "2026-09-14", end: "2026-11-06", yMin: -300, yMax: 4200,
+    yTicks: [0, 1000, 2000, 3000, 4000],
+    xTicks: ["2026-09-14", "2026-09-28", "2026-10-12", "2026-10-28", "2026-11-06"],
+    today: "2026-10-12", buffer: 500, height: 320,
+    ariaLabel: "Balance observed to 12 October and forecast to 6 November",
+    series: [
+      { kind: "history", data: history, name: "Observed" },
+      { kind: "ghost", data: before, name: "Before repair" },
+      { kind: "forecast", data: withRepair, band, name: "With car repair" },
+      { kind: "recommended", data: plan, name: "Checked plan" },
+    ],
+    markers: [
+      { date: "2026-10-27", value: 162, label: "£162 · Tue 27 Oct", tone: "risk", align: "end", dy: 18 },
+      { date: "2026-10-27", value: 812, label: "", tone: "neutral" },
+      { date: "2026-10-27", value: 532, label: "£532 with checked plan", tone: "good", align: "end", dy: -14 },
+    ],
+  });
+
+  // Rail steps point at the block they produced
+  document.querySelectorAll(".step[data-target]").forEach((s) => {
+    const target = document.getElementById(s.dataset.target);
+    s.addEventListener("mouseenter", () => target.classList.add("is-highlight"));
+    s.addEventListener("mouseleave", () => target.classList.remove("is-highlight"));
+    s.addEventListener("click", () => target.scrollIntoView({ behavior: "smooth", block: "center" }));
+  });
+</script>
+</body>
+</html>

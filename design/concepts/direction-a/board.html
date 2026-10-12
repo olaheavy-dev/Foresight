@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foresight · Direction A board — Intelligence Command Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/a.css">
+<style>
+  .board { max-width: 1180px; margin: 0 auto; padding: 48px 48px 96px; }
+  .masthead { display: flex; align-items: baseline; gap: 16px; padding-bottom: 28px; border-bottom: 1px solid var(--border-subtle); }
+  .masthead .brand { font-family: var(--font-brand); font-size: 44px; line-height: 1; }
+  .masthead .dir { font-size: var(--t-sm); color: var(--text-muted); }
+  .masthead .concept-tag { margin-left: auto; }
+  .idea { font-size: var(--t-xl); font-weight: 500; letter-spacing: -0.02em; line-height: 1.25; max-width: 34ch; margin: 36px 0 0; }
+  .idea .soft { color: var(--text-faint); }
+  .sec { margin-top: 56px; }
+  .sec > h2 { font-size: var(--t-xs); color: var(--text-faint); font-weight: 500; letter-spacing: 0.02em; margin-bottom: 16px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .principles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--border-subtle); }
+  .principles div { padding: 18px 20px 18px 0; border-bottom: 1px solid var(--border-subtle); }
+  .principles div:not(:nth-child(3n+1)) { padding-left: 20px; border-left: 1px solid var(--border-subtle); }
+  .principles b { display: block; font-size: var(--t-md); margin-bottom: 4px; }
+  .principles span { font-size: var(--t-sm); color: var(--text-muted); }
+  .swatches { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
+  .sw { border: 1px solid var(--border-subtle); border-radius: var(--r-panel); overflow: hidden; background: var(--surface); }
+  .sw i { display: block; height: 72px; }
+  .sw p { padding: 10px 12px 12px; font-size: var(--t-xs); color: var(--text-muted); line-height: 1.4; }
+  .sw b { display: block; color: var(--text); font-size: var(--t-sm); }
+  .type-row { display: grid; grid-template-columns: 160px 1fr; gap: 24px; padding: 16px 0; border-top: 1px solid var(--border-subtle); align-items: baseline; }
+  .type-row .meta { font-size: var(--t-xs); color: var(--text-faint); font-family: var(--font-mono); }
+  .grammar { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+  .gcell { background: var(--surface); border: 1px solid var(--border-subtle); border-radius: var(--r-panel); padding: 14px; }
+  .gcell svg { width: 100%; height: 44px; display: block; margin-bottom: 10px; }
+  .gcell b { font-size: var(--t-sm); display: block; }
+  .gcell span { font-size: var(--t-xs); color: var(--text-muted); }
+  table.borrow { width: 100%; border-collapse: collapse; font-size: var(--t-sm); }
+  table.borrow th { text-align: left; font-size: var(--t-xs); color: var(--text-faint); font-weight: 500; padding: 0 16px 10px 0; }
+  table.borrow td { padding: 14px 16px 14px 0; border-top: 1px solid var(--border-subtle); vertical-align: top; }
+  table.borrow td:first-child { font-weight: 600; width: 140px; }
+  .wire { font-family: var(--font-mono); font-size: 12px; line-height: 1.5; background: var(--surface); border: 1px solid var(--border-subtle); border-radius: var(--r-panel); padding: 18px 20px; white-space: pre; color: var(--text-muted); overflow-x: auto; }
+</style>
+</head>
+<body>
+<div class="board">
+  <header class="masthead">
+    <span class="brand">Foresight</span>
+    <span class="dir">Direction A · Intelligence Command Centre</span>
+    <span class="concept-tag">Design concept · fictional data</span>
+  </header>
+
+  <p class="idea">A morning briefing for your money: <span class="soft">one calm outlook of the weeks ahead, the one thing that needs you, and a checked plan — with every number one click from its evidence.</span></p>
+
+  <section class="sec">
+    <h2>Principles</h2>
+    <div class="principles">
+      <div><b>The future is the hero</b><span>The outlook chart leads every visit. History is the short run-up on its left.</span></div>
+      <div><b>One thing at a time</b><span>A briefing ranks what matters today. Calm days say so; they never fill space with KPIs.</span></div>
+      <div><b>Every number has a kind</b><span>Observed, computed, forecast, scenario, AI-written or checked — marked the same way everywhere.</span></div>
+      <div><b>Advice arrives checked</b><span>Recommendations show what was rejected and why. Nothing moves money; you decide.</span></div>
+      <div><b>Questions become reports</b><span>Ask something and get an analysis with a verdict, a chart, alternatives and evidence — not a chat bubble.</span></div>
+      <div><b>Quiet chrome</b><span>Navigation recedes once you arrive; separators are felt, not seen.</span></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Palette — one accent, reserved status colours</h2>
+    <div class="swatches">
+      <div class="sw"><i style="background:#151D31"></i><p><b>Midnight ink</b>#151D31 · text, observed history, primary buttons</p></div>
+      <div class="sw"><i style="background:#F7F8F5"></i><p><b>Warm canvas</b>#F7F8F5 · the page</p></div>
+      <div class="sw"><i style="background:#FFFFFF"></i><p><b>White</b>#FFFFFF · analysis surfaces</p></div>
+      <div class="sw"><i style="background:#3868E9"></i><p><b>Signal blue</b>#3868E9 · the one accent: controls, focus, scenarios</p></div>
+      <div class="sw"><i style="background:#168A78"></i><p><b>Positive teal</b>#168A78 · checked, money in, safe</p></div>
+      <div class="sw"><i style="background:#C47B4D"></i><p><b>Caution amber</b>#C47B4D · buffer, risk, needs attention</p></div>
+      <div class="sw"><i style="background:#C2413A"></i><p><b>Shortfall red</b>#C2413A · only below £0 or invalid input</p></div>
+    </div>
+    <p class="faint" style="margin-top:12px">Text tints measured on white: muted #545C70 6.7:1, faint #6A7184 4.9:1 (4.6:1 on canvas), amber text #95542A 5.9:1, teal text #10705F 6.0:1, signal blue 4.9:1. Chart series are separated by line style and direct labels, not colour alone (the amber/teal pair is only 6.5 ΔE for protanopia, so both always carry an icon and a word).</p>
+  </section>
+
+  <section class="sec grid2">
+    <div>
+      <h2>Type — Geist for everything, tabular figures for money</h2>
+      <div class="type-row"><span class="meta">Hero figure · 44/600</span><span class="num" style="font-size:44px;font-weight:500;letter-spacing:-0.03em">£2,184<sup style="font-size:22px;vertical-align:20px">.50</sup></span></div>
+      <div class="type-row"><span class="meta">Question · 28/500</span><span style="font-size:28px;font-weight:500;letter-spacing:-0.02em">What should I know today?</span></div>
+      <div class="type-row"><span class="meta">Lede · 20/400</span><span style="font-size:20px">One thing needs attention. <span style="color:var(--text-muted)">A car repair puts your buffer at risk.</span></span></div>
+      <div class="type-row"><span class="meta">Body · 15/400</span><span>Move the £300 savings transfer to 29 Oct.</span></div>
+      <div class="type-row"><span class="meta">Meta · 13 &amp; 12</span><span class="faint">Monzo statement, as of Sun 11 Oct</span></div>
+      <div class="type-row"><span class="meta">Brand only</span><span style="font-family:var(--font-brand);font-size:34px">Foresight</span></div>
+    </div>
+    <div>
+      <h2>Layout — Command Centre</h2>
+<div class="wire">┌──────────┬──────────────────────────────────────────────┐
+│Foresight │ Home              [ Ask about your money  / ]│
+│          ├──────────────────────────────────────────────┤
+│Home     1│ Monday 12 October                            │
+│Workspace │ What should I know about my money today?     │
+│Decision  │ One thing needs attention. …                 │
+│Data      │ ─ balance ─┬─ lowest point ─┬─ next salary ─ │
+│Activity  │ ┌──────── Your cash outlook ───────────┐     │
+│          │ │ observed │ today │ forecast + range  │     │
+│          │ │──────────┼── buffer ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄│     │
+│          │ │ event rail: dated payments ▲  ▲   ▲  │     │
+│          │ └──────────────────────────────────────┘     │
+│agents ·  │ ┌ Needs attention ─────┐┌ Checked plan ┐     │
+│data to   │ │ why·effect·next      ││ before→after │     │
+│Amara  ⚙  │ └──────────────────────┘└──────────────┘     │
+│          │ What changed          Coming up + balance    │
+└──────────┴──────────────────────────────────────────────┘</div>
+      <p class="faint" style="margin-top:10px">Signature: the <b>outlook with an event rail</b> — every dated payment sits under the exact day it moves the line, so cause and effect read in one glance.</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Chart grammar — never violated</h2>
+    <div class="grammar">
+      <div class="gcell"><svg viewBox="0 0 120 44"><path d="M2 30 L30 26 L60 32 L90 18 L118 22" fill="none" stroke="#151D31" stroke-width="2"/></svg><b>Observed</b><span>Solid ink. Only what your statements show.</span></div>
+      <div class="gcell"><svg viewBox="0 0 120 44"><path d="M2 24 L118 12 L118 30 L2 26Z" fill="rgba(21,29,49,.08)"/><path d="M2 25 L118 21" fill="none" stroke="#4B5572" stroke-width="2"/></svg><b>Forecast</b><span>Slate line + likely range band (10th–90th).</span></div>
+      <div class="gcell"><svg viewBox="0 0 120 44"><path d="M2 20 L60 22 L62 34 L118 36" fill="none" stroke="#3868E9" stroke-width="2" stroke-dasharray="6 4"/></svg><b>Your scenario</b><span>Dashed blue. Hypothetical, never mixed with observed.</span></div>
+      <div class="gcell"><svg viewBox="0 0 120 44"><path d="M2 18 L118 22" fill="none" stroke="#9AA0AE" stroke-width="1.5" stroke-dasharray="4 4"/></svg><b>Previous forecast</b><span>Grey dashed ghost after a revision.</span></div>
+      <div class="gcell"><svg viewBox="0 0 120 44"><path d="M2 30 L118 30" stroke="#C47B4D" stroke-width="1.5" stroke-dasharray="1 4" stroke-linecap="round"/></svg><b>Your buffer</b><span>Dotted amber, labelled at the axis.</span></div>
+      <div class="gcell"><svg viewBox="0 0 120 44"><line x1="58" x2="58" y1="4" y2="40" stroke="#151D31"/><circle cx="90" cy="30" r="5" fill="#fff" stroke="#C47B4D" stroke-width="2.5"/></svg><b>Today + risk point</b><span>Hard “today” rule; ringed, dated low.</span></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Components</h2>
+    <div class="grid3">
+      <div class="panel"><div class="panel-body">
+        <span class="label faint">Metric with provenance</span>
+        <div class="metric" style="padding:8px 0 0"><span class="value num warn">£162</span><span class="context"><span class="kind forecast">Forecast</span> · Tue 27 Oct · likely −£10 to £330</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:16px"><span class="kind observed">Observed</span><span class="kind computed">Computed</span><span class="kind forecast">Forecast</span><span class="kind scenario">Scenario</span><span class="kind ai">AI-written</span></div>
+      </div></div>
+      <div class="panel insight"><div class="panel-body">
+        <span class="risk-flag"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.5 13 12H1z"/><path d="M7 5.5v3M7 10.2v.1"/></svg>Needs attention</span>
+        <p style="font-size:var(--t-lg);margin-top:8px;line-height:1.3">Your late-October buffer may fall below £500</p>
+        <p class="faint" style="margin-top:8px">Why · Effect · Window · Next — the same four facts, every time.</p>
+      </div></div>
+      <div class="panel"><div class="panel-body">
+        <span class="check"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="m2.5 7.5 3 3 6-7"/></svg>Checked · 1 revision</span>
+        <p style="margin-top:8px;font-size:var(--t-sm)"><span class="reject"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="m3 3 8 8M11 3l-8 8"/></svg>Rejected</span> cap food delivery at £40 — 79% below your usual pace (limit 40%).</p>
+        <div class="actions" style="margin-top:14px"><button class="btn primary">Use this plan</button><button class="btn accent">Investigate</button><button class="btn ghost">Not now</button></div>
+      </div></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>What we borrowed — and what we left behind</h2>
+    <table class="borrow">
+      <thead><tr><th>Reference</th><th>Borrowed</th><th>Why it fits Foresight</th><th>Left behind</th></tr></thead>
+      <tbody>
+        <tr><td>Mercury</td><td>Confident figures with superscript pence; “upcoming payments” with an ending-balance column</td><td>Our “Coming up before payday” ledger shows the balance after each payment — the forecast as a list</td><td>Card art, banking actions, transfers</td></tr>
+        <tr><td>Linear</td><td>A sidebar a few notches dimmer than content; borders “felt, not seen”; an inspector panel</td><td>The briefing and the report own the attention; the Workspace inspector holds controls and the agent trail</td><td>Issue-tracker density and vocabulary</td></tr>
+        <tr><td>Ramp</td><td>Two-tone headline (statement in ink, explanation in grey); a quiet “agents at work” status line</td><td>The lede answers the day’s question in one sentence; agent status lives in the sidebar, not a hero animation</td><td>Corporate spend terminology, neon CTA</td></tr>
+        <tr><td>Monarch</td><td>Click any part of a chart to see the transactions behind it</td><td>Every number has an inspect affordance that opens its source transactions and assumptions</td><td>Historical category reports as the hero</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <p class="footnote">Design concept for Agent Arena 2026 · Direction A · all people, accounts and figures are fictional · <a href="home.html">Home</a> · <a href="workspace.html">Workspace</a></p>
+</div>
+</body>
+</html>

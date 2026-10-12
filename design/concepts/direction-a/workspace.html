@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foresight · Workspace — Direction A concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/a.css">
+<style>
+  .ws { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 32px; max-width: 1180px; margin: 0 auto; padding: 36px 40px 96px; }
+  .asked { display: flex; align-items: center; gap: 10px; }
+  .asked .avatar { width: 22px; height: 22px; font-size: 10px; }
+  h1.q { font-size: var(--t-xl); font-weight: 500; letter-spacing: -0.02em; line-height: 1.2; margin: 12px 0 0; }
+  .verdict { margin-top: 24px; padding: 22px 24px; background: var(--surface); border: 1px solid var(--border-subtle); border-radius: var(--r-panel); border-left: 3px solid var(--warning); }
+  .verdict .big { font-size: var(--t-lg); font-weight: 600; letter-spacing: -0.01em; line-height: 1.3; }
+  .verdict .big span { color: var(--text-muted); font-weight: 500; }
+  .ai-text { margin-top: 12px; font-size: var(--t-md); color: var(--text); max-width: 64ch; }
+  .ai-label { display: flex; align-items: center; gap: 8px; margin-top: 16px; font-size: var(--t-xs); color: var(--text-faint); }
+  .outcomes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 20px; border-top: 1px solid var(--border-subtle); }
+  .outcomes .metric .value { font-size: var(--t-lg); }
+  .outcomes .metric { padding-right: 18px; }
+  .outcomes .metric + .metric { padding-left: 18px; }
+  .chart-panel { margin-top: 20px; }
+  .alt { margin-top: 20px; }
+  .alt dl { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 16px; margin: 14px 0 0; font-size: var(--t-sm); }
+  .alt dt { color: var(--text); }
+  .alt dd { margin: 0; text-align: right; }
+  details.evidence { margin-top: 20px; }
+  details.evidence summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 16px 22px; }
+  details.evidence summary::-webkit-details-marker { display: none; }
+  details.evidence summary .chev { margin-left: auto; transition: transform 120ms; color: var(--text-faint); }
+  details.evidence[open] summary .chev { transform: rotate(90deg); }
+  .ev-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; padding: 4px 22px 22px; }
+  .ev-grid h3 { margin-bottom: 10px; }
+  .assume { list-style: none; padding: 0; margin: 0; font-size: var(--t-sm); }
+  .assume li { padding: 8px 0; border-top: 1px solid var(--border-subtle); display: grid; grid-template-columns: 1fr auto; gap: 12px; }
+  .assume li:first-child { border-top: 0; }
+  .follow { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: var(--t-sm); }
+  .follow .lbl { color: var(--text-muted); margin-right: 6px; }
+  .follow a { padding: 6px 12px; border: 1px solid var(--border-strong); border-radius: var(--r-control); background: var(--surface); text-decoration: none; }
+  .follow a:hover { border-color: var(--accent); color: var(--accent); }
+
+  .inspector { position: sticky; top: 80px; align-self: start; display: grid; gap: 16px; }
+  .insp-sec { background: var(--surface); border: 1px solid var(--border-subtle); border-radius: var(--r-panel); padding: 18px; }
+  .insp-sec h2 { font-size: var(--t-sm); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .field { display: grid; gap: 6px; margin-bottom: 14px; }
+  .field label, .field .lab { font-size: var(--t-xs); color: var(--text-muted); font-weight: 500; }
+  .money { display: flex; align-items: center; height: 36px; border: 1px solid var(--border-strong); border-radius: var(--r-control); padding: 0 10px; background: var(--surface); }
+  .money span { color: var(--text-faint); margin-right: 4px; }
+  .money input { border: 0; outline: 0; width: 100%; font-variant-numeric: tabular-nums; background: none; }
+  .money:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-tint); }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 3px; background: var(--surface-subtle); border-radius: 8px; }
+  .seg button { border: 0; background: none; padding: 7px 8px; border-radius: 6px; font-size: var(--t-sm); cursor: pointer; color: var(--text-muted); display: grid; gap: 1px; text-align: left; }
+  .seg button small { font-size: 11px; color: var(--text-faint); }
+  .seg button[aria-checked="true"] { background: var(--surface); color: var(--text); box-shadow: 0 0 0 1px var(--border-subtle), 0 1px 2px rgba(21,29,49,.06); }
+  .seg button[aria-checked="true"] small { color: var(--accent); }
+  .recalc { font-size: var(--t-xs); color: var(--text-faint); display: flex; gap: 6px; align-items: center; }
+  .steps { list-style: none; margin: 0; padding: 0; position: relative; }
+  .steps li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 10px; padding: 0 0 14px; position: relative; font-size: var(--t-sm); }
+  .steps li::before { content: ""; position: absolute; left: 8px; top: 18px; bottom: 0; width: 1px; background: var(--border-subtle); }
+  .steps li:last-child::before { display: none; }
+  .steps .node { width: 17px; height: 17px; border-radius: 50%; border: 1.5px solid var(--border-strong); background: var(--surface); display: grid; place-items: center; margin-top: 1px; }
+  .steps .node.ok { border-color: var(--positive); }
+  .steps .node.ok::after { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--positive); }
+  .steps .node.fix { border-color: var(--warning); }
+  .steps .node.fix::after { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--warning); }
+  .steps b { font-weight: 600; }
+  .steps .what { display: block; color: var(--text-muted); font-size: var(--t-xs); margin-top: 1px; }
+  .steps .t { float: right; font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); }
+  .insp-foot { border-top: 1px solid var(--border-subtle); padding-top: 12px; margin-top: 2px; font-size: var(--t-xs); color: var(--text-muted); display: grid; gap: 4px; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side" aria-label="Primary">
+    <a class="wordmark" href="home.html" aria-label="Foresight home">
+      <svg class="glyph" viewBox="0 0 18 18" aria-hidden="true"><path d="M1 13 C5 13 6 5 10 5 S15 9 17 9" fill="none" stroke="#151D31" stroke-width="1.8" stroke-linecap="round"/><path d="M10 5 S15 9 17 9" fill="none" stroke="#3868E9" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="2 2.5"/></svg>
+      <b>Foresight</b>
+    </a>
+    <nav>
+      <a href="home.html"><svg viewBox="0 0 16 16"><path d="M2 7.5 8 2.5l6 5V14H2z"/></svg>Home<span class="count" aria-label="1 item needs attention">1</span></a>
+      <a href="workspace.html" aria-current="page"><svg viewBox="0 0 16 16"><path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z"/></svg>Workspace</a>
+      <a href="#"><svg viewBox="0 0 16 16"><path d="M2 12.5 6 8l3 2.5 5-6"/><path d="M11 4.5h3v3"/></svg>Decision Lab</a>
+      <a href="#"><svg viewBox="0 0 16 16"><path d="M2.5 3.5h11M2.5 8h11M2.5 12.5h11"/></svg>Financial Data</a>
+      <a href="#"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="M8 5v3.2l2 1.3"/></svg>Activity</a>
+    </nav>
+    <div class="spacer"></div>
+    <div class="status" aria-label="Agent status">
+      <span><span class="dot"></span>Agents idle · last run 09:41</span>
+      <span>Data to 11 Oct · Monzo CSV</span>
+    </div>
+    <a class="profile" href="#" aria-label="Profile and settings">
+      <span class="avatar" aria-hidden="true">AN</span>
+      <span>Amara Nwosu<small>Profile &amp; settings</small></span>
+    </a>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <span class="crumb">Workspace / <b>Holiday in November</b></span>
+      <a class="ask" href="#" role="search" aria-label="Ask a follow-up">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg>
+        Ask a follow-up, or a new question
+        <kbd>/</kbd>
+      </a>
+      <span class="concept-tag">Design concept · fictional data</span>
+    </header>
+
+    <div class="ws">
+      <article aria-labelledby="q">
+        <div class="asked"><span class="avatar" aria-hidden="true">AN</span><span class="faint">You asked · today 09:41 · answered in 6.2 s</span></div>
+        <h1 class="q" id="q">“Can I afford a £1,200 holiday in November?”</h1>
+
+        <section class="verdict" aria-label="Answer">
+          <p class="big">Not comfortably in November. <span>Fine if you pay from 28 November.</span></p>
+          <p class="ai-text">Paying on 6 Nov leaves you with about £180 before your 27 Nov salary — well under your £500 buffer. Paying after payday keeps every week above it; December’s lowest point would be £720.</p>
+          <p class="ai-label"><span class="kind ai">Explanation written by Foresight</span> · every number in it comes from the checked forecast below</p>
+          <div class="outcomes">
+            <div class="metric">
+              <span class="label">Pay on Fri 6 Nov</span>
+              <span class="value num warn">£180</span>
+              <span class="context"><span class="kind scenario">Scenario</span> · lowest, Thu 26 Nov · under buffer</span>
+            </div>
+            <div class="metric">
+              <span class="label">Pay from Sat 28 Nov</span>
+              <span class="value num">£720</span>
+              <span class="context"><span class="kind scenario">Scenario</span> · lowest, Thu 17 Dec · above buffer</span>
+            </div>
+            <div class="metric">
+              <span class="label">No holiday</span>
+              <span class="value num">£1,380</span>
+              <span class="context"><span class="kind forecast">Forecast</span> · lowest in Nov, Thu 26 Nov</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel chart-panel" aria-labelledby="h-chart">
+          <div class="panel-head">
+            <h2 id="h-chart">Forecast with and without the holiday</h2>
+            <span class="faint">5 Oct – 31 Dec · Monzo current account</span>
+          </div>
+          <div class="legend" aria-hidden="true">
+            <span><i class="hist"></i>Observed</span>
+            <span><i class="fc"></i>Forecast without holiday · likely range</span>
+            <span><i class="scen"></i><span id="scen-legend">Holiday paid Fri 6 Nov</span></span>
+            <span><i class="buf"></i>Buffer · £500</span>
+          </div>
+          <div class="chart-wrap" id="hol"></div>
+          <p class="faint" style="padding:6px 22px 18px">Late October dips to £162 in every scenario because of the car repair — that is handled by the checked plan on <a href="home.html#plan">Home</a>, not by this question.</p>
+        </section>
+
+        <section class="panel alt" aria-labelledby="h-alt">
+          <div class="panel-body">
+            <div style="display:flex;align-items:center;gap:10px">
+              <h2 id="h-alt">Checked alternative</h2>
+              <span class="check"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="m2.5 7.5 3 3 6-7"/></svg>Checked · 4 numbers recomputed</span>
+            </div>
+            <p style="margin-top:10px">Book now, but pay after your 27 Nov salary. If the booking needs money up front, keep the deposit to <b>£800 or less</b>.</p>
+            <dl>
+              <dt>Lowest balance if paid in full from 28 Nov</dt><dd class="num">£720 · Thu 17 Dec</dd>
+              <dt>Lowest balance with an £800 deposit on 6 Nov</dt><dd class="num">£580 · Thu 26 Nov</dd>
+              <dt>Weeks under your buffer to 31 Dec, if paid from 28 Nov</dt><dd class="num">0</dd>
+            </dl>
+            <ul class="rejected" style="list-style:none;padding:0;margin:14px 0 0;font-size:var(--t-xs);color:var(--text-muted)">
+              <li style="display:grid;grid-template-columns:auto 1fr;gap:8px"><span class="reject"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="m3 3 8 8M11 3l-8 8"/></svg></span><span>Corrected before you saw it: the first draft said November’s low would be “about £200”. The Verifier recomputed it as £180 and replaced the figure.</span></li>
+            </ul>
+          </div>
+        </section>
+
+        <details class="panel evidence">
+          <summary><h2>Evidence and assumptions</h2><span class="faint">6 inputs · 4 known payments · forecast engine fc-1.0</span><span class="chev" aria-hidden="true">›</span></summary>
+          <div class="ev-grid">
+            <div>
+              <h3>Known payments used</h3>
+              <table class="ledger">
+                <thead><tr><th>Date</th><th>Payment</th><th class="num">Amount</th></tr></thead>
+                <tbody>
+                  <tr><td>Sun 1 Nov</td><td>Rent</td><td class="num">−£1,395.00</td></tr>
+                  <tr><td>Fri 27 Nov</td><td>Salary <span class="faint">(28th is a Saturday)</span></td><td class="num pos">+£2,940.00</td></tr>
+                  <tr><td>Tue 1 Dec</td><td>Rent</td><td class="num">−£1,395.00</td></tr>
+                  <tr><td>Fri 18 Dec</td><td>Salary <span class="faint">(December paid early)</span></td><td class="num pos">+£2,940.00</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <h3>Assumptions</h3>
+              <ul class="assume">
+                <li><span>Holiday paid in one payment from Monzo</span><span class="kind scenario">Your input</span></li>
+                <li><span>Everyday spending follows the last 90 days</span><span class="kind computed">Computed</span></li>
+                <li><span>Balance as of Sun 11 Oct, from your statement</span><span class="kind observed">Observed</span></li>
+                <li><span>Likely range = 10th–90th percentile of 500 paths</span><span class="kind forecast">Forecast</span></li>
+                <li><span>No currency conversion; GBP only</span><span class="faint">Limit</span></li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <nav class="follow" aria-label="Follow-up questions">
+          <span class="lbl">Ask next</span>
+          <a href="#">What if it costs £900?</a>
+          <a href="#">Which week in November is safest?</a>
+          <a href="#">Make this a savings goal</a>
+        </nav>
+      </article>
+
+      <aside class="inspector" aria-label="Scenario and agent activity">
+        <section class="insp-sec" aria-labelledby="h-scen">
+          <h2 id="h-scen"><span class="kind scenario">Scenario</span></h2>
+          <div class="field">
+            <label for="amt">Holiday cost</label>
+            <div class="money"><span>£</span><input id="amt" inputmode="decimal" value="1,200" aria-describedby="recalc"></div>
+          </div>
+          <div class="field">
+            <span class="lab" id="pay-on">Pay on</span>
+            <div class="seg" role="radiogroup" aria-labelledby="pay-on">
+              <button role="radio" aria-checked="true" data-s="nov">Fri 6 Nov<small>£180 low</small></button>
+              <button role="radio" aria-checked="false" data-s="dec">Sat 28 Nov<small>£720 low</small></button>
+            </div>
+          </div>
+          <p class="recalc" id="recalc">Recalculated instantly by the forecast engine. No AI writes these numbers.</p>
+        </section>
+
+        <section class="insp-sec" aria-labelledby="h-steps">
+          <h2 id="h-steps">How Foresight worked this out</h2>
+          <ol class="steps">
+            <li><span class="node ok"></span><span><b>Coordinator</b><span class="t">09:41:02</span><span class="what">Read the question as a one-off £1,200 payment in November</span></span></li>
+            <li><span class="node ok"></span><span><b>Ledger</b><span class="t">09:41:03</span><span class="what">Used 312 categorised transactions, data to 11 Oct</span></span></li>
+            <li><span class="node ok"></span><span><b>Behaviour Analyst</b><span class="t">09:41:03</span><span class="what">Everyday spending pattern, last 90 days</span></span></li>
+            <li><span class="node ok"></span><span><b>Forecaster</b><span class="t">09:41:05</span><span class="what">Built the forecast to 31 Dec · simulated 2 payment dates</span></span></li>
+            <li><span class="node ok"></span><span><b>Advisor</b><span class="t">09:41:07</span><span class="what">Proposed paying after payday, or an £800 deposit</span></span></li>
+            <li><span class="node fix"></span><span><b>Verifier</b><span class="t">09:41:08</span><span class="what">Checked 4 numbers · corrected 1 (£200 → £180)</span></span></li>
+          </ol>
+          <div class="insp-foot">
+            <span>6 steps · 5 model calls via Mesh · 0 numbers written by AI</span>
+            <a href="#" style="color:var(--accent);text-decoration:none">Open the full audit trail →</a>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<script src="assets/chart.js"></script>
+<script>
+  const base = [["2026-10-12",2184.5],["2026-10-14",1466],["2026-10-15",722],["2026-10-20",520],["2026-10-24",330],["2026-10-27",162],["2026-10-28",3102],["2026-11-01",1590],["2026-11-06",1540],["2026-11-15",1460],["2026-11-26",1380],["2026-11-27",4320],["2026-12-01",2925],["2026-12-10",2400],["2026-12-17",1920],["2026-12-18",4860],["2026-12-24",4520],["2026-12-31",4210]];
+  const SC = {
+    nov: { label: "Holiday paid Fri 6 Nov", points: [["2026-11-05",1550],["2026-11-06",340],["2026-11-15",260],["2026-11-26",180],["2026-11-27",3120],["2026-12-01",1725],["2026-12-10",1200],["2026-12-17",720],["2026-12-18",3660],["2026-12-24",3320],["2026-12-31",3010]], from: "2026-11-05",
+           marker: { date: "2026-11-26", value: 180, label: "£180 · Thu 26 Nov", sub: "Under your buffer", align: "end", tone: "warn" } },
+    dec: { label: "Holiday paid Sat 28 Nov", points: [["2026-11-27",4320],["2026-11-28",3120],["2026-12-01",1725],["2026-12-10",1200],["2026-12-17",720],["2026-12-18",3660],["2026-12-24",3320],["2026-12-31",3010]], from: "2026-11-27",
+           marker: { date: "2026-12-17", value: 720, label: "£720 · Thu 17 Dec", sub: "Above your buffer", align: "end", tone: "scenario" } }
+  };
+  function draw(key) {
+    const s = SC[key];
+    document.getElementById("scen-legend").textContent = s.label;
+    ForesightChart.render(document.getElementById("hol"), {
+      aria: "Forecast to 31 December with and without a £1,200 holiday. " + s.label + ": lowest " + s.marker.label + ".",
+      width: 720, height: 300,
+      start: "2026-10-05", end: "2026-12-31", today: "2026-10-12",
+      yMin: -900, yMax: 5200, ticksY: [0, 1000, 2000, 3000, 4000, 5000],
+      ticksX: ["2026-10-12", "2026-11-01", "2026-11-27", "2026-12-18"],
+      buffer: 500,
+      history: [["2026-10-05",2290],["2026-10-08",2236],["2026-10-11",2184.5],["2026-10-12",2184.5]],
+      forecast: base,
+      band: (days) => 170 * Math.pow(Math.min(days, 60) / 15, 0.6),
+      scenarios: [{ label: s.label, points: s.points, from: s.from }],
+      markers: [s.marker, { date: "2026-10-27", value: 162, label: "£162 · 27 Oct", sub: "Car repair dip", align: "end" }],
+      lineLabels: [{ date: "2026-12-31", value: 4210, text: "No holiday", dy: -12, anchor: "end", color: "var(--series-forecast)", weight: 600 },
+                   { date: "2026-12-31", value: 3010, text: "With holiday", dy: 22, anchor: "end", color: "var(--accent)", weight: 600 }]
+    });
+  }
+  document.querySelectorAll(".seg button").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll(".seg button").forEach((o) => o.setAttribute("aria-checked", String(o === b)));
+    draw(b.dataset.s);
+  }));
+  draw("nov");
+</script>
+</body>
+</html>

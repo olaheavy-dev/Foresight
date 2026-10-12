@@ -29,10 +29,10 @@ Features ship behind flags ([`features.yaml`](features.yaml)). A feature is list
 - Stage 2: Behaviour trends and anomaly detection
 - Stage 2: Advisor and Verifier loop (advice checked before you see it)
 - Stage 2: Evidence and audit trail for every recommendation
-- Stage 2: Ask — conversational analysis with generated UI
-- Stage 3: Briefing (intelligence home)
+- Stage 2: AI Workspace — conversational analysis with generated answers
+- Stage 3: Home (cached financial briefing and proactive insights)
 - Stage 3: Decision Lab scenario comparison
-- Stage 3: Ledger, imports and categorisation review
+- Stage 3: Transactions, imports and categorisation review
 - Stage 3: Scheduled Telegram digest
 - Stage 3: Goal tracking with adaptive advice
 - Stage 3: Checking whether accepted advice worked

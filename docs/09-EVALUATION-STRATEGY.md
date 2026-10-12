@@ -109,7 +109,7 @@ All datasets live under `evals/datasets/` with a `MANIFEST.json` listing file, s
 
 | Dataset | Base | Accounts → formats | Months | Purpose | Injected anomalies |
 |---|---|---|---|---|---|
-| `P1-base` | **Amara Nwosu** (00 §4): **one Monzo current account** | Monzo CSV (no balance column) | 12 | **Primary demo, judge path, primary backtest** | food delivery +41% over the last 30 days; NOW Entertainment overlapping Sky TV; Spotify price rise; £410 car insurance one-off |
+| `P1-base` | **Amara Nwosu** (00 §4): **one Monzo current account** | Monzo CSV (no balance column) | 12 | **Primary demo, judge path, primary backtest** | food delivery +41% over the last 30 days; Netflix overlapping Sky TV; Spotify price rise; £650 car repair one-off (14 Oct) |
 | `P1-clean` | Amara | Monzo CSV | 12 | False-positive control | none (same calendar, no injected changes) |
 | `P2-base` | **Jamie Clarke**, freelance: one account | generic CSV (signed amount + balance) | 18 | Irregular income backtest | client paying 45 days late; new-merchant spike (camera kit); Self Assessment jump |
 | `P2-clean` | Jamie | generic CSV | 18 | FP control | none |
@@ -227,12 +227,12 @@ Handling rules:
 ### 3.5 Scenario parsing set — `scenario_prompts.jsonl`
 
 80 hand-written UK what-ifs with gold `ScenarioSpec`s (see `08`), for example:
-- "Can I afford £640 flights home in December?"
+- "Can I afford a £1,200 holiday?"
 - "what if my pay is 10 days late"
 - "rent goes up 6% from April"
 - "cancel NOW and cut Deliveroo by a third"
 - "what if I lose my job for two months"
-- "how does a £1,200 laptop on Klarna in 3 instalments affect my emergency fund?"
+- "how does a £1,200 laptop on Klarna in 3 instalments affect my March outlook?"
 
 Ten ambiguous prompts have gold `needs_clarification` with the expected slot.
 
@@ -244,8 +244,8 @@ Ten ambiguous prompts have gold `needs_clarification` with the expected slot.
 |---|---|---|
 | `dangling_evidence` | 7 | cites a `fnd_…` that does not exist |
 | `wrong_evidence` | 5 | cites the council-tax finding to justify a food-delivery cut |
-| `impact_mismatch` | 9 | claims "+£220/mo" where `recompute_impact` gives £196.40 (tolerance ±1%, 01 FR-50(b)) |
-| `infeasible_cut` | 8 | £90/mo cap on food delivery = 56% below the 3-month median, beyond the **40% bound** (01 FR-50(c)); or a cut to rent/council tax |
+| `impact_mismatch` | 9 | claims a low of £400 where `recompute_impact` gives £264 (tolerance ±1%, 01 FR-50(b)) |
+| `infeasible_cut` | 8 | £40 food-delivery cap until payday = 72% below the usual pace (£143.20), beyond the **40% bound** (01 FR-50(c)); or a cut to rent/council tax |
 | `cut_commitment` | 5 | proposes reducing `family_support_abroad` without the user asking (00 §6b.5) |
 | `nonexistent_target` | 5 | cancel a subscription the user doesn't have |
 | `generic_advice` | 6 | "Try to spend less on takeaways and save more." |
@@ -446,12 +446,12 @@ On P1, P2, P3, S8, S9, S10 and S11.
 | ID | Check | TARGET |
 |---|---|---|
 | INC-1 | Income-stream detection P/R vs truth (same source + account) | ≥ 0.95 / ≥ 0.95 (salaried) |
-| INC-2 | **Amount within ±2%** of truth net amount (robust median); P1 = £2,940 | 100% of matched salaried streams |
+| INC-2 | **Amount within ±2%** of truth net amount (robust median); P1 = £4,050 | 100% of matched salaried streams |
 | INC-3 | **Payday rule correct**: P1 `28th, previous working day at weekends/bank holidays`, weekend moves (Fri 27 Nov, Fri 26 Feb, Fri 26 Mar) and the December override (Fri 18 Dec) learned from history; next-payday prediction exact, including the long-January gap (18 Dec → 28 Jan = 41 days) | 100% on P1, P3 |
 | INC-4 | Four-weekly pay (S11) detected as a 28-day cadence, not monthly | exact |
 | INC-5 | **Not income**: rate of truth `partner_contribution`, `reimbursement`, `split_settlement`, `refund`, `betting_return` credits counted as income, per class | 0.00 for partner contributions and betting returns; 0.00 for reimbursements/settlements both before confirmation (inflow_unconfirmed) and after |
 | INC-6 | Bonus/arrears (S8) treated as one-offs, excluded from the baseline | 100% |
-| INC-7 | Salary split across two accounts (S8) totals £2,940 ±2% as one source | exact within tolerance |
+| INC-7 | Salary split across two accounts (S8) totals £4,050 ±2% as one source | exact within tolerance |
 | INC-8 | Untracked salary (S10): no stream detected from transfers-in, user asked to **declare**, forecast uses `provenance=declared` | correct path |
 | INC-9 | Declared vs observed divergence > 10% → flag, observed used | flag raised |
 | INC-10 | Irregular income (P2) modelled as a distribution, no false "salary" stream | exact |
@@ -474,7 +474,7 @@ On P1, P2, P3, S8, S9, S10 and S11.
 - **False positives per persona-month on `*-clean`**: the headline "doesn't cry wolf" metric.
 - **Magnitude error** for surges (e.g. P1 food delivery: truth +41%) in percentage points.
 - **Detection latency** (day-by-day replay).
-- **One-offs are not anomalies of behaviour**: the £410 car insurance renewal is shown as a one-off, never as a "spending surge" (hard test).
+- **One-offs are not anomalies of behaviour**: the £650 car repair (14 Oct) is shown as a one-off, never as a "spending surge" (hard test).
 - **Betting neutrality**: betting findings are generated only when the user has opted in (hard test).
 - **Sensitivity sweep** over robust-z thresholds {2.0, 2.5, 3.0, 3.5}, to justify the chosen threshold.
 - TARGETS: recall ≥ 0.85, precision ≥ 0.75, FP ≤ 0.5 watch/act findings per persona-month, magnitude error ≤ 5 pp.
@@ -554,9 +554,9 @@ P2 (irregular income) is expected to be weakest and is shown next to P1, not ave
 | SIM-10 | Breach bounds | `0 ≤ p ≤ 1`, non-increasing as the buffer falls |
 | SIM-11 | Goal consistency | goal shortfall = target − projected P50 progress at the deadline, to the penny (P1: `funding_rule=residual`, progress = March pre-salary low − buffer, 00 §10a) |
 | SIM-12 | BNPL instalments | a £1,200 purchase in 3 instalments = three one-offs on the schedule (linearity holds per instalment) |
-| SIM-13 | Canonical fixture | P1 seed 1729: the "£640 flights, paid 1 Dec" scenario reproduces the committed golden hash (updated only with an `engine_version` bump) |
+| SIM-13 | Canonical fixture | P1 seed 1729: the "£1,200 holiday, paid 6 Nov" scenario reproduces the committed golden hash (updated only with an `engine_version` bump) |
 
-The 00 §10a numbers (e.g. "January low £260 on 27 Jan") are **design fixtures, not golden outputs**. The golden file is whatever the implemented engine produces, frozen at that point.
+The 00 §10a numbers (e.g. "December low £1,086 on 17 Dec") are **design fixtures, not golden outputs**. The golden file is whatever the implemented engine produces, frozen at that point.
 
 ---
 
@@ -585,7 +585,7 @@ Inject the 60 bad and 40 good proposals at the Verifier node, then run the full 
 - **False rejection rate** on good proposals. TARGET ≤ 0.10.
 - **Check attribution**: which check fired (deterministic vs LLM judge).
 - **Revision success** = rejected-revisable proposals approved within ≤ 2 revisions. **Withdraw correctness** for unrevisable defects.
-- **Loop statistics on normal runs**: the distribution of 0/1/2/withdrawn revisions, showing the loop loops on real data. The P1 prototype depicts one revision (00 §10a); normal runs report their observed distribution without requiring a scripted £90-cap draft. ORC-4 proves revision with a disclosed adversarial injection.
+- **Loop statistics on normal runs**: the distribution of 0/1/2/withdrawn revisions, showing the loop loops on real data. The P1 prototype depicts one revision (00 §10a); normal runs report their observed distribution without requiring a scripted £40-cap draft. ORC-4 proves revision with a disclosed adversarial injection.
 - **LLM-judge agreement** with 40 human-labelled proposals (Cohen's κ).
 
 ---
@@ -604,7 +604,7 @@ Uses the real LangGraph graph (live or replay). Assertions read the persisted `A
 | ORC-6 | Transient Mesh error | recorded 503 → retried with backoff (≤ 2) → success |
 | ORC-7 | Malformed JSON | one repair attempt → `Narrative` fallback, run completes |
 | ORC-8 | System-event routing | a ledger `data_version` or preference `prefs_version` change follows W2 in the fixed route table with **no** Coordinator LLM call |
-| ORC-9 | Conversational | **8 paraphrases** of the affordability question (e.g. "Can I afford £640 flights home in December?", "is a £640 trip at Christmas ok?", "what happens if I book flights for £640 on 1 Dec", one with no amount → clarifying question H5) each → `affordability` → Forecaster (parse + simulate) → (Advisor) → response containing `ScenarioComparison` |
+| ORC-9 | Conversational | **8 paraphrases** of the affordability question (e.g. "Can I afford a £1,200 holiday?", "is a £1,200 trip ok?", "what happens if I pay £1,200 for a holiday on 6 Nov", one with no amount → clarifying question H5) each → `affordability` → Forecaster (parse + simulate) → (Advisor) → response containing `ScenarioComparison` |
 | ORC-10 | Budget guard | a run that would exceed **12 LLM calls / 60k tokens** (01 FR-60) aborts gracefully with an audit event. Deterministic partial results are still returned |
 | ORC-11 | Scheduler | APScheduler job (freezegun clock) triggers a digest run without HTTP. The content references a current `brf_`/`rec_` |
 | ORC-12 | Snapshot reload | reopening `rsp_…` performs **0** agent steps |
@@ -618,7 +618,7 @@ Metric: **case pass rate** (TARGET 100%) plus the agent coverage table.
 
 ## 10a. Suite `E-UI`: generated UI quality (08)
 
-Measures the agent-generated interface, not just its rendering. Dataset: the 30 orchestration cases (§3.7) plus 40 user questions with a labelled **expected block set** (e.g. affordability → `ScenarioComparison` + `RiskAssessment` + `InterventionCard`; "where does my money go" → `SpendingBreakdownChart` + `TransactionTable`), written before prompts are tuned.
+Measures the agent-generated interface, not just its rendering. Dataset: the 30 orchestration cases (§3.7) plus 40 user questions with a labelled **expected block set** (e.g. affordability → `Narrative` (verdict) + `FinancialMetricGroup` (key numbers) + `ScenarioComparison` (main visual) + `InterventionCard` (what to do) in the Overview, weekly `CashFlowForecastChart` in Details; "where does my money go" → `SpendingBreakdownChart` + `TransactionTable`), written before prompts are tuned.
 
 | ID | Check | Target |
 |---|---|---|
@@ -628,6 +628,10 @@ Measures the agent-generated interface, not just its rendering. Dataset: the 30 
 | UI-4 | **Currency integrity**: no block mixes currencies (V-20, 08 validation) | 0 violations |
 | UI-5 | **Snapshot reload**: reopening a stored response renders identical blocks with zero agent calls | 100% |
 | UI-6 | **Fallback behaviour**: injected invalid blocks are dropped and replaced by a `Narrative` fallback, logged | 100% |
+| UI-7 | **Overview budget respected** (08 §7a): every `surface: workspace` response's Overview has ≤ 1 verdict, ≤ 3 key numbers, exactly 1 main visual, ≤ 1 recommendation and an `evidence_line`. Overflow blocks are moved to the intent's tab, never dropped. Report the `overview_overflow` rate, i.e. how often the LLM's plan needed trimming | 100% within budget; overflow rate reported |
+| UI-8 | **Intent classification accuracy** (06 §6.2): accuracy and macro-F1 of the Coordinator's intent against the labelled intent of the 40 questions plus 20 paraphrases; low-confidence (< 0.6) cases must produce a clarifying question, not a guess | accuracy ≥ 0.90; 100% of low-confidence cases clarified |
+| UI-9 | **Placement correctness**: every block's `placement` (slot or tab) matches the 08 §7a per-intent slot table | 100% |
+| UI-10 | **Answer skeleton followed** (08 §7a, owner decision 12 Oct 2026): every `surface: workspace` response has its Overview blocks in slot order (Verdict · key numbers · one main visual · What to do (optional) · Evidence line) and its tabs drawn only from the fixed set in the fixed order Overview · Details · Recommendation · Transactions · How it was checked; empty tabs hidden, never reordered or renamed. Checked on the 40 questions + 20 paraphrases and on every committed contract in `design/contracts/` | 100% |
 
 Runs in replay (cassettes) on every push and live nightly; results in `summary.json → suites.ui`.
 

@@ -130,7 +130,7 @@
     "locale": "en-IN",
     "run_id": "run_01JAZ4HC2S8H3AXYSRD0DA0G7S",
     "thread_id": "thr_food_in_01",
-    "surface": "ask",
+    "surface": "workspace",
     "question": "Why is my food delivery so high this month?",
     "created_at": "2026-10-12T14:05:31Z",
     "forecast_id": "fc_01JAVMCM63EHF7NBJX12P5JM1M",
@@ -139,6 +139,10 @@
       {
         "block_id": "b1",
         "type": "Narrative",
+        "placement": {
+          "area": "overview",
+          "slot": "verdict"
+        },
         "currency": "INR",
         "evidence": [
           "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ",
@@ -188,6 +192,10 @@
       {
         "block_id": "b2",
         "type": "FinancialMetricGroup",
+        "placement": {
+          "area": "overview",
+          "slot": "key_numbers"
+        },
         "currency": "INR",
         "evidence": [
           "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ"
@@ -252,6 +260,10 @@
       {
         "block_id": "b3",
         "type": "SpendingBreakdownChart",
+        "placement": {
+          "area": "overview",
+          "slot": "main_visual"
+        },
         "currency": "INR",
         "title": "Food delivery by 30-day window",
         "evidence": [
@@ -306,6 +318,10 @@
       {
         "block_id": "b4",
         "type": "TransactionTable",
+        "placement": {
+          "area": "tab",
+          "tab": "transactions"
+        },
         "currency": "INR",
         "title": "Largest food delivery orders, last 30 days",
         "evidence": [
@@ -461,6 +477,10 @@
       {
         "block_id": "b5",
         "type": "EvidencePanel",
+        "placement": {
+          "area": "tab",
+          "tab": "checked"
+        },
         "evidence": [
           "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ",
           "fnd_01JA6WDVD7333A92ZFM27JTCYC",

@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Foresight · Workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" rel="stylesheet">
+<script src="assets/theme.js"></script>
+<link rel="stylesheet" href="assets/foresight.css">
+<link rel="stylesheet" href="assets/pages.css">
+</head>
+<body>
+<script src="assets/icons.js"></script>
+<div class="frame ws">
+  <aside class="sidebar">
+    <a class="logo" href="index.html" aria-label="Foresight home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 11.5 27 5.5l-2.4 6.2L4.6 17.7Z"/><path d="M5.6 19.4 21.8 14.6l-2.2 5.6L3.4 25Z"/><path d="M4.4 26.6 13.8 23.8l-1.6 4L2.8 30.6Z"/></svg>
+      <span class="wordmark">Foresight</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="home.html"><svg aria-hidden="true"><use href="#i-home"/></svg><span>Home</span></a>
+      <a href="workspace.html" aria-current="page"><svg aria-hidden="true"><use href="#i-grid"/></svg><span>Workspace</span></a>
+      <a href="#"><svg aria-hidden="true"><use href="#i-bars"/></svg><span class="long">Decision Lab</span><span class="short">Lab</span></a>
+      <a href="#"><svg aria-hidden="true"><use href="#i-swap"/></svg><span>Transactions</span></a>
+      <a href="#"><svg aria-hidden="true"><use href="#i-clock"/></svg><span>Activity</span></a>
+      <a class="nav-settings" href="#"><svg aria-hidden="true"><use href="#i-settings"/></svg><span>Settings</span></a>
+    </nav>
+    <div class="spacer"></div>
+    <section class="side-card" aria-labelledby="perf-h">
+      <div class="head"><span class="icon-chip sm"><svg aria-hidden="true"><use href="#i-flask"/></svg></span><h3 id="perf-h">Quality checks</h3></div>
+      <p>Categorisation and forecast accuracy: not measured yet.</p>
+      <a class="link" href="#">See evaluation results <svg aria-hidden="true"><use href="#i-arrowright"/></svg></a>
+    </section>
+  </aside>
+
+  <header class="topbar">
+    <a class="logo" href="index.html" aria-label="Foresight home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 11.5 27 5.5l-2.4 6.2L4.6 17.7Z"/><path d="M5.6 19.4 21.8 14.6l-2.2 5.6L3.4 25Z"/><path d="M4.4 26.6 13.8 23.8l-1.6 4L2.8 30.6Z"/></svg><span class="wordmark">Foresight</span></a>
+    <label class="search"><svg aria-hidden="true"><use href="#i-search"/></svg><span>Ask Foresight about your finances…</span></label>
+    <span class="proto-tag">Design prototype · fictional data</span>
+    <div class="right">
+      <button class="icon-btn search-toggle" type="button" aria-label="Search" aria-expanded="false"><svg aria-hidden="true"><use href="#i-search"/></svg></button>
+      <button class="icon-btn bell" type="button" aria-label="Notifications, 3 new"><svg aria-hidden="true"><use href="#i-bell"/></svg><span class="dot"></span></button>
+      <div class="user"><span class="avatar">AN</span><span class="name">Amara Nwosu</span><svg class="chev" aria-hidden="true"><use href="#i-chevdown"/></svg></div>
+    </div>
+  </header>
+
+  <div class="ws-body" data-thread="holiday">
+    <!-- ================= Conversation ================= -->
+    <section class="convo" data-collapsed="true" aria-label="Conversation">
+      <button class="convo-toggle" type="button" aria-expanded="false" aria-controls="convo-body">
+        <span class="icon-chip sm"><svg aria-hidden="true"><use href="#i-sparkles"/></svg></span>
+        <span class="q" data-thread-text="holiday">Can I afford a £1,200 holiday next month?</span>
+        <span class="q" data-thread-text="spending">Why is my food delivery spending higher?</span>
+        <span class="xs faint">Conversation</span>
+        <svg class="chev" aria-hidden="true"><use href="#i-chevdown"/></svg>
+      </button>
+      <div class="convo-body" id="convo-body">
+        <div class="assistant-head">
+          <span class="bot-avatar"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 11.5 27 5.5l-2.4 6.2L4.6 17.7Z"/><path d="M5.6 19.4 21.8 14.6l-2.2 5.6L3.4 25Z"/><path d="M4.4 26.6 13.8 23.8l-1.6 4L2.8 30.6Z"/></svg></span>
+          <div><h2>Foresight Assistant</h2><p>Your financial intelligence partner</p></div>
+        </div>
+
+        <div class="threads" role="radiogroup" aria-label="Conversations">
+          <a href="?q=holiday" role="radio" data-thread-link="holiday" aria-checked="true"><svg aria-hidden="true"><use href="#i-plane"/></svg>Holiday in November</a>
+          <a href="?q=spending" role="radio" data-thread-link="spending" aria-checked="false"><svg aria-hidden="true"><use href="#i-utensils"/></svg>Food delivery</a>
+        </div>
+
+        <!-- Thread: holiday -->
+        <div class="thread" data-thread="holiday">
+          <div class="msg-user">
+            <div class="bubble">Can I afford a £1,200 holiday next month?</div>
+            <div class="stamp">Mon 12 Oct, 09:14</div>
+          </div>
+          <div class="msg-bot">
+            <span class="bot-avatar mini" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M7 11.5 27 5.5l-2.4 6.2L4.6 17.7Z"/><path d="M5.6 19.4 21.8 14.6l-2.2 5.6L3.4 25Z"/><path d="M4.4 26.6 13.8 23.8l-1.6 4L2.8 30.6Z"/></svg></span>
+            <div>
+              <div class="bubble"><p>Yes, if you book it after your 27 November payday: your lowest point would be <strong class="num" data-fx="what_if.1200_after_payday.lowest" data-fmt="money0">£1,086</strong>. Paying on 6 Nov would leave you <strong class="num" data-fx="what_if.1200_on_6nov.lowest" data-fmt="overdrawn">£148 overdrawn</strong> before payday. The full analysis is on the right.</p></div>
+              <div class="stamp">Mon 12 Oct, 09:14 · numbers from the forecast engine</div>
+            </div>
+          </div>
+          <nav class="jump" aria-label="Go deeper">
+            <a href="#recommendation"><svg aria-hidden="true"><use href="#i-scale"/></svg>Compare</a>
+            <a href="#details"><svg aria-hidden="true"><use href="#i-pulse"/></svg>Week by week</a>
+            <a href="#checked"><svg aria-hidden="true"><use href="#i-checkcircle"/></svg>Checks</a>
+            <a href="#transactions"><svg aria-hidden="true"><use href="#i-list"/></svg>Transactions</a>
+          </nav>
+        </div>
+
+        <!-- Thread: spending -->
+        <div class="thread" data-thread="spending" hidden>
+          <div class="msg-user">
+            <div class="bubble">Why is my food delivery spending higher?</div>
+            <div class="stamp">Mon 12 Oct, 09:21</div>
+          </div>
+          <div class="msg-bot">
+            <span class="bot-avatar mini" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M7 11.5 27 5.5l-2.4 6.2L4.6 17.7Z"/><path d="M5.6 19.4 21.8 14.6l-2.2 5.6L3.4 25Z"/><path d="M4.4 26.6 13.8 23.8l-1.6 4L2.8 30.6Z"/></svg></span>
+            <div>
+              <div class="bubble"><p>You’ve spent <strong class="num" data-fx="food_delivery.last_30_days.total" data-fmt="money2">£286.40</strong> on delivery in the last 30 days, <strong class="num" data-fx="food_delivery.change_pct" data-fmt="pctup">41%</strong> above your usual month. Most of the rise is in the last three weeks, and it’s the main reason late October is tight.</p></div>
+              <div class="stamp">Mon 12 Oct, 09:21 · from 23 categorised transactions</div>
+            </div>
+          </div>
+          <nav class="jump" aria-label="Go deeper">
+            <a href="#recommendation"><svg aria-hidden="true"><use href="#i-scale"/></svg>Compare</a>
+            <a href="#details"><svg aria-hidden="true"><use href="#i-list"/></svg>Where it went</a>
+            <a href="#checked"><svg aria-hidden="true"><use href="#i-checkcircle"/></svg>Checks</a>
+            <a href="#transactions"><svg aria-hidden="true"><use href="#i-list"/></svg>Transactions</a>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Pinned follow-up input ================= -->
+    <div class="dock">
+      <div class="try" aria-label="Try asking">
+        <div class="chips" data-thread="holiday">
+          <button class="chip" type="button">What if I spend £1,500 instead?</button>
+          <button class="chip" type="button">Can I still save £400 a month?</button>
+          <button class="chip" type="button">What if my salary is late?</button>
+        </div>
+        <div class="chips" data-thread="spending" hidden>
+          <button class="chip" type="button">Which nights do I order most?</button>
+          <button class="chip" type="button">What if I cap it at £100?</button>
+          <button class="chip" type="button">Compare with groceries</button>
+        </div>
+      </div>
+      <div class="composer"><svg aria-hidden="true"><use href="#i-clip"/></svg><label class="sr-only" for="ask">Ask a follow-up question</label><input id="ask" type="text" placeholder="Ask a follow-up question…" autocomplete="off"><button class="send" type="button" aria-label="Send"><svg aria-hidden="true"><use href="#i-send"/></svg></button></div>
+    </div>
+
+    <!-- ================= Analysis canvas ================= -->
+    <section class="canvas" aria-label="Analysis">
+
+      <!-- ---------- Holiday analysis (intent: affordability) ---------- -->
+      <div class="analysis" data-thread="holiday" data-intent="affordability">
+        <div class="loading-view" aria-live="polite">
+          <div class="canvas-top"><span class="ai"><svg aria-hidden="true"><use href="#i-sparkles"/></svg>AI Analysis</span><span class="done">Working on “Can I afford a £1,200 holiday next month?”</span></div>
+          <ol class="steps" aria-label="Progress">
+            <li data-state="done"><svg aria-hidden="true"><use href="#i-check"/></svg>Analysing transactions</li>
+            <li data-state="done"><svg aria-hidden="true"><use href="#i-check"/></svg>Building forecast</li>
+            <li data-state="active" aria-current="step">Simulating</li>
+            <li>Checking</li>
+          </ol>
+          <div class="skel h1"></div><div class="skel line"></div>
+          <div class="skel-grid"><div class="skel block short"></div><div class="skel block short"></div><div class="skel block short"></div></div>
+          <div class="skel-grid two"><div class="skel block"></div><div class="skel block"></div></div>
+          <p class="xs faint">Numbers appear once the Verifier has checked them.</p>
+        </div>
+
+        <div class="loaded">
+          <div class="canvas-top">
+            <span class="ai"><svg aria-hidden="true"><use href="#i-sparkles"/></svg>AI Analysis</span>
+            <span class="done"><svg aria-hidden="true"><use href="#i-checkcircle"/></svg>Completed in 6 seconds · data to Sun 11 Oct</span>
+            <div class="tools">
+              <button class="btn icon" type="button" aria-label="Share"><svg aria-hidden="true"><use href="#i-share"/></svg></button>
+              <button class="btn" type="button" aria-label="Save to Decision Lab"><svg aria-hidden="true"><use href="#i-bookmark"/></svg><span class="btn-label">Save to Decision Lab</span></button>
+            </div>
+          </div>
+
+          <div class="verdict-block" data-slot="verdict">
+            <h1 class="verdict serif">You can afford a £1,200 holiday after 27 November.</h1>
+            <p class="verdict-sub">Book from 28 Nov and your lowest point stays at <span class="num" data-fx="what_if.1200_after_payday.lowest" data-fmt="money0">£1,086</span>. Pay on 6 Nov and you’d be <span class="num" data-fx="what_if.1200_on_6nov.lowest" data-fmt="overdrawn">£148 overdrawn</span>.</p>
+          </div>
+
+          <div class="tabs" role="tablist" aria-label="Analysis sections">
+            <button role="tab" id="h-tab-overview" aria-controls="h-p-overview" aria-selected="true" data-tab="overview">Overview</button>
+            <button role="tab" id="h-tab-details" aria-controls="h-p-details" aria-selected="false" tabindex="-1" data-tab="details">Details</button>
+            <button role="tab" id="h-tab-recommendation" aria-controls="h-p-recommendation" aria-selected="false" tabindex="-1" data-tab="recommendation">Recommendation</button>
+            <button role="tab" id="h-tab-transactions" aria-controls="h-p-transactions" aria-selected="false" tabindex="-1" data-tab="transactions">Transactions</button>
+            <button role="tab" id="h-tab-checked" aria-controls="h-p-checked" aria-selected="false" tabindex="-1" data-tab="checked">How it was checked</button>
+          </div>
+
+          <!-- Overview: verdict (above) · key numbers · one main visual · what to do · evidence -->
+          <div class="panel" role="tabpanel" id="h-p-overview" data-panel="overview" aria-labelledby="h-tab-overview" tabindex="0">
+            <dl class="keynums card" data-slot="keynums">
+              <div><dt>Lowest after booking</dt><dd class="v num" data-fx="what_if.1200_after_payday.lowest" data-fmt="money0">£1,086</dd><dd class="n"><span data-fx="what_if.1200_after_payday.date" data-fmt="day">Thu 17 Dec</span> · likely <span data-fx="what_if.1200_after_payday.p10" data-fmt="money0">£936</span>–<span data-fx="what_if.1200_after_payday.p90" data-fmt="money0">£1,218</span></dd></div>
+              <div><dt>Above your £500 buffer</dt><dd class="v num pos" data-fx="what_if.1200_after_payday.vs_buffer" data-fmt="money0">£586</dd><dd class="n"><span data-fx="what_if.1200_after_payday.chance_below_buffer_pct" data-fmt="pct">0%</span> of 500 paths go below</dd></div>
+              <div><dt>On 31 Mar 2027</dt><dd class="v num" data-fx="end_of_march_all.holiday_1200_28nov" data-fmt="money0">£7,188</dd><dd class="n"><span data-fx="end_of_march_all.plan" data-fmt="money0">£8,388</span> without the holiday</dd></div>
+            </dl>
+
+            <div class="ov-grid">
+              <article class="card ws-card" data-slot="visual">
+                <div class="card-head">
+                  <svg class="icon-bare" aria-hidden="true"><use href="#i-pulse"/></svg>
+                  <div><h2 class="card-title">Scenario comparison</h2><p class="card-sub">Lowest balance before each payday, to March</p></div>
+                </div>
+                <div class="chart" data-chart="scenario"></div>
+                <div class="legend">
+                  <span><svg viewBox="0 0 26 10" aria-hidden="true"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--color-data-forecast)" stroke-width="2"/></svg>Without the holiday</span>
+                  <span><svg viewBox="0 0 26 10" aria-hidden="true"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--color-data-scenario)" stroke-width="2" stroke-dasharray="7 5"/></svg>With the holiday, paid 28 Nov</span>
+                  <span><svg viewBox="0 0 26 10" aria-hidden="true"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--color-data-buffer)" stroke-width="1.5" stroke-dasharray="2 4" stroke-linecap="round"/></svg>Buffer · £500</span>
+                </div>
+              </article>
+
+              <article class="card ws-card rec" data-slot="todo">
+                <div class="card-head">
+                  <span class="icon-chip sm green"><svg aria-hidden="true"><use href="#i-leaf"/></svg></span>
+                  <div><h2 class="card-title">What to do</h2></div>
+                  <span class="badge green"><svg aria-hidden="true"><use href="#i-check"/></svg>Checked</span>
+                </div>
+                <h3>Book the holiday after your 27 November payday.</h3>
+                <p>That keeps every week above your buffer. Paying on 6 Nov would leave you overdrawn before payday, so we didn’t recommend it.</p>
+                <div class="btns">
+                  <a class="btn primary" href="#recommendation">View full recommendation <svg aria-hidden="true"><use href="#i-arrowright"/></svg></a>
+                  <a class="btn" href="#recommendation">Try different amounts <svg aria-hidden="true"><use href="#i-sliders"/></svg></a>
+                </div>
+              </article>
+            </div>
+
+            <a class="evidence" data-slot="evidence" href="#checked"><svg aria-hidden="true"><use href="#i-checkcircle"/></svg><span>Checked by 6 agents · 1 draft rejected</span><span class="go">View how <svg aria-hidden="true"><use href="#i-arrowright"/></svg></span></a>
+          </div>
+
+          <!-- Details: weekly cash flow with paydays + end-of-March impact -->
+          <div class="panel" role="tabpanel" id="h-p-details" data-panel="details" aria-labelledby="h-tab-details" tabindex="0" hidden>
+            <article class="card ws-card">
+              <div class="card-head">
+                <svg class="icon-bare" aria-hidden="true"><use href="#i-pulse"/></svg>
+                <div><h2 class="card-title">Your balance, week by week</h2><p class="card-sub">Middle of 500 simulated paths with the likely range · pay arrives, then bills and spending draw it down</p></div>
+              </div>
+              <div class="chart" data-chart="weekly"></div>
+              <div class="legend">
+                <span><svg viewBox="0 0 26 10" aria-hidden="true"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--color-data-forecast)" stroke-width="2"/></svg>Without the holiday</span>
+                <span><svg viewBox="0 0 26 10" aria-hidden="true"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--color-data-scenario)" stroke-width="2" stroke-dasharray="7 5"/></svg>With the holiday, paid 28 Nov</span>
+                <span><svg viewBox="0 0 26 10" aria-hidden="true"><rect x="1" y="1" width="24" height="8" rx="2" fill="var(--color-data-forecast-band)"/></svg>Likely range</span>
+                <span><svg viewBox="0 0 26 10" aria-hidden="true"><line x1="13" y1="2" x2="13" y2="9" stroke="var(--color-status-success)" stroke-width="2" stroke-linecap="round"/></svg>Payday</span>
+                <span><svg viewBox="0 0 26 10" aria-hidden="true"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--color-data-buffer)" stroke-width="1.5" stroke-dasharray="2 4" stroke-linecap="round"/></svg>Buffer · £500</span>
+              </div>
+            </article>
+            <article class="card ws-card">
+              <div class="card-head">
+                <svg class="icon-bare" aria-hidden="true"><use href="#i-calendar"/></svg>
+                <div><h2 class="card-title">What the holiday does to your plan</h2><p class="card-sub">Balance on 31 Mar 2027, middle of 500 paths, with your checked October plan in place</p></div>
+              </div>
+              <dl class="compare">
+                <div><dt>Without the holiday</dt><dd class="num" data-fx="end_of_march_all.plan" data-fmt="money0">£8,388</dd><span class="bar" data-bar-of="end_of_march_all.plan"></span></div>
+                <div><dt>With the holiday, paid 28 Nov</dt><dd class="num" data-fx="end_of_march_all.holiday_1200_28nov" data-fmt="money0">£7,188</dd><span class="bar scenario" data-bar-of="end_of_march_all.holiday_1200_28nov"></span></div>
+              </dl>
+              <ul class="facts">
+                <li><strong class="num" data-calc="holidayCost" data-fmt="money0">£1,200</strong> less by the end of March: exactly the cost of the holiday. Nothing else in your plan changes.</li>
+                <li>At the lowest point you’d still have <strong class="num" data-fx="what_if.1200_after_payday.vs_buffer" data-fmt="money0">£586</strong> above your buffer, about <strong class="num" data-calc="bufferWeeks" data-fmt="weeks">3 weeks</strong> of everyday spending (<span class="num" data-calc="weeklySpend" data-fmt="money0">£199</span> a week, from your last 90 days).</li>
+              </ul>
+            </article>
+          </div>
+
+          <!-- Recommendation -->
+          <div class="panel" role="tabpanel" id="h-p-recommendation" data-panel="recommendation" aria-labelledby="h-tab-recommendation" tabindex="0" hidden>
+            <div class="rec-grid">
+              <article class="card ws-card rec">
+                <div class="card-head">
+                  <span class="icon-chip sm green"><svg aria-hidden="true"><use href="#i-leaf"/></svg></span>
+                  <div><h2 class="card-title">Book after your 27 November payday</h2></div>
+                  <span class="badge green"><svg aria-hidden="true"><use href="#i-check"/></svg>Checked</span>
+                </div>
+                <p>Paying on or after 28 Nov keeps every week above your £500 buffer. The Verifier recomputed it from the forecast engine before you saw it.</p>
+                <dl class="changes" aria-label="What changes">
+                  <dt>Lowest point</dt><dd class="num"><span data-fx="what_if.1200_after_payday.lowest" data-fmt="money0">£1,086</span><span data-fx="what_if.1200_after_payday.date" data-fmt="day">Thu 17 Dec</span></dd>
+                  <dt>Above your £500 buffer</dt><dd class="num" data-fx="what_if.1200_after_payday.vs_buffer" data-fmt="money0">£586</dd>
+                  <dt>On 31 Mar 2027</dt><dd class="num"><span data-fx="end_of_march_all.holiday_1200_28nov" data-fmt="money0">£7,188</span><span><span data-fx="end_of_march_all.plan" data-fmt="money0">£8,388</span> without it</span></dd>
+                </dl>
+              </article>
+              <article class="card ws-card rejected">
+                <div class="card-head">
+                  <span class="icon-chip sm red"><svg aria-hidden="true"><use href="#i-xcircle"/></svg></span>
+                  <div><h2 class="card-title">A draft we rejected</h2><p class="card-sub">The Verifier stopped this before it reached you</p></div>
+                </div>
+                <p class="draft">“Pay on 6 Nov and cut groceries until payday.”</p>
+                <p>Even with the cut, you’d be <strong class="num" data-fx="what_if.1200_on_6nov.lowest" data-fmt="overdrawn">£148 overdrawn</strong> on <span data-fx="what_if.1200_on_6nov.date" data-fmt="day">Thu 26 Nov</span> in every simulated path, and the cut is outside your usual spending range.</p>
+              </article>
+            </div>
+            <article class="card ws-card">
+              <div class="card-head">
+                <svg class="icon-bare" aria-hidden="true"><use href="#i-scale"/></svg>
+                <div><h2 class="card-title">Compare amounts and timing</h2><p class="card-sub">Lowest balance in the pay cycle you pay for it · same 500 paths for every row</p></div>
+              </div>
+              <div class="scroll-x">
+                <table class="data" id="whatif">
+                  <thead><tr><th>Option</th><th class="r">Lowest balance</th><th class="r">Paths below £500</th><th class="r">On 31 Mar</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+
+          <!-- Transactions -->
+          <div class="panel" role="tabpanel" id="h-p-transactions" data-panel="transactions" aria-labelledby="h-tab-transactions" tabindex="0" hidden>
+            <article class="card ws-card">
+              <div class="card-head">
+                <span class="icon-chip sm plain"><svg aria-hidden="true"><use href="#i-list"/></svg></span>
+                <div><h2 class="card-title">Transactions behind this answer</h2><p class="card-sub">Monzo current account · Oct–Nov 2026 · upcoming items are forecast from your history</p></div>
+                <a class="link" href="#">View all <svg aria-hidden="true"><use href="#i-arrowright"/></svg></a>
+              </div>
+              <div class="scroll-x">
+                <table class="data">
+                  <thead><tr><th>Date</th><th>Description</th><th><span class="sr-only">Category</span></th><th class="r">Amount</th><th>Type</th></tr></thead>
+                  <tbody>
+                    <tr><td class="lead num">28 Nov</td><td class="desc" data-label="Description" title="Holiday (your scenario)">Holiday (your scenario)</td><td data-label="Category"><span class="cat"><i class="violet"><svg aria-hidden="true"><use href="#i-plane"/></svg></i><span class="cat-l">Travel</span></span></td><td class="r num" data-label="Amount">−£1,200.00</td><td data-label="Type"><span class="badge violet">Scenario</span></td></tr>
+                    <tr><td class="lead num">27 Nov</td><td class="desc" data-label="Description" title="Salary · Acme Analytics">Salary · Acme Analytics</td><td data-label="Category"><span class="cat"><i class="green"><svg aria-hidden="true"><use href="#i-briefcase"/></svg></i><span class="cat-l">Income</span></span></td><td class="r num pos" data-label="Amount">+£4,050.00</td><td data-label="Type"><span class="badge blue">Upcoming</span></td></tr>
+                    <tr><td class="lead num">15 Nov</td><td class="desc" data-label="Description" title="Savings pot transfer">Savings pot transfer</td><td data-label="Category"><span class="cat"><i class="blue"><svg aria-hidden="true"><use href="#i-piggy"/></svg></i><span class="cat-l">Savings</span></span></td><td class="r num" data-label="Amount">−£400.00</td><td data-label="Type"><span class="badge blue">Upcoming</span></td></tr>
+                    <tr><td class="lead num">1 Nov</td><td class="desc" data-label="Description" title="Rent · Northside Lettings">Rent · Northside Lettings</td><td data-label="Category"><span class="cat"><i><svg aria-hidden="true"><use href="#i-house"/></svg></i><span class="cat-l">Housing</span></span></td><td class="r num" data-label="Amount">−£1,250.00</td><td data-label="Type"><span class="badge blue">Upcoming</span></td></tr>
+                    <tr><td class="lead num">29 Oct</td><td class="desc" data-label="Description" title="Savings transfer, moved after payday">Savings transfer, moved after payday</td><td data-label="Category"><span class="cat"><i class="blue"><svg aria-hidden="true"><use href="#i-piggy"/></svg></i><span class="cat-l">Savings</span></span></td><td class="r num" data-label="Amount">−£400.00</td><td data-label="Type"><span class="badge blue">Upcoming</span></td></tr>
+                    <tr><td class="lead num">14 Oct</td><td class="desc" data-label="Description" title="Car repair · KwikFit">Car repair · KwikFit</td><td data-label="Category"><span class="cat"><i class="amber"><svg aria-hidden="true"><use href="#i-car"/></svg></i><span class="cat-l">Transport</span></span></td><td class="r num" data-label="Amount">−£650.00</td><td data-label="Type"><span class="badge blue">Upcoming</span></td></tr>
+                    <tr><td class="lead num">9 Oct</td><td class="desc" data-label="Description" title="Broadband">Broadband</td><td data-label="Category"><span class="cat"><i><svg aria-hidden="true"><use href="#i-bolt"/></svg></i><span class="cat-l">Bills</span></span></td><td class="r num" data-label="Amount">−£31.00</td><td data-label="Type"><span class="badge grey">Completed</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+
+          <!-- How it was checked -->
+          <div class="panel" role="tabpanel" id="h-p-checked" data-panel="checked" aria-labelledby="h-tab-checked" tabindex="0" hidden>
+            <article class="card ws-card">
+              <div class="card-head">
+                <svg class="icon-bare" aria-hidden="true"><use href="#i-shuffle"/></svg>
+                <div><h2 class="card-title">How it was checked</h2><p class="card-sub">Six agents · each step is logged and can be inspected</p></div>
+              </div>
+              <ol class="timeline">
+                <li><span class="t">Coordinator</span><span class="time">09:14:02</span><svg class="ok" aria-label="Done"><use href="#i-checkcircle"/></svg><span class="d">Read the question as a one-off £1,200 payment next month</span></li>
+                <li><span class="t">Ledger</span><span class="time">09:14:03</span><svg class="ok" aria-label="Done"><use href="#i-checkcircle"/></svg><span class="d">Used your categorised Monzo transactions, data to 11 Oct</span></li>
+                <li><span class="t">Behaviour Analyst</span><span class="time">09:14:03</span><svg class="ok" aria-label="Done"><use href="#i-checkcircle"/></svg><span class="d">Checked your usual spending, bills and paydays</span></li>
+                <li><span class="t">Forecaster</span><span class="time">09:14:05</span><svg class="ok" aria-label="Done"><use href="#i-checkcircle"/></svg><span class="d">Simulated 500 paths to 31 Mar for each timing and amount</span></li>
+                <li class="rej"><span class="t">Verifier · rejected a draft</span><span class="time">09:14:06</span><svg class="no" aria-label="Rejected"><use href="#i-xcircle"/></svg><span class="d">“Pay on 6 Nov and cut groceries”: still overdrawn on 26 Nov, and the cut is outside your usual range</span></li>
+                <li><span class="t">Verifier · checked</span><span class="time">09:14:08</span><svg class="ok" aria-label="Done"><use href="#i-checkcircle"/></svg><span class="d">Recomputed “book after 27 Nov”: lowest £1,086, above your buffer</span></li>
+              </ol>
+              <p class="method"><svg aria-hidden="true"><use href="#i-info"/></svg><span>Every number here comes from the forecast engine (500 simulated paths from your transactions), not written by AI. The AI chose which views to show and wrote the sentences around them. <a href="#">Learn more about our methodology</a></span></p>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- Spending analysis (intent: trend_or_change) — same skeleton, different content ---------- -->
+      <div class="analysis" data-thread="spending" data-intent="trend_or_change" hidden>
+        <div class="loading-view" aria-live="polite">
+          <div class="canvas-top"><span class="ai"><svg aria-hidden="true"><use href="#i-sparkles"/></svg>AI Analysis</span><span class="done">Working on “Why is my food delivery spending higher?”</span></div>
+          <ol class="steps" aria-label="Progress">
+            <li data-state="done"><svg aria-hidden="true"><use href="#i-check"/></svg>Analysing transactions</li>
+            <li data-state="done"><svg aria-hidden="true"><use href="#i-check"/></svg>Building forecast</li>
+            <li data-state="active" aria-current="step">Simulating</li>
+            <li>Checking</li>
+          </ol>
+          <div class="skel h1"></div><div class="skel line"></div>
+          <div class="skel-grid"><div class="skel block short"></div><div class="skel block short"></div><div class="skel block short"></div></div>
+          <div class="skel-grid two"><div class="skel block"></div><div class="skel block"></div></div>
+          <p class="xs faint">Numbers appear once the Verifier has checked them.</p>
+        </div>
+
+        <div class="loaded">
+          <div class="canvas-top">
+            <span class="ai"><svg aria-hidden="true"><use href="#i-sparkles"/></svg>AI Analysis</span>
+            <span class="done"><svg aria-hidden="true"><use href="#i-checkcircle"/></svg>Completed in 4 seconds · data to Sun 11 Oct</span>
+            <div class="tools">
+              <button class="btn icon" type="button" aria-label="Share"><svg aria-hidden="true"><use href="#i-share"/></svg></button>
+              <button class="btn" type="button" aria-label="Save to Decision Lab"><svg aria-hidden="true"><use href="#i-bookmark"/></svg><span class="btn-label">Save to Decision Lab</span></button>
+            </div>
+          </div>
+
+          <div class="verdict-block" data-slot="verdict">
+            <h1 class="verdict serif">Food delivery is up <span data-fx="food_delivery.change_pct" data-fmt="pct">41%</span> on a usual month.</h1>
+            <p class="verdict-sub"><span class="num" data-fx="food_delivery.last_30_days.total" data-fmt="money2">£286.40</span> in the last 30 days against a usual <span class="num" data-fx="food_delivery.usual_30_days" data-fmt="money2">£203.10</span>. The rise started three weeks ago.</p>
+          </div>
+
+          <div class="tabs" role="tablist" aria-label="Analysis sections">
+            <button role="tab" id="s-tab-overview" aria-controls="s-p-overview" aria-selected="true" data-tab="overview">Overview</button>
+            <button role="tab" id="s-tab-details" aria-controls="s-p-details" aria-selected="false" tabindex="-1" data-tab="details">Details</button>
+            <button role="tab" id="s-tab-recommendation" aria-controls="s-p-recommendation" aria-selected="false" tabindex="-1" data-tab="recommendation">Recommendation</button>
+            <button role="tab" id="s-tab-transactions" aria-controls="s-p-transactions" aria-selected="false" tabindex="-1" data-tab="transactions">Transactions</button>
+            <button role="tab" id="s-tab-checked" aria-controls="s-p-checked" aria-selected="false" tabindex="-1" data-tab="checked">How it was checked</button>
+          </div>
+
+          <!-- Overview: verdict (above) · key numbers · one main visual · what to do · evidence -->
+          <div class="panel" role="tabpanel" id="s-p-overview" data-panel="overview" aria-labelledby="s-tab-overview" tabindex="0">
+            <dl class="keynums card" data-slot="keynums">
+              <div><dt>Last 30 days</dt><dd class="v num" data-fx="food_delivery.last_30_days.total" data-fmt="money2">£286.40</dd><dd class="n"><span data-fx="food_delivery.last_30_days.orders" data-fmt="int">23</span> orders · about <span data-fx="food_delivery.average_order_last_30" data-fmt="money2">£12.45</span> each</dd></div>
+              <div><dt>A usual month</dt><dd class="v num" data-fx="food_delivery.usual_30_days" data-fmt="money2">£203.10</dd><dd class="n">Middle of your last three 30-day periods</dd></div>
+              <div><dt>Above usual</dt><dd class="v num neg" data-calc="deliveryDiff" data-fmt="plusmoney2">+£83.30</dd><dd class="n">In the last 30 days</dd></div>
+            </dl>
+
+            <div class="ov-grid">
+              <article class="card ws-card" data-slot="visual">
+                <div class="card-head">
+                  <svg class="icon-bare" aria-hidden="true"><use href="#i-bars"/></svg>
+                  <div><h2 class="card-title">Delivery spend each week</h2><p class="card-sub">Last 13 weeks, to 11 Oct</p></div>
+                </div>
+                <div class="chart" data-chart="deliveryWeeks"></div>
+                <div class="legend">
+                  <span><svg viewBox="0 0 26 10" aria-hidden="true"><rect x="5" y="0" width="16" height="10" rx="3" fill="var(--color-data-forecast)"/></svg>Last four weeks</span>
+                  <span><svg viewBox="0 0 26 10" aria-hidden="true"><rect x="5" y="0" width="16" height="10" rx="3" fill="var(--color-data-buffer)"/></svg>Earlier weeks</span>
+                  <span><svg viewBox="0 0 26 10" aria-hidden="true"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--color-text-secondary)" stroke-width="1.5" stroke-dasharray="2 4" stroke-linecap="round"/></svg>Usual week · <span class="num" data-fx="food_delivery.usual_week" data-fmt="money2">£47.39</span></span>
+                </div>
+              </article>
+
+              <article class="card ws-card rec" data-slot="todo">
+                <div class="card-head">
+                  <span class="icon-chip sm green"><svg aria-hidden="true"><use href="#i-leaf"/></svg></span>
+                  <div><h2 class="card-title">What to do</h2></div>
+                  <span class="badge green"><svg aria-hidden="true"><use href="#i-check"/></svg>Checked</span>
+                </div>
+                <h3>Cap delivery at £100 until your 28 October payday.</h3>
+                <p>That’s <span data-fx="plan_cap_below_pace_pct" data-fmt="pct">30%</span> below your current pace: a change you can realistically keep, and part of the plan that keeps your 27 Oct low at <strong class="num" data-fx="overall.plan.lowest" data-fmt="money0">£604</strong>.</p>
+                <div class="btns">
+                  <a class="btn primary" href="#recommendation">View full recommendation <svg aria-hidden="true"><use href="#i-arrowright"/></svg></a>
+                  <a class="btn" href="home.html">See the checked plan <svg aria-hidden="true"><use href="#i-arrowright"/></svg></a>
+                </div>
+              </article>
+            </div>
+
+            <a class="evidence" data-slot="evidence" href="#checked"><svg aria-hidden="true"><use href="#i-checkcircle"/></svg><span>Checked by 4 agents · 1 draft rejected</span><span class="go">View how <svg aria-hidden="true"><use href="#i-arrowright"/></svg></span></a>
+          </div>
+
+          <!-- Details: merchant breakdown + the last three 30-day periods -->
+          <div class="panel" role="tabpanel" id="s-p-details" data-panel="details" aria-labelledby="s-tab-details" tabindex="0" hidden>
+            <article class="card ws-card">
+              <div class="card-head">
+                <svg class="icon-bare" aria-hidden="true"><use href="#i-list"/></svg>
+                <div><h2 class="card-title">Where it went</h2><p class="card-sub">Last 30 days by app</p></div>
+              </div>
+              <div class="chart" data-chart="deliveryMerchants"></div>
+            </article>
+            <article class="card ws-card">
+              <div class="card-head">
+                <svg class="icon-bare" aria-hidden="true"><use href="#i-calendar"/></svg>
+                <div><h2 class="card-title">Your last three 30-day periods</h2><p class="card-sub">The usual month is the middle of these three</p></div>
+              </div>
+              <dl class="compare">
+                <div><dt>12 Sep – 11 Oct · <span data-fx="food_delivery.windows.0.orders" data-fmt="int">23</span> orders</dt><dd class="num" data-fx="food_delivery.windows.0.total" data-fmt="money2">£286.40</dd><span class="bar" data-bar-of="food_delivery.windows.0.total"></span></div>
+                <div><dt>13 Aug – 11 Sep · <span data-fx="food_delivery.windows.1.orders" data-fmt="int">16</span> orders</dt><dd class="num" data-fx="food_delivery.windows.1.total" data-fmt="money2">£203.10</dd><span class="bar" data-bar-of="food_delivery.windows.1.total"></span></div>
+                <div><dt>14 Jul – 12 Aug · <span data-fx="food_delivery.windows.2.orders" data-fmt="int">15</span> orders</dt><dd class="num" data-fx="food_delivery.windows.2.total" data-fmt="money2">£188.65</dd><span class="bar" data-bar-of="food_delivery.windows.2.total"></span></div>
+              </dl>
+            </article>
+          </div>
+
+          <!-- Recommendation -->
+          <div class="panel" role="tabpanel" id="s-p-recommendation" data-panel="recommendation" aria-labelledby="s-tab-recommendation" tabindex="0" hidden>
+            <div class="rec-grid">
+              <article class="card ws-card rec">
+                <div class="card-head">
+                  <span class="icon-chip sm green"><svg aria-hidden="true"><use href="#i-leaf"/></svg></span>
+                  <div><h2 class="card-title">Cap delivery at £100 until payday</h2></div>
+                  <span class="badge green"><svg aria-hidden="true"><use href="#i-check"/></svg>Checked</span>
+                </div>
+                <p>Your current pace is <span class="num" data-fx="delivery_pace_to_payday" data-fmt="money2">£143.20</span> for the next two weeks; £100 is <span data-fx="plan_cap_below_pace_pct" data-fmt="pct">30%</span> below it. With your £400 savings transfer moved to after payday, your 27 Oct low stays at <strong class="num" data-fx="overall.plan.lowest" data-fmt="money0">£604</strong>, above your £500 buffer.</p>
+                <div class="btns">
+                  <a class="btn" href="#">Remind me on Friday</a>
+                </div>
+              </article>
+              <article class="card ws-card rejected">
+                <div class="card-head">
+                  <span class="icon-chip sm red"><svg aria-hidden="true"><use href="#i-xcircle"/></svg></span>
+                  <div><h2 class="card-title">A draft we rejected</h2><p class="card-sub">The Verifier stopped this before it reached you</p></div>
+                </div>
+                <p class="draft">“Cap delivery at £40 until payday.”</p>
+                <p>That’s <span data-fx="rejected_cap_below_pace_pct" data-fmt="pct">72%</span> below your pace, which isn’t realistic to keep, and on its own it wouldn’t lift your late-October low above your buffer.</p>
+              </article>
+            </div>
+          </div>
+
+          <!-- Transactions -->
+          <div class="panel" role="tabpanel" id="s-p-transactions" data-panel="transactions" aria-labelledby="s-tab-transactions" tabindex="0" hidden>
+            <article class="card ws-card">
+              <div class="card-head">
+                <span class="icon-chip sm plain"><svg aria-hidden="true"><use href="#i-list"/></svg></span>
+                <div><h2 class="card-title">Recent delivery orders</h2><p class="card-sub">Monzo current account · most recent of <span data-fx="food_delivery.last_30_days.orders" data-fmt="int">23</span> in the last 30 days</p></div>
+                <a class="link" href="#">View all <svg aria-hidden="true"><use href="#i-arrowright"/></svg></a>
+              </div>
+              <div class="scroll-x">
+                <table class="data" id="recent-orders">
+                  <thead><tr><th>Date</th><th>Description</th><th><span class="sr-only">Category</span></th><th class="r">Amount</th><th>Type</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+
+          <!-- How it was checked -->
+          <div class="panel" role="tabpanel" id="s-p-checked" data-panel="checked" aria-labelledby="s-tab-checked" tabindex="0" hidden>
+            <article class="card ws-card">
+              <div class="card-head">
+                <svg class="icon-bare" aria-hidden="true"><use href="#i-shuffle"/></svg>
+                <div><h2 class="card-title">How it was checked</h2><p class="card-sub">Four agents · each step is logged and can be inspected</p></div>
+              </div>
+              <ol class="timeline">
+                <li><span class="t">Ledger</span><span class="time">09:21:02</span><svg class="ok" aria-label="Done"><use href="#i-checkcircle"/></svg><span class="d">Matched 23 delivery orders across three apps, data to 11 Oct</span></li>
+                <li><span class="t">Behaviour Analyst</span><span class="time">09:21:03</span><svg class="ok" aria-label="Done"><use href="#i-checkcircle"/></svg><span class="d">Compared the last 30 days with your previous three 30-day periods</span></li>
+                <li><span class="t">Advisor</span><span class="time">09:21:04</span><svg class="ok" aria-label="Done"><use href="#i-checkcircle"/></svg><span class="d">Proposed caps of £40 and £100 until payday</span></li>
+                <li class="rej"><span class="t">Verifier · rejected a draft</span><span class="time">09:21:05</span><svg class="no" aria-label="Rejected"><use href="#i-xcircle"/></svg><span class="d">“Cap at £40”: 72% below your pace isn’t realistic, and it wouldn’t lift the low above your buffer</span></li>
+                <li><span class="t">Verifier · checked</span><span class="time">09:21:05</span><svg class="ok" aria-label="Done"><use href="#i-checkcircle"/></svg><span class="d">Recomputed “cap at £100” with the forecast engine</span></li>
+              </ol>
+              <p class="method"><svg aria-hidden="true"><use href="#i-info"/></svg><span>Every number here comes from your categorised transactions and the forecast engine, not written by AI. The AI chose which views to show and wrote the sentences around them. <a href="#">Learn more about our methodology</a></span></p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+<script src="assets/data.js"></script>
+<script>
+window.CHARTS = {
+  scenario: {
+    history: false, mode: "lows",
+    series: [
+      { name: "plan", label: "Without holiday", colorVar: "--color-data-forecast", band: true, endLabel: "Without" },
+      { name: "holiday_1200_28nov", label: "With holiday", colorVar: "--color-data-scenario", dash: true, endLabel: "With holiday" },
+    ],
+    height: 230, heightNarrow: 210, buffer: 500, bufferLabel: "£500 buffer",
+    callout: { series: "holiday_1200_28nov", cycleIndex: 2, title: "Lowest after booking · 17 Dec", value: "£1,086" },
+    compactCallout: true,
+    ariaLabel: "Lowest balance before each payday from 12 October 2026 to March 2027, with and without a £1,200 holiday paid on 28 November. Both stay above the £500 buffer; the holiday lowers the December low from £2,286 to £1,086.",
+  },
+  weekly: {
+    history: false, paydays: true,
+    series: [
+      { name: "plan", label: "Without holiday", colorVar: "--color-data-forecast", band: true },
+      { name: "holiday_1200_28nov", label: "With holiday", colorVar: "--color-data-scenario", dash: true },
+    ],
+    height: 300, heightNarrow: 240, buffer: 500, bufferLabel: "£500 buffer",
+    ariaLabel: "Weekly forecast balance from 12 October 2026 to 31 March 2027 with and without the holiday. The balance rises on each payday and falls through the month; with the holiday paid 28 November it is lower from December but stays above the £500 buffer.",
+  },
+  deliveryWeeks: {
+    type: "columns",
+    weeks: () => window.FIXTURE.food_delivery.weekly,
+    reference: () => window.FIXTURE.food_delivery.usual_week,
+    ariaLabel: "Food delivery spend for each of the last 13 weeks. Most weeks are near the usual £47 a week; the last three are well above it.",
+  },
+  deliveryMerchants: {
+    type: "hbars",
+    rows: () => window.FIXTURE.food_delivery.merchants.map((m) => ({ label: m.name, value: m.amount, note: `${m.orders} orders` })),
+    ariaLabel: "Food delivery spend in the last 30 days by app.",
+  },
+};
+</script>
+<script src="assets/charts.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

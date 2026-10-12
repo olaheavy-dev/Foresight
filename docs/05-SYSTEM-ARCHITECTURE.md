@@ -15,7 +15,7 @@ Status: design. No production code exists yet. Code snippets are pseudocode that
 | A2 | **One gateway for AI.** | `backend/mesh/mesh_client.py` is the only module allowed to import `openai`. An `import-linter` forbidden contract (§3.1, rule list) fails the build if any other module imports an AI SDK. This makes the "every call goes through Mesh" rule provable. |
 | A3 | **Every step leaves a record.** | Every agent node writes an `AgentStep`. Every recommendation links to findings, calculations and verification results. Audit is a by-product of execution, not a separate feature. |
 | A4 | **Reproducible by default.** | Seeded simulations, `engine_version` stamped on every calculation, the same input hash gives the same output, and eval results are committed. |
-| A5 | **Read paths are cheap.** | Briefing, past analyses and scenarios are persisted snapshots. Opening a page never triggers an LLM call. |
+| A5 | **Read paths are cheap.** | The Home briefing, past analyses and scenarios are persisted snapshots. Opening a page never triggers an LLM call. |
 | A6 | **Workspace isolation everywhere.** | Every workspace-owned table has `workspace_id`; system Category rows and built-in profiles are read-only reference-data exceptions. Every repository method requires it. No query can be constructed without it. Forecast cache keys include data/prefs versions, currency, scope/account, as_of, horizon, parameters and engine version (`00` §13). |
 | A7 | **Small number of moving parts.** | One API process (FastAPI + LangGraph + APScheduler), one PostgreSQL 16 database, one Next.js app: three containers in one Docker Compose project. Production splits these apart along clearly marked seams. |
 
@@ -47,7 +47,7 @@ Trust boundaries:
 ```mermaid
 flowchart TB
     subgraph FE[frontend/ — Next.js App Router]
-        PAGES[Routes: /start · / · /ask · /lab · /ledger]
+        PAGES[Routes: / · /start · /home · /workspace · /lab · /transactions · /activity · /settings · /quality]
         RENDER[Block renderer<br/>discriminated-union switch]
         CONTRACTS[ui-contracts<br/>generated TS + Zod]
         CHARTS[Chart kit<br/>Visx + SVG primitives]
@@ -264,7 +264,7 @@ sequenceDiagram
     G->>M: Ledger Agent: batch of unresolved rows (redacted)
     M-->>G: typed categorisations + confidence
     G->>D: Transactions, Calculations, AgentSteps
-    G->>G: Behaviour Analyst → Forecaster → (Advisor ⇄ Verifier) → Briefing refresh
+    G->>G: Behaviour Analyst → Forecaster → (Advisor ⇄ Verifier) → Home briefing refresh
     A-->>W: SSE progress events (step started/finished, counts)
     W->>A: GET /imports/{id}/review (low-confidence rows first)
     W->>A: PATCH /transactions/{id} (user correction)
@@ -278,7 +278,7 @@ User corrections become merchant memory, so later imports start with better rule
 ```mermaid
 sequenceDiagram
     autonumber
-    participant W as Web (/ask)
+    participant W as Web (/workspace)
     participant A as API (ask, SSE)
     participant C as Coordinator
     participant S as Specialists
@@ -294,7 +294,7 @@ sequenceDiagram
     A-->>W: SSE: step events… then final response
 ```
 
-### 4.3 Briefing read (no LLM)
+### 4.3 Home briefing read (no LLM)
 
 `GET /briefing` returns the latest `Briefing` snapshot (`brf_…`) along with a `freshness` object `{generated_at, data_version, stale: bool}`. If `stale`, the UI shows "Updating…". It does **not** block. Regeneration is triggered by events (§6.3), never by page views.
 
@@ -371,7 +371,7 @@ Rules:
 
 | Option | For | Against | Verdict |
 |---|---|---|---|
-| **Next.js + TS** | Full control over the distinctive "Broadsheet" design; typed block renderer; SSE streaming UI; server components for fast snapshot reads | Second language and toolchain; deployment of two apps | **Chosen** |
+| **Next.js + TS** | Full control over the distinctive "Atelier light" design; typed block renderer; SSE streaming UI; server components for fast snapshot reads | Second language and toolchain; deployment of two apps | **Chosen** |
 | Streamlit | Very fast, all-Python | Looks like every other Streamlit app; can't do the evidence drawer, streaming agent timeline or custom chart grammar well | Rejected |
 | Gradio | Fast chat UI | Same issues as Streamlit; chat-first, not analysis-first | Rejected |
 | Jinja2 + HTMX | One deployable, Python-only | Rich interactive charts and drawer state become hand-rolled JS anyway | Rejected |
@@ -406,14 +406,14 @@ Telegram Bot API: free, instant and easy to demo live. The user links an account
 
 | Option | For | Against | Verdict |
 |---|---|---|---|
-| **Signed-cookie session + workspace switcher** (demo workspaces P1–P4 plus a "your data" workspace) | No external dependency; judges can open the app without signing up; isolation still enforced by `workspace_id` | Not real multi-tenant auth | **Hackathon** |
+| **Signed-cookie session + profile switcher** (UI term "Profile"; demo profiles P1–P4 plus a "your data" workspace) | No external dependency; judges can open the app without signing up; isolation still enforced by `workspace_id` | Not real multi-tenant auth | **Hackathon** |
 | Clerk / Auth0 | Managed, MFA, quick integration | External account needed by judges; adds failure modes | Production option |
 | Supabase Auth + Postgres RLS | Auth and RLS together | Ties storage to Supabase | Production option |
 | Roll our own passwords | — | Security liability | Never |
 
 The architecture keeps an `AuthContext → workspace_id` seam in `app/deps.py`. Swapping to managed auth changes only that dependency.
 
-**User → Workspace.** Hackathon: a single implicit local user; the session holds the active `workspace_id` chosen in the workspace switcher. Production: managed auth yields a `user_id`; `WorkspaceMembership(user_id, workspace_id, role=owner)` authorises access; every repository call still takes a `WorkspaceContext`, and Postgres RLS checks `workspace_id` against the members table.
+**User → Workspace.** Hackathon: a single implicit local user; the session holds the active `workspace_id` chosen with *Switch profile*. Production: managed auth yields a `user_id`; `WorkspaceMembership(user_id, workspace_id, role=owner)` authorises access; every repository call still takes a `WorkspaceContext`, and Postgres RLS checks `workspace_id` against the members table.
 
 ---
 
@@ -537,7 +537,7 @@ Let `p_in(tier)` and `p_out(tier)` be Mesh's per-token prices for the chosen mod
 | Scenario (free text) | 1 parse + optional advise ⇄ verify | ≈ 1.5k/0.5k parse | parse + optional loop |
 | Format/layout profile proposal (CSV and PDF) | 0 for built-in/saved profiles; ≤ 2 for a new bank format | ≈ 1k in / 0.4k out | `attempts × (1k·p_in(fast) + 0.4k·p_out(fast))` |
 | Digest | 0 by default; optional one `fast` headline call; stale briefing invokes W2 first | ≤20-word optional headline | 0 or headline cost, plus W2 if stale |
-| Briefing view | 0 | — | 0 |
+| Home view | 0 | — | 0 |
 
 Locale notes: the `in` pack has no built-in FormatProfiles, so the first import of each Indian layout costs ≤ 2 proposal calls; UPI narrations are more varied than UK codes, so assume `U ≈ 0.35N` on a first Indian import until merchant memory warms up. Currency detection, number/date inference and holiday resolution are deterministic (0 LLM calls, < 50 ms per file).
 
@@ -621,7 +621,7 @@ Readiness probe `/healthz` (database reachable, migrations at head, deploy SHA),
 | Concern | Hackathon (build this) | Production (designed seam) |
 |---|---|---|
 | Data store | PostgreSQL 16 in Docker Compose, repository-layer `workspace_id` scoping (RLS policies added in Stage 3) | Managed Postgres + RLS, PITR backups, field-level encryption for narrations |
-| Auth | Signed cookie, workspace switcher (demo workspaces P1–P4) | Managed auth, MFA, sessions in DB; `User` 1→n `Workspace` |
+| Auth | Signed cookie, profile switcher (demo profiles P1–P4; sign-in shown disabled) | Managed auth, MFA, sessions in DB; `User` 1→n `Workspace` |
 | Agent runtime | In-process LangGraph, `PostgresSaver` checkpointer | Worker pool, durable retries |
 | Scheduling | APScheduler + DB lock | Queue + idempotent jobs + dead-letter |
 | Ingestion | generic `csv_statement` (CSV + XLS/XLSX; built-in Monzo/Revolut profiles), manual, demo; generic PDF with reconciliation gate (Tier 2); locale packs `uk`, `in`; any currency, forecasts per currency | + Open Banking (UK AIS; India Account Aggregator), OCR for scanned statements, more locale packs, FX conversion with a rates source |

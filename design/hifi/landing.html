@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foresight · Your money, a few steps ahead</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" rel="stylesheet">
+<script src="assets/theme.js"></script>
+<link rel="stylesheet" href="assets/foresight.css">
+<link rel="stylesheet" href="assets/pages.css">
+</head>
+<body>
+<script src="assets/icons.js"></script>
+<div class="landing-frame">
+  <section class="auth" aria-labelledby="auth-h">
+    <a class="logo" href="index.html" aria-label="Foresight">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 11.5 27 5.5l-2.4 6.2L4.6 17.7Z"/><path d="M5.6 19.4 21.8 14.6l-2.2 5.6L3.4 25Z"/><path d="M4.4 26.6 13.8 23.8l-1.6 4L2.8 30.6Z"/></svg>
+      <span class="wordmark">Foresight</span>
+    </a>
+    <p class="kicker">Your financial intelligence partner</p>
+    <h1 id="auth-h" class="serif">Start with your own statements</h1>
+    <p class="sub">Turn your transactions into a clear view of what’s next, with advice that’s checked before you see it.</p>
+
+    <div class="primary-actions">
+      <a class="btn primary lg" href="home.html">Explore the live demo <svg><use href="#i-arrowright"/></svg></a>
+      <a class="btn lg" href="#"><svg><use href="#i-upload"/></svg>Import a CSV statement</a>
+    </div>
+
+    <div class="divider">or sign in</div>
+    <form class="signin" aria-describedby="soon">
+      <div class="seg" aria-hidden="true"><span class="on">Sign in</span><span>Create account</span></div>
+      <div class="field"><label for="em">Email address</label><div class="input"><svg><use href="#i-mail"/></svg><span id="em">you@example.com</span></div></div>
+      <div class="field"><label for="pw">Password</label><div class="input"><svg><use href="#i-lock"/></svg><span id="pw">••••••••••••</span><svg style="margin-left:auto"><use href="#i-eye"/></svg></div></div>
+      <button class="btn primary lg" type="button" disabled style="width:100%">Sign in <svg><use href="#i-arrowright"/></svg></button>
+      <p class="soon" id="soon"><svg><use href="#i-clock"/></svg>Accounts are coming after the hackathon. For now, try the demo or import a CSV.</p>
+    </form>
+
+    <p class="privacy"><svg><use href="#i-shield"/></svg><span>Your statements stay private. Every model call goes through one gateway, account numbers are masked first, and we never ask for bank logins.</span></p>
+    <div class="theme-footer" data-theme-footer></div>
+  </section>
+
+  <section class="market" aria-labelledby="mk-h">
+    <div class="market-art" aria-hidden="true"></div>
+    <blockquote class="quote serif">“A calm mind<br>builds a richer future.”<span></span></blockquote>
+    <p class="kicker">From data to a calmer month</p>
+    <div class="market-top">
+      <div>
+        <h2 id="mk-h">Your money,<br>a few steps ahead.</h2>
+        <p class="lede">Foresight reads your transactions, forecasts what’s next and tests your decisions before you make them, so you can stay in control today and plan for tomorrow.</p>
+      </div>
+      <ul class="features">
+        <li><span class="icon-chip"><svg><use href="#i-bars"/></svg></span><div><h3>See what’s next</h3><p>A forecast of your balance up to six months ahead, with a likely range.</p></div></li>
+        <li><span class="icon-chip"><svg><use href="#i-bulb"/></svg></span><div><h3>Get warned early</h3><p>Risks spotted before they happen, like a buffer about to run thin.</p></div></li>
+        <li><span class="icon-chip red"><svg><use href="#i-target"/></svg></span><div><h3>Test decisions first</h3><p>Ask “can I afford it?” and see the answer on your own numbers.</p></div></li>
+      </ul>
+    </div>
+
+    <div class="preview">
+      <article class="card forecast">
+        <div class="card-head">
+          <svg class="icon-bare"><use href="#i-pulse"/></svg>
+          <div><h3 class="card-title">Cash-flow forecast</h3><p class="card-sub">Demo account · lowest balance before each payday, to 31 Mar 2027</p></div>
+        </div>
+        <div class="chart" data-chart="landing"></div>
+        <div class="legend">
+          <span><svg viewBox="0 0 26 10" aria-hidden="true"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--color-data-observed)" stroke-width="2"/></svg>Observed</span>
+          <span><svg viewBox="0 0 26 10" aria-hidden="true"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--color-data-forecast)" stroke-width="2"/></svg>Lowest before each payday, with the checked plan</span>
+          <span><svg viewBox="0 0 26 10" aria-hidden="true"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--color-data-buffer)" stroke-width="1.5" stroke-dasharray="2 4" stroke-linecap="round"/></svg>Buffer · £500</span>
+        </div>
+      </article>
+      <article class="card insight-pop">
+        <div class="top"><span class="icon-chip sm green"><svg><use href="#i-leaf"/></svg></span>Proactive insight<span class="badge green">Checked</span></div>
+        <p>Move your £400 savings transfer to after payday and your late-October low stays at <strong class="num">£604</strong>, above your buffer.</p>
+        <a class="btn" href="home.html">See the demo <svg><use href="#i-arrowright"/></svg></a>
+      </article>
+    </div>
+
+    <div class="mini-metrics">
+      <div class="card metric"><span class="icon-chip"><svg><use href="#i-wallet"/></svg></span><div><p class="m-label">Current balance</p><p class="m-value serif num">£2,184.50</p><p class="m-note">Demo · as of Sun 11 Oct</p></div></div>
+      <div class="card metric"><span class="icon-chip"><svg><use href="#i-bars"/></svg></span><div><p class="m-label">Lowest before payday</p><p class="m-value serif num">£604</p><p class="m-note">Tue 27 Oct · with the checked plan</p></div></div>
+      <div class="card metric"><span class="icon-chip red"><svg><use href="#i-alert"/></svg></span><div><p class="m-label">Risks to review</p><p class="m-value serif num">1</p><p class="m-note">Late-October buffer</p></div></div>
+    </div>
+  </section>
+</div>
+<script src="assets/data.js"></script>
+<script>
+window.CHARTS = {
+  landing: {
+    history: true, mode: "lows",
+    series: [{ name: "plan", label: "Lowest before payday", colorVar: "--color-data-forecast", band: true }],
+    height: 230, heightNarrow: 210, buffer: 500, bufferLabel: "£500 buffer",
+    callout: { series: "plan", cycleIndex: 0, title: "Lowest · Tue 27 Oct", value: "£604" },
+    ariaLabel: "Demo account: observed balance from 28 September to 11 October 2026, then the lowest balance forecast before each payday with the checked plan to March 2027. The lowest point is £604 on 27 October, above the £500 buffer, and the lows rise each month.",
+  },
+};
+</script>
+<script src="assets/charts.js"></script>
+</body>
+</html>

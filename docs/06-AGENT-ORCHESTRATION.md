@@ -297,9 +297,9 @@ Deterministic rules (**D**) run first and can block. LLM-judge rules (**J**) run
 | V-01 | D | Every `trigger_refs` ID exists, belongs to this workspace, and has status ≠ superseded (FR-50a) | block | Cites `fnd_…` from an older data_version |
 | V-02 | D | At least one trigger is a **finding or forecast** (not only context) | block | Proposal cites only the goal |
 | V-03 | D | Action targets exist: the merchant/category/obligation is present in the user's data in the trailing 90 days | block | "Cancel Disney+" when no such recurring exists |
-| V-04 | D | Feasibility: a category cap is ≥ 60% of its 3-month median (i.e. ≤ 40% cut); essential categories (rent, council tax, energy, water, loan/BNPL repayments, insurance) cannot be cut, only rescheduled (FR-50c) | block | Cap food delivery at £90 vs median £203.10 (56% cut) |
+| V-04 | D | Feasibility: a category cap is ≥ 60% of its 3-month median (i.e. ≤ 40% cut); essential categories (rent, council tax, energy, water, loan/BNPL repayments, insurance) cannot be cut, only rescheduled (FR-50c) | block | Cap food delivery at £40 until payday vs a usual pace of £143.20 (72% cut) |
 | V-05 | D | Recomputed impact has the claimed `expected_direction` and magnitude ≥ materiality (≥ £10/mo or ≥ 5 pp risk reduction) (FR-50d) | block | Cancelling £2.99 iCloud+ presented as a risk fix |
-| V-06 | D | The mandatory `claimed_monthly_impact_minor` (and any figure in `claimed_impact_text`) is within ±1% of `recompute_impact` (FR-50b) | block | Claims +£220/mo, recomputed £196.40 |
+| V-06 | D | The mandatory `claimed_monthly_impact_minor` (and any figure in `claimed_impact_text`) is within ±1% of `recompute_impact` (FR-50b) | block | Claims a low of £400, recomputed £264 |
 | V-07 | D | Every number in title/rationale maps to a referenced calculation (after formatting normalisation) | block | Rationale says "you spend 60% more" with no calc showing 60% |
 | V-08 | D | No conflict with goals or buffer in any affected pay cycle: the proposal does not reduce goal progress or increase buffer-breach probability | block | "Prepay a year of PureGym to save 15%" that breaches the buffer this month |
 | V-09 | D | No duplication with another approved active recommendation (same action and target) | warn → WITHDRAW if exact duplicate | Same cap proposed twice |
@@ -325,8 +325,8 @@ Rule versions are stored with each `RuleResult` (`rule_id@version`) so the audit
 
 | Trigger | Workflow | Route |
 |---|---|---|
-| Import committed / manual transaction added | W1 Ingestion & analysis | Ledger → Analyst → Forecaster(baseline) → Risk check → [Advisor ⇄ Verifier if risk or material finding] → Briefing |
-| `data_version` / `prefs_version` changed (debounced) or daily 06:30 | W2 Autonomous risk detection | Analyst(incremental) → Forecaster(baseline) → Risk rules → [Advisor ⇄ Verifier] → Briefing + Insight events |
+| Import committed / manual transaction added | W1 Ingestion & analysis | Ledger → Analyst → Forecaster(baseline) → Risk check → [Advisor ⇄ Verifier if risk or material finding] → Home briefing |
+| `data_version` / `prefs_version` changed (debounced) or daily 06:30 | W2 Autonomous risk detection | Analyst(incremental) → Forecaster(baseline) → Risk rules → [Advisor ⇄ Verifier] → Home briefing + Insight events |
 | Scenario submitted in Lab | W3 Scenario simulation | Forecaster(parse → confirm → simulate) → [Advisor ⇄ Verifier if breach/goal miss] → compose |
 | Advice needed (from W1/W2/W3/W5) | W4 Recommendation loop | Advisor → quantify → Verifier → loop ≤ 2 revisions |
 | Digest schedule | W6 Scheduled digest | Freshness check → [W2 if stale] → select insight + action → render → deliver |
@@ -501,8 +501,9 @@ stateDiagram-v2
 Decisions are made per proposal: in one round, some proposals can be approved while others are sent back for revision. Each pass persists a `VerificationResult` with `round` (1..3; revision_round is separately 0..2). A proposal withdrawn at round 3 (initial + 2 revisions) is stored with its full critique history and surfaced only in the audit trail. If *nothing* is approved, the response says plainly "No recommendation passed verification", together with the risk itself. That is an honest outcome, not a failure.
 
 Canonical example (P1, from 00 §10a):
-- Round 1: "Cap food delivery at £90/mo — saves £220/mo" → **REJECT** (V-04 infeasible: 56% below the £203.10 median; V-06 claimed £220 vs recomputed £196.40).
-- Round 2: "Cap food delivery at £180/mo and cancel NOW Entertainment (overlaps Sky TV)" → deterministic rules pass → judge rules pass → **APPROVE**. Impact: +£116.39/mo (£106.40 + £9.99); buffer-breach probability before the October payday 78% → 41%; with the £640 December trip, the January low recovers to ≈ £493 (above the £300 buffer). The Advisor never proposed touching the ~£250/mo LemFi family support (V-17).
+Context: after the £650 car repair on 14 Oct, the lowest balance before the 28 Oct payday is £162 (£95–£224), a 100% chance below the £500 buffer.
+- Round 1: "Cap food delivery at £40 until payday" → **REJECT** (V-04 infeasible: 72% below the usual pace of £143.20 for 13–27 Oct; the recomputed low, £264, is still below the buffer).
+- Round 2: "Move the £400 savings transfer from 15 Oct to 29 Oct and keep food delivery under £100 until payday (30% below pace)" → deterministic rules pass → judge rules pass → **APPROVE**. Engine result: lowest balance £604 (£538–£667), 2% chance below the buffer; later lows Nov £1,052, Dec £2,286; end of March £8,388 vs £8,345 with no action. The Advisor never proposed touching the ~£250/mo LemFi family support (V-17).
 
 ### W5 — Conversational interrogation
 
@@ -610,7 +611,7 @@ Recommendation → evidence chain (what the Evidence drawer walks):
 
 ### 10.3 Intervention verification over time
 
-When a user accepts a recommendation, a `VerificationCheck` is scheduled for the end of the action window (e.g. the next month boundary). The deterministic check compares actual behaviour with the commitment (e.g. food delivery ≤ £180; no NOW Entertainment charge) and emits an "Intervention verified" or "not yet" insight. The adaptive goal advice reads these outcomes.
+When a user accepts a recommendation, a `VerificationCheck` is scheduled for the end of the action window (e.g. the next month boundary). The deterministic check compares actual behaviour with the commitment (e.g. food delivery ≤ £100 until payday; the savings transfer moved to 29 Oct) and emits an "Intervention worked" or "not yet" insight. The adaptive goal advice reads these outcomes.
 
 
 ### 10.4 Forecast self-correction on each new import (rev 4.3)

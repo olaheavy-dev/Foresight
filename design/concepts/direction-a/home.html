@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foresight · Home — Direction A concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/a.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="side" aria-label="Primary">
+    <a class="wordmark" href="home.html" aria-label="Foresight home">
+      <svg class="glyph" viewBox="0 0 18 18" aria-hidden="true"><path d="M1 13 C5 13 6 5 10 5 S15 9 17 9" fill="none" stroke="#151D31" stroke-width="1.8" stroke-linecap="round"/><path d="M10 5 S15 9 17 9" fill="none" stroke="#3868E9" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="2 2.5"/></svg>
+      <b>Foresight</b>
+    </a>
+    <nav>
+      <a href="home.html" aria-current="page"><svg viewBox="0 0 16 16"><path d="M2 7.5 8 2.5l6 5V14H2z"/></svg>Home<span class="count" aria-label="1 item needs attention">1</span></a>
+      <a href="workspace.html"><svg viewBox="0 0 16 16"><path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z"/></svg>Workspace</a>
+      <a href="#"><svg viewBox="0 0 16 16"><path d="M2 12.5 6 8l3 2.5 5-6"/><path d="M11 4.5h3v3"/></svg>Decision Lab</a>
+      <a href="#"><svg viewBox="0 0 16 16"><path d="M2.5 3.5h11M2.5 8h11M2.5 12.5h11"/></svg>Financial Data</a>
+      <a href="#"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="M8 5v3.2l2 1.3"/></svg>Activity</a>
+    </nav>
+    <div class="spacer"></div>
+    <div class="status" aria-label="Agent status">
+      <span><span class="dot"></span>Agents idle · last run 08:12</span>
+      <span>Data to 11 Oct · Monzo CSV</span>
+    </div>
+    <a class="profile" href="#" aria-label="Profile and settings">
+      <span class="avatar" aria-hidden="true">AN</span>
+      <span>Amara Nwosu<small>Profile &amp; settings</small></span>
+    </a>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <span class="crumb"><b>Home</b></span>
+      <a class="ask" href="workspace.html" role="search" aria-label="Ask Foresight a question">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg>
+        Ask about your money — “Can I afford a holiday in November?”
+        <kbd>/</kbd>
+      </a>
+      <span class="concept-tag">Design concept · fictional data</span>
+    </header>
+
+    <div class="page">
+      <p class="kicker">Monday 12 October 2026 · morning briefing</p>
+      <h1 class="question">What should I know about my money today?</h1>
+      <p class="lede">One thing needs attention. <span class="soft">A £650 car repair puts your late-October buffer at risk — there is a checked plan that keeps you above it.</span></p>
+
+      <section class="metrics" aria-label="Where you stand">
+        <div class="metric">
+          <span class="label">Last known balance <button class="inspect" aria-label="Inspect: source of last known balance"><svg viewBox="0 0 14 14"><circle cx="6" cy="6" r="4"/><path d="m9 9 3 3"/></svg></button></span>
+          <span class="value num">£2,184<sup>.50</sup></span>
+          <span class="context"><span class="kind observed">Observed</span> · Monzo statement, as of Sun 11 Oct</span>
+        </div>
+        <div class="metric">
+          <span class="label">Lowest point before payday <button class="inspect" aria-label="Inspect: forecast assumptions"><svg viewBox="0 0 14 14"><circle cx="6" cy="6" r="4"/><path d="m9 9 3 3"/></svg></button></span>
+          <span class="value num warn">£162</span>
+          <span class="context"><span class="kind forecast">Forecast</span> · Tue 27 Oct · likely −£10 to £330</span>
+        </div>
+        <div class="metric">
+          <span class="label">Next salary <button class="inspect" aria-label="Inspect: how salary was detected"><svg viewBox="0 0 14 14"><circle cx="6" cy="6" r="4"/><path d="m9 9 3 3"/></svg></button></span>
+          <span class="value num">£2,940</span>
+          <span class="context"><span class="kind computed">Detected</span> · Wed 28 Oct · in 16 days</span>
+        </div>
+      </section>
+
+      <section class="panel horizon" aria-labelledby="h-outlook">
+        <div class="panel-head">
+          <h2 id="h-outlook">Your cash outlook</h2>
+          <span class="faint">Monzo current account · 21 Sep – 6 Nov · updated 08:12 after the car repair</span>
+        </div>
+        <div class="legend" aria-hidden="true">
+          <span><i class="hist"></i>Observed balance</span>
+          <span><i class="fc"></i>Forecast · middle estimate and likely range</span>
+          <span><i class="ghost"></i>Forecast before the car repair</span>
+          <span><i class="buf"></i>Your buffer · £500</span>
+        </div>
+        <div class="chart-wrap" id="outlook"></div>
+        <div class="rail" id="outlook-rail" aria-label="Dated payments in the forecast">
+          <div class="pin new" data-date="2026-10-14"><span class="d">Wed 14 Oct</span><span class="t">Car repair · new</span><span class="a num">−£650</span></div>
+          <div class="pin r2" data-date="2026-10-15"><span class="d">Thu 15 Oct</span><span class="t">Savings, council tax, family</span><span class="a num">−£712</span></div>
+          <div class="pin in" data-date="2026-10-28"><span class="d">Wed 28 Oct</span><span class="t">Salary</span><span class="a num">+£2,940</span></div>
+          <div class="pin r2" data-date="2026-11-01"><span class="d">Sun 1 Nov</span><span class="t">Rent</span><span class="a num">−£1,395</span></div>
+        </div>
+      </section>
+
+      <section class="briefing" aria-label="Briefing">
+        <article class="panel insight" aria-labelledby="h-insight">
+          <div class="panel-body">
+            <div class="eyebrow">
+              <span class="risk-flag"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.5 13 12H1z"/><path d="M7 5.5v3M7 10.2v.1"/></svg>Needs attention</span>
+              <span class="faint">Found by Foresight at 08:12 · not prompted</span>
+            </div>
+            <h2 class="alert" id="h-insight">Your late-October buffer may fall below £500</h2>
+            <dl class="facts">
+              <dt>Why</dt>
+              <dd>You added a <b>£650 car repair</b> (garage invoice, paying Wed 14 Oct). It lands in the same fortnight as your £300 savings transfer, and food delivery is running <b>41% above usual</b> (£286.40 in 30 days vs £203.10).</dd>
+              <dt>Effect</dt>
+              <dd>Lowest balance before payday falls from <b class="num">£812</b> to <b class="num">£162</b> on Tue 27 Oct. Chance of going under your buffer: <b class="num">6% → 91%</b>.</dd>
+              <dt>Window</dt>
+              <dd>15–27 Oct, until your £2,940 salary on Wed 28 Oct.</dd>
+              <dt>Next</dt>
+              <dd>Review the checked plan, or investigate the forecast first.</dd>
+            </dl>
+            <div class="actions">
+              <a class="btn accent" href="workspace.html">Investigate</a>
+              <a class="btn" href="#plan">Review plan</a>
+              <button class="btn ghost">Not now</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel rec" id="plan" aria-labelledby="h-plan">
+          <div class="panel-body">
+            <div class="eyebrow" style="display:flex;align-items:center;gap:10px">
+              <h2 id="h-plan">Checked plan</h2>
+              <span class="check"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="m2.5 7.5 3 3 6-7"/></svg>Checked · 1 revision</span>
+            </div>
+            <p style="margin-top:12px;font-size:var(--t-md)">Move the <b>£300 savings transfer</b> from 15 Oct to <b>29 Oct</b>, after payday, and keep food delivery <b>under £120</b> until payday.</p>
+            <div class="compare" aria-label="Forecast with this plan">
+              <div><span class="faint">Lowest before payday</span><div class="v num"><span class="before">£162</span> £532</div></div>
+                            <div><span class="faint">Chance under buffer</span><div class="v num"><span class="before">91%</span> 34%</div></div>
+            </div>
+            <ul class="rejected">
+              <li><span class="reject"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="m3 3 8 8M11 3l-8 8"/></svg></span><span>Rejected first draft: <i>cap food delivery at £40</i> — 79% below your usual pace (limit 40%) and still leaves a £312 low.</span></li>
+            </ul>
+            <div class="actions">
+              <button class="btn primary">Use this plan</button>
+              <button class="btn ghost">See evidence</button>
+            </div>
+            <p class="faint" style="margin-top:12px">A suggestion only. Foresight never moves money.</p>
+          </div>
+        </article>
+      </section>
+
+      <section class="lower">
+        <article class="panel" aria-labelledby="h-changed">
+          <div class="panel-head"><h2 id="h-changed">What changed</h2><span class="faint">since Friday</span></div>
+          <div class="panel-body">
+            <ul class="rows">
+              <li><span class="when">Today</span><span>Car repair added<span class="sub">Manual entry · garage invoice · paying 14 Oct</span></span><span class="amt num">−£650.00</span></li>
+              <li><span class="when">Today</span><span>Forecast revised<span class="sub">Lowest point before payday £812 → £162</span></span><span class="amt"><button class="inspect" aria-label="Inspect forecast revision"><svg viewBox="0 0 14 14"><circle cx="6" cy="6" r="4"/><path d="m9 9 3 3"/></svg></button></span></li>
+              <li><span class="when">30 days</span><span>Food delivery up 41%<span class="sub">23 orders · £286.40 vs usual £203.10</span></span><span class="amt num">+£83.30</span></li>
+              <li><span class="when">Sun</span><span>Statement imported<span class="sub">Monzo CSV · 312 rows · 0 needing review</span></span><span class="amt"><span class="check"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="m2.5 7.5 3 3 6-7"/></svg>Reconciled</span></span></li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="panel" aria-labelledby="h-coming">
+          <div class="panel-head"><h2 id="h-coming">Coming up before payday</h2><span class="faint"><span class="kind forecast">Forecast</span></span></div>
+          <div class="panel-body">
+            <table class="ledger">
+              <thead><tr><th>Date</th><th>Payment</th><th class="num">Amount</th><th class="num">Balance after</th></tr></thead>
+              <tbody>
+                <tr><td>Wed 14 Oct</td><td>Car repair</td><td class="num">−£650.00</td><td class="num">£1,466</td></tr>
+                <tr><td>Thu 15 Oct</td><td>Savings, council tax, family support</td><td class="num">−£712.00</td><td class="num">£722</td></tr>
+                <tr><td>Tue 20 Oct</td><td>Energy</td><td class="num">−£78.00</td><td class="num">£520</td></tr>
+                <tr><td>Sat 24 Oct</td><td>Water, broadband, TV</td><td class="num">−£119.00</td><td class="num">£330</td></tr>
+                <tr class="low"><td>Tue 27 Oct</td><td>Lowest point</td><td class="num"></td><td class="num">£162</td></tr>
+                <tr><td>Wed 28 Oct</td><td>Salary</td><td class="num pos">+£2,940.00</td><td class="num">£3,102</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <nav class="suggest" aria-label="Suggested questions">
+        <span>Ask next</span>
+        <a href="workspace.html">Can I afford a £1,200 holiday in November?</a>
+        <a href="#">Why is food delivery higher this month?</a>
+        <a href="#">What if my salary is a week late?</a>
+      </nav>
+
+      <p class="footnote">
+        <span>Design concept · Direction A · all people, accounts and figures are fictional</span>
+        <span>Forecast: daily balance, 500 simulated paths, middle estimate shown with likely range (10th–90th percentile)</span>
+      </p>
+    </div>
+  </main>
+</div>
+
+<script src="assets/chart.js"></script>
+<script>
+  ForesightChart.render(document.getElementById("outlook"), {
+    aria: "Balance history from 14 September and forecast to 4 November. Lowest forecast point £162 on 27 October, below the £500 buffer.",
+    width: 1000, height: 360,
+    start: "2026-09-21", end: "2026-11-06", today: "2026-10-12",
+    yMin: -900, yMax: 4200, ticksY: [0, 1000, 2000, 3000, 4000],
+    ticksX: ["2026-09-21", "2026-10-01", "2026-10-12", "2026-10-21", "2026-11-01"],
+    buffer: 500,
+    history: [["2026-09-21",1270],["2026-09-23",1190],["2026-09-25",1040],["2026-09-27",905],["2026-09-28",3845],["2026-09-30",3760],["2026-10-01",2365],["2026-10-05",2290],["2026-10-08",2236],["2026-10-11",2184.5],["2026-10-12",2184.5]],
+    forecast: [["2026-10-12",2184.5],["2026-10-13",2150],["2026-10-14",1466],["2026-10-15",722],["2026-10-16",690],["2026-10-18",625],["2026-10-20",520],["2026-10-22",430],["2026-10-24",330],["2026-10-26",210],["2026-10-27",162],["2026-10-28",3102],["2026-10-30",3040],["2026-11-01",1590],["2026-11-04",1480],["2026-11-06",1415]],
+    ghost: [["2026-10-12",2184.5],["2026-10-13",2150],["2026-10-14",2116],["2026-10-15",1372],["2026-10-16",1340],["2026-10-18",1275],["2026-10-20",1170],["2026-10-22",1080],["2026-10-24",980],["2026-10-26",860],["2026-10-27",812],["2026-10-28",3752],["2026-10-30",3690],["2026-11-01",2240],["2026-11-04",2130],["2026-11-06",2065]],
+    ghostLabel: "Before car repair",
+    band: (days) => 170 * Math.pow(Math.min(days, 30) / 15, 0.85),
+    markers: [{ date: "2026-10-27", value: 162, label: "Lowest £162 · Tue 27 Oct", sub: "Likely −£10 to £330 · 91% chance under your buffer", align: "end", labelAbove: false }],
+    lineLabels: [
+      { date: "2026-09-22", value: 1240, text: "Observed", dy: -14, color: "var(--text)", weight: 600 },
+      { date: "2026-10-21", value: 1120, text: "Before car repair", dy: -10, color: "var(--text-faint)" },
+      { date: "2026-11-06", value: 1415, text: "Forecast", dy: 20, anchor: "end", color: "var(--series-forecast)", weight: 600 }
+    ],
+    rail: document.getElementById("outlook-rail")
+  });
+</script>
+</body>
+</html>
