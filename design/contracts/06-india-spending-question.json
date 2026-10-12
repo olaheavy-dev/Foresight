@@ -1,0 +1,639 @@
+{
+  "_note": "FICTIONAL design fixture for persona P4 (Aanya Rao, one savings account at a fictional Indian bank, INR, en-IN). Figures are illustrative values from docs/07-DATA-MODEL.md §10a, not engine output. Series use resolution 'sampled' to stay readable.",
+  "plan": {
+    "schema": "response_plan/1",
+    "intent": "spending_question",
+    "blocks": [
+      {
+        "type": "Narrative",
+        "text": "You spent **{{calc_01JACAKJQ5NRFBFYH5K0JKCTVJ#result.current_minor|money}}** on food delivery in the last month, up {{calc_01JACAKJQ5NRFBFYH5K0JKCTVJ#result.pct_change|pct_change}} on your usual month. It's the biggest change in your spending, spread across Swiggy and Zomato, almost all paid by UPI. {{fnd_01JA6WDVD7333A92ZFM27JTCYC}}"
+      },
+      {
+        "type": "FinancialMetricGroup",
+        "metrics": [
+          {
+            "label": "Food delivery, last 30 days",
+            "value_ref": "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ#result.current_minor",
+            "format": "money",
+            "compare_ref": "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ#result.baseline_minor",
+            "compare_label": "Usual month (3-month median)"
+          },
+          {
+            "label": "Orders",
+            "value_ref": "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ#result.order_count",
+            "format": "count"
+          },
+          {
+            "label": "Change",
+            "value_ref": "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ#result.pct_change",
+            "format": "pct_change"
+          }
+        ]
+      },
+      {
+        "type": "SpendingBreakdownChart",
+        "mode": "over_time",
+        "query": {
+          "group_by": "month",
+          "period": {
+            "from": "2026-06-15",
+            "to": "2026-10-12"
+          },
+          "category_keys": [
+            "food.delivery"
+          ],
+          "compare_to": "median_3m"
+        },
+        "highlight_keys": [
+          "2026-09-13/2026-10-12"
+        ]
+      },
+      {
+        "type": "TransactionTable",
+        "query": {
+          "date_from": "2026-09-13",
+          "date_to": "2026-10-12",
+          "category_keys": [
+            "food.delivery"
+          ],
+          "direction": "out",
+          "include_transfers": false,
+          "sort": "amount_desc",
+          "limit": 5
+        },
+        "columns": [
+          "date",
+          "narration",
+          "category",
+          "amount",
+          "source"
+        ]
+      },
+      {
+        "type": "EvidencePanel",
+        "refs": [
+          "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ",
+          "fnd_01JA6WDVD7333A92ZFM27JTCYC",
+          "calc_01JAVWAEKG252XHYN9C4TCWHBP"
+        ]
+      }
+    ],
+    "follow_ups": [
+      {
+        "label": "What if I capped it?",
+        "kind": "simulate",
+        "payload": {
+          "scenario_spec": {
+            "schema": "scenario_spec/1",
+            "name": "Cap food delivery",
+            "scope": "mine",
+            "horizon_days": 90,
+            "modifiers": [
+              {
+                "type": "category_cap",
+                "category_key": "food.delivery",
+                "monthly_cap_minor": 900000,
+                "from_date": "2026-10-13"
+              }
+            ],
+            "currency": "INR"
+          }
+        }
+      },
+      {
+        "label": "Show all food delivery orders",
+        "kind": "filter_transactions",
+        "payload": {
+          "txn_query": {
+            "date_from": "2026-09-13",
+            "date_to": "2026-10-12",
+            "category_keys": [
+              "food.delivery"
+            ],
+            "direction": "out",
+            "include_transfers": false,
+            "sort": "date_desc",
+            "limit": 50
+          }
+        }
+      }
+    ]
+  },
+  "response": {
+    "schema_version": "agent_response/1",
+    "as_of": "2026-10-12",
+    "data_version": 9,
+    "engine_version": "0.3.0",
+    "response_id": "rsp_01JA9M3M7S2ZR5VDANJYMTDHNS",
+    "workspace_id": "wsp_01JASR194XPK5GYEY49F4K83AS",
+    "currency": "INR",
+    "locale": "en-IN",
+    "run_id": "run_01JAZ4HC2S8H3AXYSRD0DA0G7S",
+    "thread_id": "thr_food_in_01",
+    "surface": "ask",
+    "question": "Why is my food delivery so high this month?",
+    "created_at": "2026-10-12T14:05:31Z",
+    "forecast_id": "fc_01JAVMCM63EHF7NBJX12P5JM1M",
+    "status": "complete",
+    "blocks": [
+      {
+        "block_id": "b1",
+        "type": "Narrative",
+        "currency": "INR",
+        "evidence": [
+          "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ",
+          "fnd_01JA6WDVD7333A92ZFM27JTCYC"
+        ],
+        "actions": [],
+        "segments": [
+          {
+            "kind": "text",
+            "text": "You spent **"
+          },
+          {
+            "kind": "value",
+            "value": {
+              "kind": "money",
+              "minor": 1486000,
+              "currency": "INR",
+              "display": "₹14,860.00",
+              "precision": "exact",
+              "ref": "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ#result.current_minor"
+            }
+          },
+          {
+            "kind": "text",
+            "text": "** on food delivery in the last month, up "
+          },
+          {
+            "kind": "value",
+            "value": {
+              "kind": "pct_change",
+              "value": 0.41,
+              "display": "+41%",
+              "ref": "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ#result.pct_change"
+            }
+          },
+          {
+            "kind": "text",
+            "text": " on your usual month. It's the biggest change in your spending, spread across Swiggy and Zomato, almost all paid by UPI. "
+          },
+          {
+            "kind": "entity",
+            "ref": "fnd_01JA6WDVD7333A92ZFM27JTCYC",
+            "label": "Finding: food delivery up"
+          }
+        ]
+      },
+      {
+        "block_id": "b2",
+        "type": "FinancialMetricGroup",
+        "currency": "INR",
+        "evidence": [
+          "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ"
+        ],
+        "actions": [],
+        "metrics": [
+          {
+            "label": "Food delivery, last 30 days",
+            "value": {
+              "kind": "money",
+              "minor": 1486000,
+              "currency": "INR",
+              "display": "₹14,860.00",
+              "precision": "exact",
+              "ref": "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ#result.current_minor"
+            },
+            "compare": {
+              "label": "Usual month (3-month median)",
+              "value": {
+                "kind": "money",
+                "minor": 1054000,
+                "currency": "INR",
+                "display": "₹10,540.00",
+                "precision": "exact",
+                "ref": "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ#result.baseline_minor"
+              },
+              "delta": {
+                "kind": "money",
+                "minor": 432000,
+                "currency": "INR",
+                "display": "₹4,320.00",
+                "precision": "exact"
+              }
+            },
+            "tone": "negative",
+            "emphasis": "primary"
+          },
+          {
+            "label": "Orders",
+            "value": {
+              "kind": "count",
+              "value": 23,
+              "display": "23",
+              "ref": "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ#result.order_count"
+            },
+            "tone": "neutral",
+            "emphasis": "secondary"
+          },
+          {
+            "label": "Change",
+            "value": {
+              "kind": "pct_change",
+              "value": 0.41,
+              "display": "+41%",
+              "ref": "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ#result.pct_change"
+            },
+            "tone": "negative",
+            "emphasis": "secondary"
+          }
+        ]
+      },
+      {
+        "block_id": "b3",
+        "type": "SpendingBreakdownChart",
+        "currency": "INR",
+        "title": "Food delivery by 30-day window",
+        "evidence": [
+          "calc_01JAFK6SY9541SJ3EQHB6GD1GH"
+        ],
+        "actions": [],
+        "mode": "over_time",
+        "period": {
+          "from": "2026-06-15",
+          "to": "2026-10-12"
+        },
+        "unit": "INR",
+        "x": [
+          "2026-06-15/2026-07-14",
+          "2026-07-15/2026-08-13",
+          "2026-08-14/2026-09-12",
+          "2026-09-13/2026-10-12"
+        ],
+        "series": [
+          {
+            "key": "food.delivery",
+            "label": "Food delivery",
+            "nature": "discretionary",
+            "values": [
+              998000,
+              1054000,
+              1112000,
+              1486000
+            ]
+          }
+        ],
+        "baseline": {
+          "kind": "money",
+          "minor": 1054000,
+          "currency": "INR",
+          "display": "₹10,540.00",
+          "precision": "exact",
+          "ref": "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ#result.baseline_minor"
+        },
+        "total": {
+          "kind": "money",
+          "minor": 4650000,
+          "currency": "INR",
+          "display": "₹46,500.00",
+          "precision": "exact",
+          "ref": "calc_01JAFK6SY9541SJ3EQHB6GD1GH#result.value_minor"
+        },
+        "highlight_keys": [
+          "2026-09-13/2026-10-12"
+        ]
+      },
+      {
+        "block_id": "b4",
+        "type": "TransactionTable",
+        "currency": "INR",
+        "title": "Largest food delivery orders, last 30 days",
+        "evidence": [
+          "calc_01JAVWAEKG252XHYN9C4TCWHBP"
+        ],
+        "actions": [],
+        "columns": [
+          "date",
+          "narration",
+          "category",
+          "amount",
+          "source"
+        ],
+        "rows": [
+          {
+            "txn_id": "txn_01JARE3CANYW1527ZG82Q50KP4",
+            "date": "2026-10-10",
+            "narration_display": "UPI/DR/628314572901/SWIGGY/YESB/Order",
+            "counterparty": "Swiggy",
+            "category": {
+              "key": "food.delivery",
+              "label": "Food delivery"
+            },
+            "amount": {
+              "kind": "money",
+              "minor": -118400,
+              "currency": "INR",
+              "display": "−₹1,184.00",
+              "precision": "exact"
+            },
+            "payment_type": "upi",
+            "source": {
+              "import_id": "imp_01JAFWTZ2ETWFVDZC22GGFDETG",
+              "row_number": 1398
+            }
+          },
+          {
+            "txn_id": "txn_01JAP54SBNQMBK115P6ABZ47BY",
+            "date": "2026-10-03",
+            "narration_display": "UPI/DR/627612093357/ZOMATO/HDFC/Order",
+            "counterparty": "Zomato",
+            "category": {
+              "key": "food.delivery",
+              "label": "Food delivery"
+            },
+            "amount": {
+              "kind": "money",
+              "minor": -104650,
+              "currency": "INR",
+              "display": "−₹1,046.50",
+              "precision": "exact"
+            },
+            "payment_type": "upi",
+            "source": {
+              "import_id": "imp_01JAFWTZ2ETWFVDZC22GGFDETG",
+              "row_number": 1361
+            }
+          },
+          {
+            "txn_id": "txn_01JA5XRDKREZS647QVTW4CKYV7",
+            "date": "2026-10-07",
+            "narration_display": "UPI/DR/628009431165/SWIGGY/YESB/Order",
+            "counterparty": "Swiggy",
+            "category": {
+              "key": "food.delivery",
+              "label": "Food delivery"
+            },
+            "amount": {
+              "kind": "money",
+              "minor": -96200,
+              "currency": "INR",
+              "display": "−₹962.00",
+              "precision": "exact"
+            },
+            "payment_type": "upi",
+            "source": {
+              "import_id": "imp_01JAFWTZ2ETWFVDZC22GGFDETG",
+              "row_number": 1384
+            }
+          },
+          {
+            "txn_id": "txn_01JAAQAB9MZNG0A0K77ZY4FTJP",
+            "date": "2026-09-26",
+            "narration_display": "UPI/DR/626954880210/ZOMATO/HDFC/Order",
+            "counterparty": "Zomato",
+            "category": {
+              "key": "food.delivery",
+              "label": "Food delivery"
+            },
+            "amount": {
+              "kind": "money",
+              "minor": -91840,
+              "currency": "INR",
+              "display": "−₹918.40",
+              "precision": "exact"
+            },
+            "payment_type": "upi",
+            "source": {
+              "import_id": "imp_01JAFWTZ2ETWFVDZC22GGFDETG",
+              "row_number": 1322
+            }
+          },
+          {
+            "txn_id": "txn_01JAEB03MXKWWS9GQN8V59BJQC",
+            "date": "2026-10-11",
+            "narration_display": "UPI/DR/628402275519/SWIGGY/YESB/Order",
+            "counterparty": "Swiggy",
+            "category": {
+              "key": "food.delivery",
+              "label": "Food delivery"
+            },
+            "amount": {
+              "kind": "money",
+              "minor": -87400,
+              "currency": "INR",
+              "display": "−₹874.00",
+              "precision": "exact"
+            },
+            "payment_type": "upi",
+            "source": {
+              "import_id": "imp_01JAFWTZ2ETWFVDZC22GGFDETG",
+              "row_number": 1403
+            }
+          }
+        ],
+        "total": {
+          "kind": "money",
+          "minor": -1486000,
+          "currency": "INR",
+          "display": "−₹14,860.00",
+          "precision": "exact",
+          "ref": "calc_01JAVWAEKG252XHYN9C4TCWHBP#result.value_minor"
+        },
+        "count": {
+          "kind": "count",
+          "value": 23,
+          "display": "23",
+          "ref": "calc_01JAVWAEKG252XHYN9C4TCWHBP#result.count"
+        },
+        "has_more": true,
+        "query": {
+          "date_from": "2026-09-13",
+          "date_to": "2026-10-12",
+          "category_keys": [
+            "food.delivery"
+          ],
+          "direction": "out",
+          "include_transfers": false,
+          "sort": "amount_desc",
+          "limit": 5
+        }
+      },
+      {
+        "block_id": "b5",
+        "type": "EvidencePanel",
+        "evidence": [
+          "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ",
+          "fnd_01JA6WDVD7333A92ZFM27JTCYC",
+          "calc_01JAVWAEKG252XHYN9C4TCWHBP"
+        ],
+        "actions": [],
+        "items": [
+          {
+            "ref": "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ",
+            "kind": "calculation",
+            "title": "Category trend: food delivery",
+            "provenance": "observed",
+            "summary_lines": [
+              "Last 30 days ₹14,860.00 vs median of the three prior 30-day windows ₹10,540.00",
+              "Robust z-score 3.1 (threshold 2.0)",
+              "Refunds netted; transfers excluded"
+            ],
+            "engine_version": "0.3.0",
+            "inputs": {
+              "transaction_count": 81,
+              "date_range": {
+                "from": "2026-06-15",
+                "to": "2026-10-12"
+              },
+              "params": {
+                "window_days": 30,
+                "baseline": "median_3m",
+                "category": "food.delivery"
+              }
+            },
+            "source_chain": {
+              "import_id": "imp_01JAFWTZ2ETWFVDZC22GGFDETG",
+              "filename": "saffron_ledger_bank_statement_01-04-2026_12-10-2026.xlsx",
+              "importer": "csv_statement",
+              "profile": {
+                "kind": "format",
+                "id": "fmt_01JAJM9T4JCWJ8GRAN0Q2XAQQJ",
+                "name": "Saffron Ledger Bank savings export (proposed, confirmed 12 Oct)",
+                "source": "user_confirmed"
+              },
+              "rows": "1,412 rows · amounts in lakh grouping · dates DMY",
+              "reconciliation": {
+                "status": "passed",
+                "method": "running_balance_chain"
+              },
+              "source_type": "xlsx",
+              "format_inference": {
+                "decimal_sep": ".",
+                "group_sep": ",",
+                "grouping": "lakh",
+                "date_order": "DMY",
+                "date_format": "dd-mm-yyyy",
+                "source": "user_confirmed"
+              }
+            },
+            "reproducible": {
+              "inputs_hash": "sha256:4be1…92c0",
+              "data_version": 9
+            }
+          },
+          {
+            "ref": "fnd_01JA6WDVD7333A92ZFM27JTCYC",
+            "kind": "finding",
+            "title": "Food delivery up on your usual month",
+            "provenance": "detected",
+            "summary_lines": [
+              "Severity: watch",
+              "First detected 9 Oct, confirmed 12 Oct"
+            ],
+            "reproducible": {
+              "inputs_hash": "sha256:4be1…92c0",
+              "data_version": 9
+            }
+          },
+          {
+            "ref": "calc_01JAVWAEKG252XHYN9C4TCWHBP",
+            "kind": "transactions",
+            "title": "23 food delivery orders",
+            "provenance": "observed",
+            "summary_lines": [
+              "13 Sep – 12 Oct, UPI payments from Saffron Ledger Bank Savings ••7731"
+            ],
+            "inputs": {
+              "transaction_count": 23
+            },
+            "source_chain": {
+              "import_id": "imp_01JAFWTZ2ETWFVDZC22GGFDETG",
+              "filename": "saffron_ledger_bank_statement_01-04-2026_12-10-2026.xlsx",
+              "importer": "csv_statement",
+              "profile": {
+                "kind": "format",
+                "id": "fmt_01JAJM9T4JCWJ8GRAN0Q2XAQQJ",
+                "name": "Saffron Ledger Bank savings export (proposed, confirmed 12 Oct)",
+                "source": "user_confirmed"
+              },
+              "rows": "1,412 rows · amounts in lakh grouping · dates DMY",
+              "reconciliation": {
+                "status": "passed",
+                "method": "running_balance_chain"
+              },
+              "source_type": "xlsx",
+              "format_inference": {
+                "decimal_sep": ".",
+                "group_sep": ",",
+                "grouping": "lakh",
+                "date_order": "DMY",
+                "date_format": "dd-mm-yyyy",
+                "source": "user_confirmed"
+              }
+            },
+            "reproducible": {
+              "inputs_hash": "sha256:a07d…11e3",
+              "data_version": 9
+            }
+          }
+        ]
+      }
+    ],
+    "follow_ups": [
+      {
+        "action_id": "fu_1",
+        "label": "What if I capped it?",
+        "kind": "simulate",
+        "payload": {
+          "scenario_spec": {
+            "schema": "scenario_spec/1",
+            "name": "Cap food delivery",
+            "scope": "mine",
+            "horizon_days": 90,
+            "modifiers": [
+              {
+                "type": "category_cap",
+                "category_key": "food.delivery",
+                "monthly_cap_minor": 900000,
+                "from_date": "2026-10-13"
+              }
+            ],
+            "currency": "INR"
+          }
+        },
+        "requires_confirmation": false
+      },
+      {
+        "action_id": "fu_2",
+        "label": "Show all food delivery orders",
+        "kind": "filter_transactions",
+        "payload": {
+          "txn_query": {
+            "date_from": "2026-09-13",
+            "date_to": "2026-10-12",
+            "category_keys": [
+              "food.delivery"
+            ],
+            "direction": "out",
+            "include_transfers": false,
+            "sort": "date_desc",
+            "limit": 50
+          }
+        },
+        "requires_confirmation": false
+      }
+    ],
+    "provenance": {
+      "calc_ids": [
+        "calc_01JACAKJQ5NRFBFYH5K0JKCTVJ",
+        "calc_01JAVWAEKG252XHYN9C4TCWHBP",
+        "calc_01JAFK6SY9541SJ3EQHB6GD1GH"
+      ],
+      "finding_ids": [
+        "fnd_01JA6WDVD7333A92ZFM27JTCYC"
+      ],
+      "recommendation_ids": []
+    },
+    "prefs_version": 1
+  }
+}

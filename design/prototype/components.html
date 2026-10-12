@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foresight Design System</title>
+<meta name="description" content="Foresight prototype — Broadsheet design system sheet: tokens, type, controls, charts grammar and agent components.">
+<script>try{var q=new URLSearchParams(location.search).get("theme"),t=q||localStorage.getItem("fs-theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/foresight.css">
+<script src="assets/app.js" defer></script>
+<script src="assets/charts.js" defer></script>
+</head>
+<body data-page="components">
+<main>
+<div class="page">
+  <header class="masthead"><h1 class="page-title">Design system · Broadsheet</h1><div class="edition"><span>Tokens from docs/00 §9 (with contrast amendments) · spec in docs/04 §10</span></div></header>
+
+  <section class="ds-section" aria-labelledby="c-colour" style="margin-top:32px">
+    <div class="section-head"><h2 id="c-colour">Colour</h2><span class="aside">One accent (blue = forecast and primary action). Burnt orange means simulated, nothing else.</span></div>
+    <div class="swatches">
+      <div class="swatch"><i style="background:var(--paper)"></i><b>Paper</b><code>--paper</code></div>
+      <div class="swatch"><i style="background:var(--paper-raised)"></i><b>Paper raised</b><code>--paper-raised</code></div>
+      <div class="swatch"><i style="background:var(--ink)"></i><b>Ink</b><code>--ink</code></div>
+      <div class="swatch"><i style="background:var(--ink-2)"></i><b>Ink 2</b><code>--ink-2</code></div>
+      <div class="swatch"><i style="background:var(--ink-3)"></i><b>Ink 3</b><code>--ink-3 · 4.6:1</code></div>
+      <div class="swatch"><i style="background:var(--rule)"></i><b>Rule</b><code>--rule</code></div>
+      <div class="swatch"><i style="background:var(--rule-strong)"></i><b>Rule strong</b><code>--rule-strong · inputs</code></div>
+      <div class="swatch"><i style="background:var(--accent)"></i><b>Accent / forecast</b><code>--accent</code></div>
+      <div class="swatch"><i style="background:var(--simulated)"></i><b>Simulated</b><code>--simulated</code></div>
+      <div class="swatch"><i style="background:var(--positive)"></i><b>Positive</b><code>--positive</code></div>
+      <div class="swatch"><i style="background:var(--caution)"></i><b>Caution</b><code>--caution</code></div>
+      <div class="swatch"><i style="background:var(--negative)"></i><b>Negative</b><code>--negative</code></div>
+    </div>
+  </section>
+
+  <section class="ds-section" aria-labelledby="c-type">
+    <div class="section-head"><h2 id="c-type">Type</h2><span class="aside">Six sizes, three weights. Figures always tabular.</span></div>
+    <div class="type-row"><span class="spec">Display · Newsreader 48/1.06 · 400</span><span class="headline" style="margin:0;font-size:48px">You’ll probably dip under your buffer.</span></div>
+    <div class="type-row"><span class="spec">Figure · Newsreader 32 · 400</span><span class="metric-value" style="margin:0">£2,940.00</span></div>
+    <div class="type-row"><span class="spec">Section · Newsreader 22 · 500</span><span class="serif" style="font-size:22px;font-weight:500">What changed</span></div>
+    <div class="type-row"><span class="spec">Reading · Inter 16/1.6</span><span style="font-size:16px">£286.40 over the last 30 days against a £203.10 median.</span></div>
+    <div class="type-row"><span class="spec">UI · Inter 14 · 400/500/600</span><span>Cap food delivery · <b style="font-weight:500">Start this plan</b> · <b>Checked</b></span></div>
+    <div class="type-row"><span class="spec">Micro · Inter 12 / JetBrains Mono 12</span><span style="font-size:12px">27 Oct · likely range <span class="mono">calc_01JAF7R1B3VP</span></span></div>
+  </section>
+
+  <div class="ds-cols ds-section">
+    <section aria-labelledby="c-btn">
+      <div class="section-head"><h2 id="c-btn">Actions</h2></div>
+      <div class="ds-row"><button class="btn btn-primary">Start this plan</button><button class="btn btn-accent">Ask</button><button class="btn">Open in Lab</button><button class="btn btn-quiet">Not for me</button><button class="btn" disabled>Running…</button></div>
+      <div class="ds-row" style="margin-top:16px"><button class="chip">What if I book in January?</button><button class="chip chip-evidence" data-kind="finding" data-ev="fnd_food">fnd_01JAF3Q8ZK</button><button class="chip chip-evidence" data-kind="forecast" data-ev="fc_low">fc_01JAF7R0X6NN</button><button class="chip chip-evidence" data-kind="simulation" data-ev="sim_trip_low">sim_01JAFB2K7Y4C</button></div>
+      <p class="hint" style="margin-top:16px">A dotted-underlined figure opens its evidence: <button class="fig" data-ev="fc_low">£242</button>. Every displayed number uses it.</p>
+    </section>
+    <section aria-labelledby="c-in">
+      <div class="section-head"><h2 id="c-in">Inputs &amp; scenario controls</h2></div>
+      <div style="display:grid;gap:16px">
+        <div class="field"><label for="x1">Amount</label><div class="input-prefix" style="max-width:240px"><span>£</span><input id="x1" class="input" value="640.00"></div></div>
+        <div class="segmented" role="radiogroup" aria-label="Scope example (multi-account only)"><button role="radio" aria-checked="false">Mine</button><button role="radio" aria-checked="true">Household</button><button role="radio" aria-checked="false">Account ▾</button></div><span class="hint">Scope selector appears only for multi-account workspaces (see Household state).</span>
+        <div class="field"><label for="x2">Spend less on food delivery</label><input id="x2" class="slider" type="range" min="0" max="40" value="11"><span class="hint">−11% → £180/mo · limit 40%</span></div>
+      </div>
+    </section>
+  </div>
+
+  <section class="ds-section" aria-labelledby="c-metric">
+    <div class="section-head"><h2 id="c-metric">FinancialMetricGroup</h2><span class="aside">Ruled, never boxed. Colour of the figure follows the data grammar.</span></div>
+    <div class="metrics" style="--cols:3">
+      <div class="metric"><div class="metric-label">Balance today · observed</div><div class="metric-value"><button class="fig" data-ev="bal_now">£1,284.50</button></div><div class="metric-sub">ink = observed</div></div>
+      <div class="metric"><div class="metric-label">Expected low · forecast</div><div class="metric-value is-forecast"><button class="fig" data-ev="fc_low">£242</button></div><div class="metric-sub">blue = forecast, always with a range</div></div>
+      <div class="metric"><div class="metric-label">January low with flights · simulated</div><div class="metric-value is-sim"><button class="fig" data-ev="sim_trip_jan">£260</button></div><div class="metric-sub">orange = what-if</div></div>
+    </div>
+  </section>
+
+  <section class="ds-section" aria-labelledby="c-chart">
+    <div class="section-head"><h2 id="c-chart">Chart grammar</h2><span class="aside">Four marks, never reassigned</span></div>
+    <div class="legend">
+      <span class="key"><svg viewBox="0 0 24 10"><line x1="0" x2="24" y1="5" y2="5" stroke="var(--series-history)" stroke-width="2"/></svg>History: solid ink, 2px</span>
+      <span class="key"><svg viewBox="0 0 24 10"><rect x="0" y="1" width="24" height="8" fill="var(--series-band)"/><line x1="0" x2="24" y1="5" y2="5" stroke="var(--series-forecast)" stroke-width="2"/></svg>Forecast: accent P50 + P10–P90 band</span>
+      <span class="key"><svg viewBox="0 0 24 10"><line x1="0" x2="24" y1="5" y2="5" stroke="var(--series-simulated)" stroke-width="2" stroke-dasharray="6 4"/></svg>Simulated: dashed orange</span>
+      <span class="key"><svg viewBox="0 0 24 10"><line x1="0" x2="24" y1="5" y2="5" stroke="var(--series-simulated)" stroke-width="2" stroke-dasharray="1.5 4" stroke-linecap="round"/></svg>Second simulation: dotted orange</span>
+      <span class="key"><svg viewBox="0 0 24 10"><line x1="0" x2="24" y1="5" y2="5" stroke="var(--caution)" stroke-width="1.5" stroke-dasharray="1.5 3"/></svg>Threshold: dotted caution, labelled</span>
+      <span class="key"><svg viewBox="0 0 24 10"><line x1="12" x2="12" y1="0" y2="10" stroke="var(--ink)" stroke-width="1"/></svg>Today rule</span>
+    </div>
+    <div class="chart" aria-label="Chart grammar example" data-chart='{"height":260,"sims":["trip"]}'></div>
+    <h3 class="kicker" style="margin-top:32px">SpendingBreakdownChart · one series, one colour, median tick</h3>
+    <div class="bars" style="margin-top:12px;max-width:640px">
+      <span>Rent</span><span class="bar-track"><span class="bar" style="width:100%"></span></span><span class="val">£1,395.00</span>
+      <span>Food delivery</span><span class="bar-track"><span class="bar is-hl" style="width:20.5%"></span><span class="bar-median" style="left:14.6%" title="3-month median £203.10"></span></span><span class="val">£286.40<span class="delta caution">+41%</span></span>
+      <span>Family support</span><span class="bar-track"><span class="bar" style="width:17.9%"></span></span><span class="val">≈ £250.00</span>
+      <span>Council tax</span><span class="bar-track"><span class="bar" style="width:11.6%"></span></span><span class="val">£162.00</span>
+      <span>Subscriptions</span><span class="bar-track"><span class="bar" style="width:6.1%"></span></span><span class="val">£84.93</span>
+      <span>Energy</span><span class="bar-track"><span class="bar" style="width:5.6%"></span></span><span class="val">£78.00</span>
+    </div>
+    <p class="hint" style="margin-top:8px">Selected categories, last 30 days. The tick on food delivery marks its three-month median (£203.10). The highlighted bar is the finding being discussed.</p>
+  </section>
+
+  <section class="ds-section" aria-labelledby="c-states">
+    <div class="section-head"><h2 id="c-states">Recommendation &amp; risk states</h2><span class="aside">Always icon + word, never colour alone</span></div>
+    <div class="ds-row">
+      <span class="status status-pending"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="3" fill="currentColor"/></svg>Proposed</span>
+      <span class="status status-forecast"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 2"/></svg>Being checked</span>
+      <span class="status status-revised"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M9.5 4.5A3.6 3.6 0 0 0 2.6 5M2.5 7.5A3.6 3.6 0 0 0 9.4 7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Revised</span>
+      <span class="status status-verified"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.2 2.2 4.8-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Checked</span>
+      <span class="status status-rejected"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Withdrawn</span>
+      <span class="status status-sim">Simulated</span>
+      <span class="status status-forecast">Forecast</span>
+    </div>
+    <div class="ds-cols" style="margin-top:32px">
+      <div class="risk" style="grid-template-columns:1fr">
+        <div><div class="risk-level low">Low</div><div class="risk-scale" aria-hidden="true"><i class="on" style="background:var(--positive)"></i><i></i><i></i><i></i></div></div>
+        <div><div class="risk-level elevated">Elevated</div><div class="risk-scale" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div></div>
+        <div><div class="risk-level high">High</div><div class="risk-scale high" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div></div>
+      </div>
+      <article class="intervention">
+        <div class="ds-row" style="justify-content:space-between"><span class="kicker">InterventionCard</span><span class="status status-verified"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.2 2.2 4.8-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Checked</span></div>
+        <h3>Cap food delivery at £180 this month and cancel NOW Entertainment.</h3>
+        <div class="impact" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div><div class="metric-label">Keeps each month</div><div class="metric-value pos"><button class="fig" data-ev="rec_plan">+£116.39</button></div></div><div><div class="metric-label">Buffer risk</div><div class="metric-value">78% → 41%</div></div></div>
+        <div class="block-actions"><button class="btn btn-primary btn-sm">Start this plan</button><button class="btn btn-sm btn-quiet">Not for me</button></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="ds-section" aria-labelledby="c-table">
+    <div class="section-head"><h2 id="c-table">TransactionTable</h2><span class="aside">Figures right-aligned and tabular · low confidence flagged with a caution rule</span></div>
+    <div class="table-wrap">
+      <table class="ledger">
+        <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>How we know</th><th class="num">Amount</th></tr></thead>
+        <tbody>
+          <tr><td class="date">11 Oct</td><td><div class="merchant">Deliveroo</div><div class="narr">DELIVEROO.CO.UK LONDON</div></td><td><span class="cat">Food delivery</span></td><td><span class="src">memory · 0.99</span></td><td class="num">−£18.45</td></tr>
+          <tr class="is-flagged"><td class="date">6 Oct</td><td><div class="merchant">Headrow Kitchen?</div><div class="narr">SQ *HEADROW KITCHEN LEEDS</div></td><td><span class="cat">Eating out</span></td><td><span class="conf low"><span class="conf-bar"><i style="width:68%"></i></span>model · 0.68</span></td><td class="num">−£27.60</td></tr>
+          <tr><td class="date">29 Sep</td><td><div class="merchant">LemFi</div><div class="narr">LEMFI * TRANSFER LONDON</div></td><td><span class="cat">Family support abroad</span></td><td><span class="src">confirmed · commitment</span></td><td class="num">−£250.00</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="ds-section" aria-labelledby="c-tl">
+    <div class="section-head"><h2 id="c-tl">AgentExecutionTimeline</h2><span class="aside">The Verifier loop is drawn, not hidden</span></div>
+    <ol class="steps-list">
+      <li class="step ok"><span class="node"></span><span class="agent">Forecaster<small>tool · simulate()</small></span><span class="what">500 paths · seed 0x4F1C</span><span class="meta">0.4 s</span></li>
+      <li class="step reject"><span class="node"></span><span class="agent">Advisor · draft 1</span><span class="what"><b>Rejected:</b> £90 cap is 56% below median · claimed £220 ≠ recomputed £196.40</span><span class="meta">3.8 s</span></li>
+    </ol>
+    <div class="loop-mark">↻ Revision 1 of 2</div>
+    <ol class="steps-list" style="margin-top:0"><li class="step ok"><span class="node"></span><span class="agent">Verifier</span><span class="what">Approved draft 2 · <span class="mono">ver_01JAF8A5H1</span></span><span class="meta">2.2 s</span></li></ol>
+  </section>
+
+  <section class="ds-section" aria-labelledby="c-sp">
+    <div class="section-head"><h2 id="c-sp">Spacing, radius, motion</h2></div>
+    <dl class="kv" style="font-size:14px">
+      <dt>Unit</dt><dd>4px. Gaps 8 · 12 · 16 · 24 · 32 · 48 · 64</dd>
+      <dt>Radius</dt><dd>3px controls · 0 sections (ruled) · pill for status only</dd>
+      <dt>Elevation</dt><dd>Only the Evidence drawer and tooltips float. Everything else sits on paper.</dd>
+      <dt>Motion</dt><dd>≤ 150 ms. One choreographed moment: agent steps arriving on first analysis. Off under reduced motion.</dd>
+    </dl>
+  </section>
+
+  <footer class="fixture-note"><span>Design prototype · fictional data.</span><span>See also <a href="states.html">States</a></span></footer>
+</div>
+</main>
+</body>
+</html>

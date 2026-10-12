@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foresight Briefing</title>
+<meta name="description" content="Foresight prototype — Intelligence Home (Briefing) for fictional persona Amara Nwosu.">
+<script>try{var q=new URLSearchParams(location.search).get("theme"),t=q||localStorage.getItem("fs-theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/foresight.css">
+<script src="assets/app.js" defer></script>
+<script src="assets/charts.js" defer></script>
+</head>
+<body data-page="briefing">
+<main>
+<div class="page">
+
+  <header class="masthead">
+    <div class="edition">
+      <span><b>The Briefing</b></span>
+      <span>No. 41</span>
+      <span>Data to 11 Oct · Written 10:42</span>
+    </div>
+    <span class="faint" style="font-size:12px">Rewritten when new transactions arrive · <button class="btn btn-quiet btn-sm">Refresh now</button></span>
+  </header>
+
+  <p class="kicker" style="margin-top:32px;letter-spacing:.06em">MONDAY 12 OCTOBER 2026 · AMARA’S EDITION</p>
+  <h1 class="headline" style="margin-top:12px">You’ll probably dip under your buffer before payday.</h1>
+  <p class="deck">Food delivery is running <button class="fig" data-ev="fnd_food">41% above</button> your usual, and the car insurance renewal took <button class="fig" data-ev="fnd_ins">£410</button> this month. Pay arrives 28 October.</p>
+
+  <section aria-labelledby="h-standing" style="margin-top:40px">
+    <h2 id="h-standing" class="sr-only">Where you stand</h2>
+    <div class="section-head" style="margin-bottom:0;border-top-width:1px"><h2 class="kicker" style="font-family:var(--font-ui);font-size:12px;letter-spacing:.06em">WHERE YOU STAND</h2></div>
+    <div class="metrics" style="--cols:4;border-top:0">
+      <div class="metric">
+        <div class="metric-label">Balance today</div>
+        <div class="metric-value"><button class="fig" data-ev="bal_now">£1,284.50</button></div>
+        <div class="metric-sub">Monzo · you told us, 12 Oct</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Buffer</div>
+        <div class="metric-value"><button class="fig" data-ev="buffer">£300</button></div>
+        <div class="metric-sub">set by you · <a href="#">change</a></div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Until payday</div>
+        <div class="metric-value"><button class="fig" data-ev="salary">16 days</button></div>
+        <div class="metric-sub">28 Oct (Wednesday)</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Still to go out</div>
+        <div class="metric-value"><button class="fig" data-ev="to_go_out">£693.93</button></div>
+        <div class="metric-sub">before payday · 7 bills</div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-next" style="margin-top:48px">
+    <div class="section-head">
+      <h2 id="h-next">What’s likely next</h2>
+      <span class="aside mono">fc_01JAF7R0X6NN · 500 paths · seed 0x4F1C</span>
+    </div>
+    <div class="legend" aria-hidden="true">
+      <span class="key"><svg viewBox="0 0 24 10"><line x1="0" x2="24" y1="5" y2="5" stroke="var(--series-history)" stroke-width="2"/></svg>Balance (history)</span>
+      <span class="key"><svg viewBox="0 0 24 10"><rect x="0" y="1" width="24" height="8" fill="var(--series-band)"/><line x1="0" x2="24" y1="5" y2="5" stroke="var(--series-forecast)" stroke-width="2"/></svg>Forecast, middle estimate with likely range (P10–P90)</span>
+      <span class="key"><svg viewBox="0 0 24 10"><line x1="0" x2="24" y1="5" y2="5" stroke="var(--caution)" stroke-width="1.5" stroke-dasharray="1.5 3"/></svg>Your buffer</span>
+    </div>
+    <div class="chart" aria-label="Balance for the last 60 days and forecast to payday on 28 October" data-chart='{"height":320,"start":"2026-08-13","end":"2026-10-28","ymax":4000,"historyLabel":"History · 60 days","bufferLabelLeft":true,"annotate":[["2026-10-27","base","£242 · 27 Oct","Low before pay","left above"]]}'></div>
+    <p class="prose" style="margin-top:12px">Lowest point about <button class="fig" data-ev="fc_low">£242</button> on 27 Oct (likely between £96 and £388). <button class="fig" data-ev="fc_breach">78%</button> chance you’ll go below your £300 buffer before payday.</p>
+    <div class="chart-foot">
+      <span>Before payday: council tax £162 (15 Oct) · energy £78 · water £42 · LemFi ≈ £250 · 7 subscriptions <button class="fig" data-ev="subs_total">£84.93/mo</button></span>
+      <span><a href="lab.html">See further ahead in the Decision Lab</a></span>
+    </div>
+  </section>
+
+  <div class="brief-grid" style="margin-top:56px">
+    <section aria-labelledby="h-changed">
+      <div class="section-head"><h2 id="h-changed">What changed</h2><span class="aside">Since your last briefing, 5 Oct</span></div>
+      <ul class="findings">
+        <li>
+          <h4>Food delivery is up 41% on your three-month norm</h4>
+          <div class="delta"><button class="fig" data-ev="fnd_food">+£83.30</button></div>
+          <p>£286.40 over the last 30 days against a £203.10 median, across 23 orders: Deliveroo 11, Uber Eats 8, Just Eat 4.</p>
+          <div class="meta">
+            <svg class="spark" viewBox="0 0 96 28" aria-label="Monthly food delivery spend, rising"><path d="M2,20 L18,21 L34,18 L50,19 L66,17 L82,9 L92,4"/><circle class="last" cx="92" cy="4" r="2.5"/></svg>
+            <span class="chip chip-evidence" data-kind="finding" data-ev="fnd_food" role="button" tabindex="0">fnd_01JAF3Q8ZK</span>
+          </div>
+        </li>
+        <li>
+          <h4>One-off: car insurance on 9 Oct</h4>
+          <div class="delta"><button class="fig" data-ev="fnd_ins">£410</button></div>
+          <p>£410.00, not counted as regular spending. It’s most of why October is tight.</p>
+          <div class="meta"><span class="chip chip-evidence" data-kind="finding" data-ev="fnd_ins" role="button" tabindex="0">fnd_01JAF3QD1W</span></div>
+        </li>
+        <li>
+          <h4>TV streaming: NOW Entertainment overlaps your Sky TV</h4>
+          <div class="delta"><button class="fig" data-ev="fnd_now">£9.99/mo</button></div>
+          <p>Both bill monthly for TV and film, and NOW sells channels Sky already includes. Foresight can’t see what you watch. Tell us if one is unused.</p>
+          <div class="meta"><span class="chip chip-evidence" data-kind="finding" data-ev="fnd_now" role="button" tabindex="0">fnd_01JAF3QB4R</span><button class="btn btn-sm">Mark NOW unused</button></div>
+        </li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-act">
+      <div class="section-head"><h2 id="h-act">Act on this</h2><span class="aside">1 recommendation</span></div>
+      <article class="intervention" style="border-top:0;padding-top:0">
+        <div class="ds-row">
+          <span class="status status-verified"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.2 2.2 4.8-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Checked</span>
+          <span class="faint" style="font-size:12px">after 1 revision · <button class="fig" data-ev="rec_plan" style="font-size:12px">see why</button></span>
+        </div>
+        <h3>Cap food delivery at £180 this month and cancel NOW Entertainment.</h3>
+        <div class="impact">
+          <div><div class="metric-label">Keeps each month</div><div class="metric-value pos"><button class="fig" data-ev="rec_plan">+£116.39</button></div></div>
+          <div><div class="metric-label">Buffer risk before payday</div><div class="metric-value">78% → 41%</div></div>
+          <div><div class="metric-label">Size of change</div><div class="metric-value">−11%</div><div class="metric-sub">vs your usual delivery spend</div></div>
+        </div>
+        <ol class="steps">
+          <li>Keep delivery to £180 a month. Foresight will nudge you at £130.</li>
+          <li>Cancel NOW Entertainment before it renews on 4 Nov (£9.99).</li>
+        </ol>
+        <div class="why">
+          <span><b>Why:</b> built from <span class="mono">fnd_01JAF3Q8ZK</span> and <span class="mono">fnd_01JAF3QB4R</span>, then re-simulated against your forecast with the same seed.</span>
+          <span><b>What the Verifier changed:</b> the first draft asked for a £90 cap. That is 56% below your usual spend, so it was rejected as unrealistic. Its claimed saving didn’t match the recalculation either.</span>
+          <span><b>Left alone on purpose:</b> the £250 a month you send to family is a commitment, not a cut.</span>
+        </div>
+        <div class="block-actions">
+          <button class="btn btn-primary">I’ll do this</button>
+          <a class="btn" href="lab.html">Try it in the Lab</a>
+          <button class="btn btn-quiet">Not for me ▾</button>
+          <button class="btn btn-quiet" data-ev="rec_plan">How was this worked out? ›</button>
+        </div>
+      </article>
+
+    </section>
+  </div>
+
+  <section aria-labelledby="h-inv" style="margin-top:56px">
+    <div class="section-head"><h2 id="h-inv">Under investigation</h2><span class="aside">And things you can set up when you’re ready</span></div>
+    <ul class="investigating cols-4">
+      <li><h4><span class="pulse" aria-hidden="true"></span>The long January</h4><p>December pay arrives early on Fri 18 Dec, and the next on 28 Jan. That’s <button class="fig" data-ev="fnd_jan">41 days</button>. Likely January low about £900.</p><a href="ask.html" style="font-size:12px">Ask about it</a></li>
+      <li><h4><span class="pulse" aria-hidden="true"></span>Set a goal</h4><p>You could build a £1,500 emergency fund by 31 March.</p><a href="lab.html" style="font-size:12px">Set it up</a></li>
+      <li><h4><span class="pulse" aria-hidden="true"></span>A weekly note on Telegram</h4><p>One insight and one action, every Monday at 08:00.</p><a href="#" style="font-size:12px">Connect Telegram</a></li>
+      <li><h4><span class="pulse" aria-hidden="true"></span>Check 38 transactions</h4><p>We weren’t sure how to categorise them. Your answers teach Foresight for next time.</p><a href="ledger.html" style="font-size:12px">Review</a></li>
+    </ul>
+  </section>
+
+  <footer class="fixture-note">
+    <span>Design prototype. Persona, account and figures are fictional fixtures (docs/00 §10a). Real values come from the deterministic engine.</span>
+    <span class="mono">brf_01JAF7S0P4QE · run_01JAF7Q2M8K4</span>
+  </footer>
+</div>
+</main>
+</body>
+</html>

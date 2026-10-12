@@ -1,0 +1,621 @@
+{
+  "_note": "FICTIONAL design fixture for persona P1 (Amara Nwosu, one Monzo current account, GBP). Figures are illustrative values from docs/00-DECISION-REGISTER.md §10a, not engine output. Series use resolution 'sampled' to stay readable.",
+  "plan": {
+    "schema": "response_plan/1",
+    "intent": "spending_question",
+    "blocks": [
+      {
+        "type": "Narrative",
+        "text": "You spent **{{calc_01JA9HP0B5ANE3S1P2TFD1SAFM#result.current_minor|money}}** on food delivery in the last month, up {{calc_01JA9HP0B5ANE3S1P2TFD1SAFM#result.pct_change|pct_change}} on your usual month. It's the biggest change in your spending, spread across Deliveroo, Uber Eats and Just Eat. {{fnd_01JA9C6A3WJWTPW1YDD18ADPV6}}"
+      },
+      {
+        "type": "FinancialMetricGroup",
+        "metrics": [
+          {
+            "label": "Food delivery, last 30 days",
+            "value_ref": "calc_01JA9HP0B5ANE3S1P2TFD1SAFM#result.current_minor",
+            "format": "money",
+            "compare_ref": "calc_01JA9HP0B5ANE3S1P2TFD1SAFM#result.baseline_minor",
+            "compare_label": "Usual month (3-month median)"
+          },
+          {
+            "label": "Orders",
+            "value_ref": "calc_01JA9HP0B5ANE3S1P2TFD1SAFM#result.order_count",
+            "format": "count"
+          },
+          {
+            "label": "Change",
+            "value_ref": "calc_01JA9HP0B5ANE3S1P2TFD1SAFM#result.pct_change",
+            "format": "pct_change"
+          }
+        ]
+      },
+      {
+        "type": "SpendingBreakdownChart",
+        "mode": "over_time",
+        "query": {
+          "group_by": "month",
+          "period": {
+            "from": "2026-06-15",
+            "to": "2026-10-12"
+          },
+          "category_keys": [
+            "food.delivery"
+          ],
+          "compare_to": "median_3m"
+        },
+        "highlight_keys": [
+          "2026-09-13/2026-10-12"
+        ]
+      },
+      {
+        "type": "TransactionTable",
+        "query": {
+          "date_from": "2026-09-13",
+          "date_to": "2026-10-12",
+          "category_keys": [
+            "food.delivery"
+          ],
+          "direction": "out",
+          "include_transfers": false,
+          "sort": "amount_desc",
+          "limit": 5
+        },
+        "columns": [
+          "date",
+          "narration",
+          "category",
+          "amount",
+          "source"
+        ]
+      },
+      {
+        "type": "EvidencePanel",
+        "refs": [
+          "calc_01JA9HP0B5ANE3S1P2TFD1SAFM",
+          "fnd_01JA9C6A3WJWTPW1YDD18ADPV6",
+          "calc_01JA9RMK2CTTHZEHXY8E39HX25"
+        ]
+      }
+    ],
+    "follow_ups": [
+      {
+        "label": "What if I capped it?",
+        "kind": "simulate",
+        "payload": {
+          "scenario_spec": {
+            "schema": "scenario_spec/1",
+            "name": "Cap food delivery",
+            "scope": "mine",
+            "horizon_days": 90,
+            "modifiers": [
+              {
+                "type": "category_cap",
+                "category_key": "food.delivery",
+                "monthly_cap_minor": 18000,
+                "from_date": "2026-10-13"
+              }
+            ],
+            "currency": "GBP"
+          }
+        }
+      },
+      {
+        "label": "Show all food delivery orders",
+        "kind": "filter_transactions",
+        "payload": {
+          "txn_query": {
+            "date_from": "2026-09-13",
+            "date_to": "2026-10-12",
+            "category_keys": [
+              "food.delivery"
+            ],
+            "direction": "out",
+            "include_transfers": false,
+            "sort": "date_desc",
+            "limit": 50
+          }
+        }
+      }
+    ]
+  },
+  "response": {
+    "schema_version": "agent_response/1",
+    "as_of": "2026-10-12",
+    "data_version": 21,
+    "engine_version": "0.3.0",
+    "response_id": "rsp_01JA9G0VRT1VMDXNBSJ8CV1VEC",
+    "workspace_id": "wsp_01JA8ZK2Q4AMARA0P1DEM0WSP0",
+    "currency": "GBP",
+    "locale": "en-GB",
+    "run_id": "run_01JA9G0VRT1VMDXNBSJ8CV1VEC",
+    "thread_id": "thr_food_01",
+    "surface": "ask",
+    "question": "Why is my food spending so high?",
+    "created_at": "2026-10-12T14:05:31Z",
+    "forecast_id": "fc_01JA9W639D84MEBQ62JNKQV8P0",
+    "status": "complete",
+    "blocks": [
+      {
+        "block_id": "b1",
+        "type": "Narrative",
+        "currency": "GBP",
+        "evidence": [
+          "calc_01JA9HP0B5ANE3S1P2TFD1SAFM",
+          "fnd_01JA9C6A3WJWTPW1YDD18ADPV6"
+        ],
+        "actions": [],
+        "segments": [
+          {
+            "kind": "text",
+            "text": "You spent **"
+          },
+          {
+            "kind": "value",
+            "value": {
+              "kind": "money",
+              "minor": 28640,
+              "currency": "GBP",
+              "display": "£286.40",
+              "precision": "exact",
+              "ref": "calc_01JA9HP0B5ANE3S1P2TFD1SAFM#result.current_minor"
+            }
+          },
+          {
+            "kind": "text",
+            "text": "** on food delivery in the last month, up "
+          },
+          {
+            "kind": "value",
+            "value": {
+              "kind": "pct_change",
+              "value": 0.41,
+              "display": "+41%",
+              "ref": "calc_01JA9HP0B5ANE3S1P2TFD1SAFM#result.pct_change"
+            }
+          },
+          {
+            "kind": "text",
+            "text": " on your usual month. It's the biggest change in your spending, spread across Deliveroo, Uber Eats and Just Eat. "
+          },
+          {
+            "kind": "entity",
+            "ref": "fnd_01JA9C6A3WJWTPW1YDD18ADPV6",
+            "label": "Finding: food delivery up"
+          }
+        ]
+      },
+      {
+        "block_id": "b2",
+        "type": "FinancialMetricGroup",
+        "currency": "GBP",
+        "evidence": [
+          "calc_01JA9HP0B5ANE3S1P2TFD1SAFM"
+        ],
+        "actions": [],
+        "metrics": [
+          {
+            "label": "Food delivery, last 30 days",
+            "value": {
+              "kind": "money",
+              "minor": 28640,
+              "currency": "GBP",
+              "display": "£286.40",
+              "precision": "exact",
+              "ref": "calc_01JA9HP0B5ANE3S1P2TFD1SAFM#result.current_minor"
+            },
+            "compare": {
+              "label": "Usual month (3-month median)",
+              "value": {
+                "kind": "money",
+                "minor": 20310,
+                "currency": "GBP",
+                "display": "£203.10",
+                "precision": "exact",
+                "ref": "calc_01JA9HP0B5ANE3S1P2TFD1SAFM#result.baseline_minor"
+              },
+              "delta": {
+                "kind": "money",
+                "minor": 8330,
+                "currency": "GBP",
+                "display": "£83.30",
+                "precision": "exact"
+              }
+            },
+            "tone": "negative",
+            "emphasis": "primary"
+          },
+          {
+            "label": "Orders",
+            "value": {
+              "kind": "count",
+              "value": 23,
+              "display": "23",
+              "ref": "calc_01JA9HP0B5ANE3S1P2TFD1SAFM#result.order_count"
+            },
+            "tone": "neutral",
+            "emphasis": "secondary"
+          },
+          {
+            "label": "Change",
+            "value": {
+              "kind": "pct_change",
+              "value": 0.41,
+              "display": "+41%",
+              "ref": "calc_01JA9HP0B5ANE3S1P2TFD1SAFM#result.pct_change"
+            },
+            "tone": "negative",
+            "emphasis": "secondary"
+          }
+        ]
+      },
+      {
+        "block_id": "b3",
+        "type": "SpendingBreakdownChart",
+        "currency": "GBP",
+        "title": "Food delivery by 30-day window",
+        "evidence": [
+          "calc_01JA9DANJD024S6CCWS5ZXSZR3"
+        ],
+        "actions": [],
+        "mode": "over_time",
+        "period": {
+          "from": "2026-06-15",
+          "to": "2026-10-12"
+        },
+        "unit": "GBP",
+        "x": [
+          "2026-06-15/2026-07-14",
+          "2026-07-15/2026-08-13",
+          "2026-08-14/2026-09-12",
+          "2026-09-13/2026-10-12"
+        ],
+        "series": [
+          {
+            "key": "food.delivery",
+            "label": "Food delivery",
+            "nature": "discretionary",
+            "values": [
+              19580,
+              20310,
+              21460,
+              28640
+            ]
+          }
+        ],
+        "baseline": {
+          "kind": "money",
+          "minor": 20310,
+          "currency": "GBP",
+          "display": "£203.10",
+          "precision": "exact",
+          "ref": "calc_01JA9HP0B5ANE3S1P2TFD1SAFM#result.baseline_minor"
+        },
+        "total": {
+          "kind": "money",
+          "minor": 89990,
+          "currency": "GBP",
+          "display": "£899.90",
+          "precision": "exact",
+          "ref": "calc_01JA9DANJD024S6CCWS5ZXSZR3#result.value_minor"
+        },
+        "highlight_keys": [
+          "2026-09-13/2026-10-12"
+        ]
+      },
+      {
+        "block_id": "b4",
+        "type": "TransactionTable",
+        "currency": "GBP",
+        "title": "Largest food delivery orders, last 30 days",
+        "evidence": [
+          "calc_01JA9RMK2CTTHZEHXY8E39HX25"
+        ],
+        "actions": [],
+        "columns": [
+          "date",
+          "narration",
+          "category",
+          "amount",
+          "source"
+        ],
+        "rows": [
+          {
+            "txn_id": "txn_01JA91G9ZF60FJSHTC9GHGR9MS",
+            "date": "2026-10-10",
+            "narration_display": "DELIVEROO",
+            "counterparty": "Deliveroo",
+            "category": {
+              "key": "food.delivery",
+              "label": "Food delivery"
+            },
+            "amount": {
+              "kind": "money",
+              "minor": -2485,
+              "currency": "GBP",
+              "display": "−£24.85",
+              "precision": "exact"
+            },
+            "payment_type": "card",
+            "source": {
+              "import_id": "imp_01JA9B4JF1XAVPFXHADVXAF6NK",
+              "row_number": 1171
+            }
+          },
+          {
+            "txn_id": "txn_01JA9Y7T4CKZ7JF4P6S8F6PHVM",
+            "date": "2026-10-03",
+            "narration_display": "UBER *EATS",
+            "counterparty": "Uber Eats",
+            "category": {
+              "key": "food.delivery",
+              "label": "Food delivery"
+            },
+            "amount": {
+              "kind": "money",
+              "minor": -2240,
+              "currency": "GBP",
+              "display": "−£22.40",
+              "precision": "exact"
+            },
+            "payment_type": "card",
+            "source": {
+              "import_id": "imp_01JA9B4JF1XAVPFXHADVXAF6NK",
+              "row_number": 1139
+            }
+          },
+          {
+            "txn_id": "txn_01JA9A3QVR4TJVXX37YBMGDFK7",
+            "date": "2026-10-07",
+            "narration_display": "JUST EAT",
+            "counterparty": "Just Eat",
+            "category": {
+              "key": "food.delivery",
+              "label": "Food delivery"
+            },
+            "amount": {
+              "kind": "money",
+              "minor": -1995,
+              "currency": "GBP",
+              "display": "−£19.95",
+              "precision": "exact"
+            },
+            "payment_type": "card",
+            "source": {
+              "import_id": "imp_01JA9B4JF1XAVPFXHADVXAF6NK",
+              "row_number": 1158
+            }
+          },
+          {
+            "txn_id": "txn_01JA9K64678VQRNZ4WDZ4585F9",
+            "date": "2026-09-26",
+            "narration_display": "DELIVEROO",
+            "counterparty": "Deliveroo",
+            "category": {
+              "key": "food.delivery",
+              "label": "Food delivery"
+            },
+            "amount": {
+              "kind": "money",
+              "minor": -1870,
+              "currency": "GBP",
+              "display": "−£18.70",
+              "precision": "exact"
+            },
+            "payment_type": "card",
+            "source": {
+              "import_id": "imp_01JA9B4JF1XAVPFXHADVXAF6NK",
+              "row_number": 1102
+            }
+          },
+          {
+            "txn_id": "txn_01JA9MNWCQR0KGKFMK6MC9RPGT",
+            "date": "2026-10-11",
+            "narration_display": "DELIVEROO",
+            "counterparty": "Deliveroo",
+            "category": {
+              "key": "food.delivery",
+              "label": "Food delivery"
+            },
+            "amount": {
+              "kind": "money",
+              "minor": -1735,
+              "currency": "GBP",
+              "display": "−£17.35",
+              "precision": "exact"
+            },
+            "payment_type": "card",
+            "source": {
+              "import_id": "imp_01JA9B4JF1XAVPFXHADVXAF6NK",
+              "row_number": 1176
+            }
+          }
+        ],
+        "total": {
+          "kind": "money",
+          "minor": -28640,
+          "currency": "GBP",
+          "display": "−£286.40",
+          "precision": "exact",
+          "ref": "calc_01JA9RMK2CTTHZEHXY8E39HX25#result.value_minor"
+        },
+        "count": {
+          "kind": "count",
+          "value": 23,
+          "display": "23",
+          "ref": "calc_01JA9RMK2CTTHZEHXY8E39HX25#result.count"
+        },
+        "has_more": true,
+        "query": {
+          "date_from": "2026-09-13",
+          "date_to": "2026-10-12",
+          "category_keys": [
+            "food.delivery"
+          ],
+          "direction": "out",
+          "include_transfers": false,
+          "sort": "amount_desc",
+          "limit": 5
+        }
+      },
+      {
+        "block_id": "b5",
+        "type": "EvidencePanel",
+        "evidence": [
+          "calc_01JA9HP0B5ANE3S1P2TFD1SAFM",
+          "fnd_01JA9C6A3WJWTPW1YDD18ADPV6",
+          "calc_01JA9RMK2CTTHZEHXY8E39HX25"
+        ],
+        "actions": [],
+        "items": [
+          {
+            "ref": "calc_01JA9HP0B5ANE3S1P2TFD1SAFM",
+            "kind": "calculation",
+            "title": "Category trend: food delivery",
+            "provenance": "observed",
+            "summary_lines": [
+              "Last 30 days £286.40 vs median of the three prior 30-day windows £203.10",
+              "Robust z-score 3.1 (threshold 2.0)",
+              "Refunds netted; transfers excluded"
+            ],
+            "engine_version": "0.3.0",
+            "inputs": {
+              "transaction_count": 81,
+              "date_range": {
+                "from": "2026-06-15",
+                "to": "2026-10-12"
+              },
+              "params": {
+                "window_days": 30,
+                "baseline": "median_3m",
+                "category": "food.delivery"
+              }
+            },
+            "source_chain": {
+              "import_id": "imp_01JA9B4JF1XAVPFXHADVXAF6NK",
+              "filename": "monzo_export_2026-04-01_2026-10-12.csv",
+              "importer": "csv_statement",
+              "profile": {
+                "kind": "format",
+                "id": "fmt_01JA90HD4TBEWE604M8QJFMC6D",
+                "name": "Monzo current account export",
+                "source": "builtin"
+              },
+              "rows": "1,184 rows (6 £0.00 card checks skipped)",
+              "reconciliation": {
+                "status": "passed",
+                "method": "none"
+              }
+            },
+            "reproducible": {
+              "inputs_hash": "sha256:4be1…92c0",
+              "data_version": 21
+            }
+          },
+          {
+            "ref": "fnd_01JA9C6A3WJWTPW1YDD18ADPV6",
+            "kind": "finding",
+            "title": "Food delivery up on your usual month",
+            "provenance": "detected",
+            "summary_lines": [
+              "Severity: watch",
+              "First detected 9 Oct, confirmed 12 Oct"
+            ],
+            "reproducible": {
+              "inputs_hash": "sha256:4be1…92c0",
+              "data_version": 21
+            }
+          },
+          {
+            "ref": "calc_01JA9RMK2CTTHZEHXY8E39HX25",
+            "kind": "transactions",
+            "title": "23 food delivery orders",
+            "provenance": "observed",
+            "summary_lines": [
+              "13 Sep – 12 Oct, card payments from Monzo Current ••4417"
+            ],
+            "inputs": {
+              "transaction_count": 23
+            },
+            "source_chain": {
+              "import_id": "imp_01JA9B4JF1XAVPFXHADVXAF6NK",
+              "filename": "monzo_export_2026-04-01_2026-10-12.csv",
+              "importer": "csv_statement",
+              "profile": {
+                "kind": "format",
+                "id": "fmt_01JA90HD4TBEWE604M8QJFMC6D",
+                "name": "Monzo current account export",
+                "source": "builtin"
+              },
+              "rows": "1,184 rows (6 £0.00 card checks skipped)",
+              "reconciliation": {
+                "status": "passed",
+                "method": "none"
+              }
+            },
+            "reproducible": {
+              "inputs_hash": "sha256:a07d…11e3",
+              "data_version": 21
+            }
+          }
+        ]
+      }
+    ],
+    "follow_ups": [
+      {
+        "action_id": "fu_1",
+        "label": "What if I capped it?",
+        "kind": "simulate",
+        "payload": {
+          "scenario_spec": {
+            "schema": "scenario_spec/1",
+            "name": "Cap food delivery",
+            "scope": "mine",
+            "horizon_days": 90,
+            "modifiers": [
+              {
+                "type": "category_cap",
+                "category_key": "food.delivery",
+                "monthly_cap_minor": 18000,
+                "from_date": "2026-10-13"
+              }
+            ],
+            "currency": "GBP"
+          }
+        },
+        "requires_confirmation": false
+      },
+      {
+        "action_id": "fu_2",
+        "label": "Show all food delivery orders",
+        "kind": "filter_transactions",
+        "payload": {
+          "txn_query": {
+            "date_from": "2026-09-13",
+            "date_to": "2026-10-12",
+            "category_keys": [
+              "food.delivery"
+            ],
+            "direction": "out",
+            "include_transfers": false,
+            "sort": "date_desc",
+            "limit": 50
+          }
+        },
+        "requires_confirmation": false
+      }
+    ],
+    "provenance": {
+      "calc_ids": [
+        "calc_01JA9HP0B5ANE3S1P2TFD1SAFM",
+        "calc_01JA9RMK2CTTHZEHXY8E39HX25",
+        "calc_01JA9DANJD024S6CCWS5ZXSZR3"
+      ],
+      "finding_ids": [
+        "fnd_01JA9C6A3WJWTPW1YDD18ADPV6"
+      ],
+      "recommendation_ids": []
+    },
+    "prefs_version": 1
+  }
+}

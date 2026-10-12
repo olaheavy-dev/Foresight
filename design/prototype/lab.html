@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foresight Decision Lab</title>
+<meta name="description" content="Foresight prototype — Decision Lab: flights-home scenario against the baseline forecast.">
+<script>try{var q=new URLSearchParams(location.search).get("theme"),t=q||localStorage.getItem("fs-theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/foresight.css">
+<script src="assets/app.js" defer></script>
+<script src="assets/charts.js" defer></script>
+<style>
+  .lab2 { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 40px; margin-top: 32px; align-items: start; }
+  .scen-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; font-size: 14px; }
+  .scen-list a { display: flex; justify-content: space-between; padding: 8px; color: var(--ink-2); text-decoration: none; border-radius: 3px; }
+  .scen-list a:hover { background: var(--paper-sunk); color: var(--ink); }
+  .scen-list a[aria-current="true"] { color: var(--ink); box-shadow: inset 2px 0 0 var(--simulated); border-radius: 0; font-weight: 500; }
+  .scen-list .label { font-size: 12px; color: var(--ink-3); padding: 16px 8px 4px; font-weight: 600; }
+  .spec-chip { display: flex; align-items: center; gap: 12px; border: 1px solid var(--rule-strong); border-radius: 3px; padding: 10px 12px; background: var(--paper-raised); flex-wrap: wrap; }
+  .spec-chip .t { font-size: 11px; font-weight: 600; letter-spacing: .06em; color: var(--simulated); }
+  .mio { list-style: none; margin: 0; padding: 0; }
+  .mio li { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); align-items: center; }
+  .mio input { width: 18px; height: 18px; accent-color: var(--ink); }
+  @media (max-width: 860px) { .lab2 { grid-template-columns: 1fr; } .scen-list { display: flex; flex-wrap: wrap; } .scen-list .label { display: none; } }
+</style>
+</head>
+<body data-page="lab">
+<main>
+<div class="page">
+
+  <header class="masthead">
+    <h1 class="page-title">Decision Lab</h1>
+    <div class="edition"><span>Baseline <span class="mono">fc_01JAF7R0X6NN</span></span><span>Data to 11 Oct</span></div>
+  </header>
+
+  <div class="lab2">
+    <nav aria-label="Scenarios">
+      <ul class="scen-list">
+        <li class="label">Scenarios</li>
+        <li><a href="#">Baseline</a></li>
+        <li><a href="#" aria-current="true">Flights home <span aria-hidden="true">●</span></a></li>
+        <li><a href="#">Pay 5 days late</a></li>
+        <li><a href="#">Rent +£60</a></li>
+        <li><a href="#" style="color:var(--accent)">+ New scenario</a></li>
+        <li class="label">Templates</li>
+        <li><a href="#">Big purchase</a></li>
+        <li><a href="#">Pay delayed</a></li>
+        <li><a href="#">Income drop</a></li>
+        <li><a href="#">Rent change</a></li>
+        <li><a href="#">Cut spending</a></li>
+        <li><a href="#">Goal impact</a></li>
+      </ul>
+    </nav>
+
+    <section aria-labelledby="sc-title" style="min-width:0">
+      <div class="ds-row" style="justify-content:space-between">
+        <h2 id="sc-title" class="serif" style="font-size:28px;font-weight:500">Flights home for Christmas</h2>
+        <span class="faint" style="font-size:12px">Saved · <span class="mono">scn_01JAFB2H3P</span></span>
+      </div>
+
+      <div class="ds-row" style="margin-top:16px">
+        <label class="sr-only" for="nl">Describe a decision</label>
+        <input id="nl" class="input" style="flex:1;min-width:220px" placeholder="Describe a decision… e.g. spend £640 on 1 Dec">
+        <button class="btn">Add a change ▾</button>
+        <button class="btn btn-primary">Run</button>
+      </div>
+      <div class="spec-chip" style="margin-top:12px">
+        <span class="t">ONE-OFF</span><span class="num" style="font-weight:600">£640.00</span><span>1 Dec 2026</span><span class="muted">Travel</span>
+        <button class="btn btn-quiet btn-sm" style="margin-left:auto" aria-label="Remove change">✕</button>
+      </div>
+      <p class="hint" style="margin-top:8px">Assumptions: everyday spending as the last 90 days · pay on the 28th or the working day before; December on Fri 18 Dec · 500 paths · seed 0x4F1C <button class="fig" data-ev="sim_trip_dec" style="font-size:12px">ⓘ</button></p>
+
+      <div class="legend" style="margin-top:24px" aria-hidden="true">
+        <span class="key"><svg viewBox="0 0 24 10"><line x1="0" x2="24" y1="5" y2="5" stroke="var(--series-history)" stroke-width="2"/></svg>History</span>
+        <span class="key"><svg viewBox="0 0 24 10"><rect x="0" y="1" width="24" height="8" fill="var(--series-band)"/><line x1="0" x2="24" y1="5" y2="5" stroke="var(--series-forecast)" stroke-width="2"/></svg>Baseline (likely range)</span>
+        <span class="key"><svg viewBox="0 0 24 10"><line x1="0" x2="24" y1="5" y2="5" stroke="var(--series-simulated)" stroke-width="2" stroke-dasharray="6 4"/></svg>With flights (simulated)</span>
+        <span class="key"><svg viewBox="0 0 24 10"><line x1="0" x2="24" y1="5" y2="5" stroke="var(--caution)" stroke-width="1.5" stroke-dasharray="1.5 3"/></svg>Buffer £300</span>
+      </div>
+      <div class="chart" aria-label="Baseline versus flights, 12 Oct 2026 to 31 Jan 2027" data-chart='{"height":340,"history":false,"bufferLabelLeft":true,"sims":["trip"],"bracket":["2026-12-18","2027-01-28","41 days"],"annotate":[["2026-12-17","trip","£410 · 17 Dec","","left above"],["2027-01-27","trip","£260 · 27 Jan","Below buffer","left above"]],"events":[["2026-12-01"]]}'></div>
+      <div class="chart-foot"><span>December pay lands early on 18 Dec; the next is 41 days later. The emergency-fund check is on 31 Mar, beyond this chart.</span><span class="mono">sim_01JAFB2K7Y4C</span></div>
+
+      <div class="table-wrap" style="margin-top:32px">
+        <table class="compare">
+          <thead><tr><th></th><th>Baseline</th><th>With flights</th><th>Change</th></tr></thead>
+          <tbody>
+            <tr><td>December low</td><td>£1,050 <span class="faint" style="font-size:12px">17 Dec</span></td><td><button class="fig" data-ev="sim_trip_dec">£410</button> <span class="faint" style="font-size:12px">17 Dec</span></td><td>−£640</td></tr>
+            <tr><td>January low</td><td>£900 <span class="faint" style="font-size:12px">27 Jan</span></td><td class="neg"><button class="fig" data-ev="sim_trip_jan">£260</button> <span class="faint" style="font-size:12px">27 Jan</span></td><td>−£640 · below buffer</td></tr>
+            <tr><td>Emergency fund 31 Mar</td><td>£1,592</td><td><button class="fig" data-ev="goal_fund">£952</button></td><td>£548 short</td></tr>
+            <tr><td>Goal status</td><td><span class="status status-forecast">On track</span></td><td><span class="status status-sim">Behind</span></td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="prose serif" style="margin-top:24px;font-size:20px;line-height:1.45">You can pay for the flights in December. The squeeze comes later: after December’s early payday your balance is likely to dip to about £260 before 28 January, below your £300 buffer.</p>
+
+      <div class="section-head" style="margin-top:40px"><h2>Make it work</h2><span class="status status-verified"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.2 2.2 4.8-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Checked</span></div>
+      <ul class="mio">
+        <li><input type="checkbox" checked id="m1"><label for="m1"><b>Cap food delivery at £180 + cancel NOW</b><br><span class="hint">January low with flights ≈ <button class="fig" data-ev="sim_plan_jan">£493</button>, above buffer · emergency fund ≈ £1,418, still £82 short</span></label><span class="num pos">+<button class="fig" data-ev="rec_plan">£116.39</button>/mo</span></li>
+        <li><input type="checkbox" id="m2"><label for="m2"><b>Move the goal date to 30 April</b><br><span class="hint">Goal on track (the engine supplies the figure when you tick this)</span></label><span class="num faint">—</span></li>
+      </ul>
+      <p class="hint" style="margin-top:8px">Ticking recombines the options in the engine. Effects are recomputed together, never added up. Family support is never offered as a cut.</p>
+      <div class="ds-row" style="margin-top:16px"><button class="btn btn-primary">Save combination</button><a class="btn" href="ask.html">Ask about this</a></div>
+    </section>
+  </div>
+
+  <footer class="fixture-note"><span>Design prototype · fictional data (docs/00 §10a). “Pay 5 days late” and “Rent +£60” are saved-scenario names (04 fixtures).</span><span class="mono">scn_01JAFB2H3P</span></footer>
+</div>
+</main>
+</body>
+</html>

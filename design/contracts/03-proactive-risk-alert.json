@@ -1,0 +1,914 @@
+{
+  "_note": "FICTIONAL design fixture for persona P1 (Amara Nwosu, one Monzo current account, GBP). Figures are illustrative values from docs/00-DECISION-REGISTER.md §10a, not engine output. Series use resolution 'sampled' to stay readable.",
+  "plan": {
+    "schema": "response_plan/1",
+    "intent": "risk_review",
+    "blocks": [
+      {
+        "type": "Narrative",
+        "text": "You're likely to dip under your buffer before payday. After the car insurance renewal on 9 Oct ({{calc_01JA9REXBN3BZXKXZ4W0JBGV83#result.value_minor|money}}), your balance is on course to reach about {{calc_01JA9W39G5FF3B6B8KT09BZ76V#result.pay_cycles.0.low.p50|money}} on {{calc_01JA9W39G5FF3B6B8KT09BZ76V#result.pay_cycles.0.low.date|date}}. One change, checked by the Verifier, makes that much less likely. {{rec_01JA9DQKVBZQMASMYGMJDQJJSQ}}"
+      },
+      {
+        "type": "CashFlowForecastChart",
+        "forecast_ref": "fc_01JA9W639D84MEBQ62JNKQV8P0",
+        "history_days": 30,
+        "highlight_window": {
+          "from": "2026-10-12",
+          "to": "2026-10-27"
+        },
+        "annotate": [
+          "rob_01JA9AVF1A0F80K451254RD05Q",
+          "rob_01JA938VC1YGBJQ4SSX8W7Q84V",
+          "rob_01JA908GA5Q0FVGFK7J24XYWYW"
+        ]
+      },
+      {
+        "type": "RiskAssessment",
+        "risks": [
+          {
+            "finding_ref": "fnd_01JA97SZ4RZF7QZJKP0YT8AX3B"
+          },
+          {
+            "finding_ref": "fnd_01JA9SF540YAXJW5MVW9FMYQNM"
+          },
+          {
+            "finding_ref": "fnd_01JA9C6A3WJWTPW1YDD18ADPV6"
+          }
+        ]
+      },
+      {
+        "type": "InterventionCard",
+        "recommendation_ref": "rec_01JA9DQKVBZQMASMYGMJDQJJSQ"
+      },
+      {
+        "type": "AgentExecutionTimeline",
+        "run_ref": "run_01JA9BS5ZJNZ5M62Y0PX9PZ71X",
+        "detail": "summary"
+      }
+    ],
+    "follow_ups": [
+      {
+        "label": "Why this recommendation?",
+        "kind": "ask",
+        "payload": {
+          "question": "Why did you recommend this?",
+          "context_refs": [
+            "rec_01JA9DQKVBZQMASMYGMJDQJJSQ"
+          ]
+        }
+      }
+    ]
+  },
+  "response": {
+    "schema_version": "agent_response/1",
+    "as_of": "2026-10-12",
+    "data_version": 21,
+    "engine_version": "0.3.0",
+    "response_id": "rsp_01JA989GT9DG4K6XZZ1EP178AB",
+    "workspace_id": "wsp_01JA8ZK2Q4AMARA0P1DEM0WSP0",
+    "currency": "GBP",
+    "locale": "en-GB",
+    "run_id": "run_01JA9BS5ZJNZ5M62Y0PX9PZ71X",
+    "surface": "briefing",
+    "created_at": "2026-10-12T02:10:24Z",
+    "forecast_id": "fc_01JA9W639D84MEBQ62JNKQV8P0",
+    "status": "complete",
+    "blocks": [
+      {
+        "block_id": "b1",
+        "type": "Narrative",
+        "currency": "GBP",
+        "evidence": [
+          "calc_01JA9W39G5FF3B6B8KT09BZ76V",
+          "calc_01JA9REXBN3BZXKXZ4W0JBGV83",
+          "rec_01JA9DQKVBZQMASMYGMJDQJJSQ"
+        ],
+        "actions": [],
+        "segments": [
+          {
+            "kind": "text",
+            "text": "You're likely to dip under your buffer before payday. After the car insurance renewal on 9 Oct ("
+          },
+          {
+            "kind": "value",
+            "value": {
+              "kind": "money",
+              "minor": 41000,
+              "currency": "GBP",
+              "display": "£410.00",
+              "precision": "exact",
+              "ref": "calc_01JA9REXBN3BZXKXZ4W0JBGV83#result.value_minor"
+            }
+          },
+          {
+            "kind": "text",
+            "text": "), your balance is on course to reach about "
+          },
+          {
+            "kind": "value",
+            "value": {
+              "kind": "money",
+              "minor": 24200,
+              "currency": "GBP",
+              "display": "£242",
+              "precision": "rounded",
+              "ref": "calc_01JA9W39G5FF3B6B8KT09BZ76V#result.pay_cycles.0.low.p50"
+            }
+          },
+          {
+            "kind": "text",
+            "text": " on "
+          },
+          {
+            "kind": "value",
+            "value": {
+              "kind": "date",
+              "value": "2026-10-27",
+              "display": "27 Oct",
+              "ref": "calc_01JA9W39G5FF3B6B8KT09BZ76V#result.pay_cycles.0.low.date"
+            }
+          },
+          {
+            "kind": "text",
+            "text": ". One change, checked by the Verifier, makes that much less likely. "
+          },
+          {
+            "kind": "entity",
+            "ref": "rec_01JA9DQKVBZQMASMYGMJDQJJSQ",
+            "label": "Recommendation"
+          }
+        ]
+      },
+      {
+        "block_id": "b2",
+        "type": "CashFlowForecastChart",
+        "currency": "GBP",
+        "title": "Your balance to payday and beyond",
+        "evidence": [
+          "calc_01JA9W39G5FF3B6B8KT09BZ76V"
+        ],
+        "actions": [
+          {
+            "action_id": "b2a1",
+            "label": "Ask about this dip",
+            "kind": "ask",
+            "payload": {
+              "question": "Why does my balance drop so much before 28 Oct?",
+              "context_refs": [
+                "calc_01JA9W39G5FF3B6B8KT09BZ76V#result.series"
+              ]
+            },
+            "requires_confirmation": false
+          }
+        ],
+        "as_of": "2026-10-12",
+        "scope": {
+          "kind": "mine",
+          "label": "Monzo Current ••4417",
+          "account_ids": [
+            "acct_01JA93PEEV3W4SVQXTQC9AQDCF"
+          ],
+          "switchable": false
+        },
+        "balance_mode": "absolute",
+        "resolution": "sampled",
+        "history": {
+          "dates": [
+            "2026-09-12",
+            "2026-09-25",
+            "2026-09-28",
+            "2026-10-01",
+            "2026-10-09",
+            "2026-10-12"
+          ],
+          "balance_minor": [
+            131280,
+            48620,
+            342620,
+            203120,
+            147190,
+            128450
+          ]
+        },
+        "forecast": {
+          "dates": [
+            "2026-10-12",
+            "2026-10-15",
+            "2026-10-20",
+            "2026-10-27",
+            "2026-10-28",
+            "2026-11-02",
+            "2026-11-15",
+            "2026-11-26",
+            "2026-11-27",
+            "2026-12-01",
+            "2026-12-17",
+            "2026-12-18",
+            "2027-01-04",
+            "2027-01-27"
+          ],
+          "p10": [
+            128450,
+            93000,
+            56000,
+            9600,
+            303600,
+            161000,
+            100000,
+            38000,
+            330000,
+            188000,
+            83000,
+            376000,
+            208000,
+            64000
+          ],
+          "p50": [
+            128450,
+            96000,
+            64000,
+            24200,
+            318200,
+            176000,
+            118000,
+            57200,
+            350000,
+            208000,
+            105000,
+            399000,
+            233000,
+            90000
+          ],
+          "p90": [
+            128450,
+            99000,
+            72000,
+            38800,
+            332800,
+            191000,
+            135000,
+            76000,
+            369000,
+            228000,
+            127000,
+            421000,
+            258000,
+            116000
+          ]
+        },
+        "buffer_minor": 30000,
+        "events": [
+          {
+            "date": "2026-10-14",
+            "label": "LemFi — family support",
+            "amount": {
+              "kind": "money",
+              "minor": -25000,
+              "currency": "GBP",
+              "display": "−£250.00",
+              "precision": "exact"
+            },
+            "kind": "commitment"
+          },
+          {
+            "date": "2026-10-15",
+            "label": "Council tax",
+            "amount": {
+              "kind": "money",
+              "minor": -16200,
+              "currency": "GBP",
+              "display": "−£162.00",
+              "precision": "exact"
+            },
+            "kind": "obligation"
+          },
+          {
+            "date": "2026-10-28",
+            "label": "Salary",
+            "amount": {
+              "kind": "money",
+              "minor": 294000,
+              "currency": "GBP",
+              "display": "£2,940.00",
+              "precision": "exact"
+            },
+            "kind": "income"
+          },
+          {
+            "date": "2026-11-02",
+            "label": "Rent",
+            "amount": {
+              "kind": "money",
+              "minor": -139500,
+              "currency": "GBP",
+              "display": "−£1,395.00",
+              "precision": "exact"
+            },
+            "kind": "obligation"
+          },
+          {
+            "date": "2026-12-18",
+            "label": "Early December pay",
+            "amount": {
+              "kind": "money",
+              "minor": 294000,
+              "currency": "GBP",
+              "display": "£2,940.00",
+              "precision": "exact"
+            },
+            "kind": "income"
+          }
+        ],
+        "pay_cycles": [
+          {
+            "payday": "2026-10-28",
+            "low": {
+              "kind": "money",
+              "minor": 24200,
+              "currency": "GBP",
+              "display": "£242",
+              "precision": "rounded"
+            },
+            "low_date": "2026-10-27",
+            "below_buffer": true
+          },
+          {
+            "payday": "2026-11-27",
+            "low": {
+              "kind": "money",
+              "minor": 57200,
+              "currency": "GBP",
+              "display": "£572",
+              "precision": "rounded"
+            },
+            "low_date": "2026-11-26",
+            "below_buffer": false
+          },
+          {
+            "payday": "2026-12-18",
+            "low": {
+              "kind": "money",
+              "minor": 105000,
+              "currency": "GBP",
+              "display": "£1,050",
+              "precision": "rounded"
+            },
+            "low_date": "2026-12-17",
+            "below_buffer": false
+          },
+          {
+            "payday": "2027-01-28",
+            "low": {
+              "kind": "money",
+              "minor": 90000,
+              "currency": "GBP",
+              "display": "£900",
+              "precision": "rounded"
+            },
+            "low_date": "2027-01-27",
+            "below_buffer": false
+          }
+        ],
+        "summary": {
+          "min_balance": {
+            "kind": "money",
+            "minor": 24200,
+            "currency": "GBP",
+            "display": "£242",
+            "precision": "rounded",
+            "ref": "calc_01JA9W39G5FF3B6B8KT09BZ76V#result.min_balance.p50_minor"
+          },
+          "min_date": {
+            "kind": "date",
+            "value": "2026-10-27",
+            "display": "27 Oct",
+            "ref": "calc_01JA9W39G5FF3B6B8KT09BZ76V#result.min_balance.date"
+          },
+          "p_breach_buffer": {
+            "kind": "percent",
+            "value": 0.78,
+            "display": "78%",
+            "ref": "calc_01JA9W39G5FF3B6B8KT09BZ76V#result.p_breach_buffer.0.value"
+          },
+          "breach_window_end": "2026-10-27",
+          "starting_balance": {
+            "kind": "money",
+            "minor": 128450,
+            "currency": "GBP",
+            "display": "£1,284.50",
+            "precision": "exact",
+            "ref": "calc_01JA9W39G5FF3B6B8KT09BZ76V#result.starting_balance.minor",
+            "provenance": "declared"
+          }
+        },
+        "highlight_window": {
+          "from": "2026-10-12",
+          "to": "2026-10-27"
+        }
+      },
+      {
+        "block_id": "b3",
+        "type": "RiskAssessment",
+        "currency": "GBP",
+        "title": "What to watch",
+        "evidence": [
+          "fnd_01JA97SZ4RZF7QZJKP0YT8AX3B",
+          "fnd_01JA9SF540YAXJW5MVW9FMYQNM",
+          "fnd_01JA9C6A3WJWTPW1YDD18ADPV6",
+          "calc_01JA9W39G5FF3B6B8KT09BZ76V"
+        ],
+        "actions": [],
+        "risks": [
+          {
+            "risk_id": "fnd_01JA97SZ4RZF7QZJKP0YT8AX3B",
+            "level": "high",
+            "headline": "Likely to fall under your £300 buffer before your 28 Oct salary",
+            "probability": {
+              "kind": "percent",
+              "value": 0.78,
+              "display": "78%",
+              "ref": "calc_01JA9W39G5FF3B6B8KT09BZ76V#result.p_breach_buffer.0.value"
+            },
+            "window": {
+              "from": "2026-10-12",
+              "to": "2026-10-27"
+            },
+            "impact": {
+              "kind": "money",
+              "minor": -5800,
+              "currency": "GBP",
+              "display": "−£58",
+              "precision": "rounded",
+              "ref": "calc_01JA9W39G5FF3B6B8KT09BZ76V#result.buffer_gap_p50_minor"
+            },
+            "drivers": [
+              {
+                "label": "Everyday spending (incl. food delivery)",
+                "impact": {
+                  "kind": "money",
+                  "minor": -37400,
+                  "currency": "GBP",
+                  "display": "−£374",
+                  "precision": "rounded"
+                },
+                "ref": "calc_01JA9W39G5FF3B6B8KT09BZ76V#result.drivers.0"
+              },
+              {
+                "label": "Family support — LemFi (commitment)",
+                "impact": {
+                  "kind": "money",
+                  "minor": -25000,
+                  "currency": "GBP",
+                  "display": "−£250",
+                  "precision": "rounded"
+                },
+                "ref": "rob_01JA9AVF1A0F80K451254RD05Q"
+              },
+              {
+                "label": "Energy, water, broadband, Sky TV",
+                "impact": {
+                  "kind": "money",
+                  "minor": -19700,
+                  "currency": "GBP",
+                  "display": "−£197",
+                  "precision": "rounded"
+                },
+                "ref": "calc_01JA9W39G5FF3B6B8KT09BZ76V#result.drivers.2"
+              },
+              {
+                "label": "Council tax, 15 Oct",
+                "impact": {
+                  "kind": "money",
+                  "minor": -16200,
+                  "currency": "GBP",
+                  "display": "−£162",
+                  "precision": "rounded"
+                },
+                "ref": "rob_01JA938VC1YGBJQ4SSX8W7Q84V"
+              },
+              {
+                "label": "Subscriptions",
+                "impact": {
+                  "kind": "money",
+                  "minor": -6000,
+                  "currency": "GBP",
+                  "display": "−£60",
+                  "precision": "rounded"
+                },
+                "ref": "calc_01JA9W39G5FF3B6B8KT09BZ76V#result.drivers.4"
+              }
+            ],
+            "status": "open"
+          },
+          {
+            "risk_id": "fnd_01JA9SF540YAXJW5MVW9FMYQNM",
+            "level": "watch",
+            "headline": "Long January: 41 days between the 18 Dec and 28 Jan paydays",
+            "probability": {
+              "kind": "percent",
+              "value": 0.03,
+              "display": "3%",
+              "ref": "calc_01JA9W39G5FF3B6B8KT09BZ76V#result.p_breach_buffer.3.value"
+            },
+            "window": {
+              "from": "2026-12-18",
+              "to": "2027-01-27"
+            },
+            "impact": {
+              "kind": "money",
+              "minor": 90000,
+              "currency": "GBP",
+              "display": "£900",
+              "precision": "rounded",
+              "ref": "calc_01JA9W39G5FF3B6B8KT09BZ76V#result.pay_cycles.3.low.p50"
+            },
+            "drivers": [],
+            "status": "open"
+          },
+          {
+            "risk_id": "fnd_01JA9C6A3WJWTPW1YDD18ADPV6",
+            "level": "watch",
+            "headline": "Food delivery is up 41% on your usual month",
+            "impact": {
+              "kind": "money",
+              "minor": -8330,
+              "currency": "GBP",
+              "display": "−£83.30",
+              "precision": "exact",
+              "ref": "calc_01JA9HP0B5ANE3S1P2TFD1SAFM#result.delta_minor"
+            },
+            "drivers": [],
+            "status": "open"
+          }
+        ]
+      },
+      {
+        "block_id": "b4",
+        "type": "InterventionCard",
+        "currency": "GBP",
+        "evidence": [
+          "rec_01JA9DQKVBZQMASMYGMJDQJJSQ",
+          "calc_01JA9C87VWNFEPQF9SACG5APY0",
+          "ver_01JA9M276RHFG5G4W9YM425181",
+          "fnd_01JA9C6A3WJWTPW1YDD18ADPV6",
+          "fnd_01JA914C3XVZ575MBA5ZYNAWBK"
+        ],
+        "actions": [
+          {
+            "type": "category_cap",
+            "label": "Cap food delivery",
+            "detail": "£180.00 per calendar month, from 13 Oct"
+          },
+          {
+            "type": "cancel_recurring",
+            "label": "Cancel NOW Entertainment",
+            "detail": "£9.99 a month, overlaps Sky TV"
+          }
+        ],
+        "recommendation_id": "rec_01JA9DQKVBZQMASMYGMJDQJJSQ",
+        "version_id": "rv_01JA92ZX6NKWHACXH8Y5FS1D31",
+        "title": "Cap food delivery at £180 a month and cancel NOW Entertainment",
+        "rationale_segments": [
+          {
+            "kind": "text",
+            "text": "Food delivery is running at "
+          },
+          {
+            "kind": "value",
+            "value": {
+              "kind": "money",
+              "minor": 28640,
+              "currency": "GBP",
+              "display": "£286.40",
+              "precision": "exact",
+              "ref": "calc_01JA9HP0B5ANE3S1P2TFD1SAFM#result.current_minor"
+            }
+          },
+          {
+            "kind": "text",
+            "text": " a month against a usual "
+          },
+          {
+            "kind": "value",
+            "value": {
+              "kind": "money",
+              "minor": 20310,
+              "currency": "GBP",
+              "display": "£203.10",
+              "precision": "exact",
+              "ref": "calc_01JA9HP0B5ANE3S1P2TFD1SAFM#result.baseline_minor"
+            }
+          },
+          {
+            "kind": "text",
+            "text": ". A cap of "
+          },
+          {
+            "kind": "value",
+            "value": {
+              "kind": "money",
+              "minor": 18000,
+              "currency": "GBP",
+              "display": "£180.00",
+              "precision": "exact",
+              "ref": "calc_01JA9C87VWNFEPQF9SACG5APY0#params.modifiers.0.monthly_cap_minor"
+            }
+          },
+          {
+            "kind": "text",
+            "text": " sits a little below your usual month, so it's realistic. NOW Entertainment overlaps with your Sky TV package."
+          }
+        ],
+        "impact": {
+          "monthly_saving": {
+            "kind": "money",
+            "minor": 11639,
+            "currency": "GBP",
+            "display": "£116.39",
+            "precision": "exact",
+            "ref": "calc_01JA9C87VWNFEPQF9SACG5APY0#result.monthly_saving_minor"
+          },
+          "p_breach_before": {
+            "kind": "percent",
+            "value": 0.78,
+            "display": "78%",
+            "ref": "calc_01JA9C87VWNFEPQF9SACG5APY0#result.p_breach.before"
+          },
+          "p_breach_after": {
+            "kind": "percent",
+            "value": 0.41,
+            "display": "41%",
+            "ref": "calc_01JA9C87VWNFEPQF9SACG5APY0#result.p_breach.after"
+          },
+          "p_breach_window": {
+            "from": "2026-10-12",
+            "to": "2026-10-27"
+          },
+          "low_deltas": [
+            {
+              "cycle_label": "Before 28 Oct payday",
+              "before": {
+                "kind": "money",
+                "minor": 24200,
+                "currency": "GBP",
+                "display": "£242",
+                "precision": "rounded"
+              },
+              "after": {
+                "kind": "money",
+                "minor": 30400,
+                "currency": "GBP",
+                "display": "£304",
+                "precision": "rounded",
+                "ref": "calc_01JA9C87VWNFEPQF9SACG5APY0#result.delta_low_minor.0.after"
+              }
+            }
+          ]
+        },
+        "verification": {
+          "verdict": "approved",
+          "revisions": 1,
+          "checks_passed": 7,
+          "checks_total": 7,
+          "verification_id": "ver_01JA9M276RHFG5G4W9YM425181"
+        },
+        "triggered_by": [
+          "fnd_01JA97SZ4RZF7QZJKP0YT8AX3B",
+          "fnd_01JA9C6A3WJWTPW1YDD18ADPV6",
+          "fnd_01JA914C3XVZ575MBA5ZYNAWBK"
+        ],
+        "status": "shown"
+      },
+      {
+        "block_id": "b5",
+        "type": "AgentExecutionTimeline",
+        "evidence": [
+          "run_01JA9BS5ZJNZ5M62Y0PX9PZ71X"
+        ],
+        "actions": [],
+        "run_id": "run_01JA9BS5ZJNZ5M62Y0PX9PZ71X",
+        "workflow": "risk_scan",
+        "duration_ms": 19430,
+        "steps": [
+          {
+            "step_id": "step_01JA917J8QH46Y86CEBNVEGJ2Z",
+            "agent": "coordinator",
+            "node": "coordinator.route",
+            "label": "Routed: new import changed the forecast",
+            "status": "ok",
+            "started_at": "2026-10-12T02:10:00Z",
+            "duration_ms": 160,
+            "outputs": []
+          },
+          {
+            "step_id": "step_01JA99VWMYQ4TF3XBZZHE52Q7H",
+            "agent": "analyst",
+            "node": "analyst.detect",
+            "label": "Ran 8 detectors on 90 days of data",
+            "status": "ok",
+            "started_at": "2026-10-12T02:10:01Z",
+            "duration_ms": 610,
+            "outputs": [
+              "calc_01JA9HP0B5ANE3S1P2TFD1SAFM",
+              "calc_01JA9AVJ4E4N84WN7VX8J64NHW",
+              "calc_01JA9QMQVZYM3M6BZNGT6PDKVB"
+            ]
+          },
+          {
+            "step_id": "step_01JA90K1JM44ZDBSPRHP4AH3R0",
+            "agent": "analyst",
+            "node": "analyst.rank",
+            "label": "Ranked 4 findings, wrote headlines",
+            "status": "ok",
+            "started_at": "2026-10-12T02:10:02Z",
+            "duration_ms": 1900,
+            "outputs": [
+              "fnd_01JA97SZ4RZF7QZJKP0YT8AX3B",
+              "fnd_01JA9C6A3WJWTPW1YDD18ADPV6",
+              "fnd_01JA914C3XVZ575MBA5ZYNAWBK",
+              "fnd_01JA9SF540YAXJW5MVW9FMYQNM"
+            ],
+            "model": "alias:fast",
+            "tokens": {
+              "in": 1720,
+              "out": 390
+            }
+          },
+          {
+            "step_id": "step_01JA9YMR7GMRP7CZWVWMKJ72KP",
+            "agent": "forecaster",
+            "node": "forecaster.build",
+            "label": "Built forecast v9 (500 paths, 90 days)",
+            "status": "ok",
+            "started_at": "2026-10-12T02:10:03Z",
+            "duration_ms": 780,
+            "outputs": [
+              "calc_01JA9W39G5FF3B6B8KT09BZ76V"
+            ]
+          },
+          {
+            "step_id": "step_01JA9QN2D8D4DS6ADBFXP4MF7W",
+            "agent": "advisor",
+            "node": "advisor.propose",
+            "label": "Draft 1: cap food delivery at £90 a month",
+            "status": "rejected",
+            "started_at": "2026-10-12T02:10:04Z",
+            "duration_ms": 5200,
+            "outputs": [
+              "calc_01JA9HEMK4YPK0N2VAVTQ9H25Y"
+            ],
+            "model": "alias:reasoning",
+            "tokens": {
+              "in": 2980,
+              "out": 640
+            }
+          },
+          {
+            "step_id": "step_01JA9M3FQ3Q27RCJKBWCYEFDH2",
+            "agent": "verifier",
+            "node": "verifier.check",
+            "label": "2 of 6 checks failed",
+            "status": "rejected",
+            "started_at": "2026-10-12T02:10:09Z",
+            "duration_ms": 300,
+            "outputs": [
+              "ver_01JA9NNC4HTPVZ3XNHJG4E4ZDS"
+            ],
+            "note": "Rejected: feasibility_cut_bound (56% below the £203.10 median; bound 40%) · impact_matches_recompute (claimed £220.00, recomputed £196.40)"
+          },
+          {
+            "step_id": "step_01JA9DFBB537CS97VGZXDQJ7NS",
+            "agent": "advisor",
+            "node": "advisor.revise",
+            "label": "Draft 2: cap at £180 and cancel NOW Entertainment",
+            "status": "ok",
+            "started_at": "2026-10-12T02:10:10Z",
+            "duration_ms": 4700,
+            "outputs": [
+              "calc_01JA9C87VWNFEPQF9SACG5APY0"
+            ],
+            "model": "alias:reasoning",
+            "tokens": {
+              "in": 3310,
+              "out": 610
+            }
+          },
+          {
+            "step_id": "step_01JA9GGYCSZ85YMEPVGJSHJZEF",
+            "agent": "verifier",
+            "node": "verifier.check",
+            "label": "6 of 6 deterministic checks passed",
+            "status": "ok",
+            "started_at": "2026-10-12T02:10:14Z",
+            "duration_ms": 280,
+            "outputs": [
+              "ver_01JA9M276RHFG5G4W9YM425181"
+            ]
+          },
+          {
+            "step_id": "step_01JA9PCS30HZZPE9FGT6GJANJ4",
+            "agent": "verifier",
+            "node": "verifier.judge",
+            "label": "Specific, grounded, not generic: approved",
+            "status": "ok",
+            "started_at": "2026-10-12T02:10:15Z",
+            "duration_ms": 3100,
+            "outputs": [
+              "ver_01JA9M276RHFG5G4W9YM425181"
+            ],
+            "model": "alias:reasoning",
+            "tokens": {
+              "in": 2140,
+              "out": 170
+            }
+          },
+          {
+            "step_id": "step_01JA90H8QKJBK9R07BBNWQ2PZH",
+            "agent": "coordinator",
+            "node": "compose.respond",
+            "label": "Composed briefing (5 blocks)",
+            "status": "ok",
+            "started_at": "2026-10-12T02:10:18Z",
+            "duration_ms": 2400,
+            "outputs": [
+              "rsp_01JA989GT9DG4K6XZZ1EP178AB"
+            ],
+            "model": "alias:fast",
+            "tokens": {
+              "in": 2650,
+              "out": 500
+            }
+          }
+        ],
+        "loops": [
+          {
+            "kind": "verification",
+            "recommendation_id": "rec_01JA9DQKVBZQMASMYGMJDQJJSQ",
+            "attempts": [
+              {
+                "version_id": "rv_01JA9566F6NS8Y49AVK688HG6A",
+                "verdict": "reject",
+                "failed_checks": [
+                  "feasibility_cut_bound",
+                  "impact_matches_recompute"
+                ]
+              },
+              {
+                "version_id": "rv_01JA92ZX6NKWHACXH8Y5FS1D31",
+                "verdict": "approve",
+                "failed_checks": []
+              }
+            ]
+          }
+        ],
+        "cost": {
+          "tokens": 15110,
+          "usd": null
+        }
+      }
+    ],
+    "follow_ups": [
+      {
+        "action_id": "fu_1",
+        "label": "Why this recommendation?",
+        "kind": "ask",
+        "payload": {
+          "question": "Why did you recommend this?",
+          "context_refs": [
+            "rec_01JA9DQKVBZQMASMYGMJDQJJSQ"
+          ]
+        },
+        "requires_confirmation": false
+      }
+    ],
+    "verification": {
+      "recommendations": [
+        {
+          "recommendation_id": "rec_01JA9DQKVBZQMASMYGMJDQJJSQ",
+          "verdict": "approve",
+          "revisions": 1
+        }
+      ]
+    },
+    "provenance": {
+      "calc_ids": [
+        "calc_01JA9W39G5FF3B6B8KT09BZ76V",
+        "calc_01JA9HP0B5ANE3S1P2TFD1SAFM",
+        "calc_01JA9C87VWNFEPQF9SACG5APY0",
+        "calc_01JA9AVJ4E4N84WN7VX8J64NHW",
+        "calc_01JA9QMQVZYM3M6BZNGT6PDKVB",
+        "calc_01JA9REXBN3BZXKXZ4W0JBGV83"
+      ],
+      "finding_ids": [
+        "fnd_01JA97SZ4RZF7QZJKP0YT8AX3B",
+        "fnd_01JA9SF540YAXJW5MVW9FMYQNM",
+        "fnd_01JA9C6A3WJWTPW1YDD18ADPV6",
+        "fnd_01JA914C3XVZ575MBA5ZYNAWBK"
+      ],
+      "recommendation_ids": [
+        "rec_01JA9DQKVBZQMASMYGMJDQJJSQ"
+      ]
+    },
+    "prefs_version": 1
+  }
+}

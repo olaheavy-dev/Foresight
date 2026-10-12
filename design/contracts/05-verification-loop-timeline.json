@@ -1,0 +1,466 @@
+{
+  "_note": "FICTIONAL design fixture for persona P1 (Amara Nwosu, one Monzo current account, GBP). Figures are illustrative values from docs/00-DECISION-REGISTER.md §10a, not engine output. Series use resolution 'sampled' to stay readable.",
+  "plan": {
+    "schema": "response_plan/1",
+    "intent": "recommendation_review",
+    "blocks": [
+      {
+        "type": "Narrative",
+        "text": "The first draft wasn't good enough, so the Verifier sent it back. It asked you to cut food delivery far below anything in your history, and its savings figure didn't match the recalculation. The revised version passed every check. {{ver_01JA9M276RHFG5G4W9YM425181}}"
+      },
+      {
+        "type": "AgentExecutionTimeline",
+        "run_ref": "run_01JA9BS5ZJNZ5M62Y0PX9PZ71X",
+        "detail": "full"
+      },
+      {
+        "type": "EvidencePanel",
+        "refs": [
+          "ver_01JA9NNC4HTPVZ3XNHJG4E4ZDS",
+          "ver_01JA9M276RHFG5G4W9YM425181",
+          "calc_01JA9HEMK4YPK0N2VAVTQ9H25Y",
+          "calc_01JA9C87VWNFEPQF9SACG5APY0",
+          "fnd_01JA9C6A3WJWTPW1YDD18ADPV6"
+        ]
+      }
+    ],
+    "follow_ups": [
+      {
+        "label": "Show the food delivery orders",
+        "kind": "filter_transactions",
+        "payload": {
+          "txn_query": {
+            "date_from": "2026-09-13",
+            "date_to": "2026-10-12",
+            "category_keys": [
+              "food.delivery"
+            ],
+            "direction": "out",
+            "include_transfers": false,
+            "sort": "date_desc",
+            "limit": 50
+          }
+        }
+      }
+    ]
+  },
+  "response": {
+    "schema_version": "agent_response/1",
+    "as_of": "2026-10-12",
+    "data_version": 21,
+    "engine_version": "0.3.0",
+    "response_id": "rsp_01JA9RT6YWV9Q93XSNQFD39341",
+    "workspace_id": "wsp_01JA8ZK2Q4AMARA0P1DEM0WSP0",
+    "currency": "GBP",
+    "locale": "en-GB",
+    "run_id": "run_01JA9RT6YWV9Q93XSNQFD39341",
+    "thread_id": "thr_why_01",
+    "surface": "ask",
+    "question": "Why did you recommend this?",
+    "created_at": "2026-10-12T14:31:02Z",
+    "forecast_id": "fc_01JA9W639D84MEBQ62JNKQV8P0",
+    "status": "complete",
+    "blocks": [
+      {
+        "block_id": "b1",
+        "type": "Narrative",
+        "evidence": [
+          "ver_01JA9NNC4HTPVZ3XNHJG4E4ZDS",
+          "ver_01JA9M276RHFG5G4W9YM425181"
+        ],
+        "actions": [],
+        "segments": [
+          {
+            "kind": "text",
+            "text": "The first draft wasn't good enough, so the Verifier sent it back. It asked you to cut food delivery far below anything in your history, and its savings figure didn't match the recalculation. The revised version passed every check. "
+          },
+          {
+            "kind": "entity",
+            "ref": "ver_01JA9M276RHFG5G4W9YM425181",
+            "label": "Verification passed"
+          }
+        ]
+      },
+      {
+        "block_id": "b2",
+        "type": "AgentExecutionTimeline",
+        "evidence": [
+          "run_01JA9BS5ZJNZ5M62Y0PX9PZ71X"
+        ],
+        "actions": [],
+        "run_id": "run_01JA9BS5ZJNZ5M62Y0PX9PZ71X",
+        "workflow": "risk_scan",
+        "duration_ms": 19430,
+        "steps": [
+          {
+            "step_id": "step_01JA917J8QH46Y86CEBNVEGJ2Z",
+            "agent": "coordinator",
+            "node": "coordinator.route",
+            "label": "Routed: new import changed the forecast",
+            "status": "ok",
+            "started_at": "2026-10-12T02:10:00Z",
+            "duration_ms": 160,
+            "outputs": []
+          },
+          {
+            "step_id": "step_01JA99VWMYQ4TF3XBZZHE52Q7H",
+            "agent": "analyst",
+            "node": "analyst.detect",
+            "label": "Ran 8 detectors on 90 days of data",
+            "status": "ok",
+            "started_at": "2026-10-12T02:10:01Z",
+            "duration_ms": 610,
+            "outputs": [
+              "calc_01JA9HP0B5ANE3S1P2TFD1SAFM",
+              "calc_01JA9AVJ4E4N84WN7VX8J64NHW",
+              "calc_01JA9QMQVZYM3M6BZNGT6PDKVB"
+            ]
+          },
+          {
+            "step_id": "step_01JA90K1JM44ZDBSPRHP4AH3R0",
+            "agent": "analyst",
+            "node": "analyst.rank",
+            "label": "Ranked 4 findings, wrote headlines",
+            "status": "ok",
+            "started_at": "2026-10-12T02:10:02Z",
+            "duration_ms": 1900,
+            "outputs": [
+              "fnd_01JA97SZ4RZF7QZJKP0YT8AX3B",
+              "fnd_01JA9C6A3WJWTPW1YDD18ADPV6",
+              "fnd_01JA914C3XVZ575MBA5ZYNAWBK",
+              "fnd_01JA9SF540YAXJW5MVW9FMYQNM"
+            ],
+            "model": "alias:fast",
+            "tokens": {
+              "in": 1720,
+              "out": 390
+            }
+          },
+          {
+            "step_id": "step_01JA9YMR7GMRP7CZWVWMKJ72KP",
+            "agent": "forecaster",
+            "node": "forecaster.build",
+            "label": "Built forecast v9 (500 paths, 90 days)",
+            "status": "ok",
+            "started_at": "2026-10-12T02:10:03Z",
+            "duration_ms": 780,
+            "outputs": [
+              "calc_01JA9W39G5FF3B6B8KT09BZ76V"
+            ]
+          },
+          {
+            "step_id": "step_01JA9QN2D8D4DS6ADBFXP4MF7W",
+            "agent": "advisor",
+            "node": "advisor.propose",
+            "label": "Draft 1: cap food delivery at £90 a month",
+            "status": "rejected",
+            "started_at": "2026-10-12T02:10:04Z",
+            "duration_ms": 5200,
+            "outputs": [
+              "calc_01JA9HEMK4YPK0N2VAVTQ9H25Y"
+            ],
+            "model": "alias:reasoning",
+            "tokens": {
+              "in": 2980,
+              "out": 640
+            }
+          },
+          {
+            "step_id": "step_01JA9M3FQ3Q27RCJKBWCYEFDH2",
+            "agent": "verifier",
+            "node": "verifier.check",
+            "label": "2 of 6 checks failed",
+            "status": "rejected",
+            "started_at": "2026-10-12T02:10:09Z",
+            "duration_ms": 300,
+            "outputs": [
+              "ver_01JA9NNC4HTPVZ3XNHJG4E4ZDS"
+            ],
+            "note": "Rejected: feasibility_cut_bound (56% below the £203.10 median; bound 40%) · impact_matches_recompute (claimed £220.00, recomputed £196.40)"
+          },
+          {
+            "step_id": "step_01JA9DFBB537CS97VGZXDQJ7NS",
+            "agent": "advisor",
+            "node": "advisor.revise",
+            "label": "Draft 2: cap at £180 and cancel NOW Entertainment",
+            "status": "ok",
+            "started_at": "2026-10-12T02:10:10Z",
+            "duration_ms": 4700,
+            "outputs": [
+              "calc_01JA9C87VWNFEPQF9SACG5APY0"
+            ],
+            "model": "alias:reasoning",
+            "tokens": {
+              "in": 3310,
+              "out": 610
+            }
+          },
+          {
+            "step_id": "step_01JA9GGYCSZ85YMEPVGJSHJZEF",
+            "agent": "verifier",
+            "node": "verifier.check",
+            "label": "6 of 6 deterministic checks passed",
+            "status": "ok",
+            "started_at": "2026-10-12T02:10:14Z",
+            "duration_ms": 280,
+            "outputs": [
+              "ver_01JA9M276RHFG5G4W9YM425181"
+            ]
+          },
+          {
+            "step_id": "step_01JA9PCS30HZZPE9FGT6GJANJ4",
+            "agent": "verifier",
+            "node": "verifier.judge",
+            "label": "Specific, grounded, not generic: approved",
+            "status": "ok",
+            "started_at": "2026-10-12T02:10:15Z",
+            "duration_ms": 3100,
+            "outputs": [
+              "ver_01JA9M276RHFG5G4W9YM425181"
+            ],
+            "model": "alias:reasoning",
+            "tokens": {
+              "in": 2140,
+              "out": 170
+            }
+          },
+          {
+            "step_id": "step_01JA90H8QKJBK9R07BBNWQ2PZH",
+            "agent": "coordinator",
+            "node": "compose.respond",
+            "label": "Composed briefing (5 blocks)",
+            "status": "ok",
+            "started_at": "2026-10-12T02:10:18Z",
+            "duration_ms": 2400,
+            "outputs": [
+              "rsp_01JA989GT9DG4K6XZZ1EP178AB"
+            ],
+            "model": "alias:fast",
+            "tokens": {
+              "in": 2650,
+              "out": 500
+            }
+          }
+        ],
+        "loops": [
+          {
+            "kind": "verification",
+            "recommendation_id": "rec_01JA9DQKVBZQMASMYGMJDQJJSQ",
+            "attempts": [
+              {
+                "version_id": "rv_01JA9566F6NS8Y49AVK688HG6A",
+                "verdict": "reject",
+                "failed_checks": [
+                  "feasibility_cut_bound",
+                  "impact_matches_recompute"
+                ]
+              },
+              {
+                "version_id": "rv_01JA92ZX6NKWHACXH8Y5FS1D31",
+                "verdict": "approve",
+                "failed_checks": []
+              }
+            ]
+          }
+        ],
+        "cost": {
+          "tokens": 15110,
+          "usd": null
+        }
+      },
+      {
+        "block_id": "b3",
+        "type": "EvidencePanel",
+        "evidence": [
+          "ver_01JA9NNC4HTPVZ3XNHJG4E4ZDS",
+          "ver_01JA9M276RHFG5G4W9YM425181",
+          "calc_01JA9HEMK4YPK0N2VAVTQ9H25Y",
+          "calc_01JA9C87VWNFEPQF9SACG5APY0",
+          "fnd_01JA9C6A3WJWTPW1YDD18ADPV6"
+        ],
+        "actions": [],
+        "items": [
+          {
+            "ref": "ver_01JA9NNC4HTPVZ3XNHJG4E4ZDS",
+            "kind": "verification",
+            "title": "Draft 1 rejected",
+            "provenance": "observed",
+            "summary_lines": [
+              "✓ evidence_refs_exist",
+              "✗ impact_matches_recompute: claimed £220.00 a month, recomputed £196.40 (tolerance 2%)",
+              "✗ feasibility_cut_bound: a £90 cap is 56% below the £203.10 median (bound 40%)",
+              "✓ no_protected_category_cut",
+              "✓ scope_consistent",
+              "– not_generic: skipped (deterministic checks failed)"
+            ],
+            "checks": [
+              {
+                "check": "evidence_refs_exist",
+                "passed": true
+              },
+              {
+                "check": "impact_matches_recompute",
+                "passed": false,
+                "claimed_minor": 22000,
+                "recomputed_minor": 19640,
+                "tolerance_pct": 2
+              },
+              {
+                "check": "feasibility_cut_bound",
+                "passed": false,
+                "cut_pct": 55.7,
+                "bound_pct": 40
+              },
+              {
+                "check": "no_protected_category_cut",
+                "passed": true
+              },
+              {
+                "check": "scope_consistent",
+                "passed": true
+              },
+              {
+                "check": "not_generic",
+                "passed": null,
+                "skipped": true
+              }
+            ],
+            "critique": "Cap is infeasible against history (55.7% below the 3-month median; bound 40%). Claimed saving £220.00 does not match recomputed £196.40. Propose a cap within the bound and use the engine's impact figure."
+          },
+          {
+            "ref": "ver_01JA9M276RHFG5G4W9YM425181",
+            "kind": "verification",
+            "title": "Draft 2 approved",
+            "provenance": "observed",
+            "summary_lines": [
+              "✓ evidence_refs_exist",
+              "✓ impact_matches_recompute: £116.39 a month",
+              "✓ feasibility_cut_bound: a £180 cap is 11% below the median",
+              "✓ no_protected_category_cut (family support untouched)",
+              "✓ scope_consistent",
+              "✓ not_generic (judge score 0.92)",
+              "✓ tone_neutral"
+            ],
+            "checks": [
+              {
+                "check": "evidence_refs_exist",
+                "passed": true
+              },
+              {
+                "check": "impact_matches_recompute",
+                "passed": true,
+                "claimed_minor": 11639,
+                "recomputed_minor": 11639,
+                "tolerance_pct": 2
+              },
+              {
+                "check": "feasibility_cut_bound",
+                "passed": true,
+                "cut_pct": 11.4,
+                "bound_pct": 40
+              },
+              {
+                "check": "no_protected_category_cut",
+                "passed": true
+              },
+              {
+                "check": "scope_consistent",
+                "passed": true
+              },
+              {
+                "check": "not_generic",
+                "passed": true,
+                "judge_score": 0.92
+              },
+              {
+                "check": "tone_neutral",
+                "passed": true
+              }
+            ]
+          },
+          {
+            "ref": "calc_01JA9HEMK4YPK0N2VAVTQ9H25Y",
+            "kind": "calculation",
+            "title": "Impact of draft 1 (£90 cap)",
+            "provenance": "observed",
+            "summary_lines": [
+              "Monthly saving at your current rate £196.40 (£286.40 → £90.00)"
+            ],
+            "reproducible": {
+              "seed": 3172604417,
+              "inputs_hash": "sha256:2d6b…e8f1",
+              "data_version": 21
+            }
+          },
+          {
+            "ref": "calc_01JA9C87VWNFEPQF9SACG5APY0",
+            "kind": "calculation",
+            "title": "Impact of draft 2 (£180 cap + cancel NOW)",
+            "provenance": "observed",
+            "summary_lines": [
+              "Monthly saving at your current rate £116.39 = £106.40 food delivery + £9.99 NOW Entertainment",
+              "Chance of dipping under £300 before 28 Oct: 78% → 41% (re-simulated, same seed)"
+            ],
+            "reproducible": {
+              "seed": 3172604417,
+              "inputs_hash": "sha256:b4f7…0a6c",
+              "data_version": 21
+            }
+          },
+          {
+            "ref": "fnd_01JA9C6A3WJWTPW1YDD18ADPV6",
+            "kind": "finding",
+            "title": "Food delivery up (trigger)",
+            "provenance": "detected",
+            "summary_lines": [
+              "£286.40 vs £203.10 usual (+41%), 23 orders"
+            ]
+          }
+        ]
+      }
+    ],
+    "follow_ups": [
+      {
+        "action_id": "fu_1",
+        "label": "Show the food delivery orders",
+        "kind": "filter_transactions",
+        "payload": {
+          "txn_query": {
+            "date_from": "2026-09-13",
+            "date_to": "2026-10-12",
+            "category_keys": [
+              "food.delivery"
+            ],
+            "direction": "out",
+            "include_transfers": false,
+            "sort": "date_desc",
+            "limit": 50
+          }
+        },
+        "requires_confirmation": false
+      }
+    ],
+    "verification": {
+      "recommendations": [
+        {
+          "recommendation_id": "rec_01JA9DQKVBZQMASMYGMJDQJJSQ",
+          "verdict": "approve",
+          "revisions": 1
+        }
+      ]
+    },
+    "provenance": {
+      "calc_ids": [
+        "calc_01JA9HEMK4YPK0N2VAVTQ9H25Y",
+        "calc_01JA9C87VWNFEPQF9SACG5APY0"
+      ],
+      "finding_ids": [
+        "fnd_01JA9C6A3WJWTPW1YDD18ADPV6"
+      ],
+      "recommendation_ids": [
+        "rec_01JA9DQKVBZQMASMYGMJDQJJSQ"
+      ]
+    },
+    "prefs_version": 1
+  }
+}
