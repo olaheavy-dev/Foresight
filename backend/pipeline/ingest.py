@@ -4,6 +4,10 @@ bytes → `import_file` → gate (blocking questions or a failed reconciliation 
 dedupe against stored fingerprints → batch, source rows and transactions → categorise (pack rules
 plus merchant memory) → detect income and recurring obligations → balance anchors → audit.
 
+Every narration and the file name are screened for instruction-like text as they arrive
+(docs/05 §7.4a L3). A flagged row is stored with `suspicious_text`: it is categorised by rules and
+merchant memory only and never sent to a model as written.
+
 Re-importing the same file, or an overlapping export, adds no transactions. Nothing here commits:
 the caller wraps the call in its own database transaction.
 """
@@ -14,6 +18,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import date
 
+from backend.agents.guard import detect_suspicious_text
 from backend.finance_core.categorise.normalise import parse_narration
 from backend.finance_core.categorise.pack import CategorisationPack, bank_category_key
 from backend.finance_core.categorise.rules import (
@@ -118,6 +123,7 @@ def _batch(
             "profile_id": result.format_profile_id,
             "profile_origin": table.profile.origin if table.profile else None,
             "tables_found": len(fi.tables),
+            "suspicious_filename": list(detect_suspicious_text(fi.file_name, "filename").rule_ids),
         },
         format_inference={
             "date_format": result.date_format,
@@ -283,11 +289,17 @@ def ingest_file(
 
         found = dedupe(acct, result.rows, ctx.fingerprints(acct))
         batch = _batch(ctx, fi, i, table, "committed", acct)
+        suspicious = {
+            id(row)
+            for row in found.new_rows
+            if detect_suspicious_text(row.description, "narration").verdict != "allow"
+        }
         batch.counts = {
             "rows_read": len(result.rows),
             "accepted": len(found.new_rows),
             "duplicates": len(found.duplicates),
             "near_duplicates": len(found.near_duplicates),
+            "suspicious_text": len(suspicious),
         }
         ctx.session.flush()
         new_ids = {id(r) for r in found.new_rows}
@@ -322,6 +334,7 @@ def ingest_file(
                 balance_after_minor=row.balance_after_minor,
                 source_row_index=row.source_row_index,
                 fingerprint=fingerprint,
+                suspicious_text=id(row) in suspicious,
             )
             ctx.add(txn)
             new_txns.append(txn)

@@ -17,8 +17,18 @@ PRICES_USD_PER_1M: dict[str, tuple[float, float]] = {
 }
 
 
-def cost_estimate(model: str, prompt_tokens: int, completion_tokens: int) -> float | None:
+def price_for(model: str) -> tuple[float, float] | None:
+    """Mesh reports the served model with or without its provider prefix ("gpt-6-luna" for
+    "openai/gpt-6-luna"); both name the same catalogue entry."""
     price = PRICES_USD_PER_1M.get(model)
+    if price is not None or "/" in model:
+        return price
+    matches = [p for key, p in PRICES_USD_PER_1M.items() if key.split("/", 1)[1] == model]
+    return matches[0] if len(matches) == 1 else None
+
+
+def cost_estimate(model: str, prompt_tokens: int, completion_tokens: int) -> float | None:
+    price = price_for(model)
     if price is None:
         return None
     return round((prompt_tokens * price[0] + completion_tokens * price[1]) / 1_000_000, 8)

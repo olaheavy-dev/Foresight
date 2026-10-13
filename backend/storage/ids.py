@@ -33,6 +33,8 @@ PREFIXES = frozenset(
         "rsp",
         "thr",
         "msg",
+        # behaviour findings (migration 0005)
+        "fnd",
     }
 )
 

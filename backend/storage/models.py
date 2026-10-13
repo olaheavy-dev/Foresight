@@ -211,6 +211,9 @@ class Transaction(Base):
     fingerprint: Mapped[str] = mapped_column(String(160))
     entry_method: Mapped[str] = mapped_column(String(16), server_default="import")
     status: Mapped[str] = mapped_column(String(24), server_default="active")
+    # Instruction-like narration found at import (docs/05 §7.4a L3, migration 0005): the row is
+    # categorised by rules and merchant memory only and is never sent to a model as written.
+    suspicious_text: Mapped[bool] = mapped_column(Boolean, server_default="false")
     created_at: Mapped[datetime] = _created_at()
 
 
@@ -555,3 +558,42 @@ class AnswerCacheEntry(Base):
     hits: Mapped[int] = mapped_column(Integer, server_default="0")
     created_at: Mapped[datetime] = _created_at()
     last_hit_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class Finding(Base):
+    """A deterministic behaviour finding (docs/07 §3.4 `Finding`, docs/06 §4.2).
+
+    Candidates come from `finance_core` detectors; the Behaviour Analyst may rank, word or
+    discard them but never creates one. Headlines use `{{calc_…#path|format}}` placeholders only
+    (V-07); the figures live in the cited Calculation rows. One row per `dedupe_key`: a later
+    refresh confirms (or supersedes) it rather than adding a duplicate.
+    """
+
+    __tablename__ = "finding"
+    __table_args__ = (
+        UniqueConstraint("workspace_id", "id", name="uq_finding_workspace_id"),
+        UniqueConstraint("workspace_id", "dedupe_key", name="uq_finding_dedupe"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)  # fnd_
+    workspace_id: Mapped[str] = _workspace_fk()
+    kind: Mapped[str] = mapped_column(String(32))  # category_spike | price_change | …
+    subject: Mapped[Json] = mapped_column(JSONB, server_default="{}")
+    stats: Mapped[Json] = mapped_column(JSONB, server_default="{}")
+    strength: Mapped[str] = mapped_column(String(12))  # strong | moderate | weak
+    severity: Mapped[str] = mapped_column(String(8), server_default="info")  # info | watch | act
+    score: Mapped[float] = mapped_column(Float, server_default="0")
+    salience: Mapped[int | None] = mapped_column(Integer)  # 1..5 from the Analyst (or rules)
+    headline: Mapped[str] = mapped_column(Text, server_default="")
+    detail: Mapped[str] = mapped_column(Text, server_default="")
+    wording_source: Mapped[str] = mapped_column(String(12), server_default="template")  # llm
+    calc_ids: Mapped[list[str]] = mapped_column(JSONB, server_default="[]")
+    txn_query: Mapped[Json] = mapped_column(JSONB, server_default="{}")
+    scope: Mapped[str] = mapped_column(String(48), server_default="mine")
+    status: Mapped[str] = mapped_column(String(16), server_default="candidate")
+    discard_reason: Mapped[str | None] = mapped_column(Text)
+    dedupe_key: Mapped[str] = mapped_column(String(200))
+    data_version: Mapped[int] = mapped_column(Integer, server_default="0")
+    run_id: Mapped[str | None] = mapped_column(String(32))
+    first_detected_at: Mapped[datetime] = _created_at()
+    last_confirmed_at: Mapped[datetime] = _created_at()
