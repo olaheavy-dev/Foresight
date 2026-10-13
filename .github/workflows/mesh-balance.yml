@@ -43,11 +43,10 @@ jobs:
             echo "::error::The balance response had no available_usd field."
             exit 1
           fi
-          shown=$(printf '%.2f' "${available}")
           open=$(gh issue list --repo "${REPO}" --state open --search "\"${TITLE}\" in:title" \
             --json number,title --jq "map(select(.title == \"${TITLE}\")) | .[0].number // empty")
           if awk -v a="${available}" -v t="${THRESHOLD_USD}" 'BEGIN { exit !(a < t) }'; then
-            body="Available Mesh balance: \$${shown} (alert below \$${THRESHOLD_USD}), checked $(date -u +%Y-%m-%dT%H:%MZ). AI answers pause when it reaches the per-question worst case; top up to keep them running."
+            body="The Mesh balance is below \$${THRESHOLD_USD} (checked $(date -u +%Y-%m-%dT%H:%MZ)). AI answers pause when it reaches the per-question worst case; top up to keep them running. The exact figure is not posted because this repository is public."
             if [ -n "${open}" ]; then
               gh issue comment "${open}" --repo "${REPO}" --body "${body}"
             else
