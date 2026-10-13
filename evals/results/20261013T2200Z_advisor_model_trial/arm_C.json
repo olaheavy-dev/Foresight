@@ -688,7 +688,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 6.1280298750061775,
+   "latency_s": 6.128,
    "tokens_in": 1843,
    "tokens_out": 264,
    "cost": 0.006326,
@@ -699,7 +699,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 4.4007785839930875,
+   "latency_s": 4.401,
    "tokens_in": 1843,
    "tokens_out": 268,
    "cost": 0.006366,
@@ -710,7 +710,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 4.870943375004572,
+   "latency_s": 4.871,
    "tokens_in": 1843,
    "tokens_out": 278,
    "cost": 0.006466,
@@ -721,7 +721,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 5.9042206250014715,
+   "latency_s": 5.904,
    "tokens_in": 1848,
    "tokens_out": 264,
    "cost": 0.006336,
@@ -732,7 +732,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 4.1463379170018015,
+   "latency_s": 4.146,
    "tokens_in": 1848,
    "tokens_out": 261,
    "cost": 0.006306,
@@ -743,7 +743,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 5.131302250010776,
+   "latency_s": 5.131,
    "tokens_in": 1848,
    "tokens_out": 277,
    "cost": 0.006466,
@@ -754,7 +754,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 11.593276624989812,
+   "latency_s": 11.593,
    "tokens_in": 12259,
    "tokens_out": 1416,
    "cost": 0.0,
@@ -765,7 +765,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 4.586728415990365,
+   "latency_s": 4.587,
    "tokens_in": 1861,
    "tokens_out": 282,
    "cost": 0.006542,
@@ -776,7 +776,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 13.374266334009008,
+   "latency_s": 13.374,
    "tokens_in": 12222,
    "tokens_out": 1355,
    "cost": 0.0,
@@ -787,7 +787,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 5.565252542000962,
+   "latency_s": 5.565,
    "tokens_in": 1858,
    "tokens_out": 272,
    "cost": 0.006436,
@@ -798,7 +798,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 22.917081416002475,
+   "latency_s": 22.917,
    "tokens_in": 13598,
    "tokens_out": 3229,
    "cost": 0.0,
@@ -809,7 +809,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 4.580646041998989,
+   "latency_s": 4.581,
    "tokens_in": 1841,
    "tokens_out": 260,
    "cost": 0.006282,
@@ -820,7 +820,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 9.349473667010898,
+   "latency_s": 9.349,
    "tokens_in": 12379,
    "tokens_out": 1329,
    "cost": 0.0,
@@ -831,7 +831,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 4.673392917000456,
+   "latency_s": 4.673,
    "tokens_in": 1856,
    "tokens_out": 258,
    "cost": 0.006292,
@@ -842,7 +842,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 22.068227541996748,
+   "latency_s": 22.068,
    "tokens_in": 13503,
    "tokens_out": 3145,
    "cost": 0.0,
@@ -853,7 +853,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 4.938017166001373,
+   "latency_s": 4.938,
    "tokens_in": 1845,
    "tokens_out": 280,
    "cost": 0.00649,
@@ -864,7 +864,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 21.106889874994522,
+   "latency_s": 21.107,
    "tokens_in": 13756,
    "tokens_out": 3383,
    "cost": 0.0,
@@ -875,7 +875,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 4.872568874998251,
+   "latency_s": 4.873,
    "tokens_in": 1848,
    "tokens_out": 277,
    "cost": 0.006466,
@@ -886,7 +886,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 15.273421250007232,
+   "latency_s": 15.273,
    "tokens_in": 12901,
    "tokens_out": 2130,
    "cost": 0.0,
@@ -897,7 +897,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 5.338820707998821,
+   "latency_s": 5.339,
    "tokens_in": 1839,
    "tokens_out": 267,
    "cost": 0.006348,
@@ -908,7 +908,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 16.86469837500772,
+   "latency_s": 16.865,
    "tokens_in": 13180,
    "tokens_out": 2397,
    "cost": 0.0,
@@ -919,7 +919,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 4.839076749995002,
+   "latency_s": 4.839,
    "tokens_in": 1853,
    "tokens_out": 246,
    "cost": 0.006166,
@@ -930,7 +930,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 4.780802207998931,
+   "latency_s": 4.781,
    "tokens_in": 1830,
    "tokens_out": 274,
    "cost": 0.0064,
@@ -941,7 +941,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 22.798219583011814,
+   "latency_s": 22.798,
    "tokens_in": 13486,
    "tokens_out": 3041,
    "cost": 0.0,
@@ -952,7 +952,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 4.3607957499916665,
+   "latency_s": 4.361,
    "tokens_in": 1843,
    "tokens_out": 284,
    "cost": 0.006526,
@@ -963,7 +963,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 4.545348749990808,
+   "latency_s": 4.545,
    "tokens_in": 1874,
    "tokens_out": 273,
    "cost": 0.006478,
@@ -974,7 +974,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 9.17771529199672,
+   "latency_s": 9.178,
    "tokens_in": 12350,
    "tokens_out": 1155,
    "cost": 0.0,
@@ -985,7 +985,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 4.1343860419874545,
+   "latency_s": 4.134,
    "tokens_in": 1869,
    "tokens_out": 279,
    "cost": 0.006528,
@@ -996,7 +996,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 23.78686999999627,
+   "latency_s": 23.787,
    "tokens_in": 13828,
    "tokens_out": 4450,
    "cost": 0.0,
@@ -1007,7 +1007,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 5.644569332987885,
+   "latency_s": 5.645,
    "tokens_in": 1850,
    "tokens_out": 275,
    "cost": 0.00645,
@@ -1018,7 +1018,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 21.262782874997356,
+   "latency_s": 21.263,
    "tokens_in": 13768,
    "tokens_out": 3611,
    "cost": 0.0,
@@ -1029,7 +1029,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 4.494011582995881,
+   "latency_s": 4.494,
    "tokens_in": 1883,
    "tokens_out": 267,
    "cost": 0.006436,

@@ -690,7 +690,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 5.620436625002185,
+   "latency_s": 5.62,
    "tokens_in": 979,
    "tokens_out": 140,
    "cost": 0.003358,
@@ -701,7 +701,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 6.414056915993569,
+   "latency_s": 6.414,
    "tokens_in": 979,
    "tokens_out": 137,
    "cost": 0.003328,
@@ -712,7 +712,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 5.708737249995465,
+   "latency_s": 5.709,
    "tokens_in": 979,
    "tokens_out": 144,
    "cost": 0.003398,
@@ -723,7 +723,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 4.846805666005821,
+   "latency_s": 4.847,
    "tokens_in": 991,
    "tokens_out": 139,
    "cost": 0.003372,
@@ -734,7 +734,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 4.144888000009814,
+   "latency_s": 4.145,
    "tokens_in": 991,
    "tokens_out": 142,
    "cost": 0.003402,
@@ -745,7 +745,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 4.089573833000031,
+   "latency_s": 4.09,
    "tokens_in": 991,
    "tokens_out": 135,
    "cost": 0.003332,
@@ -756,7 +756,7 @@
   {
    "tier": "reasoning",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 10.30908162498963,
+   "latency_s": 10.309,
    "tokens_in": 4429,
    "tokens_out": 1238,
    "cost": 0.021238,
@@ -767,7 +767,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 4.38610395899741,
+   "latency_s": 4.386,
    "tokens_in": 979,
    "tokens_out": 136,
    "cost": 0.003318,
@@ -778,7 +778,7 @@
   {
    "tier": "reasoning",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 10.816972750006244,
+   "latency_s": 10.817,
    "tokens_in": 4431,
    "tokens_out": 930,
    "cost": 0.018162,
@@ -789,7 +789,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 4.801638916993397,
+   "latency_s": 4.802,
    "tokens_in": 991,
    "tokens_out": 137,
    "cost": 0.003352,
@@ -800,7 +800,7 @@
   {
    "tier": "reasoning",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 11.791465375004918,
+   "latency_s": 11.791,
    "tokens_in": 4439,
    "tokens_out": 1221,
    "cost": 0.021088,
@@ -811,7 +811,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 5.720116790995235,
+   "latency_s": 5.72,
    "tokens_in": 987,
    "tokens_out": 142,
    "cost": 0.003394,
@@ -822,7 +822,7 @@
   {
    "tier": "reasoning",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 10.676025749999098,
+   "latency_s": 10.676,
    "tokens_in": 4441,
    "tokens_out": 1239,
    "cost": 0.021272,
@@ -833,7 +833,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 4.382630666994373,
+   "latency_s": 4.383,
    "tokens_in": 1001,
    "tokens_out": 138,
    "cost": 0.003382,
@@ -844,7 +844,7 @@
   {
    "tier": "reasoning",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 9.852227499999572,
+   "latency_s": 9.852,
    "tokens_in": 4437,
    "tokens_out": 1210,
    "cost": 0.020974,
@@ -855,7 +855,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 0.0021753329929197207,
+   "latency_s": 0.002,
    "tokens_in": 979,
    "tokens_out": 136,
    "cost": 0.003318,
@@ -866,7 +866,7 @@
   {
    "tier": "reasoning",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 9.765261207998265,
+   "latency_s": 9.765,
    "tokens_in": 4436,
    "tokens_out": 1238,
    "cost": 0.021252,
@@ -877,7 +877,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 0.0023634999961359426,
+   "latency_s": 0.002,
    "tokens_in": 991,
    "tokens_out": 137,
    "cost": 0.003352,
@@ -888,7 +888,7 @@
   {
    "tier": "reasoning",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 9.794180665994645,
+   "latency_s": 9.794,
    "tokens_in": 4396,
    "tokens_out": 1185,
    "cost": 0.020642,
@@ -899,7 +899,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 5.451432624991867,
+   "latency_s": 5.451,
    "tokens_in": 980,
    "tokens_out": 137,
    "cost": 0.00333,
@@ -910,7 +910,7 @@
   {
    "tier": "reasoning",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 10.731744250006159,
+   "latency_s": 10.732,
    "tokens_in": 4397,
    "tokens_out": 1220,
    "cost": 0.020994,
@@ -921,7 +921,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 5.644042792002438,
+   "latency_s": 5.644,
    "tokens_in": 995,
    "tokens_out": 139,
    "cost": 0.00338,
@@ -932,7 +932,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 4.196035166998627,
+   "latency_s": 4.196,
    "tokens_in": 966,
    "tokens_out": 138,
    "cost": 0.003312,
@@ -943,7 +943,7 @@
   {
    "tier": "reasoning",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 10.661466542005655,
+   "latency_s": 10.661,
    "tokens_in": 4439,
    "tokens_out": 1216,
    "cost": 0.021038,
@@ -954,7 +954,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 5.540498292000848,
+   "latency_s": 5.54,
    "tokens_in": 988,
    "tokens_out": 138,
    "cost": 0.003356,
@@ -965,7 +965,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 4.148927292000735,
+   "latency_s": 4.149,
    "tokens_in": 987,
    "tokens_out": 137,
    "cost": 0.003344,
@@ -976,7 +976,7 @@
   {
    "tier": "reasoning",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 10.151135749998502,
+   "latency_s": 10.151,
    "tokens_in": 4450,
    "tokens_out": 1195,
    "cost": 0.02085,
@@ -987,7 +987,7 @@
   {
    "tier": "reasoning",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 9.119441499991808,
+   "latency_s": 9.119,
    "tokens_in": 4434,
    "tokens_out": 1131,
    "cost": 0.020178,
@@ -998,7 +998,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 5.435253000003286,
+   "latency_s": 5.435,
    "tokens_in": 998,
    "tokens_out": 140,
    "cost": 0.003396,
@@ -1009,7 +1009,7 @@
   {
    "tier": "reasoning",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 11.344049541992717,
+   "latency_s": 11.344,
    "tokens_in": 4367,
    "tokens_out": 1388,
    "cost": 0.022614,
@@ -1020,7 +1020,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 5.383581749993027,
+   "latency_s": 5.384,
    "tokens_in": 990,
    "tokens_out": 133,
    "cost": 0.00331,
@@ -1031,7 +1031,7 @@
   {
    "tier": "reasoning",
    "model": "anthropic/claude-sonnet-5.5",
-   "latency_s": 10.763646084000356,
+   "latency_s": 10.764,
    "tokens_in": 4370,
    "tokens_out": 1353,
    "cost": 0.02227,
@@ -1042,7 +1042,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 4.685771125004976,
+   "latency_s": 4.686,
    "tokens_in": 994,
    "tokens_out": 135,
    "cost": 0.003338,

@@ -688,7 +688,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 8.721533500007354,
+   "latency_s": 8.722,
    "tokens_in": 1843,
    "tokens_out": 699,
    "cost": 0.0005338,
@@ -699,7 +699,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 11.4521388340072,
+   "latency_s": 11.452,
    "tokens_in": 1843,
    "tokens_out": 700,
    "cost": 0.0005343,
@@ -710,7 +710,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 11.4521388340072,
+   "latency_s": 11.452,
    "tokens_in": 1898,
    "tokens_out": 640,
    "cost": 0.0005098,
@@ -721,7 +721,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 6.178164791999734,
+   "latency_s": 6.178,
    "tokens_in": 1843,
    "tokens_out": 573,
    "cost": 0.0004708,
@@ -732,7 +732,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 5.316216916005942,
+   "latency_s": 5.316,
    "tokens_in": 1848,
    "tokens_out": 634,
    "cost": 0.0005018,
@@ -743,7 +743,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 4.821757166006137,
+   "latency_s": 4.822,
    "tokens_in": 1848,
    "tokens_out": 270,
    "cost": 0.0003198,
@@ -754,7 +754,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 10.616948958995636,
+   "latency_s": 10.617,
    "tokens_in": 1848,
    "tokens_out": 700,
    "cost": 0.0005348,
@@ -765,7 +765,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 10.616948958995636,
+   "latency_s": 10.617,
    "tokens_in": 1903,
    "tokens_out": 648,
    "cost": 0.0005143,
@@ -776,7 +776,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 0.0033073749946197495,
+   "latency_s": 0.003,
    "tokens_in": 12259,
    "tokens_out": 1416,
    "cost": 0.00518875,
@@ -787,7 +787,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 5.741463291997206,
+   "latency_s": 5.741,
    "tokens_in": 1861,
    "tokens_out": 581,
    "cost": 0.0004766,
@@ -798,7 +798,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 0.002664458006620407,
+   "latency_s": 0.003,
    "tokens_in": 12222,
    "tokens_out": 1355,
    "cost": 0.005088,
@@ -809,7 +809,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 7.570761166993179,
+   "latency_s": 7.571,
    "tokens_in": 1858,
    "tokens_out": 621,
    "cost": 0.0004963,
@@ -820,7 +820,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 0.003159250001772307,
+   "latency_s": 0.003,
    "tokens_in": 13598,
    "tokens_out": 3229,
    "cost": 0.008243,
@@ -831,7 +831,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 10.512960000007297,
+   "latency_s": 10.513,
    "tokens_in": 1841,
    "tokens_out": 700,
    "cost": 0.0005341,
@@ -842,7 +842,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 10.512960000007297,
+   "latency_s": 10.513,
    "tokens_in": 1896,
    "tokens_out": 609,
    "cost": 0.0004941,
@@ -853,7 +853,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 0.0032979999959934503,
+   "latency_s": 0.003,
    "tokens_in": 12379,
    "tokens_out": 1329,
    "cost": 0.00508825,
@@ -864,7 +864,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 9.643904083000962,
+   "latency_s": 9.644,
    "tokens_in": 1856,
    "tokens_out": 700,
    "cost": 0.0005356,
@@ -875,7 +875,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 9.643904083000962,
+   "latency_s": 9.644,
    "tokens_in": 1911,
    "tokens_out": 598,
    "cost": 0.0004901,
@@ -886,7 +886,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 0.0030959579889895394,
+   "latency_s": 0.003,
    "tokens_in": 13503,
    "tokens_out": 3145,
    "cost": 0.00809325,
@@ -897,7 +897,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 5.544278166009462,
+   "latency_s": 5.544,
    "tokens_in": 1845,
    "tokens_out": 598,
    "cost": 0.0004835,
@@ -908,7 +908,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 0.003396957996301353,
+   "latency_s": 0.003,
    "tokens_in": 13756,
    "tokens_out": 3383,
    "cost": 0.0085135,
@@ -919,7 +919,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 10.109204708001926,
+   "latency_s": 10.109,
    "tokens_in": 1848,
    "tokens_out": 700,
    "cost": 0.0005348,
@@ -930,7 +930,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 10.109204708001926,
+   "latency_s": 10.109,
    "tokens_in": 1903,
    "tokens_out": 649,
    "cost": 0.0005148,
@@ -941,7 +941,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 0.002766458987025544,
+   "latency_s": 0.003,
    "tokens_in": 12901,
    "tokens_out": 2130,
    "cost": 0.00642025,
@@ -952,7 +952,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 4.584031708000111,
+   "latency_s": 4.584,
    "tokens_in": 1839,
    "tokens_out": 518,
    "cost": 0.0004429,
@@ -963,7 +963,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 0.0031105829984880984,
+   "latency_s": 0.003,
    "tokens_in": 13180,
    "tokens_out": 2397,
    "cost": 0.0068905,
@@ -974,7 +974,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 6.177526500003296,
+   "latency_s": 6.178,
    "tokens_in": 1853,
    "tokens_out": 645,
    "cost": 0.0005078,
@@ -985,7 +985,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 5.3931478330050595,
+   "latency_s": 5.393,
    "tokens_in": 1830,
    "tokens_out": 491,
    "cost": 0.0004285,
@@ -996,7 +996,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 12.862734750000527,
+   "latency_s": 12.863,
    "tokens_in": 12358,
    "tokens_out": 1411,
    "cost": 0.005206,
@@ -1007,7 +1007,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 10.44934099999955,
+   "latency_s": 10.449,
    "tokens_in": 1854,
    "tokens_out": 700,
    "cost": 0.0005354,
@@ -1018,7 +1018,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 10.44934099999955,
+   "latency_s": 10.449,
    "tokens_in": 1909,
    "tokens_out": 545,
    "cost": 0.0004634,
@@ -1029,7 +1029,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 5.910957708998467,
+   "latency_s": 5.911,
    "tokens_in": 1874,
    "tokens_out": 539,
    "cost": 0.0004569,
@@ -1040,7 +1040,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 20.517358875003993,
+   "latency_s": 20.517,
    "tokens_in": 13020,
    "tokens_out": 2575,
    "cost": 0.0071175,
@@ -1051,7 +1051,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 6.6977285419998225,
+   "latency_s": 6.698,
    "tokens_in": 1841,
    "tokens_out": 694,
    "cost": 0.0005311,
@@ -1062,7 +1062,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 0.0029441250080708414,
+   "latency_s": 0.003,
    "tokens_in": 13828,
    "tokens_out": 4450,
    "cost": 0.010132,
@@ -1073,7 +1073,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 10.659138792005251,
+   "latency_s": 10.659,
    "tokens_in": 1850,
    "tokens_out": 700,
    "cost": 0.000535,
@@ -1084,7 +1084,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 10.659138792005251,
+   "latency_s": 10.659,
    "tokens_in": 1905,
    "tokens_out": 642,
    "cost": 0.0005115,
@@ -1095,7 +1095,7 @@
   {
    "tier": "reasoning",
    "model": "openai-gpt-56-luna-pro",
-   "latency_s": 0.002442459008307196,
+   "latency_s": 0.002,
    "tokens_in": 13768,
    "tokens_out": 3611,
    "cost": 0.0088585,
@@ -1106,7 +1106,7 @@
   {
    "tier": "verifier",
    "model": "anthropic/claude-haiku-5.5",
-   "latency_s": 5.481998458009912,
+   "latency_s": 5.482,
    "tokens_in": 1883,
    "tokens_out": 639,
    "cost": 0.0005078,

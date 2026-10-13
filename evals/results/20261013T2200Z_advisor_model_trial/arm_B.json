@@ -432,7 +432,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 0.013560791005147621,
+   "latency_s": 0.014,
    "tokens_in": 979,
    "tokens_out": 140,
    "cost": 0.003358,
@@ -443,7 +443,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 0.0021775839995825663,
+   "latency_s": 0.002,
    "tokens_in": 979,
    "tokens_out": 137,
    "cost": 0.003328,
@@ -454,7 +454,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 0.002260083012515679,
+   "latency_s": 0.002,
    "tokens_in": 979,
    "tokens_out": 144,
    "cost": 0.003398,
@@ -465,7 +465,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 0.0019637499935925007,
+   "latency_s": 0.002,
    "tokens_in": 991,
    "tokens_out": 139,
    "cost": 0.003372,
@@ -476,7 +476,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 0.0019849999953294173,
+   "latency_s": 0.002,
    "tokens_in": 991,
    "tokens_out": 142,
    "cost": 0.003402,
@@ -487,7 +487,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 0.001986624993151054,
+   "latency_s": 0.002,
    "tokens_in": 991,
    "tokens_out": 135,
    "cost": 0.003332,
@@ -498,7 +498,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 6.814284959007637,
+   "latency_s": 6.814,
    "tokens_in": 3158,
    "tokens_out": 422,
    "cost": 0.003951,
@@ -509,7 +509,7 @@
   {
    "tier": "reasoning",
    "model": "?",
-   "latency_s": 28.779481916004443,
+   "latency_s": 28.779,
    "tokens_in": 0,
    "tokens_out": 0,
    "cost": 0.0,
@@ -520,7 +520,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 10.459464125000522,
+   "latency_s": 10.459,
    "tokens_in": 3164,
    "tokens_out": 1165,
    "cost": 0.00674175,
@@ -531,7 +531,7 @@
   {
    "tier": "reasoning",
    "model": "?",
-   "latency_s": 29.83029041600821,
+   "latency_s": 29.83,
    "tokens_in": 0,
    "tokens_out": 0,
    "cost": 0.0,
@@ -542,7 +542,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 23.779138291996787,
+   "latency_s": 23.779,
    "tokens_in": 3168,
    "tokens_out": 1586,
    "cost": 0.0083235,
@@ -553,7 +553,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 23.779138291996787,
+   "latency_s": 23.779,
    "tokens_in": 3284,
    "tokens_out": 1338,
    "cost": 0.0074805,
@@ -564,7 +564,7 @@
   {
    "tier": "reasoning",
    "model": "?",
-   "latency_s": 26.410569250001572,
+   "latency_s": 26.411,
    "tokens_in": 0,
    "tokens_out": 0,
    "cost": 0.0,
@@ -575,7 +575,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 25.530204666996724,
+   "latency_s": 25.53,
    "tokens_in": 3175,
    "tokens_out": 1586,
    "cost": 0.00832875,
@@ -586,7 +586,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 25.530204666996724,
+   "latency_s": 25.53,
    "tokens_in": 3291,
    "tokens_out": 1553,
    "cost": 0.008292,
@@ -597,7 +597,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 24.606413166009588,
+   "latency_s": 24.606,
    "tokens_in": 3196,
    "tokens_out": 1586,
    "cost": 0.0083445,
@@ -608,7 +608,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 24.606413166009588,
+   "latency_s": 24.606,
    "tokens_in": 3316,
    "tokens_out": 1279,
    "cost": 0.00728325,
@@ -619,7 +619,7 @@
   {
    "tier": "reasoning",
    "model": "?",
-   "latency_s": 27.37566695800342,
+   "latency_s": 27.376,
    "tokens_in": 0,
    "tokens_out": 0,
    "cost": 0.0,
@@ -630,7 +630,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 25.592420000000857,
+   "latency_s": 25.592,
    "tokens_in": 3161,
    "tokens_out": 1585,
    "cost": 0.0083145,
@@ -641,7 +641,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 25.592420000000857,
+   "latency_s": 25.592,
    "tokens_in": 3277,
    "tokens_out": 1468,
    "cost": 0.00796275,
@@ -652,7 +652,7 @@
   {
    "tier": "reasoning",
    "model": "?",
-   "latency_s": 26.756774624998798,
+   "latency_s": 26.757,
    "tokens_in": 0,
    "tokens_out": 0,
    "cost": 0.0,
@@ -663,7 +663,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 32.887000540999,
+   "latency_s": 32.887,
    "tokens_in": 3137,
    "tokens_out": 1586,
    "cost": 0.00830025,
@@ -674,7 +674,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 32.887000540999,
+   "latency_s": 32.887,
    "tokens_in": 3257,
    "tokens_out": 1050,
    "cost": 0.00638025,
@@ -685,7 +685,7 @@
   {
    "tier": "reasoning",
    "model": "?",
-   "latency_s": 25.045162207999965,
+   "latency_s": 25.045,
    "tokens_in": 0,
    "tokens_out": 0,
    "cost": 0.0,
@@ -696,7 +696,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 25.288496833993122,
+   "latency_s": 25.288,
    "tokens_in": 3140,
    "tokens_out": 1586,
    "cost": 0.0083025,
@@ -707,7 +707,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 25.288496833993122,
+   "latency_s": 25.288,
    "tokens_in": 3256,
    "tokens_out": 1535,
    "cost": 0.00819825,
@@ -718,7 +718,7 @@
   {
    "tier": "reasoning",
    "model": "?",
-   "latency_s": 26.323969999997644,
+   "latency_s": 26.324,
    "tokens_in": 0,
    "tokens_out": 0,
    "cost": 0.0,
@@ -729,7 +729,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 0.0021196250017965212,
+   "latency_s": 0.002,
    "tokens_in": 966,
    "tokens_out": 138,
    "cost": 0.003312,
@@ -740,7 +740,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 22.238920458999928,
+   "latency_s": 22.239,
    "tokens_in": 3164,
    "tokens_out": 1586,
    "cost": 0.0083205,
@@ -751,7 +751,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 22.238920458999928,
+   "latency_s": 22.239,
    "tokens_in": 3284,
    "tokens_out": 1264,
    "cost": 0.007203,
@@ -762,7 +762,7 @@
   {
    "tier": "reasoning",
    "model": "?",
-   "latency_s": 23.15962729199964,
+   "latency_s": 23.16,
    "tokens_in": 0,
    "tokens_out": 0,
    "cost": 0.0,
@@ -773,7 +773,7 @@
   {
    "tier": "verifier",
    "model": "gpt-6.1-sol",
-   "latency_s": 0.0024280409998027608,
+   "latency_s": 0.002,
    "tokens_in": 987,
    "tokens_out": 137,
    "cost": 0.003344,
@@ -784,7 +784,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 20.41225958299765,
+   "latency_s": 20.412,
    "tokens_in": 3174,
    "tokens_out": 1585,
    "cost": 0.00832425,
@@ -795,7 +795,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 20.41225958299765,
+   "latency_s": 20.412,
    "tokens_in": 3286,
    "tokens_out": 837,
    "cost": 0.00560325,
@@ -806,7 +806,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 25.512364333000733,
+   "latency_s": 25.512,
    "tokens_in": 3197,
    "tokens_out": 1586,
    "cost": 0.00834525,
@@ -817,7 +817,7 @@
   {
    "tier": "reasoning",
    "model": "gemini-3.8-flash",
-   "latency_s": 25.512364333000733,
+   "latency_s": 25.512,
    "tokens_in": 3315,
    "tokens_out": 1562,
    "cost": 0.00834375,
@@ -828,7 +828,7 @@
   {
    "tier": "reasoning",
    "model": "?",
-   "latency_s": 25.072568875009893,
+   "latency_s": 25.073,
    "tokens_in": 0,
    "tokens_out": 0,
    "cost": 0.0,
@@ -839,7 +839,7 @@
   {
    "tier": "reasoning",
    "model": "?",
-   "latency_s": 24.472845334006706,
+   "latency_s": 24.473,
    "tokens_in": 0,
    "tokens_out": 0,
    "cost": 0.0,
