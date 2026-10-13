@@ -872,6 +872,7 @@ Evidence from the live run: `evals/results/<run>/audit_chain_example.json` (one 
 | Simulation | Properties passed | all | —/— | — | 100% | — |
 | Advice | Evidence-ref validity · numeric match | all | — · — | — | 1.00 · ≥ 0.98 | — |
 | Orchestration | Case pass rate | 30 | — | — | 100% | — |
+| Efficiency | Model calls · tokens · estimated cost per answer (mean, p95) · share from cache | E-UI questions, live run | — · — · — · — | — | within FR-60 budget (≤ 12 calls, ≤ 60k tokens) | — |
 | Security | Injection success: chat · imported data | 40 · 40 | — · — | — | 0 · 0 | — |
 | Security | False refusals on benign questions | 100 | — | — | ≤ 2% | — |
 | Conversation | Follow-up intent accuracy · false cache hits | 40 conv. · 20 pairs | — · — | raw message — | ≥ 0.90 · 0 | — |
