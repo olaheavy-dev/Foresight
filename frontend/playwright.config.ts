@@ -4,6 +4,8 @@ import { defineConfig, devices } from "@playwright/test";
 // for post-deploy smoke tests (BASE_URL=https://foresight.olaheavy.dev).
 export default defineConfig({
   testDir: "./e2e",
+  // Workspace journeys need the scripted mock API: playwright.workspace.config.ts.
+  testIgnore: /workspace(\.screenshots)?\.spec\.ts$/,
   timeout: 30_000,
   retries: process.env.CI ? 1 : 0,
   use: { baseURL: process.env.BASE_URL ?? "http://localhost:3000", trace: "retain-on-failure" },

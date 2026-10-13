@@ -22,3 +22,21 @@ describe("format", () => {
     expect(formatDayDate("2026-10-27")).toBe("Tue 27 Oct");
   });
 });
+
+describe("run timing and cost formatting", () => {
+  it("formats clock times in the profile's time zone", async () => {
+    const { formatClock } = await import("./format");
+    expect(formatClock("2026-10-12T08:14:06Z", "en-GB", "Europe/London")).toBe("09:14:06");
+    expect(formatClock("not a date")).toBe("");
+  });
+
+  it("formats durations, counts and estimated cost", async () => {
+    const { formatCount, formatDuration, formatUsdEstimate } = await import("./format");
+    expect(formatDuration(6_400)).toBe("6.4 s");
+    expect(formatDuration(48_000)).toBe("48 s");
+    expect(formatDuration(125_000)).toBe("2 min 5 s");
+    expect(formatCount(18_240)).toBe("18,240");
+    expect(formatUsdEstimate(0.046)).toBe("about $0.05");
+    expect(formatUsdEstimate(0.004)).toBe("under $0.01");
+  });
+});

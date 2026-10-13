@@ -71,3 +71,46 @@ export function formatLongDate(iso: string, locale = "en-GB"): string {
     timeZone: UTC,
   }).format(new Date(`${iso}T00:00:00Z`));
 }
+
+/** ISO timestamp → "09:14:06" in the profile's time zone. */
+export function formatClock(iso: string, locale = "en-GB", timeZone = "Europe/London"): string {
+  const t = Date.parse(iso);
+  if (!Number.isFinite(t)) return "";
+  return new Intl.DateTimeFormat(locale, {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+    timeZone,
+  }).format(new Date(t));
+}
+
+/** Milliseconds → "6.4 s", "48 s", "2 min 5 s". */
+export function formatDuration(ms: number, locale = "en-GB"): string {
+  if (!(ms >= 0)) return "";
+  const s = ms / 1000;
+  if (s < 10) return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(s)} s`;
+  if (s < 60) return `${Math.round(s)} s`;
+  const m = Math.floor(s / 60);
+  const rest = Math.round(s - m * 60);
+  return rest ? `${m} min ${rest} s` : `${m} min`;
+}
+
+/** Whole numbers with locale grouping: 18240 → "18,240". */
+export function formatCount(n: number, locale = "en-GB"): string {
+  return new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(n);
+}
+
+/** An estimated model cost in US dollars: "about $0.05" (never "$0.00" for a small non-zero cost). */
+export function formatUsdEstimate(usd: number, locale = "en-GB"): string {
+  if (usd > 0 && usd < 0.01) return "under $0.01";
+  const digits = usd < 1 ? 2 : usd < 10 ? 2 : 0;
+  const body = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: "USD",
+    currencyDisplay: "narrowSymbol",
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  }).format(usd);
+  return `about ${body}`;
+}
