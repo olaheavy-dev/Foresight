@@ -158,52 +158,54 @@
   color-scheme: light;
 }
 
-/* Night palette: cool navy, slightly reduced contrast, darker and more transparent shadows,
-   lifted accents for contrast. */
+/* Night palette: neutrals, borders and status colours shared with the owner's FastPilot dark theme
+   (#0C1222 page, #151D30 surface, #0A0F1C wells, #28324A borders, #E7E9EE text, #8B94A7 muted);
+   Foresight keeps its blue accent and chart pair. Every text colour >= 4.5:1 on every dark background
+   (tertiary >= 4.65:1), interactive border >= 3.48:1; chart pair passes the dataviz validator on #151D30. */
 [data-theme="dark"] {
-  --color-bg-primary: #0B1222;
-  --color-bg-secondary: #121B2F;
-  --color-bg-tertiary: #18233B;
-  --color-bg-sunk: #1C2843;
-  --color-bg-inverse: #E7EBF3;
+  --color-bg-primary: #0C1222;
+  --color-bg-secondary: #151D30;
+  --color-bg-tertiary: #0A0F1C;
+  --color-bg-sunk: #1B2438;
+  --color-bg-inverse: #E7E9EE;
   --color-surface-overlay: rgba(3, 7, 16, 0.6);
 
-  --color-text-primary: #E7EBF3;
+  --color-text-primary: #E7E9EE;
   --color-text-secondary: #AAB4C8;
-  --color-text-tertiary: #8D98AF;
-  --color-text-inverse: #0B1222;
+  --color-text-tertiary: #8B94A7;
+  --color-text-inverse: #0C1222;
   --color-text-link: #8CB0FF;
 
-  --color-border-primary: #222D45;
-  --color-border-secondary: #2C3854;
-  --color-border-interactive: #5D6A85;
+  --color-border-primary: #28324A;
+  --color-border-secondary: #334063;
+  --color-border-interactive: #717E9A;
   --color-border-focus: #7AA2FF;
 
   --color-accent-primary: #7AA2FF;
   --color-accent-primary-hover: #93B4FF;
   --color-accent-primary-active: #A9C3FF;
   --color-accent-primary-tint: #1A2A4D;
-  --color-accent-on-primary: #0B1222;
+  --color-accent-on-primary: #0C1222;
   --color-accent-secondary: #D383E3;
   --color-accent-secondary-tint: #2C1F3A;
 
-  --color-status-success: #4CC79A;
+  --color-status-success: #4ADE80;
   --color-status-success-tint: #12302A;
   --color-status-warning: #E8A94F;
   --color-status-warning-tint: #33270F;
-  --color-status-error: #FF8078;
-  --color-status-error-tint: #3A1A1D;
+  --color-status-error: #F87171;
+  --color-status-error-tint: #3B1A1E;
   --color-status-info: #7AA2FF;
   --color-status-info-tint: #1A2A4D;
 
-  --color-data-observed: #E7EBF3;
+  --color-data-observed: #E7E9EE;
   --color-data-forecast: #4C82F5;
   --color-data-forecast-band: rgba(76, 130, 245, 0.18);
   --color-data-scenario: #C95BC4;
   --color-data-scenario-band: rgba(201, 91, 196, 0.16);
   --color-data-buffer: #6F86C2;
-  --color-data-today: #5D6A85;
-  --color-data-grid: #222D45;
+  --color-data-today: #717E9A;
+  --color-data-grid: #28324A;
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
   --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.35), 0 6px 20px rgba(0, 0, 0, 0.30);
@@ -215,44 +217,44 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --color-bg-primary: #0B1222;
-    --color-bg-secondary: #121B2F;
-    --color-bg-tertiary: #18233B;
-    --color-bg-sunk: #1C2843;
-    --color-bg-inverse: #E7EBF3;
+    --color-bg-primary: #0C1222;
+    --color-bg-secondary: #151D30;
+    --color-bg-tertiary: #0A0F1C;
+    --color-bg-sunk: #1B2438;
+    --color-bg-inverse: #E7E9EE;
     --color-surface-overlay: rgba(3, 7, 16, 0.6);
-    --color-text-primary: #E7EBF3;
+    --color-text-primary: #E7E9EE;
     --color-text-secondary: #AAB4C8;
-    --color-text-tertiary: #8D98AF;
-    --color-text-inverse: #0B1222;
+    --color-text-tertiary: #8B94A7;
+    --color-text-inverse: #0C1222;
     --color-text-link: #8CB0FF;
-    --color-border-primary: #222D45;
-    --color-border-secondary: #2C3854;
-    --color-border-interactive: #5D6A85;
+    --color-border-primary: #28324A;
+    --color-border-secondary: #334063;
+    --color-border-interactive: #717E9A;
     --color-border-focus: #7AA2FF;
     --color-accent-primary: #7AA2FF;
     --color-accent-primary-hover: #93B4FF;
     --color-accent-primary-active: #A9C3FF;
     --color-accent-primary-tint: #1A2A4D;
-    --color-accent-on-primary: #0B1222;
+    --color-accent-on-primary: #0C1222;
     --color-accent-secondary: #D383E3;
     --color-accent-secondary-tint: #2C1F3A;
-    --color-status-success: #4CC79A;
+    --color-status-success: #4ADE80;
     --color-status-success-tint: #12302A;
     --color-status-warning: #E8A94F;
     --color-status-warning-tint: #33270F;
-    --color-status-error: #FF8078;
-    --color-status-error-tint: #3A1A1D;
+    --color-status-error: #F87171;
+    --color-status-error-tint: #3B1A1E;
     --color-status-info: #7AA2FF;
     --color-status-info-tint: #1A2A4D;
-    --color-data-observed: #E7EBF3;
+    --color-data-observed: #E7E9EE;
     --color-data-forecast: #4C82F5;
     --color-data-forecast-band: rgba(76, 130, 245, 0.18);
     --color-data-scenario: #C95BC4;
     --color-data-scenario-band: rgba(201, 91, 196, 0.16);
     --color-data-buffer: #6F86C2;
-    --color-data-today: #5D6A85;
-    --color-data-grid: #222D45;
+    --color-data-today: #717E9A;
+    --color-data-grid: #28324A;
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
     --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.35), 0 6px 20px rgba(0, 0, 0, 0.30);
     --shadow-lg: 0 10px 36px rgba(0, 0, 0, 0.45);
