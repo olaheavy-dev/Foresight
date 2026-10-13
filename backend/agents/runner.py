@@ -64,6 +64,7 @@ def run_workflow(
     budget: Budget | None = None,
     clock: Callable[[], datetime] = utcnow,
     thread_id: str | None = None,
+    on_run_created: Callable[[str], None] | None = None,
 ) -> RunOutcome:
     from backend.agents.graph import build_graph
 
@@ -77,6 +78,8 @@ def run_workflow(
         thread_id=thread_id,
     )
     store.session.commit()
+    if on_run_created is not None:
+        on_run_created(run.id)
     ctx = RunContext(
         store=store,
         run_id=run.id,
@@ -132,6 +135,8 @@ def ask(
     checkpointer: Any = None,
     budget: Budget | None = None,
     clock: Callable[[], datetime] = utcnow,
+    on_run_created: Callable[[str], None] | None = None,
+    as_of: str | None = None,
 ) -> RunOutcome:
     existing = store.message_by_client_id(thread_id, client_msg_id)
     if existing is not None and existing.run_id:
@@ -158,6 +163,14 @@ def ask(
         action=dict(action) if action else None,
     )
     store.session.commit()
+
+    def created(run_id: str) -> None:
+        # Link the question to its run at once, so a retry during the run finds it (05 §6.4).
+        message.run_id = run_id
+        store.session.commit()
+        if on_run_created is not None:
+            on_run_created(run_id)
+
     outcome = run_workflow(
         store,
         workflow="conversation",
@@ -167,12 +180,14 @@ def ask(
             "user_message": text,
             "history": history,
             "scenario_input": dict(action) if action else None,
-        },
+        }
+        | ({"as_of": as_of} if as_of else {}),
         nodes=nodes,
         checkpointer=checkpointer,
         budget=budget,
         clock=clock,
         thread_id=thread_id,
+        on_run_created=created,
     )
     intent = outcome.state.get("intent") or {}
     message.run_id = outcome.run_id

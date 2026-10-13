@@ -81,6 +81,9 @@ class CassetteStore:
     def _path(self, key: str) -> Path:
         return self.directory / f"{key}.json"
 
+    def has(self, request: dict[str, Any]) -> bool:
+        return self._path(request_hash(request)).exists()
+
     def load(self, request: dict[str, Any]) -> RecordedResponse:
         key = request_hash(request)
         path = self._path(key)

@@ -20,6 +20,7 @@ def test_healthz_reports_deploy_sha(client: TestClient) -> None:
     assert body["sha"] == "abc1234"
     assert body["status"] == "ok"
     assert body["database"] is None
+    assert body["ai"] in {"ok", "low", "unavailable"}  # a word only, never a balance figure
 
 
 def test_features_endpoint_lists_flags(client: TestClient) -> None:

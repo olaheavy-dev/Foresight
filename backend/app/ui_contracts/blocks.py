@@ -575,7 +575,8 @@ class AgentStepView(Contract):
     agent: Agent
     node: NonEmpty
     label: NonEmpty
-    status: Literal["ok", "rejected", "retried", "error"]
+    # skipped: not run (deadline, budget, or a slot not built yet); cached: reused a stored answer
+    status: Literal["ok", "rejected", "retried", "error", "skipped", "cached"]
     started_at: dt.datetime
     duration_ms: Annotated[int, Field(ge=0)]
     model: str | None = None
@@ -597,8 +598,13 @@ class VerificationLoop(Contract):
 
 
 class RunCost(Contract):
+    """Sums of the run's AgentStep usage (docs/08 §5.10, docs/00 §7). Shown only in How it was
+    checked; `usd_estimate` = Mesh-reported tokens × catalogue price, labelled estimated."""
+
+    model_calls: Annotated[int, Field(ge=0)]
     tokens: Annotated[int, Field(ge=0)]
-    usd: float | None  # null until Mesh pricing for the chosen model is known
+    usd_estimate: Annotated[float, Field(ge=0)] | None  # null only if a model's price is missing
+    cached: bool  # the answer was reused from the answer cache
 
 
 class AgentExecutionTimeline(BlockBase):

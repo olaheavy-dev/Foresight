@@ -40,7 +40,8 @@ from openai import (
 from pydantic import BaseModel, ValidationError
 
 import backend.mesh.redact as redaction
-from backend.mesh.breaker import CircuitBreaker
+from backend.mesh.availability import AiAvailability
+from backend.mesh.breaker import BreakerState, CircuitBreaker
 from backend.mesh.capabilities import capabilities_for
 from backend.mesh.cassettes import CassetteMiss, CassetteStore, RecordedResponse, request_hash
 from backend.mesh.prices import cost_estimate
@@ -320,6 +321,22 @@ class MeshClient:
         )
         self.breaker = breaker or CircuitBreaker()
         self._sleep = sleep
+        self.availability = AiAvailability(
+            self._available_usd,
+            lambda: self.breaker.state is BreakerState.OPEN,
+            low_usd=self._settings.mesh_low_balance_usd,
+            worst_case_usd=self._settings.mesh_question_worst_case_usd,
+        )
+
+    def _available_usd(self) -> float | None:
+        """Mesh `GET /v1/balance` (costs no credit). None when it can't be read (replay mode,
+        no live client): availability then rests on the breaker and spend refusals alone."""
+        if self._client is None or self._mode == "replay":
+            return None
+        body = self._client.get("/balance", cast_to=object, options={"timeout": 3.0})
+        if isinstance(body, dict) and body.get("available_usd") is not None:
+            return float(body["available_usd"])
+        return None
 
     # ------------------------------------------------------------------ configuration
 
@@ -394,6 +411,7 @@ class MeshClient:
         preferred = capabilities_for(primary).structured_mode
         order = [preferred, *(s for s in ("json_schema", "tools") if s != preferred), "json_object"]
         last_unsupported: Exception | None = None
+        first_miss: CassetteMiss | None = None
         for strategy in order:
             try:
                 return self._structured_with(
@@ -407,6 +425,15 @@ class MeshClient:
             except _UnsupportedRequest as exc:
                 last_unsupported = exc
                 continue
+            except CassetteMiss as miss:
+                # The live run fell back past this strategy (the model rejected it), so its
+                # answer is recorded under a later one: replay follows the same order.
+                if self._mode != "replay":
+                    raise
+                first_miss = first_miss or miss
+                continue
+        if first_miss is not None:
+            raise first_miss
         raise MeshCallError(
             f"no structured-output strategy was accepted for tier '{tier.value}'"
         ) from last_unsupported
@@ -500,7 +527,12 @@ class MeshClient:
         key = request_hash(request)
         started = time.monotonic()
 
-        if self._mode == "replay":
+        replayable = self._mode == "replay" or (
+            self._mode == "record" and self._cassettes is not None and self._cassettes.has(request)
+        )
+        if replayable:
+            # Record mode re-uses what is already recorded, so re-running a recording session
+            # only pays for requests that are new or changed.
             assert self._cassettes is not None
             recorded = self._cassettes.load(request)
             _, sent_temperature, strategy = _request_kwargs(
@@ -539,6 +571,7 @@ class MeshClient:
                     )
                 except BadRequestError as exc:
                     if _error_code(exc) == "spend_limit_exceeded":
+                        self.availability.note_spend_limit()
                         raise MeshSpendLimitError("Mesh balance exhausted") from exc
                     # The request shape was rejected; not an outage, so the breaker isn't told.
                     raise _UnsupportedRequest(str(exc)) from exc
@@ -551,6 +584,7 @@ class MeshClient:
                 except APIStatusError as exc:
                     status = _status(exc)
                     if status == 402 or _error_code(exc) == "spend_limit_exceeded":
+                        self.availability.note_spend_limit()
                         raise MeshSpendLimitError(
                             "Mesh balance exhausted (402 spend_limit_exceeded)"
                         ) from exc

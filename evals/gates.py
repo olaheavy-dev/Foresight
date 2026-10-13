@@ -31,6 +31,7 @@ ALL_SUITES = (
     "E-UI",
     "E-AUD",
     "E-SEC",
+    "E-CTX",
 )
 
 RULE_TARGETS = "docs/09 targets"

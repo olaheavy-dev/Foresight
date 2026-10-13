@@ -47,6 +47,8 @@ class ForesightState(TypedDict, total=False):
     route: list[str]  # planned specialist nodes for this run
     intent: dict[str, Any] | None  # IntentClassification.model_dump()
     screen_verdict: Literal["allow", "suspicious", "block"] | None
+    screen_rules: list[str]
+    ai_paused: bool
     snapshot_id: str | None
     cache_key: str | None
     cache_hit: bool
@@ -67,5 +69,6 @@ class ForesightState(TypedDict, total=False):
     # output
     block_plan: dict[str, Any] | None
     response_body: dict[str, Any] | None
+    answer_kind: Literal["answer", "refusal", "clarify", "unavailable"] | None
     response_id: str | None
     needs_user_input: dict[str, Any] | None

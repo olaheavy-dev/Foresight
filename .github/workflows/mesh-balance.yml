@@ -1,0 +1,63 @@
+# Watches the Mesh balance so AI answers don't pause unnoticed (owner decision, 13 Oct 2026).
+# Every 6 hours, and on demand: below $2.00 it opens (or updates) the issue "Mesh balance low";
+# when the balance recovers it closes that issue. GET /v1/balance costs no credit.
+# No third-party actions; the key only travels in an environment variable and is never echoed.
+name: Mesh balance
+
+on:
+  schedule:
+    - cron: "23 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: mesh-balance
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check the balance and open, update or close the issue
+        env:
+          MESH_API_KEY: ${{ secrets.MESH_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          THRESHOLD_USD: "2.00"
+          TITLE: Mesh balance low
+        run: |
+          set -euo pipefail
+          if [ -z "${MESH_API_KEY}" ]; then
+            echo "::error::The MESH_API_KEY secret is not set."
+            exit 1
+          fi
+          response=$(curl --fail --silent --show-error --max-time 20 \
+            --header "Authorization: Bearer ${MESH_API_KEY}" \
+            https://api.meshapi.ai/v1/balance)
+          available=$(jq -r '.available_usd // empty' <<<"${response}")
+          if [ -z "${available}" ]; then
+            echo "::error::The balance response had no available_usd field."
+            exit 1
+          fi
+          shown=$(printf '%.2f' "${available}")
+          open=$(gh issue list --repo "${REPO}" --state open --search "\"${TITLE}\" in:title" \
+            --json number,title --jq "map(select(.title == \"${TITLE}\")) | .[0].number // empty")
+          if awk -v a="${available}" -v t="${THRESHOLD_USD}" 'BEGIN { exit !(a < t) }'; then
+            body="Available Mesh balance: \$${shown} (alert below \$${THRESHOLD_USD}), checked $(date -u +%Y-%m-%dT%H:%MZ). AI answers pause when it reaches the per-question worst case; top up to keep them running."
+            if [ -n "${open}" ]; then
+              gh issue comment "${open}" --repo "${REPO}" --body "${body}"
+            else
+              gh issue create --repo "${REPO}" --title "${TITLE}" --body "${body}"
+            fi
+            echo "Balance below the alert threshold."
+          else
+            if [ -n "${open}" ]; then
+              gh issue close "${open}" --repo "${REPO}" \
+                --comment "Balance is back above \$${THRESHOLD_USD} ($(date -u +%Y-%m-%dT%H:%MZ)). Closing."
+            fi
+            echo "Balance is above the alert threshold."
+          fi

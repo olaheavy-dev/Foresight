@@ -89,9 +89,14 @@ def test_orc8_system_event_routes_with_no_model_call(session: Session) -> None:
     assert by_node["ledger"].output["candidates"] == 0
     assert by_node["analyst"].status == "ok"
     assert by_node["analyst"].output["candidates"] == 0
+    # With no transactions the Forecaster and risk check skip honestly ("no ledger data").
     for s in steps[1:]:
         if s.status == "skipped":
-            assert s.output.get("reason") == "not built yet"
+            assert s.output.get("reason") in {
+                "not built yet",
+                "no ledger data",
+                "no forecast or no buffer",
+            }
 
 
 def test_every_step_has_a_hash_label_and_contiguous_sequence(session: Session) -> None:
@@ -196,9 +201,13 @@ def test_question_records_model_tokens_cost_and_standalone_question(session: Ses
         "verify",
         "compose",
     } <= set(steps)
-    # No compose yet (AGT-10): honest partial run, no fabricated answer.
-    assert out.response_id is None
-    assert out.partial is True
+    # The composer answers from what exists. This profile has no ledger, so there is nothing to
+    # chart: a verdict-only answer, composed without a model call (no values to choose from).
+    assert out.response_id is not None
+    body = store.response(out.response_id).body  # type: ignore[union-attr]
+    assert body["schema_version"] == "agent_response/1"
+    assert body["response_id"] == out.response_id
+    assert [b["type"] for b in body["blocks"]][0] == "Narrative"
     user = store.messages(thread.id)[0]
     assert user.standalone_question == _intent()["standalone_question"]
     assert user.run_id == out.run_id
@@ -231,7 +240,9 @@ def test_injection_is_refused_audited_and_never_cached(session: Session) -> None
     assert out.response_id is not None
     snapshot = store.response(out.response_id)
     assert snapshot is not None
-    assert snapshot.body["kind"] == "refusal"
+    assert snapshot.body["schema_version"] == "agent_response/1"
+    assert [b["type"] for b in snapshot.body["blocks"]] == ["Narrative"]
+    assert "can only help" in snapshot.body["blocks"][0]["segments"][0]["text"]
     assert (
         session.scalar(
             select(func.count()).where(m.AnswerCacheEntry.workspace_id == store.ctx.workspace_id)
@@ -256,7 +267,9 @@ def test_low_confidence_asks_a_clarifying_question(session: Session) -> None:
     assert out.response_id is not None
     snapshot = store.response(out.response_id)
     assert snapshot is not None
-    assert snapshot.body["kind"] == "clarify"
+    block = snapshot.body["blocks"][0]
+    assert block["type"] == "ClarifyingQuestion"
+    assert 2 <= len(block["options"]) <= 4
     assert "cache_lookup" not in [s.node for s in _steps(store, out.run_id)]
 
 

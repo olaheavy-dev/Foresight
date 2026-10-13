@@ -215,9 +215,10 @@ class AgentStore:
         prefs_version: int,
         engine_version: str,
         partial: bool = False,
+        response_id: str | None = None,
     ) -> m.AgentResponse:
         response = m.AgentResponse(
-            id=new_id("rsp"),
+            id=response_id or new_id("rsp"),
             run_id=run_id,
             surface=surface,
             intent=intent,

@@ -38,6 +38,10 @@ class Settings(BaseSettings):
     # exchanges (no key, no network); a request that was never recorded raises CassetteMiss.
     mesh_cassette_mode: str = "live"
     mesh_cassette_dir: str = "evals/cassettes"
+    # AI availability (backend/mesh/availability.py): below the first, status is `low`; at or
+    # below the per-question worst case, AI answers pause. Figures never reach users or logs.
+    mesh_low_balance_usd: float = 2.00
+    mesh_question_worst_case_usd: float = 0.30
 
     database_url: str = ""
     # Baked into the image at build time (backend/Dockerfile). Deliberately a name that no

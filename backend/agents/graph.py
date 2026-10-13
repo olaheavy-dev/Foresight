@@ -39,8 +39,14 @@ def coordinator_nodes() -> dict[str, NodeSpec]:
     }
 
 
+def composer_nodes() -> dict[str, NodeSpec]:
+    from backend.agents.compose import compose
+
+    return {"compose": NodeSpec("compose", "coordinator", "llm", compose, "Composing the answer")}
+
+
 def default_nodes() -> dict[str, NodeSpec]:
-    return {**coordinator_nodes(), **specialist_nodes()}
+    return {**coordinator_nodes(), **specialist_nodes(), **composer_nodes()}
 
 
 def _next_after(current: str | None, state: ForesightState) -> str:

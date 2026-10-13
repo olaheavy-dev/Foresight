@@ -19,10 +19,15 @@ _PREFIX = "fs-canary-"
 _LABEL = b"foresight/prompt-canary/v1"
 
 
+# Letters only: digit or hex runs look like references and would be masked by the outbound
+# redaction (docs/05 §7.3) before the model ever saw the marker.
+_LETTERS = str.maketrans("0123456789abcdef", "bcdfghjkmnpqrstv")
+
+
 def make_canary(secret: str) -> str:
     """Deterministic canary for one deployment secret (exposed for tests)."""
     digest = hmac.new(secret.encode("utf-8"), _LABEL, hashlib.sha256).hexdigest()
-    return f"{_PREFIX}{digest[:20]}"
+    return f"{_PREFIX}{digest[:20].translate(_LETTERS)}"
 
 
 @lru_cache(maxsize=1)
