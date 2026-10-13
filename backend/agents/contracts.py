@@ -40,3 +40,8 @@ class EvidenceRef(BaseModel):
     kind: Literal["calculation", "finding", "forecast", "simulation", "transaction_query", "goal"]
     id: str
     role: Literal["trigger", "impact", "context"]
+
+
+# Owner decision (13 Oct 2026): an affordability question with an amount but no date assumes
+# the payment is made today (docs/06 §6.2). Stated on the answer and stored with the evidence.
+PAY_TODAY = "Assuming you pay today"

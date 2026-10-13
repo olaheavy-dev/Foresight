@@ -30,6 +30,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 
 from backend.agents.cache import prompt_version
+from backend.agents.contracts import PAY_TODAY
 from backend.agents.guard import output_screen
 from backend.agents.prompting import active_canary, system_prompt
 from backend.agents.runtime import NodeOutput, RunContext
@@ -992,9 +993,45 @@ class Composer:
             items=items,
         )
 
+    def pay_today(self) -> bool:
+        """The what-if assumed today's date (owner decision 13 Oct 2026, docs/06 §6.2)."""
+        spec = self.state.get("scenario_spec") or {}
+        return PAY_TODAY in (spec.get("assumptions") or [])
+
+    def with_pay_today(self, verdict: Narrative) -> Narrative:
+        """States the assumption and offers "Change date": paying on the next payday instead,
+        a concrete date taken from the forecast's own pay cycles."""
+        segments = [*verdict.segments, TextSegment(kind="text", text=f" {PAY_TODAY}.")]
+        actions = list(verdict.actions)
+        spec = self.state.get("scenario_spec") or {}
+        amount = next(
+            (int(m["amount_minor"]) for m in spec.get("modifiers") or [] if m.get("amount_minor")),
+            None,
+        )
+        payday = next(
+            (c.payday for c in (self.chart().pay_cycles if self.sources.forecast else [])),
+            None,
+        )
+        if amount is not None and payday is not None:
+            money = self.money(amount, "exact", None).display
+            when = f"{payday.day} {payday:%B}"
+            actions.append(
+                AskAction(
+                    action_id="change-date",
+                    label="Change date",
+                    requires_confirmation=False,
+                    kind="ask",
+                    payload=AskPayload(question=f"Can I afford {money} on {when}, my payday?"),
+                )
+            )
+        return verdict.model_copy(update={"segments": segments, "actions": actions[:3]})
+
     def build_blocks(self, choice: ComposerOutput) -> list[Any]:
         src = self.sources
-        blocks: list[Any] = [self.narrative(choice.verdict)]
+        verdict_block = self.narrative(choice.verdict)
+        if self.pay_today():
+            verdict_block = self.with_pay_today(verdict_block)
+        blocks: list[Any] = [verdict_block]
         metrics = self.metrics(choice.key_numbers)
         if metrics is not None:
             blocks.append(metrics)

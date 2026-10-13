@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Iterator
-from datetime import date
+from datetime import date, timedelta
 from typing import Any
 from urllib.parse import urlsplit
 
@@ -515,3 +515,34 @@ def test_a_card_that_narrows_but_does_not_close_the_gap_says_so_and_signposts_he
     hosts = {urlsplit(t if "://" in t else f"https://{t}").hostname for t in tokens if "." in t}
     assert any(h == "moneyhelper.org.uk" or h == "www.moneyhelper.org.uk" for h in hosts), text
     assert check_skeleton(AgentResponse.model_validate(body).blocks) == []
+
+
+def test_an_amount_with_no_date_assumes_today_and_offers_change_date(p1: AgentStore) -> None:
+    """Owner decision (13 Oct 2026, docs/06 §6.2): an affordability question with an amount but
+    no date is simulated as a payment today, answered straight away, the assumption stated on the
+    answer and stored with the evidence, with a "Change date" follow-up. No parser call."""
+    nodes = {k: v for k, v in _stand_ins().items() if k != "forecaster"}
+    intent = _intent(
+        standalone_question="Can I afford a £1,200 holiday?",
+        slots={"amount_minor": 120000, "purpose": "holiday", "case": next(_CASE)},
+    )
+    out, calls = _ask_with(p1, nodes, json_ok(intent))
+    assert len(calls.calls) == 1  # Understand only: no parse, no clarifying question
+    body = _body(p1, out.response_id)
+    assert ("main_visual", "ScenarioComparison") in _overview(body)
+    text = _verdict_text(body)
+    assert text.endswith("Assuming you pay today.")
+    chips = body["blocks"][0].get("actions") or []
+    change = next(a for a in chips if a["label"] == "Change date")
+    assert change["kind"] == "ask"
+    assert "my payday" in change["payload"]["question"]
+    step = next(s for s in p1.steps(out.run_id) if s.node == "forecaster")
+    assert step.output["assumptions"] == ["Assuming you pay today"]
+    sim = p1.ctx.calculation(step.output["simulation_id"])
+    assert sim is not None
+    assert sim.params["assumptions"] == ["Assuming you pay today"]
+    (mod,) = sim.params["spec"]["modifiers"]
+    assert mod["amount_minor"] == 120000
+    # The first forecast day: the earliest a payment can land after the latest known balance.
+    as_of = date.fromisoformat(sim.params["as_of"])
+    assert mod["date"] == (as_of + timedelta(days=1)).isoformat()

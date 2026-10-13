@@ -373,6 +373,7 @@ def run_simulation(
     horizon_days: int = 90,
     n_paths: int = 500,
     window_days: int = HISTORY_DAYS,
+    assumptions: Sequence[str] = (),
 ) -> StoredSimulation:
     """Baseline from stored data plus the scenario; the simulation reuses the baseline seed."""
     inputs = forecast_inputs(
@@ -388,6 +389,8 @@ def run_simulation(
         **_model_params(prior, calibration),
         "spec": spec,
     }
+    if assumptions:  # e.g. an owner-decided default date, stated with the evidence
+        params["assumptions"] = list(assumptions)
     rec = record("simulation", inputs, params, result, result.simulated.engine_version)
     row, created = _store(ctx, rec, elapsed)
     return StoredSimulation(row, result, created)

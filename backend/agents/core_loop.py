@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import dataclasses
 from concurrent.futures import ThreadPoolExecutor
-from datetime import date
+from datetime import date, timedelta
 from typing import Any
 
 from backend.agents.advice.advisor import advise as run_advisor
@@ -25,6 +25,7 @@ from backend.agents.advice.impact import Impact
 from backend.agents.advice.models import InterventionProposal
 from backend.agents.advice.verifier import verification_record, verify
 from backend.agents.advice.world import AdviceWorld, Finding, SpendRow
+from backend.agents.contracts import PAY_TODAY
 from backend.agents.forecaster import drivers, parse_scenario, to_engine_spec
 from backend.agents.runtime import NodeOutput, NodeSpec, RunContext
 from backend.agents.state import ForesightState
@@ -211,8 +212,23 @@ def forecaster_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
             tool_calls=[{"name": "build_forecast", "result_refs": [forecast_id]}],
             label="Building your forecast",
         )
-    mesh = ctx.require_mesh()
     inputs = stored.inputs
+    default = _pay_today_spec(intent, inputs)
+    if default is not None:
+        # Owner decision (13 Oct 2026): an affordability question with an amount but no date
+        # assumes the payment is made today (the as_of financial date), the most cautious
+        # choice, and answers straight away; the answer says so and offers "Change date".
+        spec, assumptions = default, [PAY_TODAY]
+        try:
+            with ctx.lock:
+                sim = run_simulation(ctx.store.ctx, spec, assumptions=assumptions)
+        except ScenarioError as exc:
+            return NodeOutput(
+                update=update, output={"forecast_id": forecast_id, "scenario_error": str(exc)},
+                status="failed", error=str(exc), label="The what-if couldn't be simulated",
+            )  # fmt: skip
+        return _simulated(state, update, forecast_id, spec, sim, assumptions, [], None)
+    mesh = ctx.require_mesh()
     with ctx.lock:
         recurring = [
             {"recurring_id": o.key, "label": o.label}
@@ -258,8 +274,23 @@ def forecaster_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
             llm=parsed.llm,
             prompt_version=parsed.prompt_version,
         )
+    return _simulated(state, update, forecast_id, spec, sim, [], parsed.llm, parsed.prompt_version)
+
+
+def _simulated(
+    state: ForesightState,
+    update: dict[str, Any],
+    forecast_id: str,
+    spec: ScenarioSpec,
+    sim: Any,
+    assumptions: list[str],
+    llm: Any,
+    prompt: str | None,
+) -> NodeOutput:
     modifiers = [modifier_json(mod) for mod in spec.modifiers]
     spec_dict: dict[str, Any] = {"name": spec.name, "modifiers": modifiers}
+    if assumptions:
+        spec_dict["assumptions"] = list(assumptions)
     # docs/06 W3: a what-if that takes a pay cycle below the buffer asks the Advisor ⇄ Verifier
     # loop for advice (the scenario workflow has no separate risk check).
     breach = [
@@ -281,12 +312,34 @@ def forecaster_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
             "simulation_id": sim.calculation.id,
             "modifiers": [mod["type"] for mod in modifiers],
             "drivers": drivers(sim.result.delta_lows),
+            "assumptions": list(assumptions),
         },
         tool_calls=[{"name": "simulate", "result_refs": [sim.calculation.id]}],
         label="Simulating your what-if on the same forecast",
-        llm=parsed.llm,
-        prompt_version=parsed.prompt_version,
+        llm=llm or [],
+        prompt_version=prompt,
     )
+
+
+def _pay_today_spec(intent: dict[str, Any], inputs: ForecastInputs) -> ScenarioSpec | None:
+    """An affordability question with an amount and no date: one payment today."""
+    slots = intent.get("slots") or {}
+    if intent.get("intent") != "affordability" or slots.get("date"):
+        return None
+    try:
+        amount = int(slots.get("amount_minor") or 0)
+    except (TypeError, ValueError):
+        return None
+    if amount <= 0:
+        return None  # a missing amount still gets the clarifying question
+    label = str(slots.get("purpose") or "Payment").replace("_", " ").capitalize()
+    # The forecast's `as_of` is the day of the latest known balance; a payment made "today" has
+    # not left it yet, so it lands on the forecast's first day, the earliest it can fall.
+    first_day = inputs.as_of + timedelta(days=1)
+    payment = ScenarioModifier(
+        type="one_off_outflow", date=first_day, amount_minor=amount, label=label
+    )
+    return ScenarioSpec(f"{label} today", inputs.currency, (payment,))
 
 
 def risk_check_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
