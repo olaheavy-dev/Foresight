@@ -55,9 +55,10 @@ class ForesightState(TypedDict, total=False):
 
     # specialist outputs (refs only)
     findings: list[str]
+    txn_queries: list[str]  # calc_ ids of saved transaction queries (ledger_query)
     forecast_id: str | None
     simulation_ids: list[str]
-    txn_queries: list[str]  # calc_ ids of saved transaction queries (ledger_query)
+    scenario_spec: dict[str, Any] | None  # the parsed what-if (JSON-safe modifiers)
     risk_flags: list[dict[str, Any]]
     proposals: list[dict[str, Any]]
     verifications: list[str]

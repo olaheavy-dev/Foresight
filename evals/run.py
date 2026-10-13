@@ -32,13 +32,16 @@ from evals.suites import (
     categorisation,
     conversation,
     forecast,
+    grounding,
     income,
     ingestion,
     locales,
     recurring,
+    scenarios,
     security,
     simulation,
     ui,
+    verifier,
 )
 
 SCHEMA_VERSION = "1.1"
@@ -53,6 +56,9 @@ SUITES: tuple[ModuleType, ...] = (
     forecast,
     simulation,
     security,
+    scenarios,
+    verifier,
+    grounding,
     conversation,
     ui,
 )

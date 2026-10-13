@@ -61,16 +61,15 @@ def revise_marker(state: ForesightState, ctx: RunContext) -> NodeOutput:
 
 
 def specialist_nodes() -> dict[str, NodeSpec]:
+    from backend.agents import core_loop  # imports this module's names: import lazily
+
     return {
         spec.name: spec
         for spec in (
             ledger_nodes.nodes()["ledger"],
             ledger_nodes.nodes()["ledger_query"],
             ledger_nodes.nodes()["analyst"],
-            _slot("forecaster", "forecaster", "llm", "AGT-05", "Building the forecast"),
-            _slot("risk_check", "forecaster", "tool", "AGT-05", "Checking for risks"),
-            _slot("advise", "advisor", "llm", "AGT-06", "Drafting a recommendation"),
-            _slot("verify", "verifier", "llm", "AGT-07", "Checking the recommendation"),
+            *core_loop.nodes().values(),
             NodeSpec("revise", "coordinator", "control", revise_marker, "Revising the draft"),
             NodeSpec("withdraw", "coordinator", "control", withdraw, "Withdrawing the draft"),
             _slot("briefing", "coordinator", "tool", "PRO-01", "Updating the Home briefing"),
