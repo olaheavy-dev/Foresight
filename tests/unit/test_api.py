@@ -4,12 +4,14 @@ import pytest
 from fastapi.testclient import TestClient
 
 from backend.app.main import create_app
-from backend.settings import get_settings
+from backend.settings import Settings, get_settings
 
 
 @pytest.fixture
 def client(monkeypatch: pytest.MonkeyPatch) -> TestClient:
-    monkeypatch.setenv("DATABASE_URL", "")
+    # No database: blank env values now mean "default", so also keep a developer's .env out.
+    monkeypatch.setitem(Settings.model_config, "env_file", None)
+    monkeypatch.delenv("DATABASE_URL", raising=False)
     monkeypatch.setenv("FORESIGHT_BUILD_SHA", "abc1234")
     get_settings.cache_clear()
     return TestClient(create_app())
