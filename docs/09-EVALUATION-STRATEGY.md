@@ -40,6 +40,7 @@ Judges reward self-evaluation "heavily" and penalise "a test set that doesn't ex
 | Audit completeness | `E-AUD` | unbroken evidence chains, recomputability | F | no |
 | Prompt injection | `E-SEC` | attack success rate (chat and imported data), canary leaks, false refusals, which layer stopped each attack | trust (#7), H | yes (or recorded) |
 | Follow-ups and answer cache | `E-CTX` | follow-up intent and slot accuracy, standalone-rewrite adequacy, cache hit rate, false cache hits | conversational, A | yes (or recorded) |
+| Wording quality | `E-WRD` | human ratings (1–5) on five rubric dimensions, inter-rater agreement; an LLM judge only if it agrees with people (ρ ≥ 0.7) | trust, self-evaluation (#6) | optional (judge arm only) |
 | Ablation | `E-ABL` | each component's measured effect on its headline metric | evidence for all criteria | reuses the suites above |
 
 ---
@@ -713,6 +714,31 @@ Each row switches off one component and re-runs the suite that measures it, so t
 | Prefetch in parallel | sequential | p50 / p95 time to first step event and to answer | latency bench (P1, 20 questions) |
 
 Reported as the full-system value, the ablated value and the difference with a 95% CI (§12). The README names the **biggest lever** as whichever row has the largest effect on a headline metric, whatever it turns out to be; we don't predict it here. Arms that need a model run in replay where cassettes cover them; the rest run once in the final live run (EVL-14), with the extra Mesh cost estimated from §9 of `05` before running.
+
+## 10e. Suite `E-WRD`: wording quality, human-rated first (owner decision 13 Oct 2026)
+
+Every other suite checks that text is grounded (no model-written numbers, real evidence ids, no generic advice). None checks that it **reads well**. `E-WRD` measures that, with people as the reference and a model judge only where it is shown to agree with them.
+
+**Answer set.** 30 answers from the live P1/P2 runs and the E-UI questions, chosen to cover each intent and each verdict (overdrawn, below buffer, tight, comfortable), including at least 5 with a withdrawn or "not checked in time" recommendation. Synthetic personas only. Frozen in `evals/datasets/authored/wording_answers.jsonl` with the exact rendered text (verdict, card text, "What else" note) and the response id.
+
+**Rubric** (1–5 each, anchors written before rating, `evals/datasets/authored/wording_rubric.md`):
+
+| Dimension | 5 means |
+|---|---|
+| Answers the question | The first sentence gives a direct answer (yes / no / how much / when) |
+| Clear | A non-expert understands it on first reading; no jargon or engine terms |
+| Honest about uncertainty | Uses "likely"/"about" where the forecast is uncertain; never overstates a fix ("reduces but doesn't remove") |
+| Actionable | Says what to do next, specifically, or says plainly that nothing checked fixes it and where to get help |
+| Tone | Calm and respectful; no blame, no moralising (betting and family support stay neutral) |
+
+**Raters (updated 13 Oct 2026).** The owner plus a small focus group rate all 30 answers independently, each in their own random order, using an offline rating kit (`tools/wording_kit/index.html`: one self-contained page, no sign-up, nothing sent anywhere; it saves a ratings file the rater returns to the owner). Raters are recorded only as `R1…Rn`, with no names or other personal details; the answers are from the fictional personas only. Ratings are stored as `evals/datasets/authored/wording_ratings/R<n>.json`. If the group doesn't return ratings in time, the result is reported as "single rater (owner)" and no agreement figure is claimed.
+
+**Metrics.**
+- WRD-1: mean score per dimension and the share of answers scoring ≥ 4 (TARGET ≥ 80% on "Answers the question" and "Honest about uncertainty").
+- WRD-2: inter-rater agreement per dimension, Krippendorff's α (ordinal) across all raters, with a bootstrap 95% CI over answers. α < 0.4 on a dimension means no target is claimed for it.
+- WRD-3 (optional, model judge): a judge prompt on the verifier tier scores the same 30 answers with the same rubric. It may be used to score larger sets **only if** its agreement with the mean human score reaches Spearman ρ ≥ 0.7 on every dimension it is used for; otherwise it is reported as "not validated" and never used. The judge's known bias toward model-written text is stated next to its numbers.
+
+**Cost.** Human rating: about 1–1.5 hours per rater. Model judge (optional): 30 calls, about $0.15. Runs once on the final build (EVL-14); results in `summary.json → suites.wording`, README row "Wording quality (human-rated)".
 
 ## 11. Suite `E-AUD`: audit completeness
 

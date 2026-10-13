@@ -136,3 +136,19 @@ def test_degraded_categoriser_rule_fails_the_gate(monkeypatch: pytest.MonkeyPatc
     monkeypatch.setattr(common, "categorise", degraded)
     problems = compare(run_cat(), baseline)
     assert any("categorisation.accuracy" in p for p in problems), problems
+
+
+def test_a_target_that_stops_being_measured_fails_the_gate() -> None:
+    from evals.regression import compare
+
+    def summary(met: bool | None) -> dict[str, object]:
+        return {
+            "suites_run": ["E-VER"],
+            "gates": {"E-VER": "pass"},
+            "targets": {"E-VER": [{"id": "VER-1", "met": met}]},
+            "suites": {},
+        }
+
+    problems = compare(summary(None), summary(True))
+    assert any("VER-1 is no longer measured" in p for p in problems)
+    assert not any("VER-1" in p for p in compare(summary(True), summary(True)))

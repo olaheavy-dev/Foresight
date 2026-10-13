@@ -94,6 +94,20 @@ def compare(latest: dict[str, Any], baseline: dict[str, Any]) -> list[str]:
                 continue
             problems.append(f"{tid} no longer passes (was met in the baseline)")
 
+    # A target that was measured in the baseline must still be measured: a missing recording
+    # turns a target into "unmeasured", which a per-run gate would otherwise treat as a pass.
+    ran = set(latest.get("suites_run") or [])
+    for sid, b_targets in (baseline.get("targets") or {}).items():
+        if sid not in ran:
+            continue
+        l_met = target_met(latest, sid)
+        for t in b_targets:
+            tid = str(t["id"])
+            if t.get("met") is not None and l_met.get(tid) is None:
+                if tid not in l_met and fast:
+                    continue
+                problems.append(f"{sid} {tid} is no longer measured (was measured in the baseline)")
+
     for sid in ("E-ORC", "E-AUD"):
         if sid in (latest.get("suites_run") or []) and latest["gates"].get(sid) != "pass":
             problems.append(f"{sid} failed (any orchestration or audit failure blocks)")
