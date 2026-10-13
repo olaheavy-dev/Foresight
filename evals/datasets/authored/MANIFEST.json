@@ -9,8 +9,8 @@
       "sha256": "9dd01fbf5935d6b72d7cf2141c5ab9ebd42435384e3ca7c5a3fbecec65725ae5"
     },
     "followup_cases_dev.jsonl": {
-      "rows": 37,
-      "sha256": "0db571da0a36bf192711c0bd88928ecf99543969ade2f613c95e6daeb9afc1e6"
+      "rows": 39,
+      "sha256": "9c43ca32192b56712101b9152cb3d10d425b97184c03d749a9a3d88c9ee61099"
     },
     "injection_benign_questions.jsonl": {
       "rows": 60,
@@ -21,8 +21,8 @@
       "sha256": "a28ab0c22e3dbc22a47e568528c0513863afa8af1ac027e6adc7c6b585cfce1f"
     },
     "injection_cases_dev.jsonl": {
-      "rows": 27,
-      "sha256": "78f6f75a4155192a7627365b03f87e1205bf37c476b6c7cff137a9ed922bce94"
+      "rows": 34,
+      "sha256": "02a0791b52cc64d01dcc035d9b585d7c255d35643112b7db7733b723d871ce2d"
     },
     "orchestration_cases.jsonl": {
       "rows": 30,

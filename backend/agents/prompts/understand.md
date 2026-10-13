@@ -12,8 +12,10 @@ its `intent` and `slots`. `today` is the date the question is asked. Then:
    every slot it does not change: "what about £800?" after a £1,200 holiday on 6 November changes
    only the amount; "and in December instead?" changes only the date.
 2. Classify the standalone question into exactly one intent from the schema:
-   - `affordability`: can I afford / pay for a stated purchase or payment.
-   - `scenario`: what if something changes (income late or cut, a bill added, changed or
+   - `affordability`: whether the user can afford or make one purchase or payment, however it is
+     phrased ("can I afford…", "is £800 ok?", "what happens if I pay £1,200 for…", "what if I
+     buy…"). A single purchase or payment is always `affordability`.
+   - `scenario`: what if something ongoing changes (income late or cut, a bill added, changed or
      cancelled, spending cut), without asking about one purchase.
    - `spending_breakdown`: where the money went, or how much was spent on something, in a period.
    - `trend_or_change`: whether spending on something went up or down, or why it changed.
@@ -34,9 +36,13 @@ its `intent` and `slots`. `today` is the date the question is asked. Then:
      future). A month with no day is the 1st of that month (the rule the Forecaster uses), for a
      payment or purchase; for a spending period use `period` instead.
    - `period`: one of `last_7d`, `last_30d`, `last_90d`, `this_month`, `last_month`,
-     `next_30d`, or a month as YYYY-MM.
-   - `window`: `to_next_payday` when the question is about the time until the next payday.
-   - `purpose`: a short lowercase noun for what money is for (`holiday`, `car_repair`, `laptop`).
+     `next_30d`, or a month as YYYY-MM. A named month or a named month's pay cycle ("in
+     December", "the December pay cycle") is that month as YYYY-MM, never a window.
+   - `window`: `to_next_payday` only when the question is about the time until the next payday
+     and names no month.
+   - `purpose`: what the money is for, as the user's own noun in lowercase singular with
+     underscores and no extra words (`holiday`, `car_repair`, `laptop`, `tax`, not
+     `tax_payment`).
    - `category_key`: one of the keys in `categories` (the profile's own categories): the closest
      one to what the user named ("takeaways" → `food.delivery`, "taxis" → `transport.taxi`). Give
      it only when the question is about spending in a category (a breakdown, a trend, a lookup,

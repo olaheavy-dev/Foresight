@@ -13,7 +13,7 @@
 # Patterns are Python regular expressions, matched case-insensitively against text that has been
 # NFKC-normalised, stripped of hidden characters and folded from look-alike letters to Latin.
 
-version: guard-1.2.0
+version: guard-1.3.0
 
 limits:
   chat_max_chars: 2000
@@ -188,6 +188,22 @@ rules:
     reason: out_of_scope
     applies_to: [chat]
     pattern: '\b(which|what|best)\s+(credit\s+card|loan|mortgage|savings\s+account|isa|pension|insurance\s+policy|bank\s+account|broker|trading\s+app)\s+(should|to|do\s+you\s+recommend|would\s+you\s+recommend)\b'
+
+  # --- output-format override: make the model write figures itself (docs/05 §7.4a L1/L4) --------
+  # Foresight's model text never carries figures: values come from the engine through placeholders.
+  # A request to write the numbers "yourself", "directly" or "without the placeholders" asks the
+  # model to break that, so it is refused. Asking to *see* exact figures is a normal question and
+  # stays allowed (the engine shows them).
+  - id: G-NUM-01
+    severity: block
+    reason: injection
+    applies_to: [chat]
+    pattern: '\b(without|no|not|don.?t\s+use|stop\s+using|instead\s+of|skip|drop|remove)\s+(the\s+|any\s+|your\s+)?(placeholders?|templates?|\{\{|value\s+tags?)'
+  - id: G-NUM-02
+    severity: block
+    reason: injection
+    applies_to: [chat]
+    pattern: '\b(write|print|output|type|put|state|insert|fill\s+in)\s+(out\s+|in\s+)?(the\s+|all\s+the\s+|every\s+)?(exact\s+|raw\s+|real\s+|actual\s+)?(numbers?|figures?|amounts?|digits?|values?)\s+(yourself|directly|by\s+hand|in\s+your\s+own\s+words|in\s+the\s+(text|sentence|reply|answer)\s+yourself|verbatim)\b'
 
 # Hosts a model output may link to (docs/05 §4.2 stage 5). Everything else is dropped.
 url_allow_list:

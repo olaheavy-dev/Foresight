@@ -1069,8 +1069,12 @@ class Composer:
                     update={"placement": _place_overview("what_to_do")}
                 )
             )
-            for card in src.recommendations[1:]:
-                blocks.append(card.model_copy(update={"placement": _place_tab("recommendation")}))
+            # ≤ 1 block of each type per tab (docs/08 §7a): further checked options go to the next
+            # free tab, as the validator moves Overview overflow; none is dropped.
+            for tab, card in zip(
+                ("recommendation", "checked"), src.recommendations[1:], strict=False
+            ):
+                blocks.append(card.model_copy(update={"placement": _place_tab(tab)}))
         for kind in DETAILS.get(self.name, ()):
             if (kind not in used or kind in DETAIL_REPEATS) and kind in visuals:
                 block = visuals[kind]()
