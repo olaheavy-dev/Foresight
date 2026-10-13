@@ -63,6 +63,16 @@ class NotRecorded(LookupError):
     """Replay met a request that has no cassette."""
 
 
+def fresh_breaker(mesh: Any) -> None:
+    """Each eval case starts with a closed circuit breaker: a transient Mesh error while recording
+    one case must not pause AI for the next ones, or recording and replay take different paths."""
+    from backend.mesh.breaker import CircuitBreaker
+
+    inner = getattr(mesh, "_inner", mesh)
+    if hasattr(inner, "breaker"):
+        inner.breaker = CircuitBreaker()
+
+
 def understand(
     mesh: MeshClient, message: str, history: list[dict[str, Any]], as_of: str
 ) -> IntentClassification:
@@ -163,6 +173,7 @@ __all__ = [
     "canonical",
     "eval_mesh",
     "eval_mode",
+    "fresh_breaker",
     "seeded_database",
     "slots_match",
     "understand",

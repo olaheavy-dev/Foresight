@@ -20,7 +20,14 @@ from backend.app.ui_contracts.validation import check_skeleton, visible_tabs
 from backend.mesh.cassettes import CassetteMiss
 from backend.storage.agent_repo import AgentStore
 from backend.storage.repositories import WorkspaceContext, demo_workspace
-from evals.assistant import NotRecorded, eval_mesh, eval_mode, seeded_database, understand
+from evals.assistant import (
+    NotRecorded,
+    eval_mesh,
+    eval_mode,
+    fresh_breaker,
+    seeded_database,
+    understand,
+)
 from evals.authored import AUTHORED_DIR
 from evals.common import read_jsonl
 from evals.metrics import r4
@@ -94,6 +101,7 @@ def _composition(rows: list[dict[str, Any]], mesh: Any) -> dict[str, Any] | None
                     failed += 1
                     continue
                 store = AgentStore(WorkspaceContext.open(session, ws.id))
+                fresh_breaker(mesh)
                 thread = store.create_thread()
                 session.commit()
                 try:

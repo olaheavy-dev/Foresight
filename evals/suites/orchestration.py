@@ -34,7 +34,7 @@ from backend.pipeline.forecast import run_forecast
 from backend.storage import models as m
 from backend.storage.agent_repo import AgentStore
 from backend.storage.repositories import WorkspaceContext, create_workspace, demo_workspace
-from evals.assistant import eval_mesh, eval_mode, seeded_database
+from evals.assistant import eval_mesh, eval_mode, fresh_breaker, seeded_database
 from evals.authored import AUTHORED_DIR
 from evals.common import read_jsonl
 from evals.egress import EgressBlocked, egress_guard
@@ -494,6 +494,7 @@ def _run_case(case: dict[str, Any], factory: Any, mesh: Any) -> CaseResult:
         result.status = "not_measured"
         result.note = "; ".join(unbuilt) or f"stage {case['stage']} case"
         return result
+    fresh_breaker(mesh)
     with factory() as session:
         try:
             if "ORC-13" in case["checks"]:
