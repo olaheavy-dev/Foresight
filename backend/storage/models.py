@@ -298,6 +298,8 @@ class RecurringObligation(Base):
     member_ids: Mapped[list[str]] = mapped_column(JSONB, server_default="[]")
     is_commitment: Mapped[bool] = mapped_column(Boolean, server_default="false")
     provenance: Mapped[str] = mapped_column(String(12), server_default="detected")
+    # none | next_working_day | previous_working_day (types.WorkingDayShift; migration 0003)
+    working_day_shift: Mapped[str] = mapped_column(String(24), server_default="none")
     created_at: Mapped[datetime] = _created_at()
 
 

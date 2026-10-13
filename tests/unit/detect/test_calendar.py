@@ -10,7 +10,13 @@ from backend.finance_core.calendar import (
     paydays_between,
     previous_working_day,
 )
-from backend.finance_core.types import Cadence, FlowKind, PaydayRule, RecurringObligation
+from backend.finance_core.types import (
+    Cadence,
+    FlowKind,
+    PaydayRule,
+    RecurringObligation,
+    WorkingDayShift,
+)
 from tests.unit.categorise.helpers import uk_pack
 
 PACK = uk_pack()
@@ -74,3 +80,43 @@ def test_obligation_dates_respect_active_months_and_weekdays() -> None:
     )
     days = obligation_dates(weekly, date(2026, 10, 1), date(2026, 10, 31))
     assert days == [date(2026, 10, 5), date(2026, 10, 12), date(2026, 10, 19), date(2026, 10, 26)]
+
+
+def _monthly_bill(shift: WorkingDayShift) -> RecurringObligation:
+    return RecurringObligation(
+        key="rob_water",
+        label="Water",
+        category_key="utilities.water",
+        flow_kind=FlowKind.SPENDING,
+        amount_minor=-3000,
+        currency="GBP",
+        cadence=Cadence.MONTHLY,
+        anchor_day=1,
+        shift=shift,
+    )
+
+
+def test_obligation_shift_moves_weekend_dates() -> None:
+    # Sat 1 Aug 2026: a direct debit is collected on Mon 3 Aug; a card payment stays on the 1st
+    window = (date(2026, 7, 25), date(2026, 8, 10))
+    assert obligation_dates(_monthly_bill(WorkingDayShift.NEXT), *window, HOLIDAYS) == [
+        date(2026, 8, 3)
+    ]
+    assert obligation_dates(_monthly_bill(WorkingDayShift.NONE), *window, HOLIDAYS) == [
+        date(2026, 8, 1)
+    ]
+
+
+def test_shifted_obligation_from_before_the_window_lands_inside_it() -> None:
+    days = obligation_dates(
+        _monthly_bill(WorkingDayShift.NEXT), date(2026, 8, 2), date(2026, 8, 10), HOLIDAYS
+    )
+    assert days == [date(2026, 8, 3)]
+
+
+def test_learned_payday_shift_overrides_the_pack_default() -> None:
+    rule = PaydayRule(kind="fixed_day", day_of_month=28, shift=WorkingDayShift.NEXT)
+    # Sat 28 Nov 2026 → Mon 30 Nov, although the uk pack's default moves pay earlier
+    assert paydays_between(
+        rule, date(2026, 11, 1), date(2026, 11, 30), HOLIDAYS, PACK.payday_shift
+    ) == [date(2026, 11, 30)]

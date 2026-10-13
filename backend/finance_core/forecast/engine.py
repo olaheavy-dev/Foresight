@@ -40,7 +40,7 @@ from backend.finance_core.types import (
     Quantiles,
 )
 
-ENGINE_VERSION = "fc-1.1.0"
+ENGINE_VERSION = "fc-1.2.0"
 HISTORY_WINDOW_DAYS = 90  # W in docs/07 §6.1: the everyday-spend bootstrap pool
 LOOKBACK_DAYS = 365  # one-off expense rate and sizes are estimated over up to a year
 MIN_LOOKBACK_DAYS = 90  # a short history still spreads its one-offs over at least 90 days
@@ -109,7 +109,7 @@ def _known_flows(inputs: ForecastInputs, dates: Sequence[date]) -> tuple[list[Fl
             flows.append(Flow(index[d], stream.amount_minor, stream.source, stream.key))
             pays.add(d)
     for ob in inputs.obligations:
-        for d in obligation_dates(ob, start, end):
+        for d in obligation_dates(ob, start, end, inputs.holidays):
             flows.append(Flow(index[d], ob.amount_minor, ob.label))
     for kf in inputs.known_flows:
         if kf.on in index and kf.on > inputs.as_of:

@@ -472,7 +472,7 @@ def detect(ctx: WorkspaceContext) -> tuple[int, int]:
     streams = detect_income_streams(
         txns, cats, holidays, shift_rule=cpack.payday_shift, one_off_multiple=cpack.one_off_multiple
     )
-    report = detect_recurring(txns, cats, cpack)
+    report = detect_recurring(txns, cats, cpack, holidays)
     ctx.replace_detected(m.IncomeStream, [ledger.income_row(s) for s in streams])
     ctx.replace_detected(
         m.RecurringObligation, [ledger.obligation_row(o) for o in report.obligations]

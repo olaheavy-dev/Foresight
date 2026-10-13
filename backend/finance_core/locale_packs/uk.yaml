@@ -14,6 +14,8 @@
 #   channels                            [{channel, bank_types: [exact bank "Type" strings],
 #                                         codes: [narration tokens]}]  -> types.Channel values
 #   noise_tokens                        tokens dropped when deriving a counterparty
+#   reference_markers                   words introducing a trailing invoice/reference number
+#                                       ("SEVERN STUDIO INV 178"); dropped with the number
 #   payroll_markers / government_payers  inflow-ladder signals (docs/00 §6a)
 #   refund_markers, card_bill_markers, self_transfer_markers, savings_markers
 #   subscription_families               {family: [merchant tokens]} for overlap detection
@@ -73,6 +75,7 @@ channels:
     codes: [CPT, ATM, CASH]
 
 noise_tokens: [GB, GBR, UK, LONDON, LTD, LIMITED, PLC, "&", CO, COM, WWW, "THE"]
+reference_markers: [INV, INVOICE, REF, REFERENCE, NO, NUM, ORDER, ORD, PO, BOOKING, ACCT, ACC]
 
 payroll_markers: [SALARY, PAYROLL, WAGES, PAY, LTD, LIMITED, PLC, LLP]
 government_payers:

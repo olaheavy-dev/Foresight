@@ -129,7 +129,8 @@ def render(summary: dict[str, Any]) -> str:
             f"MAE @7/30/60 d (P1) {_gbp(dig(s, 'forecast', 'by_horizon', '7', 'mae_gbp'))} / "
             f"{_gbp(dig(s, 'forecast', 'by_horizon', '30', 'mae_gbp'))} / "
             f"{_gbp(dig(s, 'forecast', 'by_horizon', '60', 'mae_gbp'))}; pay-cycle-low error "
-            f"{_gbp(dig(s, 'forecast', 'pay_cycle_low_mae_gbp'))}"
+            f"{_gbp(dig(s, 'forecast', 'pay_cycle_low_mae_gbp'))}; pinball (P1) "
+            f"{_gbp(dig(s, 'forecast', 'pinball_gbp_by_dataset', 'P1-base'))}"
         ),
         "E-SIM": (
             f"properties SIM-1/2/3/6: {_f(dig(s, 'simulation', 'passed'))}/"
@@ -144,10 +145,9 @@ def render(summary: dict[str, Any]) -> str:
             f"{', '.join(d.get('failed') or []) or '—'} |"
         )
     not_run = [sid for sid, d in detail.items() if d.get("rule") == "not run"]
+    lines += ["", f"Not run yet: {', '.join(not_run) or 'none'}.", ""]
+    lines += _forecast_arms(s)
     lines += [
-        "",
-        f"Not run yet: {', '.join(not_run) or 'none'}.",
-        "",
         "**Where we fall short**",
         "",
     ]
@@ -160,6 +160,34 @@ def render(summary: dict[str, Any]) -> str:
     lines += misses or ["- No measured Stage 1 target missed."]
     lines += ["", END]
     return "\n".join(lines)
+
+
+def _forecast_arms(s: dict[str, Any]) -> list[str]:
+    """The E-FC arms: the headline simulates a user step, so the no-confirmation numbers are
+    shown next to it (docs/09 §7)."""
+    arms = dig(s, "forecast", "arms") or {}
+    headline_arm = dig(s, "forecast", "headline_arm")
+    if not arms or headline_arm not in arms:
+        return []
+    out = [
+        f"**Forecast arms.** The headline forecast numbers come from the arm that "
+        f"{arms[headline_arm]['note']}. "
+        "Without that step:",
+        "",
+        "| Arm | Coverage P1 · P2 · S4 | MAE @30 d P1 · P2 · S4 | Pinball P1 · P2 · S4 |",
+        "|---|---|---|---|",
+    ]
+    for name, arm in arms.items():
+        cov = arm.get("coverage_by_dataset") or {}
+        mae = arm.get("mae30_gbp_by_dataset") or {}
+        pin = arm.get("pinball_gbp_by_dataset") or {}
+        label = f"{name} (headline)" if name == headline_arm else name
+        out.append(
+            f"| {label} | {' · '.join(_f(v) for v in cov.values())} | "
+            f"{' · '.join(_gbp(v) for v in mae.values())} | "
+            f"{' · '.join(_gbp(v) for v in pin.values())} |"
+        )
+    return [*out, ""]
 
 
 def update(readme: str, block: str) -> str:

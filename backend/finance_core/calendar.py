@@ -14,7 +14,7 @@ from datetime import date, timedelta
 
 import holidays as _holidays
 
-from backend.finance_core.types import Cadence, PaydayRule, RecurringObligation
+from backend.finance_core.types import Cadence, PaydayRule, RecurringObligation, WorkingDayShift
 
 DEFAULT_SHIFT = "previous_working_day"
 
@@ -47,10 +47,18 @@ def last_working_day(year: int, month: int, holidays: frozenset[date]) -> date:
 
 
 def shift(d: date, rule: str, holidays: frozenset[date]) -> date:
-    """Apply a pack's weekend/holiday shift rule ("previous_working_day" | "next_working_day")."""
-    if rule == "next_working_day":
+    """Apply a weekend/holiday shift rule: "previous_working_day", "next_working_day" or "none"
+    (the date stands)."""
+    if rule == WorkingDayShift.NONE.value:
+        return d
+    if rule == WorkingDayShift.NEXT.value:
         return next_working_day(d, holidays)
     return previous_working_day(d, holidays)
+
+
+def effective_shift(rule: PaydayRule, default: str) -> str:
+    """The shift a payday rule uses: its own when learned, else the locale pack's default."""
+    return rule.shift.value if rule.shift is not None else default
 
 
 def clamp_day(year: int, month: int, day: int) -> date:
@@ -74,6 +82,7 @@ def payday_in_month(
     """
     if rule.kind not in ("last_working_day", "fixed_day"):
         return None
+    shift_rule = effective_shift(rule, shift_rule)
     if month == 12 and rule.december_day is not None:
         return shift(clamp_day(year, month, rule.december_day), shift_rule, holidays)
     if rule.kind == "last_working_day":
@@ -92,6 +101,7 @@ def paydays_between(
 ) -> list[date]:
     """All paydays a rule produces in [start, end], after the shift rule is applied."""
     out: set[date] = set()
+    shift_rule = effective_shift(rule, shift_rule)
     if rule.kind == "four_weekly":
         if rule.anchor_date is None:
             return []
@@ -122,31 +132,35 @@ def next_payday(
     return days[0] if days else None
 
 
-def obligation_dates(ob: RecurringObligation, start: date, end: date) -> list[date]:
+def obligation_dates(
+    ob: RecurringObligation,
+    start: date,
+    end: date,
+    holidays: frozenset[date] = frozenset(),
+) -> list[date]:
     """Occurrences of a recurring obligation in [start, end].
 
     MONTHLY/QUARTERLY/ANNUAL use anchor_day (day of month) restricted to active_months (so
     council tax Apr–Jan never falls in Feb–Mar, and an annual bill lists its single month).
-    WEEKLY uses anchor_day as a weekday (0 = Monday). Direct debits and standing orders are not
-    moved for weekends here: banks collect them on the next working day, which the statement
-    shows, and the detector learns the observed day. FOUR_WEEKLY and IRREGULAR obligations need an
-    anchor date the type does not carry; the recurring detector does not emit them yet, so they
-    are not projected.
+    WEEKLY uses anchor_day as a weekday (0 = Monday). A nominal date on a weekend or bank holiday
+    moves by the obligation's shift (direct debits and standing orders: next working day; card
+    payments: none), so a nominal date just before `start` can land inside the window.
+    FOUR_WEEKLY and IRREGULAR obligations need an anchor date the type does not carry; the
+    recurring detector does not emit them yet, so they are not projected.
     """
-    out: list[date] = []
+    nominal: list[date] = []
     if ob.anchor_day is None:
-        return out
+        return nominal
+    lead = start - timedelta(days=7)  # a shifted date can cross into the window
     if ob.cadence in (Cadence.MONTHLY, Cadence.QUARTERLY, Cadence.ANNUAL):
-        for y, m in _months(start, end):
-            if m not in ob.active_months:
-                continue
-            d = clamp_day(y, m, ob.anchor_day)
-            if start <= d <= end:
-                out.append(d)
+        for y, m in _months(lead, end):
+            if m in ob.active_months:
+                nominal.append(clamp_day(y, m, ob.anchor_day))
     elif ob.cadence is Cadence.WEEKLY:
-        d = start
+        d = lead
         while d <= end:
             if d.weekday() == ob.anchor_day % 7 and d.month in ob.active_months:
-                out.append(d)
+                nominal.append(d)
             d += timedelta(days=1)
-    return out
+    moved = (shift(d, ob.shift.value, holidays) for d in nominal)
+    return sorted({d for d in moved if start <= d <= end})

@@ -42,6 +42,17 @@ WARMUP_DAYS = 90
 STEP_DAYS = 7
 N_PATHS = 500
 QUESTIONS = 3  # "Check what we found" asks about at most three unconfirmed payers
+# Arms. The headline arm simulates the user answering the onboarding question about detected
+# income (docs/06 H8, docs/00 §6a) from the truth labels; the other arm takes detection as is.
+ARM_CONFIRMED = "with_onboarding_confirmation"
+ARM_UNCONFIRMED = "no_confirmation"
+HEADLINE_ARM = ARM_CONFIRMED
+ARM_NOTES = {
+    ARM_CONFIRMED: "simulates the user confirming detected income at onboarding (06 H8): the top "
+    f"{QUESTIONS} unconfirmed payers at each origin are asked about and answered from the truth "
+    "labels",
+    ARM_UNCONFIRMED: "detection only: no user answers",
+}
 
 
 def confirmed_income_sources(
@@ -65,8 +76,11 @@ def confirmed_income_sources(
     )
 
 
-def inputs_at(ds: Dataset, ledger: Ledger, account: str, origin: date) -> ForecastInputs:
-    """ForecastInputs as they would have been known at `origin` (truncated ledger)."""
+def inputs_at(
+    ds: Dataset, ledger: Ledger, account: str, origin: date, confirm: bool = True
+) -> ForecastInputs:
+    """ForecastInputs as they would have been known at `origin` (truncated ledger). With
+    `confirm`, the onboarding income question is answered as the user would (ARM_CONFIRMED)."""
     pack = uk_categorisation_pack()
     keep = [i for i, t in enumerate(ledger.txns) if t.posted_on <= origin]
     txns = [ledger.txns[i] for i in keep]
@@ -78,9 +92,9 @@ def inputs_at(ds: Dataset, ledger: Ledger, account: str, origin: date) -> Foreca
         hol,
         pack.payday_shift,
         pack.one_off_multiple,
-        confirmed_sources=confirmed_income_sources(txns, cats, ledger),
+        confirmed_sources=confirmed_income_sources(txns, cats, ledger) if confirm else (),
     )
-    report = detect_recurring(txns, cats, pack)
+    report = detect_recurring(txns, cats, pack, hol)
     recurring_ids = {m for ob in report.obligations for m in ob.member_ids}
     window_start = origin - timedelta(days=LOOKBACK_DAYS - 1)
     history = tuple(
@@ -121,7 +135,7 @@ def origins_for(history: dict[date, int], max_h: int = max(HORIZONS)) -> list[da
     return out
 
 
-def _dataset(name: str) -> dict[str, Any]:
+def _dataset(name: str, confirm: bool = True) -> dict[str, Any]:
     ds = load_dataset(name)
     account = str(ds.accounts[0]["id"])
     ledger = build_ledger(ds)
@@ -131,7 +145,7 @@ def _dataset(name: str) -> dict[str, Any]:
 
     def build(origin: date) -> ForecastInputs:
         nonlocal leaks
-        inputs = inputs_at(ds, ledger, account, origin)
+        inputs = inputs_at(ds, ledger, account, origin, confirm)
         leaks += sum(1 for d, _c, _a in inputs.discretionary_history if d > origin)
         return inputs
 
@@ -168,13 +182,31 @@ def _dataset(name: str) -> dict[str, Any]:
     }
 
 
+def _gbp(minor: float | None) -> float | None:
+    return None if minor is None else round(minor / 100, 2)
+
+
+def _arm_summary(per: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    return {
+        "coverage_by_dataset": {n: d["foresight"]["coverage_p10_p90"] for n, d in per.items()},
+        "mae30_gbp_by_dataset": {
+            n: _gbp(d["foresight"]["mae_minor"]["30"]) for n, d in per.items()
+        },
+        "pinball_gbp_by_dataset": {
+            n: _gbp(d["foresight"].get("pinball_minor")) for n, d in per.items()
+        },
+    }
+
+
 def run(fast: bool = False) -> dict[str, Any]:
     names = ["P1-base"] if fast else DATASETS
-    per = {n: _dataset(n) for n in names}
+    per = {n: _dataset(n, confirm=True) for n in names}
+    arms = {ARM_CONFIRMED: {"note": ARM_NOTES[ARM_CONFIRMED], **_arm_summary(per)}}
+    if not fast:
+        unconfirmed = {n: _dataset(n, confirm=False) for n in names}
+        arms[ARM_UNCONFIRMED] = {"note": ARM_NOTES[ARM_UNCONFIRMED], **_arm_summary(unconfirmed)}
     p1 = per["P1-base"]
-
-    def gbp(minor: float | None) -> float | None:
-        return None if minor is None else round(minor / 100, 2)
+    gbp = _gbp
 
     by_horizon = {
         str(h): {
@@ -190,6 +222,10 @@ def run(fast: bool = False) -> dict[str, Any]:
     metrics: dict[str, Any] = {
         "engine_version": ENGINE_VERSION,
         "headline_dataset": "P1-base",
+        "headline_arm": HEADLINE_ARM,
+        "simulated_user_step": ARM_NOTES[HEADLINE_ARM],
+        "arms": arms,
+        "pinball_gbp_by_dataset": arms[HEADLINE_ARM]["pinball_gbp_by_dataset"],
         "by_horizon": by_horizon,
         "skill_vs": {
             "B1-repeat30": p1["skill_vs_B1"],
@@ -251,8 +287,10 @@ def run(fast: bool = False) -> dict[str, Any]:
         "Discretionary history passed to the engine covers up to 365 days before each origin "
         "and every unscheduled outflow (not only spending); the engine bootstraps everyday "
         "outflows from the last 90 days and models one-offs over the span.",
-        "Check what we found is simulated: the top 3 unconfirmed payers at each origin are asked "
-        "about and answered from the truth labels, as a user would (docs/00 §6a).",
+        "Headline numbers simulate the user confirming detected income at onboarding (06 H8): "
+        f"the top {QUESTIONS} unconfirmed payers at each origin are answered from the truth "
+        "labels. The no-confirmation arm (detection only) is reported alongside in "
+        "forecast.arms.",
         "S4-shock coverage after the shift is expected to miss (docs/09 §7.4) and is not gated.",
         "Breach Brier and the long-January check are not computed yet.",
     ]

@@ -9,6 +9,10 @@ their monthly totals as the distribution (freelance income): one total per calen
 ledger fully covers (up to the last 12), months with no such credit counting as zero, which is
 what the forecast engine draws from (docs/07 §4.5).
 
+A payer whose gaps fail the cadence bands (one late payment makes two odd gaps) is still monthly
+when a learned payday rule lands exactly on at least 75 % of its credits and on at least 75 % of
+the months its history spans; the late credit stays a member of the stream.
+
 Several credits from one payer on the same payday are one payday: when that happens on most
 paydays the parts are summed (a salary paid in two transfers); otherwise the credit nearest the
 usual amount is the pay and the others (arrears, a bonus) are one-offs that are not projected.
@@ -32,6 +36,7 @@ from backend.finance_core.types import (
     PaydayRule,
     Provenance,
     Transaction,
+    WorkingDayShift,
 )
 
 MIN_OCCURRENCES = 3
@@ -69,34 +74,81 @@ def _cv(values: Sequence[int]) -> float:
     return statistics.pstdev(values) / mean if mean else 1.0
 
 
-def infer_payday_rule(
-    dates: Sequence[date], holidays: frozenset[date], shift_rule: str
-) -> PaydayRule | None:
-    """Pick the monthly rule that explains the most non-December paydays; learn a December override
-    when December pay lands more than three days before the rule's date."""
-    regular = [d for d in dates if d.month != 12] or list(dates)
-    best: tuple[int, PaydayRule] | None = None
+def _best_rule(
+    regular: Sequence[date], holidays: frozenset[date], shift_rule: str, how: WorkingDayShift | None
+) -> tuple[int, PaydayRule]:
     candidates: list[PaydayRule] = [PaydayRule(kind="last_working_day")]
-    candidates += [PaydayRule(kind="fixed_day", day_of_month=day) for day in range(1, 32)]
+    candidates += [
+        PaydayRule(kind="fixed_day", day_of_month=day, shift=how) for day in range(1, 32)
+    ]
+    best: tuple[int, PaydayRule] | None = None
     for rule in candidates:
         hits = sum(
             payday_in_month(rule, d.year, d.month, holidays, shift_rule) == d for d in regular
         )
-        # prefer fixed-day rules on ties: they also explain future months exactly
+        # strictly more hits to replace: earlier candidates win ties
         if best is None or hits > best[0]:
             best = (hits, rule)
-    if best is None or best[0] < max(2, int(0.75 * len(regular))):
+    assert best is not None
+    return best
+
+
+def infer_payday_rule(
+    dates: Sequence[date], holidays: frozenset[date], shift_rule: str
+) -> PaydayRule | None:
+    """Pick the monthly rule that explains the most non-December paydays; learn a December override
+    when December pay lands more than three days before the rule's date.
+
+    Fixed-day rules use the locale pack's weekend shift (`shift_rule`) unless another shift
+    (next working day, or none) explains strictly more paydays; then the rule records it, so a
+    payer that pays late after a weekend is still a regular salary."""
+    regular = [d for d in dates if d.month != 12] or list(dates)
+    hits, rule = _best_rule(regular, holidays, shift_rule, None)
+    for how in WorkingDayShift:
+        if how.value == shift_rule:
+            continue
+        alt_hits, alt = _best_rule(regular, holidays, shift_rule, how)
+        if alt_hits > hits and alt.kind == "fixed_day":
+            hits, rule = alt_hits, alt
+    if hits < max(2, int(0.75 * len(regular))):
         return None
-    rule = best[1]
     for d in dates:
         if d.month != 12:
             continue
         expected = payday_in_month(rule, d.year, 12, holidays, shift_rule)
         if expected is not None and (expected - d).days > 3 and rule.kind == "fixed_day":
-            rule = PaydayRule(kind="fixed_day", day_of_month=rule.day_of_month, december_day=d.day)
+            rule = PaydayRule(
+                kind="fixed_day",
+                day_of_month=rule.day_of_month,
+                december_day=d.day,
+                shift=rule.shift,
+            )
         elif expected is not None and (expected - d).days > 3:
             rule = PaydayRule(kind="last_working_day", december_day=d.day)
     return rule
+
+
+MONTH_COVERAGE = 0.75
+
+
+def _calendar_monthly_rule(
+    dates: Sequence[date], holidays: frozenset[date], shift_rule: str
+) -> PaydayRule | None:
+    """A monthly payday rule that explains the history although its gaps fail the cadence bands
+    (a late or missed payment). Needs the rule to cover most months of the span, so a payer with
+    a handful of scattered credits is never called monthly."""
+    if len(dates) < MIN_OCCURRENCES:
+        return None
+    rule = infer_payday_rule(dates, holidays, shift_rule)
+    if rule is None:
+        return None
+    hit_months = {
+        (d.year, d.month)
+        for d in dates
+        if payday_in_month(rule, d.year, d.month, holidays, shift_rule) == d
+    }
+    span = (dates[-1].year - dates[0].year) * 12 + dates[-1].month - dates[0].month + 1
+    return rule if len(hit_months) >= MONTH_COVERAGE * span else None
 
 
 def _income_candidates(
@@ -173,11 +225,14 @@ def detect_income_streams(
         ] or gaps
         cadence = _cadence(non_dec_gaps, [d.day for d in dates])
         reg_amounts = [a for _d, _parts, a in regular]
+        rule: PaydayRule | None = None
+        if cadence is None:
+            rule = _calendar_monthly_rule(dates, frozenset(holidays), shift_rule)
+            cadence = Cadence.MONTHLY if rule is not None else None
         if cadence is None or _cv(reg_amounts) > MAX_CV:
             irregular.extend(rows)
             continue
-        rule: PaydayRule | None = None
-        if cadence == Cadence.MONTHLY:
+        if cadence == Cadence.MONTHLY and rule is None:
             rule = infer_payday_rule(dates, frozenset(holidays), shift_rule)
         elif cadence == Cadence.FOUR_WEEKLY:
             rule = PaydayRule(kind="four_weekly", anchor_date=dates[-1])

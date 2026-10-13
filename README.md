@@ -92,7 +92,7 @@ Reproduce: `make eval` (every deterministic suite) or `make eval-fast` (< 60 s).
 |---|---|---|---|
 | E-ANOM | fail | category trends: recall 1.000, precision 0.111, false positives / persona-month 3.500 | ANOM-precision, ANOM-fp |
 | E-CAT | pass | flow-class accuracy 0.966; coverage@0.85 0.841 | — |
-| E-FC | fail | MAE @7/30/60 d (P1) £243.51 / £623.95 / £970.35; pay-cycle-low error £522.10 | FC-mape, FC-coverage-P1, FC-coverage-P2 |
+| E-FC | fail | MAE @7/30/60 d (P1) £243.51 / £623.95 / £970.35; pay-cycle-low error £522.10; pinball (P1) — | FC-mape, FC-coverage-P1, FC-coverage-P2 |
 | E-INC | fail | salaried P/R 1.000/0.750; amount ±2% 0.667; payday rule 1.000 | INC-1-R, INC-2 |
 | E-ING | fail | table locator P/R 1.000/1.000; built-in profile match 1.000; unseen C1–C4 heuristic-only 0.000 | ING-locator-unseen, ING-corrupt |
 | E-LOC | pass | currency detection 1.000; number / date format 1.000 / 1.000; minor units exact yes; H13 all clauses yes | — |

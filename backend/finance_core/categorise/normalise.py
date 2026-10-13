@@ -25,6 +25,8 @@ _AMOUNT = re.compile(r"[£$€₹]?\s?\d+[.,]\d{2}\b")
 _REFERENCE = re.compile(r"\b(REF|REFERENCE|FROM|TO)\b[:\s]+([A-Z0-9][A-Z0-9 \-/]{2,})$")
 _SPACE = re.compile(r"\s+")
 _PUNCT = re.compile(r"[^A-Z0-9&'+.\s]")
+# a reference-shaped token: up to four letters then at least two digits (INV178, PO1234, A12)
+_REF_SHAPED = re.compile(r"^[A-Z]{0,4}\d{2,}[A-Z0-9]*$")
 
 
 def normalise_narration(text: str) -> str:
@@ -75,5 +77,19 @@ def parse_narration(
         for tok in normalised.split()
         if tok not in codes and tok not in pack.noise_tokens and not tok.isdigit()
     ]
+    tokens = strip_trailing_references(tokens, pack.reference_markers)
     counterparty = " ".join(tokens[:4]) or None
     return ParsedNarration(normalised, channel, counterparty, reference)
+
+
+def strip_trailing_references(tokens: list[str], markers: frozenset[str]) -> list[str]:
+    """Drop invoice and reference numbers from the end of a payer's name, so every invoice from
+    one client keys to the same counterparty ("SEVERN STUDIO INV178" → "SEVERN STUDIO").
+
+    Only trailing tokens go, and never the whole name: reference-shaped tokens (up to four
+    letters then two or more digits) and the pack's reference markers. A name with a short
+    number in it ("O2") keeps it."""
+    out = list(tokens)
+    while len(out) > 1 and (_REF_SHAPED.match(out[-1]) or out[-1] in markers):
+        out.pop()
+    return out

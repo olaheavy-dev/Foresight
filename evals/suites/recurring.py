@@ -46,8 +46,8 @@ def _truth_next(spec: dict[str, Any], as_of: date, hol: frozenset[date]) -> date
     return None
 
 
-def _predicted_next(ob: RecurringObligation, as_of: date) -> date | None:
-    days = obligation_dates(ob, as_of + timedelta(days=1), as_of + timedelta(days=400))
+def _predicted_next(ob: RecurringObligation, as_of: date, hol: frozenset[date]) -> date | None:
+    days = obligation_dates(ob, as_of + timedelta(days=1), as_of + timedelta(days=400), hol)
     return days[0] if days else None
 
 
@@ -56,7 +56,8 @@ def _rise_within_cycle(ledger: Ledger, subject: str, rise_on: date) -> dict[str,
     cut = rise_on + timedelta(days=CYCLE_DAYS)
     keep = [i for i, t in enumerate(ledger.txns) if t.posted_on <= cut]
     txns = [ledger.txns[i] for i in keep]
-    report = detect_recurring(txns, [ledger.cats[i] for i in keep], uk_categorisation_pack())
+    hol = uk_holidays(cut.year - 2, cut.year + 1)
+    report = detect_recurring(txns, [ledger.cats[i] for i in keep], uk_categorisation_pack(), hol)
     by_key = {ob.key: ob for ob in report.obligations}
     hit = False
     for change in report.price_changes:
@@ -82,8 +83,8 @@ def _rise_within_cycle(ledger: Ledger, subject: str, rise_on: date) -> dict[str,
 def _dataset(name: str) -> dict[str, Any]:
     ds = load_dataset(name)
     ledger = build_ledger(ds)
-    report = detect_recurring(ledger.txns, ledger.cats, uk_categorisation_pack())
-    hol = uk_holidays(ds.as_of.year - 1, ds.as_of.year + 1)
+    hol = uk_holidays(ds.as_of.year - 2, ds.as_of.year + 1)
+    report = detect_recurring(ledger.txns, ledger.cats, uk_categorisation_pack(), hol)
     truth = {str(s["key"]): s for s in ds.truth_json("truth_recurring.json")["recurring"]}
     det: list[dict[str, Any]] = []
     matched: dict[str, RecurringObligation] = {}
@@ -116,7 +117,7 @@ def _dataset(name: str) -> dict[str, Any]:
             err = abs(ob.amount_minor - want) / abs(want)
             amount_errors.append(err)
             row["amount_error"] = r4(err)
-            t_next, p_next = _truth_next(spec, ds.as_of, hol), _predicted_next(ob, ds.as_of)
+            t_next, p_next = _truth_next(spec, ds.as_of, hol), _predicted_next(ob, ds.as_of, hol)
             if t_next and p_next:
                 date_errors.append(abs((p_next - t_next).days))
                 row["next_date_error_days"] = abs((p_next - t_next).days)

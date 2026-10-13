@@ -182,16 +182,27 @@ class BalanceAnchor:
     source: str  # "statement_column" | "declared"
 
 
+class WorkingDayShift(str, Enum):
+    """What happens to a scheduled date that falls on a weekend or bank holiday."""
+
+    PREVIOUS = "previous_working_day"  # most UK employers pay early
+    NEXT = "next_working_day"  # direct debits, standing orders, some payers
+    NONE = "none"  # the money moves on the calendar day (card subscriptions, some fintechs)
+
+
 @dataclass(frozen=True)
 class PaydayRule:
-    """When pay lands. kind: 'fixed_day' (day_of_month, moved to the previous working day),
-    'last_working_day', or 'four_weekly' (anchor_date + 28n). december_day optionally overrides
-    December (e.g. early Christmas pay), learned from history."""
+    """When pay lands. kind: 'fixed_day' (day_of_month), 'last_working_day', or 'four_weekly'
+    (anchor_date + 28n). december_day optionally overrides December (e.g. early Christmas pay),
+    learned from history. shift says how a fixed or four-weekly payday that falls on a weekend or
+    bank holiday moves; None means the locale pack's payday default (previous working day in the
+    uk pack). It is learned from history only when the data shows a different shift."""
 
     kind: str
     day_of_month: int | None = None
     anchor_date: date | None = None
     december_day: int | None = None
+    shift: WorkingDayShift | None = None
 
 
 @dataclass(frozen=True)
@@ -220,6 +231,9 @@ class RecurringObligation:
     active_months: frozenset[int] = field(default_factory=lambda: frozenset(range(1, 13)))
     member_ids: tuple[str, ...] = ()
     is_commitment: bool = False
+    # how a scheduled date on a weekend or bank holiday moves: direct debits and standing orders
+    # are collected on the next working day; card payments are taken on the day (NONE, default)
+    shift: WorkingDayShift = WorkingDayShift.NONE
 
 
 @dataclass(frozen=True)
@@ -244,8 +258,10 @@ class ForecastInputs:
     income_streams: tuple[IncomeStream, ...]
     obligations: tuple[RecurringObligation, ...]
     known_flows: tuple[KnownFlow, ...]
-    # discretionary history: (date, category_key, amount_minor<0) rows from the last W days,
-    # excluding recurring, one-offs and transfers (docs/07 §6.1)
+    # unscheduled outflows: (date, category_key, amount_minor<0) rows from up to the last 365
+    # days, including one-offs (the engine separates them) and every outflow that is not a
+    # recurring obligation (spending, ad-hoc transfers, extra commitments, tax); income and own
+    # transfers are excluded (docs/07 §6.1, forecast.engine.is_unscheduled_outflow)
     discretionary_history: tuple[tuple[date, str, int], ...]
     holidays: frozenset[date]  # from the workspace's locale pack
     buffer_minor: int | None

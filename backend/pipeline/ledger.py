@@ -81,6 +81,7 @@ def payday_rule_json(rule: t.PaydayRule | None) -> dict[str, Any] | None:
         "day_of_month": rule.day_of_month,
         "anchor_date": rule.anchor_date.isoformat() if rule.anchor_date else None,
         "december_day": rule.december_day,
+        "shift": rule.shift.value if rule.shift is not None else None,
     }
 
 
@@ -93,6 +94,7 @@ def payday_rule(data: dict[str, Any] | None) -> t.PaydayRule | None:
         day_of_month=data.get("day_of_month"),
         anchor_date=date.fromisoformat(anchor) if anchor else None,
         december_day=data.get("december_day"),
+        shift=t.WorkingDayShift(data["shift"]) if data.get("shift") else None,
     )
 
 
@@ -143,6 +145,7 @@ def obligation_row(o: t.RecurringObligation) -> m.RecurringObligation:
         member_ids=list(o.member_ids),
         is_commitment=o.is_commitment,
         provenance="detected",
+        working_day_shift=o.shift.value,
     )
 
 
@@ -159,6 +162,7 @@ def obligation(row: m.RecurringObligation) -> t.RecurringObligation:
         active_months=frozenset(row.active_months),
         member_ids=tuple(row.member_ids),
         is_commitment=row.is_commitment,
+        shift=t.WorkingDayShift(row.working_day_shift or "none"),
     )
 
 

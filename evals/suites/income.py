@@ -110,18 +110,23 @@ def _dataset(name: str) -> dict[str, Any]:
                 )
                 expected_next = next_payday(truth_rule, ds.as_of, hol, truth_shift)
                 got_next = next_payday(rule, ds.as_of, hol, uk_categorisation_pack().payday_shift)
+                # the truth rule's own paydays: a late or missed credit is the payer's doing,
+                # not a wrong rule (INC-3 scores the rule; credits are reported alongside)
+                rule_pays = paydays_between(truth_rule, pays[0], pays[-1], hol, truth_shift)
                 row["payday_rule"] = {
                     "kind": rule.kind,
                     "day_of_month": rule.day_of_month,
                     "december_day": rule.december_day,
+                    "shift": rule.shift.value if rule.shift is not None else "pack default",
                 }
+                row["history_paydays_match_rule"] = pred == rule_pays
                 row["history_paydays_exact"] = pred == pays
                 row["history_payday_misses"] = sorted(
                     {d.isoformat() for d in set(pred) ^ set(pays)}
                 )
                 row["next_payday"] = got_next.isoformat() if got_next else None
                 row["expected_next_payday"] = expected_next.isoformat() if expected_next else None
-                row["payday_ok"] = pred == pays and got_next == expected_next
+                row["payday_ok"] = pred == rule_pays and got_next == expected_next
             else:
                 row["payday_ok"] = False
         rows.append(row)
@@ -152,11 +157,17 @@ def run(fast: bool = False) -> dict[str, Any]:
     four_weekly_ok = (
         any(r.get("cadence_detected") == "four_weekly" for r in s11["truth"]) if s11 else None
     )
+    credits_exact = [
+        r.get("history_paydays_exact", False) for r in sal_found if r["cadence"] == "monthly"
+    ]
     metrics: dict[str, Any] = {
         "salaried_precision": r4(len(sal_true) / len(sal_detected)) if sal_detected else None,
         "salaried_recall": r4(len(sal_found) / len(sal)) if sal else None,
         "amount_within_2pct": r4(sum(amount_ok) / len(amount_ok)) if amount_ok else None,
         "payday_rule_ok": r4(sum(payday_ok) / len(payday_ok)) if payday_ok else None,
+        "paydays_equal_credit_dates": r4(sum(credits_exact) / len(credits_exact))
+        if credits_exact
+        else None,
         "four_weekly_cadence_ok": four_weekly_ok,
         "by_dataset": per,
     }
@@ -206,8 +217,10 @@ def run(fast: bool = False) -> dict[str, Any]:
         "Detected streams are matched to truth by the majority truth `income` key of their "
         "member transactions; a truth stream counts as found when ≥ 50% of its rows are members "
         "(of regular streams, for salaried truth streams).",
-        "INC-3 compares the detected rule's paydays over the history with the truth paydays, and "
-        "the predicted next payday after as_of with the truth rule's next payday.",
+        "INC-3 compares the detected rule's paydays over the history with the truth rule's "
+        "paydays (a payer's late or missed credit is not a wrong rule), and the predicted next "
+        "payday after as_of with the truth rule's next payday. paydays_equal_credit_dates reports "
+        "how often the rule also matches every actual credit date (P2's client paid June late).",
         "S8 split salary: amounts of the streams matched to one truth source are summed (INC-7).",
     ]
     return {"metrics": metrics, "targets": targets, "notes": notes}

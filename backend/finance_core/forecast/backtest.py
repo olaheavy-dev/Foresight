@@ -73,6 +73,18 @@ def _mean_by_horizon(
     return out
 
 
+PINBALL_QUANTILES = (0.1, 0.5, 0.9)
+
+
+def _pinball(actual: int, preds: Sequence[int]) -> float:
+    """Mean quantile (pinball) loss of the P10/P50/P90 forecasts for one day."""
+    total = 0.0
+    for q, p in zip(PINBALL_QUANTILES, preds, strict=True):
+        diff = actual - p
+        total += max(q * diff, (q - 1) * diff)
+    return total / len(PINBALL_QUANTILES)
+
+
 def backtest(
     history: Mapping[date, int],
     origins: Sequence[date],
@@ -82,12 +94,14 @@ def backtest(
     """Run the forecast at each origin and score it against history and baselines B0–B3.
 
     Returns a JSON-ready dict: per-horizon MAE (minor units) and MAPE for Foresight and each
-    baseline, P10–P90 coverage, pay-cycle-low error and skill versus B1.
+    baseline, P10–P90 coverage, mean pinball loss over P10/P50/P90 (minor units), pay-cycle-low
+    error and skill versus B1.
     """
     max_h = max(horizons)
     ours: list[Metric] = []
     base: dict[str, list[Metric]] = {b: [] for b in BASELINES}
     covered = total = 0
+    pinball_sum = 0.0
     low_errors: list[float] = []
     for origin in origins:
         if origin not in history:
@@ -103,6 +117,7 @@ def backtest(
             if a is not None:
                 total += 1
                 covered += int(fc.p10[k + 1] <= a <= fc.p90[k + 1])
+                pinball_sum += _pinball(a, (fc.p10[k + 1], fc.p50[k + 1], fc.p90[k + 1]))
         for cycle in fc.pay_cycles:
             window_start = (
                 origin + timedelta(days=1)
@@ -122,6 +137,7 @@ def backtest(
             "mae_minor": _mean_by_horizon(ours, "mae_minor", horizons),
             "mape": _mean_by_horizon(ours, "mape", horizons),
             "coverage_p10_p90": round(covered / total, 4) if total else None,
+            "pinball_minor": round(pinball_sum / total, 2) if total else None,
             "pay_cycle_low_mae_minor": round(fmean(low_errors), 2) if low_errors else None,
         },
         "baselines": {

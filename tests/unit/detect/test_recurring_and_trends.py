@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
+from backend.finance_core.calendar import holiday_set, next_working_day
 from backend.finance_core.categorise.rules import categorise
 from backend.finance_core.detect.recurring import detect_recurring
 from backend.finance_core.detect.trends import category_trends, long_pay_gaps
-from backend.finance_core.types import Cadence, FlowKind
+from backend.finance_core.types import Cadence, FlowKind, WorkingDayShift
 from tests.unit.categorise.helpers import txn, uk_pack
 
 PACK = uk_pack()
@@ -136,3 +137,33 @@ def test_uncategorised_spend_is_never_a_trend() -> None:
 def test_long_january() -> None:
     (gap,) = long_pay_gaps([date(2026, 11, 27), date(2026, 12, 18), date(2027, 1, 28)])
     assert gap.days == 41
+
+
+def _collected(desc: str, amount: int, day: int, months: list[tuple[int, int]], moved: bool):  # type: ignore[no-untyped-def]
+    """A bill due on `day`; when `moved`, weekend/holiday dates are collected the next working
+    day, as a bank does for direct debits."""
+    hol = holiday_set(PACK.holiday_country, PACK.holiday_subdiv, range(2025, 2028))
+    rows = []
+    for y, m in months:
+        due = date(y, m, day)
+        rows.append(txn(desc, -amount, on=next_working_day(due, hol) if moved else due))
+    return rows, hol
+
+
+def test_direct_debit_learns_nominal_day_and_next_working_day_shift() -> None:
+    rows, hol = _collected("DD SEVERN TRENT WATER", 3100, 1, TWELVE, moved=True)
+    (ob,) = detect_recurring(rows, [categorise(r, PACK) for r in rows], PACK, hol).obligations
+    assert ob.anchor_day == 1
+    assert ob.shift is WorkingDayShift.NEXT
+
+
+def test_card_payment_never_shifts() -> None:
+    rows, hol = _collected("DEB SPOTIFY", 1199, 1, TWELVE, moved=True)
+    (ob,) = detect_recurring(rows, [categorise(r, PACK) for r in rows], PACK, hol).obligations
+    assert ob.shift is WorkingDayShift.NONE
+
+
+def test_direct_debit_on_fixed_dates_keeps_no_shift() -> None:
+    rows, hol = _collected("DD SEVERN TRENT WATER", 3100, 20, TWELVE, moved=False)
+    (ob,) = detect_recurring(rows, [categorise(r, PACK) for r in rows], PACK, hol).obligations
+    assert (ob.anchor_day, ob.shift) == (20, WorkingDayShift.NONE)

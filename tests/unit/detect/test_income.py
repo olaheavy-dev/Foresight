@@ -13,6 +13,7 @@ from backend.finance_core.types import (
     IncomeStream,
     PaydayRule,
     Provenance,
+    WorkingDayShift,
 )
 from tests.unit.categorise.helpers import txn, uk_pack
 
@@ -140,3 +141,44 @@ def test_declared_income_divergence_flag() -> None:
     )
     (flag,) = divergence_flags([detected], [declared])
     assert flag.observed_minor == SALARY
+
+
+def test_payer_that_pays_after_weekends_learns_next_working_day() -> None:
+    rows = []
+    for y, m in MONTHS:
+        due = date(y, m, 15)
+        on = due
+        while on.weekday() >= 5 or on in HOLIDAYS:
+            on += timedelta(days=1)
+        rows.append(txn("LUMEN PAYROLL", SALARY, on=on, bank_type="Bacs (Direct Credit)"))
+    (stream,) = _detect(rows)
+    assert stream.payday_rule == PaydayRule(
+        kind="fixed_day", day_of_month=15, shift=WorkingDayShift.NEXT
+    )
+
+
+def test_pack_default_shift_is_kept_when_it_explains_the_history() -> None:
+    (stream,) = _detect(_salary_rows(MONTHS))
+    assert stream.payday_rule is not None
+    assert stream.payday_rule.shift is None
+
+
+def test_one_late_payment_keeps_a_monthly_salary() -> None:
+    rule = PaydayRule(kind="fixed_day", day_of_month=5, shift=WorkingDayShift.NEXT)
+    rows = []
+    for y, m in MONTHS:
+        on = payday_in_month(rule, y, m, HOLIDAYS, PACK.payday_shift)
+        assert on is not None
+        if (y, m) == (2026, 6):
+            on = date(2026, 7, 20)  # June's pay arrives late, after July's
+        rows.append(txn("LUMEN PAYROLL", SALARY, on=on, bank_type="Bacs (Direct Credit)"))
+    (stream,) = _detect(rows)
+    assert stream.cadence == Cadence.MONTHLY
+    assert stream.payday_rule == rule
+    assert len(stream.member_ids) == len(MONTHS)
+
+
+def test_scattered_credits_are_not_called_monthly() -> None:
+    days = [date(2026, 1, 5), date(2026, 2, 5), date(2026, 5, 5), date(2026, 9, 5)]
+    rows = [txn("LUMEN PAYROLL", SALARY, on=d, bank_type="Bacs (Direct Credit)") for d in days]
+    assert all(s.cadence is not Cadence.MONTHLY for s in _detect(rows))

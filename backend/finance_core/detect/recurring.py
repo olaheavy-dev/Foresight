@@ -4,6 +4,12 @@ Outflows are grouped by counterparty and category; a group recurs when it has �
 gaps inside a cadence band and amounts within ±15 % of the median (variable bills). Seasonal
 monthly obligations (council tax: 10 instalments Apr–Jan) keep their active months; with less than
 12 months of history the pack's seasonal default is used and flagged as an assumption.
+
+Monthly direct debits and standing orders are collected on the next working day when their date
+falls on a weekend or bank holiday, so the statement shows a drifting day. Given the calendar, the
+detector looks for the nominal day and shift that explain the most observed dates; it records the
+pack's debit shift only when that explains strictly more dates than taking each date as it is.
+Card payments never move.
 """
 
 from __future__ import annotations
@@ -14,13 +20,16 @@ from collections.abc import Sequence
 from dataclasses import dataclass, replace
 from datetime import date
 
+from backend.finance_core.calendar import clamp_day, shift
 from backend.finance_core.categorise.pack import CategorisationPack, contains_phrase
 from backend.finance_core.types import (
     Cadence,
     Categorisation,
+    Channel,
     FlowKind,
     RecurringObligation,
     Transaction,
+    WorkingDayShift,
 )
 
 MIN_OCCURRENCES = 3
@@ -110,13 +119,47 @@ def _active_months(
     return frozenset(range(1, 13))
 
 
+_SCHEDULED_CHANNELS = {Channel.DIRECT_DEBIT, Channel.STANDING_ORDER}
+
+
+def infer_anchor_and_shift(
+    rows: Sequence[Transaction], pack: CategorisationPack, holidays: frozenset[date]
+) -> tuple[int, WorkingDayShift]:
+    """Nominal day of month and weekend/holiday shift that explain the most observed dates.
+
+    Only direct debits and standing orders can move (to the pack's debit shift); everything else
+    keeps the most common observed day and no shift. Ties keep no shift, then the most common
+    day, so the conservative reading wins unless the calendar clearly explains the drift."""
+    dates = [t.posted_on for t in rows]
+    counts = Counter(d.day for d in dates)
+    mode_day = counts.most_common(1)[0][0]
+    channel = Counter(t.channel for t in rows).most_common(1)[0][0]
+    if channel not in _SCHEDULED_CHANNELS:
+        return mode_day, WorkingDayShift.NONE
+    moved = WorkingDayShift(pack.debit_shift)
+
+    def hits(day: int, how: WorkingDayShift) -> int:
+        return sum(shift(clamp_day(d.year, d.month, day), how.value, holidays) == d for d in dates)
+
+    best_none = max(range(1, 32), key=lambda day: (hits(day, WorkingDayShift.NONE), counts[day]))
+    best_moved = max(range(1, 32), key=lambda day: (hits(day, moved), counts[day]))
+    if hits(best_moved, moved) > hits(best_none, WorkingDayShift.NONE):
+        return best_moved, moved
+    return mode_day, WorkingDayShift.NONE
+
+
 def _slug(text: str) -> str:
     return "_".join(text.lower().split())[:40] or "unknown"
 
 
 def detect_recurring(
-    txns: Sequence[Transaction], cats: Sequence[Categorisation], pack: CategorisationPack
+    txns: Sequence[Transaction],
+    cats: Sequence[Categorisation],
+    pack: CategorisationPack,
+    holidays: frozenset[date] = frozenset(),
 ) -> RecurringReport:
+    """Recurring obligations in a ledger. `holidays` is the locale's bank-holiday set; without it
+    only weekends count as non-working days when learning a debit's shift."""
     by_id = {c.transaction_id: c for c in cats}
     groups: dict[tuple[str, str], list[Transaction]] = defaultdict(list)
     for t in txns:
@@ -148,6 +191,11 @@ def detect_recurring(
             if cadence == Cadence.MONTHLY
             else frozenset(range(1, 13))
         )
+        anchor, how = (
+            infer_anchor_and_shift(in_band, pack, holidays)
+            if cadence == Cadence.MONTHLY
+            else (None, WorkingDayShift.NONE)
+        )
         obligations.append(
             RecurringObligation(
                 key=key,
@@ -157,12 +205,11 @@ def detect_recurring(
                 amount_minor=-int(statistics.median([-t.amount_minor for t in in_band[-3:]])),
                 currency=rows[0].currency,
                 cadence=cadence,
-                anchor_day=Counter(d.day for d in dates).most_common(1)[0][0]
-                if cadence == Cadence.MONTHLY
-                else None,
+                anchor_day=anchor,
                 active_months=active,
                 member_ids=tuple(t.id for t in in_band),
                 is_commitment=category in pack.protected_categories or flow == FlowKind.COMMITMENT,
+                shift=how,
             )
         )
         # price change: compare the latest payment with the earlier median over ALL rows of the

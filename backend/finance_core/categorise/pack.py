@@ -69,6 +69,8 @@ class CategorisationPack:
     bank_category_priors: dict[str, dict[str, str]]
     protected_categories: frozenset[str]
     seasonal_defaults: dict[str, frozenset[int]]
+    # words that introduce an invoice/reference number at the end of a narration ("INV", "REF")
+    reference_markers: frozenset[str] = frozenset()
 
     def default_flow_kind(self, category_key: str) -> FlowKind:
         info = self.categories.get(category_key)
@@ -154,6 +156,7 @@ def load_pack(yaml_text: str) -> CategorisationPack:
             str(k): frozenset(int(m) for m in v)
             for k, v in (data.get("seasonal_defaults") or {}).items()
         },
+        reference_markers=frozenset(_strs(data.get("reference_markers"))),
     )
 
 

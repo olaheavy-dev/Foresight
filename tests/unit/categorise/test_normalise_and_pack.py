@@ -58,3 +58,30 @@ def test_channel_from_pack(description: str, bank_type: str | None, channel: Cha
 def test_counterparty_drops_codes_and_noise() -> None:
     parsed = parse_narration("DD YORKSHIRE WATER LTD", None, uk_pack())
     assert parsed.counterparty == "YORKSHIRE WATER"
+
+
+@pytest.mark.parametrize(
+    "description",
+    [
+        "FPI SEVERN STUDIO INV178",
+        "FPI SEVERN STUDIO INV-0042",
+        "FPI SEVERN STUDIO INVOICE 0042",
+        "FPI SEVERN STUDIO REF 12345",
+        "FPI SEVERN STUDIO #123",
+        "FPI SEVERN STUDIO PO7731",
+    ],
+)
+def test_counterparty_drops_trailing_invoice_and_reference_numbers(description: str) -> None:
+    assert parse_narration(description, None, uk_pack()).counterparty == "SEVERN STUDIO"
+
+
+@pytest.mark.parametrize(
+    ("description", "counterparty"),
+    [
+        ("DD O2 UK", "O2"),  # one digit: part of the name
+        ("DEB 3 STORE", "STORE"),  # digit-only tokens were always dropped
+        ("FPI INV178", "INV178"),  # never strip the whole name
+    ],
+)
+def test_counterparty_keeps_names_with_numbers(description: str, counterparty: str) -> None:
+    assert parse_narration(description, None, uk_pack()).counterparty == counterparty
