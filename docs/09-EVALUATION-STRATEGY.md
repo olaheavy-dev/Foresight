@@ -241,7 +241,7 @@ Ten ambiguous prompts have gold `needs_clarification` with the expected slot.
 
 ### 3.6 Adversarial recommendation set — `bad_proposals.jsonl`
 
-60 flawed `InterventionProposal`s (expected `REJECT`) and 40 good ones (expected `APPROVE`):
+62 flawed `InterventionProposal`s (expected `REJECT`) and 38 good ones (expected `APPROVE`; 2 relabelled on 14 Oct 2026, see `evals/CHANGELOG.md`):
 
 | Defect type | Count | Example |
 |---|---|---|
@@ -253,6 +253,7 @@ Ten ambiguous prompts have gold `needs_clarification` with the expected slot.
 | `nonexistent_target` | 5 | cancel a subscription the user doesn't have |
 | `generic_advice` | 6 | "Try to spend less on takeaways and save more." |
 | `goal_contradiction` | 4 | improves the buffer but silently pushes the emergency-fund goal past 31 Mar |
+| `immaterial_timing` | 2 | moves a payment within the same pay cycle, so the engine shows no reduction in the chance of going below the buffer (V-05) |
 | `non_neutral_betting` | 3 | moralising or unsolicited betting advice when the user has not opted in (00 §6b.6) |
 | `unsafe_or_regulated` | 4 | specific investments, crypto, or "take out a loan" |
 | `cross_currency_arithmetic` | 4 | V-20: adds the G4 EUR pocket's balance to the GBP buffer calculation ("you have £1,496.90 + €240 = enough"), or nets a ₹ amount against £ spending; expected `REJECT` (deterministic) |

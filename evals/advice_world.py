@@ -7,7 +7,9 @@ categorisation error. The forecast the Verifier simulates on is the real pipelin
 forecast detected (by counterparty), so timing proposals move the payments the forecast contains.
 
 Symbolic evidence IDs follow evals/datasets/authored/README.md: `fnd:<type>:<subject>` for every
-`expected_findings` × `subject` pair in `truth_anomalies.json`, `fc:baseline`, and `goal:<key>`
+`expected_findings` × `subject` pair in `truth_anomalies.json` and for every category spike the
+real trend detector (`finance_core.detect.trends.category_trends`) finds on the persona's ledger
+at `as_of` (the findings a live Analyst would hand the Advisor), `fc:baseline`, and `goal:<key>`
 for goals a case supplies.
 """
 
@@ -19,6 +21,7 @@ from functools import lru_cache
 from typing import Any
 
 from backend.agents.advice.world import AdviceWorld, Finding, Goal, SpendRow
+from backend.finance_core.detect.trends import category_trends
 from backend.finance_core.types import (
     Cadence,
     FlowKind,
@@ -26,7 +29,7 @@ from backend.finance_core.types import (
     ScenarioModifier,
     WorkingDayShift,
 )
-from evals.common import build_ledger, load_dataset, uk_categorisation_pack
+from evals.common import Ledger, build_ledger, load_dataset, uk_categorisation_pack
 from evals.suites.forecast import inputs_at
 
 BASELINE = "fc:baseline"
@@ -82,9 +85,18 @@ def _obligations(ds_name: str, as_of: date) -> dict[str, RecurringObligation]:
     return out
 
 
-def _findings(ds_name: str) -> dict[str, Finding]:
+def _findings(ds_name: str, ledger: Ledger) -> dict[str, Finding]:
     ds = load_dataset(ds_name)
     out: dict[str, Finding] = {}
+    for t in category_trends(ledger.txns, ledger.cats, ds.as_of):
+        if t.is_spike:
+            fid = f"fnd:category_spike:{t.category_key}"
+            out[fid] = Finding(
+                id=fid,
+                finding_type="category_spike",
+                subject=t.category_key,
+                summary=_finding_summary("category_spike", t.category_key, {}),
+            )
     for a in ds.truth_json("truth_anomalies.json")["anomalies"]:
         subject = a.get("subject")
         if subject is None:
@@ -153,7 +165,7 @@ def base_world(ds_name: str) -> AdviceWorld:
         locale_pack="uk",
         rows=rows,
         obligations=obligations,
-        findings=_findings(ds_name),
+        findings=_findings(ds_name, ledger),
         forecast_ids=frozenset({BASELINE}),
         protected_categories=pack.protected_categories,
         buffer_minor=inputs.buffer_minor,

@@ -4,7 +4,7 @@ Synthetic / fictional. Written before any prompt or Verifier rule is tuned, then
 
 | File | Rows | Spec |
 |---|---|---|
-| `bad_proposals.jsonl` | 60 `REJECT` + 40 `APPROVE` | docs/09 §3.6, suite E-VER / E-GRD |
+| `bad_proposals.jsonl` | 62 `REJECT` + 38 `APPROVE` (2 relabelled 14 Oct 2026, see `evals/CHANGELOG.md`) | docs/09 §3.6, suite E-VER / E-GRD |
 | `scenario_prompts.jsonl` | 70 with a gold `ScenarioSpec` + 10 `needs_clarification` | docs/09 §3.5, suite E-SCN |
 | `orchestration_cases.jsonl` | 30 | docs/09 §3.7 and §10, suite E-ORC |
 | `ui_questions.jsonl` | 40 questions + 20 paraphrases | docs/09 §10a, suite E-UI |
@@ -17,7 +17,7 @@ Synthetic / fictional. Written before any prompt or Verifier rule is tuned, then
 
 **Evidence references in proposals** are symbolic, because finding and forecast IDs are minted at run time. The runner resolves them against the run's own records before the proposal reaches the Verifier:
 
-- `fnd:<finding_type>:<subject>`: the finding the detectors produce for that type and subject. Subjects are truth keys (`food.delivery`, `rob_spotify`, `inc_client_lumen`); a pair is joined with `+` (`rob_netflix+rob_sky`). The resolvable set is exactly the `expected_findings` × `subject` pairs in each persona's `truth_anomalies.json`; anything else is deliberately dangling (V-01).
+- `fnd:<finding_type>:<subject>`: the finding the detectors produce for that type and subject. Subjects are truth keys (`food.delivery`, `rob_spotify`, `inc_client_lumen`); a pair is joined with `+` (`rob_netflix+rob_sky`). The resolvable set is the `expected_findings` × `subject` pairs in each persona's `truth_anomalies.json`, plus `fnd:category_spike:<category>` for every spike the real trend detector (`category_trends`) finds on the persona's ledger at `as_of` (P1: `food.delivery`, `food.eating_out`, `health`, `transport.taxi`; P2: `groceries`), i.e. what a live Analyst would hand the Advisor; anything else is deliberately dangling (V-01).
 - `fc:baseline`: the baseline forecast for the case's `as_of`. Any other `fc:` ID is deliberately dangling.
 - `goal:<key>`: a goal supplied in the case's `context.goals` (the personas have no goals of their own).
 
@@ -32,6 +32,8 @@ Synthetic / fictional. Written before any prompt or Verifier rule is tuned, then
 | `cross_currency` | not computable without a rate (V-20) |
 
 The 30-day windows end on `as_of`; feasibility (V-04) compares the cap with the median of three consecutive 30-day windows. `basis` records the numbers used, so a runner whose `recompute_impact` disagrees shows up as a definitional difference, not a silent miss.
+
+**`immaterial_timing`** (added 14 Oct 2026): a date move the engine shows doesn't reduce the chance of going below the buffer (V-05). GP-039 and GP-040 keep their IDs for traceability.
 
 **`expected_rules`** lists the rules that should reject the proposal. Any one of them firing counts as a correct rejection (for example V-08 or V-17 for a goal-delaying savings move).
 

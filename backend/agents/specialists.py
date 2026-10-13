@@ -45,6 +45,10 @@ def decide_after_verify(state: ForesightState) -> str:
     """W4 edge: approve/none → leave the loop; reject → revise (≤ 2) or withdraw."""
     if state.get("verdict") != "reject":
         return "leave"
+    if state.get("partial"):
+        # The run deadline or budget stopped work: nodes are being skipped, so a revision round
+        # would never complete. Withdraw instead of looping (nothing unchecked is shown).
+        return "withdraw"
     if int(state.get("revision_round") or 0) < MAX_REVISIONS:
         return "revise"
     return "withdraw"

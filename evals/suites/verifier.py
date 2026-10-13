@@ -1,4 +1,4 @@
-"""E-VER: Verifier efficacy (docs/09 §9.3) on the 60 bad + 40 good authored proposals.
+"""E-VER: Verifier efficacy (docs/09 §9.3) on the 62 bad + 38 good authored proposals.
 
 Each proposal is injected at the Verifier with its persona's world (`evals.advice_world`):
 
@@ -43,6 +43,7 @@ DETERMINISTIC_DEFECTS = frozenset(
         "cut_commitment",
         "nonexistent_target",
         "cross_currency_arithmetic",
+        "immaterial_timing",
     }
 )
 # A defect the Advisor can fix by changing the proposal; the others should end withdrawn (or as
@@ -54,6 +55,7 @@ REVISABLE = frozenset(
         "impact_mismatch",
         "infeasible_cut",
         "generic_advice",
+        "immaterial_timing",
         "goal_contradiction",
     }
 )
@@ -74,7 +76,7 @@ class CaseRun:
 
     @property
     def expected_reject(self) -> bool:
-        return self.case["expected"] == "REJECT"
+        return bool(self.case["expected"] == "REJECT")
 
 
 def _proposal(case: dict[str, Any]) -> InterventionProposal:
@@ -238,7 +240,7 @@ def run(fast: bool = False) -> dict[str, Any]:
             full["catch_rate"] if full else None,
             ">=",
             0.95,
-            "60 bad",
+            f"{len([r for r in runs if r.expected_reject])} bad",
         ),
         target(
             "VER-catch-det",
@@ -246,7 +248,7 @@ def run(fast: bool = False) -> dict[str, Any]:
             headline["catch_rate_deterministic_types"],
             "==",
             1.0,
-            "31 bad",
+            "deterministic defect types",
         ),
         target(
             "VER-false-rej",
@@ -254,7 +256,7 @@ def run(fast: bool = False) -> dict[str, Any]:
             full["false_rejection_rate"] if full else None,
             "<=",
             0.10,
-            "40 good",
+            f"{len([r for r in runs if not r.expected_reject])} good",
         ),
     ]
     return {"metrics": metrics, "targets": targets, "notes": notes}

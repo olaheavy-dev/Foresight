@@ -145,3 +145,34 @@ def test_uk_lexicon_comes_from_the_pack_and_unknown_pack_is_rejected() -> None:
     assert {"DELIVEROO", "OCTOPUS ENERGY", "NETFLIX"} <= default_merchants("uk")
     with pytest.raises(ValueError, match="unknown locale pack"):
         redact_text("x", locale_pack="fr")
+
+
+# ---------------------------------------------------------------- numbers in agent data messages
+
+
+def test_numbers_inside_a_json_message_are_never_masked() -> None:
+    data = {
+        "data": {
+            "spending": [{"category_key": "housing.rent", "last_30d_minor": 125000}],
+            "forecast": {"lowest_minor": 26218, "chance_below_buffer": 0.684},
+            "count": 1234567,
+        }
+    }
+    payload = {"messages": [{"role": "user", "content": json.dumps(data, ensure_ascii=False)}]}
+    out = redact(payload, locale_pack="uk")
+    parsed = json.loads(out["messages"][0]["content"])
+    assert parsed == data  # rent 125000 and every other number survive, and it stays valid JSON
+
+
+def test_identifiers_inside_a_json_message_are_still_masked() -> None:
+    data = {"rows": [{"narration": "DD PAYMENT ACCOUNT 41234567 REF 993311", "amount": 125000}]}
+    payload = {"messages": [{"role": "user", "content": json.dumps(data)}]}
+    content = redact(payload, locale_pack="uk")["messages"][0]["content"]
+    narration = json.loads(content)["rows"][0]["narration"]
+    assert "41234567" not in narration
+    assert "993311" not in narration
+    assert json.loads(content)["rows"][0]["amount"] == 125000
+
+
+def test_account_number_in_plain_narration_text_is_still_masked() -> None:
+    assert "41234567" not in redact_text("FPO 41234567 RENT", locale_pack="uk")

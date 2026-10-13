@@ -2,7 +2,7 @@
   "files": {
     "bad_proposals.jsonl": {
       "rows": 100,
-      "sha256": "578c9fd5b4378f24a4a0fbe09d3d0740c44539ea008558d790c781e6e4f4829e"
+      "sha256": "984180034d79e6e8394649ffe4395fd34e090be74efda9546822a4a112f1cea7"
     },
     "followup_cases.jsonl": {
       "rows": 80,

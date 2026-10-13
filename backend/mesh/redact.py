@@ -2,6 +2,9 @@
 
 `redact(payload, locale_pack=...)` walks a JSON-like payload and masks identifiers in every string
 value. Keys, numbers and booleans are left alone (amounts travel as bands, never as identifiers).
+A string that is itself a JSON document (an agent's `data` message) is parsed and walked the same
+way, so its numbers (amounts in minor units, counts) are never mistaken for references; only its
+string values are masked.
 It is deterministic: the same payload always gives the same output, and within one call the same
 person is always the same `PERSON_n` placeholder, so a model can still see that two rows are the
 same counterparty without learning who it is.
@@ -25,6 +28,7 @@ The module is pure: no network, no AI SDK, no storage (import-linter contracts, 
 
 from __future__ import annotations
 
+import json
 import re
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
@@ -246,6 +250,10 @@ def _transfer_counterparties(value: Any) -> list[str]:
     elif isinstance(value, list | tuple):
         for v in value:
             out += _transfer_counterparties(v)
+    elif isinstance(value, str):
+        document = _json_document(value)
+        if document is not None:
+            out += _transfer_counterparties(document)
     return out
 
 
@@ -307,6 +315,18 @@ def _long_ref(m: re.Match[str]) -> str:
     return "REF"
 
 
+def _json_document(text: str) -> Any:
+    """The parsed value when `text` is a JSON object or array, else None."""
+    stripped = text.strip()
+    if not stripped or stripped[0] not in "{[":
+        return None
+    try:
+        value = json.loads(stripped)
+    except ValueError:
+        return None
+    return value if isinstance(value, dict | list) else None
+
+
 def redact(
     payload: Mapping[str, Any],
     *,
@@ -329,6 +349,10 @@ def redact(
     names = (tuple(people) + tuple(found), tuple(household_members), tuple(employers))
 
     def walk(value: Any, key: str | None = None, transfer: bool = False) -> Any:
+        if isinstance(value, str):
+            document = _json_document(value)
+            if document is not None:
+                return json.dumps(walk(document), ensure_ascii=False)
         if isinstance(value, str) and transfer and key in _COUNTERPARTY_KEYS:
             words = value.upper().split()
             if _looks_like_person(words, lexicon):

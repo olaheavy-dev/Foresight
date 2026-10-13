@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import re
 from collections.abc import Callable, Iterator
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import pytest
@@ -155,3 +156,44 @@ def test_orc5_permanently_bad_advisor_is_withdrawn_after_two_revisions(p1: Agent
     assert [r.status for r in recs] == ["withdrawn"]
     assert [v.verdict for v in p1.verifications(recs[0].id)] == ["REJECT"] * 3
     assert not out.state.get("approved_recs")
+
+
+def test_a_rejected_draft_after_the_deadline_withdraws_instead_of_looping(p1: AgentStore) -> None:
+    """Regression: once the run deadline passes every node is skipped, so a rejected draft must
+    leave the loop (it used to cycle advise → verify → revise until LangGraph's recursion limit)."""
+    start = datetime.now(timezone.utc)
+    late = {"now": False}
+
+    def clock() -> datetime:
+        return start + (timedelta(hours=1) if late["now"] else timedelta())
+
+    def advise(state: ForesightState, ctx: RunContext) -> NodeOutput:
+        return NodeOutput(update={"proposals": [{"proposal_key": "p1"}]})
+
+    def verify(state: ForesightState, ctx: RunContext) -> NodeOutput:
+        late["now"] = True  # the deadline passes while the first draft is being checked
+        return NodeOutput(update={"verdict": "reject", "proposals": [{"proposal_key": "p1"}]})
+
+    def risk(state: ForesightState, ctx: RunContext) -> NodeOutput:
+        return NodeOutput(update={"risk_flags": [{"kind": "buffer_breach"}]})
+
+    out = run_workflow(
+        p1,
+        workflow="risk_detection",
+        trigger="event",
+        event="data_version_changed",
+        nodes={
+            **STAND_INS,
+            "advise": NodeSpec("advise", "advisor", "llm", advise, "Drafting"),
+            "verify": NodeSpec("verify", "verifier", "llm", verify, "Checking"),
+            "risk_check": NodeSpec("risk_check", "forecaster", "tool", risk, "Risks"),
+        },
+        clock=clock,
+    )
+    nodes = [s.node for s in p1.steps(out.run_id)]
+    # One skipped revision round (the deadline is noticed by the next node), then withdraw.
+    assert nodes.count("verify") == 2
+    assert nodes.count("revise") == 1
+    assert nodes.count("withdraw") == 1
+    assert len(nodes) < 20
+    assert out.partial is True

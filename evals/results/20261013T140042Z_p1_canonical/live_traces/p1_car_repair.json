@@ -1,0 +1,347 @@
+{
+  "persona": "P1-base (synthetic)",
+  "question": "My car needs a £650 repair on 14 October. Will I be OK before payday, and what should I do?",
+  "recorded_at": "2026-10-13T13:59:17+00:00",
+  "run": {
+    "status": "succeeded",
+    "partial": true,
+    "answered": false
+  },
+  "steps": [
+    {
+      "seq": 1,
+      "node": "intake",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Reading your question",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 2,
+      "node": "prefetch",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Loading your latest forecast",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 1
+    },
+    {
+      "seq": 3,
+      "node": "understand",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Understanding your question",
+      "model": "openai/gpt-6-luna",
+      "llm_calls": 1,
+      "tokens_in": 1038,
+      "tokens_out": 249,
+      "cost_estimate_usd": 0.0002283,
+      "latency_ms": 1041
+    },
+    {
+      "seq": 4,
+      "node": "triage",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Deciding how to answer",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 5,
+      "node": "cache_lookup",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Planning the work",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 13
+    },
+    {
+      "seq": 6,
+      "node": "forecaster",
+      "agent": "forecaster",
+      "status": "ok",
+      "label": "Simulating your what-if on the same forecast",
+      "model": "gpt-6-luna",
+      "llm_calls": 1,
+      "tokens_in": 2046,
+      "tokens_out": 139,
+      "cost_estimate_usd": 0.0002741,
+      "latency_ms": 5422
+    },
+    {
+      "seq": 7,
+      "node": "advise",
+      "agent": "advisor",
+      "status": "ok",
+      "label": "Drafting a recommendation",
+      "model": "anthropic/claude-sonnet-5.5",
+      "llm_calls": 1,
+      "tokens_in": 3775,
+      "tokens_out": 1450,
+      "cost_estimate_usd": 0.02205,
+      "latency_ms": 13267
+    },
+    {
+      "seq": 8,
+      "node": "verify",
+      "agent": "verifier",
+      "status": "ok",
+      "label": "Verifier rejected 3 draft(s)",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 233
+    },
+    {
+      "seq": 9,
+      "node": "revise",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Verifier rejected a draft; revising",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 10,
+      "node": "advise",
+      "agent": "advisor",
+      "status": "ok",
+      "label": "Revising the recommendation",
+      "model": "anthropic/claude-sonnet-5.5",
+      "llm_calls": 1,
+      "tokens_in": 4686,
+      "tokens_out": 1600,
+      "cost_estimate_usd": 0.025372,
+      "latency_ms": 15525
+    },
+    {
+      "seq": 11,
+      "node": "verify",
+      "agent": "verifier",
+      "status": "ok",
+      "label": "Verifier rejected 3 draft(s)",
+      "model": "openai/gpt-6.1-sol",
+      "llm_calls": 3,
+      "tokens_in": 2766,
+      "tokens_out": 477,
+      "cost_estimate_usd": 0.010302,
+      "latency_ms": 34356
+    },
+    {
+      "seq": 12,
+      "node": "revise",
+      "agent": "coordinator",
+      "status": "skipped",
+      "label": "Revising the draft: stopped, run deadline reached",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 13,
+      "node": "advise",
+      "agent": "advisor",
+      "status": "skipped",
+      "label": "Drafting a recommendation: stopped, run deadline reached",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 14,
+      "node": "verify",
+      "agent": "verifier",
+      "status": "skipped",
+      "label": "Checking the recommendation: stopped, run deadline reached",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 15,
+      "node": "withdraw",
+      "agent": "coordinator",
+      "status": "skipped",
+      "label": "Withdrawing the draft: stopped, run deadline reached",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 16,
+      "node": "compose",
+      "agent": "coordinator",
+      "status": "skipped",
+      "label": "Composing the answer: stopped, run deadline reached",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 17,
+      "node": "persist_response",
+      "agent": "coordinator",
+      "status": "skipped",
+      "label": "Answer ready: stopped, run deadline reached",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    }
+  ],
+  "recommendations": [
+    {
+      "status": "in_review",
+      "revisions": 0,
+      "final": {
+        "action": "move_purchase_date",
+        "params": {
+          "label": "Car repair",
+          "to_date": "2026-10-28",
+          "from_date": "2026-10-14",
+          "amount_minor": 65000
+        },
+        "title": "Pay the car repair on payday if the garage allows"
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "verdict": "REJECT",
+          "failed": [
+            "V-02@1",
+            "V-05@1"
+          ],
+          "critique": "Tie the proposal to a finding or the forecast that triggered it.\nChoose an action worth at least £10 a month or 5 points less risk."
+        }
+      ]
+    },
+    {
+      "status": "in_review",
+      "revisions": 1,
+      "final": {
+        "action": "cap_category",
+        "params": {
+          "category_key": "shopping.clothing",
+          "monthly_cap_minor": 13053
+        },
+        "title": "Cap clothing spending back to your usual level"
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "verdict": "REJECT",
+          "failed": [
+            "V-02@1"
+          ],
+          "critique": "Tie the proposal to a finding or the forecast that triggered it."
+        },
+        {
+          "round": 2,
+          "verdict": "REJECT",
+          "failed": [
+            "V-11@1"
+          ],
+          "critique": "V-11: The cited cash-flow forecast does not support the claim that clothing spending is above its usual level."
+        }
+      ]
+    },
+    {
+      "status": "in_review",
+      "revisions": 1,
+      "final": {
+        "action": "cap_category",
+        "params": {
+          "category_key": "food.eating_out",
+          "monthly_cap_minor": 26135
+        },
+        "title": "Cap eating out at your usual level"
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "verdict": "REJECT",
+          "failed": [
+            "V-02@1"
+          ],
+          "critique": "Tie the proposal to a finding or the forecast that triggered it."
+        },
+        {
+          "round": 2,
+          "verdict": "REJECT",
+          "failed": [
+            "V-11@1"
+          ],
+          "critique": "V-11: The cited forecast does not establish that eating-out spending exceeds the typical month or that the balance falls below the buffer in every coming pay cycle."
+        }
+      ]
+    },
+    {
+      "status": "in_review",
+      "revisions": 1,
+      "final": {
+        "action": "cap_category",
+        "params": {
+          "category_key": "food.delivery",
+          "monthly_cap_minor": 20310
+        },
+        "title": "Cap food delivery at your usual level"
+      },
+      "rounds": [
+        {
+          "round": 2,
+          "verdict": "REJECT",
+          "failed": [
+            "V-11@1"
+          ],
+          "critique": "V-11: The cited cash-flow forecast does not establish that food-delivery spending is above the three-month norm, so the rationale is not fully grounded."
+        }
+      ]
+    }
+  ],
+  "cost": {
+    "model_calls": 7,
+    "tokens": 18226,
+    "usd_estimate": 0.0582264
+  }
+}
