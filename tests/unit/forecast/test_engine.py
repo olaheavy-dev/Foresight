@@ -43,6 +43,20 @@ def test_pay_cycles_and_buffer_chance(inputs: ForecastInputs) -> None:
     assert date(2026, 10, 13) <= first.low_date < date(2026, 10, 28)
 
 
+def test_headline_low_is_the_lowest_pay_cycle_low(inputs: ForecastInputs) -> None:
+    fc = build_forecast(inputs)
+    assert fc.pay_cycles
+    lowest = min(fc.pay_cycles, key=lambda c: c.low.p50)
+    assert fc.min_balance_p50_minor == lowest.low.p50
+    assert fc.min_balance_date == lowest.low_date
+
+
+def test_headline_low_without_paydays_covers_the_whole_horizon(inputs: ForecastInputs) -> None:
+    fc = build_forecast(dataclasses.replace(inputs, income_streams=()))
+    assert fc.pay_cycles == ()
+    assert fc.min_balance_p50_minor <= min(fc.p50[1:])
+
+
 def test_relative_mode_has_no_breach_probability(inputs: ForecastInputs) -> None:
     fc = build_forecast(dataclasses.replace(inputs, starting_balance_provenance="relative"))
     assert fc.p50[0] == 0

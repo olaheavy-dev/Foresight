@@ -40,7 +40,7 @@ from backend.finance_core.types import (
     Quantiles,
 )
 
-ENGINE_VERSION = "fc-1.2.0"
+ENGINE_VERSION = "fc-1.2.1"
 HISTORY_WINDOW_DAYS = 90  # W in docs/07 §6.1: the everyday-spend bootstrap pool
 LOOKBACK_DAYS = 365  # one-off expense rate and sizes are estimated over up to a year
 MIN_LOOKBACK_DAYS = 90  # a short history still spreads its one-offs over at least 90 days
@@ -401,6 +401,28 @@ def pay_cycle_lows(
     return tuple(out)
 
 
+def _lowest_balance(
+    dates: Sequence[date], balances: IntArray, cycles: Sequence[PayCycleLow]
+) -> tuple[int, date]:
+    """The headline "lowest balance": the lowest of the pay-cycle lows (P50 of the path-wise
+    minimum within each cycle, docs/07 §6.5), so the summary always equals one of the lows the
+    user sees. Ties go to the earliest cycle. Without a complete pay cycle in the horizon (no
+    income detected), the whole horizon after today is treated as one window.
+
+    Taking the P50 of the path-wise minimum over the whole horizon instead mixes cycles: each
+    path contributes its worst cycle, so the median sits below every cycle's own low while
+    sharing its modal date, and the two figures contradict each other on screen."""
+    if cycles:
+        lowest = min(cycles, key=lambda c: c.low.p50)
+        return lowest.low.p50, lowest.low_date
+    future = balances[:, 1:] if balances.shape[1] > 1 else balances
+    offset = 1 if balances.shape[1] > 1 else 0
+    return (
+        int(quantile_minor(future.min(axis=1), QUANTILES["p50"])),
+        _modal_date(dates, future.argmin(axis=1), offset),
+    )
+
+
 def summarise(
     prep: Prepared,
     balances: IntArray,
@@ -408,9 +430,10 @@ def summarise(
     cycle_paydays: Sequence[date] | None = None,
 ) -> ForecastResult:
     dates = prep.dates
-    future = balances[:, 1:] if balances.shape[1] > 1 else balances
-    path_min = future.min(axis=1)
-    offset = 1 if balances.shape[1] > 1 else 0
+    cycles = pay_cycle_lows(
+        prep, balances, prep.paydays if cycle_paydays is None else cycle_paydays
+    )
+    min_p50, min_date = _lowest_balance(dates, balances, cycles)
     return ForecastResult(
         as_of=prep.inputs.as_of,
         currency=prep.inputs.currency,
@@ -419,11 +442,9 @@ def summarise(
         p10=_series(balances, QUANTILES["p10"]),
         p50=_series(balances, QUANTILES["p50"]),
         p90=_series(balances, QUANTILES["p90"]),
-        pay_cycles=pay_cycle_lows(
-            prep, balances, prep.paydays if cycle_paydays is None else cycle_paydays
-        ),
-        min_balance_p50_minor=int(quantile_minor(path_min, QUANTILES["p50"])),
-        min_balance_date=_modal_date(dates, future.argmin(axis=1), offset),
+        pay_cycles=cycles,
+        min_balance_p50_minor=min_p50,
+        min_balance_date=min_date,
         buffer_minor=None if prep.relative else prep.inputs.buffer_minor,
         n_paths=prep.inputs.n_paths,
         seed=prep.inputs.seed,

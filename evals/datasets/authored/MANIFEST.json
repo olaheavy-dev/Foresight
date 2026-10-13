@@ -1,0 +1,26 @@
+{
+  "files": {
+    "bad_proposals.jsonl": {
+      "rows": 100,
+      "sha256": "578c9fd5b4378f24a4a0fbe09d3d0740c44539ea008558d790c781e6e4f4829e"
+    },
+    "followup_cases.jsonl": {
+      "rows": 80,
+      "sha256": "9dd01fbf5935d6b72d7cf2141c5ab9ebd42435384e3ca7c5a3fbecec65725ae5"
+    },
+    "orchestration_cases.jsonl": {
+      "rows": 30,
+      "sha256": "c86017cad44ccdf121d0166f3691639c0a1fc6c3f7305e6dee2f72e957d7b019"
+    },
+    "scenario_prompts.jsonl": {
+      "rows": 80,
+      "sha256": "2b861b991e12451d8d5af48ff57db6b9efb36d8f38b84e14515c80f75597d5f4"
+    },
+    "ui_questions.jsonl": {
+      "rows": 60,
+      "sha256": "96c6237e6b5f378d2a84c4cef16a618b1016e7bb298ed848d49ba9a9064112b7"
+    }
+  },
+  "note": "synthetic / fictional, hand-authored",
+  "version": "authored-1"
+}
