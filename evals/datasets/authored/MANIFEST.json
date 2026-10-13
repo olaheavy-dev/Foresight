@@ -1,8 +1,8 @@
 {
   "files": {
     "bad_proposals.jsonl": {
-      "rows": 100,
-      "sha256": "984180034d79e6e8394649ffe4395fd34e090be74efda9546822a4a112f1cea7"
+      "rows": 96,
+      "sha256": "aa53bf1e3cbf205580e63b44537e9bbef93f61fde1aefcc0dd0f925f68986547"
     },
     "followup_cases.jsonl": {
       "rows": 80,

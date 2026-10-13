@@ -189,3 +189,14 @@ def test_one_payee_recurring_in_two_categories_gets_two_unique_keys() -> None:
     assert len(keys) == len(set(keys)) == 2
     assert keys.count("rob_harbourside_homes") == 1
     assert any(k.startswith("rob_harbourside_homes_transport") for k in keys)
+
+
+def test_low_volume_category_jump_is_not_a_trend() -> None:
+    """Fewer than MIN_BASE_COUNT purchases in a typical month is not a behaviour: a few extra
+    taxi rides are not a trend, but the same jump in a regular habit is (docs/07 §6.6)."""
+    as_of = date(2026, 10, 11)
+    # 2 rides a month for three months (MAD 0), then 4 rides at the same fare: +100%.
+    rare = _windows("UBER", [8000, 4000, 4000, 4000], as_of, per_window=2)
+    assert _spikes(rare, as_of) == set()
+    regular = _windows("DELIVEROO", [40000, 20000, 20000, 20000], as_of, per_window=10)
+    assert _spikes(regular, as_of) == {"food.delivery"}

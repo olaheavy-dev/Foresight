@@ -160,8 +160,20 @@ def load_pack(yaml_text: str) -> CategorisationPack:
     )
 
 
+def _canon(text: str) -> str:
+    """Matching form shared by narrations and pack phrases: narration normalisation turns "-" into
+    a space ("CO-OP" → "CO OP"), and banks write "&" or "AND" ("TONI & GUY", "TONI AND GUY"), so
+    both sides are compared with "-" as a space and "&" as AND. Matching only: stored and
+    model-bound text is unchanged."""
+    return " ".join(text.upper().replace("&", " AND ").replace("-", " ").split())
+
+
 def contains_phrase(normalised: str, phrase: str) -> bool:
     """Whole-word (or whole-phrase) match on an uppercase normalised narration."""
     if not phrase:
         return False
-    return re.search(r"(?<![A-Z0-9])" + re.escape(phrase) + r"(?![A-Z0-9])", normalised) is not None
+    target = _canon(phrase)
+    return (
+        re.search(r"(?<![A-Z0-9])" + re.escape(target) + r"(?![A-Z0-9])", _canon(normalised))
+        is not None
+    )

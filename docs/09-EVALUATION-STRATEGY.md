@@ -242,7 +242,7 @@ Ten ambiguous prompts have gold `needs_clarification` with the expected slot.
 
 ### 3.6 Adversarial recommendation set — `bad_proposals.jsonl`
 
-62 flawed `InterventionProposal`s (expected `REJECT`) and 38 good ones (expected `APPROVE`; 2 relabelled on 13 Oct 2026, see `evals/CHANGELOG.md`):
+62 flawed `InterventionProposal`s (expected `REJECT`) and 34 good ones (expected `APPROVE`; 2 relabelled and 4 removed on 13 Oct 2026, see `evals/CHANGELOG.md`):
 
 | Defect type | Count | Example |
 |---|---|---|
@@ -879,7 +879,7 @@ Evidence from the live run: `evals/results/<run>/audit_chain_example.json` (one 
 | Categorisation | Accuracy · macro-F1 | UK holdout (n=—) | — · — | rules-only — | ≥ 0.85 · ≥ 0.80 | — |
 | Forecast | MAE @30d (£) | P1 | — | repeat-30 — | skill ≥ 0.20 | — |
 | Forecast | P10–P90 coverage | all | — | — | 0.72–0.88 | — |
-| Verifier | Bad caught · good falsely rejected | 60 / 40 | — · — | — | ≥ 0.95 · ≤ 0.10 | — |
+| Verifier | Bad caught · good falsely rejected | 62 / 34 | — · — | — | ≥ 0.95 · ≤ 0.10 | — |
 
 **All suites**
 

@@ -9,6 +9,11 @@ don't recur, docs/00 §13); in a category where large amounts are routine (resta
 coffees) they are ordinary behaviour and stay in. A category with no spending in the prior
 windows has no baseline to compare against; a first purchase is a new-merchant finding, not a
 trend.
+
+A category must also be a regular behaviour: at least MIN_BASE_COUNT purchases in a typical prior
+window (the median of the three). Below that, a month's total is a handful of purchases and a
+"spike" is one or two extra ones (a second taxi, a dentist visit), not a change in behaviour
+(docs/07 §6.6, measured on dev windows; owner-approved 13 Oct 2026).
 """
 
 from __future__ import annotations
@@ -29,6 +34,7 @@ _SPEND = {FlowKind.SPENDING, FlowKind.FEE, FlowKind.BETTING}
 ONE_OFF_MULTIPLE = 3
 ONE_OFF_MAX_ROWS = 2  # more large rows than this in the four windows ⇒ large amounts recur
 NOT_A_BEHAVIOUR = frozenset({"uncategorised"})
+MIN_BASE_COUNT = 5  # median purchases per prior window for a category to count as a behaviour
 
 
 @dataclass(frozen=True)
@@ -81,10 +87,13 @@ def category_trends(
         start = end - timedelta(days=WINDOW_DAYS - 1)
         recent, count = _window_total(rows, start, end)
         prior = []
+        prior_counts = []
         for k in range(1, 4):
             p_end = start - timedelta(days=1 + WINDOW_DAYS * (k - 1))
             p_start = p_end - timedelta(days=WINDOW_DAYS - 1)
-            prior.append(_window_total(rows, p_start, p_end)[0])
+            p_total, p_count = _window_total(rows, p_start, p_end)
+            prior.append(p_total)
+            prior_counts.append(p_count)
         usual = int(statistics.median(prior))
         mad = statistics.median([abs(p - usual) for p in prior])
         z = (
@@ -94,8 +103,10 @@ def category_trends(
         )
         delta = recent - usual
         share = delta / usual if usual else 0.0
+        regular = statistics.median(prior_counts) >= MIN_BASE_COUNT
         spike = (
             usual > 0
+            and regular
             and z >= Z_THRESHOLD
             and abs(delta) >= max(min_delta_minor, MIN_DELTA_SHARE * usual)
         )

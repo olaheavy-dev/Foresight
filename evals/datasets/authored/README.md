@@ -4,7 +4,7 @@ Synthetic / fictional. Written before any prompt or Verifier rule is tuned, then
 
 | File | Rows | Spec |
 |---|---|---|
-| `bad_proposals.jsonl` | 62 `REJECT` + 38 `APPROVE` (2 relabelled 13 Oct 2026, see `evals/CHANGELOG.md`) | docs/09 §3.6, suite E-VER / E-GRD |
+| `bad_proposals.jsonl` | 62 `REJECT` + 34 `APPROVE` (2 relabelled and 4 removed 13 Oct 2026, see `evals/CHANGELOG.md`) | docs/09 §3.6, suite E-VER / E-GRD |
 | `scenario_prompts.jsonl` | 70 with a gold `ScenarioSpec` + 10 `needs_clarification` | docs/09 §3.5, suite E-SCN |
 | `orchestration_cases.jsonl` | 30 | docs/09 §3.7 and §10, suite E-ORC |
 | `ui_questions.jsonl` | 40 questions + 20 paraphrases | docs/09 §10a, suite E-UI |
