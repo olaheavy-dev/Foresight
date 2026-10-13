@@ -163,10 +163,14 @@ Coordinator + 5 agents via Mesh, the Advisor⇄Verifier loop with mandatory clai
 | AGT-05 | **Forecaster**: NL → ScenarioSpec (+ `needs_clarification`), simulate, explain drivers | 4 | AGT-01, ENG-05 | E-SCN runs on 80 prompts |
 | AGT-06 | **Advisor**: typed InterventionProposals citing IDs; impacts from `simulate`; never cuts `family_support_abroad` unless asked | 4 | AGT-04, AGT-05 | P1 proposals cite only existing IDs |
 | AGT-07 | **Verifier** + loop: deterministic checks (refs, recompute impact **±1%**, feasibility **≤ 40% below the 3-month median**, essentials/commitments (01 FR-50), generic advice, betting neutrality) → LLM judge; REJECT → critique → Advisor (≤ 2) → APPROVE/WITHDRAW; persist every VerificationResult | 6 | AGT-06 | ORC-4, ORC-5 pass; the loop loops on the adversarial set; the P1 live run shows whatever it produces, and the committed live traces report the observed revision distribution (round > 1 counts) |
-| AGT-08 | Error recovery: retries, JSON repair once, Narrative fallback, timeouts | 2 | AGT-01 | ORC-6, ORC-7 pass |
+| AGT-08 | Error recovery: retries, JSON repair once, Narrative fallback, per-node timeouts and run deadlines, Mesh circuit breaker (05 §6.4) | 3 | AGT-01 | ORC-6, ORC-7 pass; breaker opens on 5 recorded failures and the answer says "AI explanation unavailable" |
 | AGT-09 | Cassette record/replay in `mesh_client` (`CassetteMiss` on drift; each cassette stores Mesh response id, model, usage, timestamp, live-run sha) | 3 | PLT-04 | LLM suites run offline |
 | AGT-10 | Response composer: block choice + refs → hydrate from the calc store → validate → `rsp_` snapshot | 4 | AGT-07, API-01 | ORC-12 passes |
 | AGT-11 | **Commit replay cassettes** for every LLM suite and the canonical journeys **before** CI runs LLM suites in replay; cassettes carry Mesh response id, model, usage, live-run sha | 1 | AGT-09 | `eval-replay` CI job runs LLM suites with 0 `CassetteMiss` |
+| AGT-12 | **Ask pipeline front half** (05 §4.2 stages 0–2): intake (`client_msg_id` idempotency, limits, Unicode clean-up), stage-1 rule-pack screen, one `fast` Understand call (standalone rewrite + intent + slots + flags; replaces AGT-01's separate intent call), `WorkspaceSnapshot` prefetch in parallel | 4 | AGT-01 | ORC-9 passes; the standalone question is stored on the message; prefetch overlaps the Understand call in the step timings |
+| AGT-13 | **Injection defence** (05 §7.4a): imported text only in masked, length-capped `data` fields; `suspicious_text` flag at import (rules-only, never sent verbatim); prompt canary + compose-time output screen; `AuditEvent prompt_leak_blocked` | 3 | AGT-03, AGT-12 | SEC-1…SEC-4 pass on the committed cassettes |
+| AGT-14 | **Run event stream**: `GET /runs/{id}/events` with the typed events of 05 §4.2 (templated labels, never model text), `Last-Event-ID` replay from `AgentStep`, heartbeat; run independent of the connection | 2 | AGT-02, API-02 | Reconnect mid-run replays missed events; closing the tab still stores the answer |
+| EVL-21 | `injection_cases.jsonl` (80 + 20 dev) and `followup_cases.jsonl` (40 conversations, 20 paraphrase + 20 near-miss pairs), frozen by sha256; **E-SEC** wired into `make eval` (E-CTX wired with AGT-15) | 4 | EVL-08 | E-SEC numbers in `latest.json` |
 | EVL-04 | `bad_proposals.jsonl` (60 incl. `cut_commitment`, `non_neutral_betting`, 4 × `cross_currency_arithmetic` for V-20) + good (40); `orchestration_cases.jsonl` (30); `scenario_prompts.jsonl` (80, UK) | 5 | — | Committed with defect taxonomy |
 | EVL-06 | E-SIM property suite, golden fixture frozen | 3 | ENG-05 | 100% pass; golden hash committed |
 | EVL-08 | E-CAT, E-GRD, E-VER, E-ORC, E-AUD, E-SCN wired, replay-capable | 5 | AGT-07, AGT-09, EVL-04 | `make eval` runs all suites in replay |
@@ -176,7 +180,7 @@ Coordinator + 5 agents via Mesh, the Advisor⇄Verifier loop with mandatory clai
 | WEB-03 | Typed API client, block renderers (11 types) with Overview/tab placement + Evidence drawer (calc, findings, run timeline, verification history, provenance badges incl. "declared") | 8 | API-01, WEB-02 | All fixtures render; invalid block → Narrative |
 | WEB-06 | **AI Workspace** `/workspace` (TASKS: *AI Workspace shell*, *Answer canvas* ×2, *Clarifying-question and fallback blocks*, *Agent progress*): threads, pinned follow-up input, streaming steps, the answer skeleton (`08` §7a: fixed Overview slots; tabs Overview · Details · Recommendation · Transactions · How it was checked), follow-up actions | 7 | WEB-03, API-00; agent answers via API-02 | Canonical P1 questions render the expected Overview; input visible at every breakpoint |
 
-*Stage total ≈ 96 owner-hours.*
+*Stage total ≈ 110 owner-hours (rev 7 added AGT-12…14 and EVL-21, about 14 h, for the Ask pipeline and injection defence). This is more than two days for one builder; if Stage 2 runs late, AGT-14's replay and the E-CTX half of EVL-21 move to Stage 3 first. AGT-13 and E-SEC do not move: injection defence ships with the first agent that reads imported text.*
 
 ### Stage 3 — Experiences, proactive and goals (Sat 17 – Sun 18 Oct) → `submittable-N` daily
 
@@ -200,9 +204,12 @@ Landing, Home, Insight detail, Decision Lab, Transactions, Activity, `/quality`,
 | WEB-10 | Settings `/settings` + public **Quality** `/quality` (TASKS: *Settings*, *Quality*): profile (name, country, home currency), buffer, goals, digest, export/delete, betting-insights opt-in; Quality reads `latest.json` | 3 | WEB-03 | Delete removes all workspace rows |
 | SEC-01 | **Postgres row-level security** (hardening, defence in depth): enable RLS on every workspace-owned table with policies on `current_setting('app.workspace_id')`; the session sets it from `WorkspaceContext`; the app role is not a superuser and cannot bypass RLS | 2 | ING-05, API-00 | A deliberately unscoped query from the app role returns 0 rows for another workspace; isolation tests pass with RLS on |
 | WEB-11 | States, responsive, dark mode and accessibility passes (TASKS: *Interactions & States*, *Responsive & Polish*, *Design review*) | 5 | WEB-04…10 | axe: 0 serious on every shipped surface; screenshots at 375/768/1280/1440 match `design/hifi/` |
+| AGT-15 | **Exact answer cache** (05 §4.2 stage 3), flag `answer_cache`: key over intent, canonical slots and every version; `cached` step and "Same data as your answer at …" label; never caches clarify, small talk or refusals. **E-CTX** wired | 2 | AGT-12, EVL-21 | CTX-4 ≥ 0.90 and CTX-5 = 0 before the flag goes on |
+| EVL-22 | **Ablation runner** `python -m evals.ablate` (09 §10d): new E-FC arms (naive calendar, no recurring obligations), Verifier-off and judge-off arms, rewrite-off, screen-off, cache-off, sequential prefetch; README "What moves the numbers" table, biggest lever auto-filled | 3 | EVL-09, AGT-15 | Every arm has a value or an explicit "not run" in `latest.json` |
+| OPS-01 | `GET /ops/metrics` (owner session, aggregates only) and the Activity run waterfall from `AgentRun`/`AgentStep` (05 §8) | 2 | AGT-02, WEB-08 | p50/p95 per workflow and node, cache hit rate, calls per answer, rejection rate, breaker openings |
 | PRV-04a | **Private importer validation, CSV half** (time-boxed 1 h slot at the end of Stage 3, independent of Stage 4): `csv_statement` on the owner's two CSV exports; categorisation coverage (share of rows at confidence ≥ 0.85) and the inflow-ladder class mix; `--llm=off`; aggregates only | 1 | ING-01b, ING-15 | Per-file result for both CSVs written to `~/.foresight-private/results/` |
 
-*Stage total ≈ 66 owner-hours.*
+*Stage total ≈ 73 owner-hours (rev 7 added AGT-15, EVL-22, OPS-01).*
 
 ### Stage 4 — Tier 2, flag-gated, strictly in this order (only if the previous item is green, and only before the 19 Oct 12:00 freeze)
 

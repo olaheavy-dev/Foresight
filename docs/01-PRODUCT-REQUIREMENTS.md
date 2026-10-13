@@ -334,7 +334,7 @@ Each FR is testable. The test type is noted: **U** = unit, **I** = integration, 
 - **FR-54** Recommendation outcome: after the period ends, the target metric is recomputed and the recommendation is marked `verified_effective` / `not_effective`. *(I)*
 - **FR-55** Verifier catch-rate: on the adversarial set of deliberately bad proposals (`09`), the rejection rate is measured and reported per defect type. *(E)*
 
-### 7.8 Orchestration and conversation (FR-56 – FR-63)
+### 7.8 Orchestration and conversation (FR-56 – FR-63, FR-88 – FR-91)
 - **FR-56** The Coordinator is a LangGraph `StateGraph` with named nodes per agent. System events route by a fixed table. User questions route by LLM intent classification into the `IntentClassification.intent` enum in `06` §4.0 (mapped to response presentation intents by `08` §4.1). *(U, I)*
 - **FR-57** Every LLM call goes through `mesh/mesh_client.py` (base URL `https://api.meshapi.ai/v1`, key from `MESH_API_KEY`). No other module imports an LLM SDK (enforced by a test). *(U, CI)*
 - **FR-58** Each agent node writes an `AgentStep` (agent, model, prompt version, input hash, output, tokens, latency, cost estimate, status). Each request writes a `run_`. *(I)*
@@ -343,6 +343,10 @@ Each FR is testable. The test type is noted: **U** = unit, **I** = integration, 
 - **FR-61** AI Workspace responses are `AgentResponse` snapshots of validated blocks. Reloading a thread renders from snapshots without calling agents. *(I)*
 - **FR-62** Every block is clickable for follow-up ("Ask about this"), which passes the block's references as context to the next turn. *(UI)*
 - **FR-63** Out-of-scope or unsafe requests (investment picks, tax filing, anything not about the user's data) get a scoped refusal with what Foresight can do instead. *(E)*
+- **FR-88** *(rev 7)* Follow-up questions are rewritten into a standalone question before intent classification, in the same single Coordinator call; the standalone question is stored on the message and shown as "Checking: …" while the run works (`05` §4.2). *(U, E)*
+- **FR-89** *(rev 7)* A repeated question on unchanged data returns the stored answer with no model calls. The cache key is exact (intent, canonical slots, data, preferences, advice state, engine and prompt versions); clarifying questions and refusals are never cached. Zero false cache hits on the near-miss set (`09` CTX-5). *(U, E)*
+- **FR-90** *(rev 7)* Agent progress streams as typed events built from the stored `AgentStep` rows, with templated labels (never model-written), reconnect replay, and runs that finish even if the browser closes. *(UI, I)*
+- **FR-91** *(rev 7)* Prompt-injection defence covers chat and imported statement text in five layers (`05` §7.4a). Imported rows with instruction-like text are categorised without a model and never sent to one verbatim. Attack success on `E-SEC` is reported, with a target of 0. *(U, E)*
 
 ### 7.9 Proactivity, Home briefing, goals and digests (FR-64 – FR-69)
 - **FR-64** A daily 06:30 workspace-local scheduled job (APScheduler, persisted job store) runs: refresh findings → forecast → advisor/verifier on material change → Home briefing regeneration. *(I)*
@@ -408,7 +412,7 @@ Each FR is testable. The test type is noted: **U** = unit, **I** = integration, 
 | TSP-06 | Explainability: every recommendation shows "Why am I seeing this?" and "How was this checked?". |
 | TSP-07 | Honest uncertainty: forecasts always show a band; copy uses "likely" and "about"; breach probability is shown with its definition one click away. |
 | TSP-08 | Scope: decision support, not regulated financial advice. No investment, credit, insurance or tax-position recommendations (FR-63). |
-| TSP-09 | Prompt-injection hygiene: descriptions and PDF text are data inside delimited JSON fields; LLM output is schema-validated; statement text can never change routing or tool selection. |
+| TSP-09 | Prompt-injection defence (FR-91, `05` §7.4a): descriptions, headers, filenames and PDF text are data inside masked, length-capped JSON fields; rows with instruction-like text never reach a model verbatim; LLM output is schema-validated and screened (prompt canary, URL allow-list, no model-authored numbers); statement text can never change routing or tool selection. |
 | TSP-10 | User control: mute a finding type, delete an import, undo a counterparty merge, export or delete all data, pause the digest. |
 | TSP-11 | **Minimal personal data:** net take-home income only. Foresight never asks for gross salary, National Insurance number, date of birth, bank login credentials or one-time passcodes. Employer names in descriptions are used only to detect the income stream. The full list of what is collected is the basic-info table in `00` §6a, and onboarding asks nothing beyond it. |
 | TSP-12 | **Joint-account privacy:** partner consent before a joint import; joint spending never attributed to an individual; partner and counterparty names masked before any Mesh call. |
