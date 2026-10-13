@@ -1,0 +1,13 @@
+{
+  "known_flows": [
+    {
+      "amount_minor": -65000,
+      "category": "transport.car",
+      "counterparty": "KwikFit Leeds",
+      "date": "2026-10-14",
+      "entered_on": "2026-10-12",
+      "is_one_off": true,
+      "label": "Car repair"
+    }
+  ]
+}

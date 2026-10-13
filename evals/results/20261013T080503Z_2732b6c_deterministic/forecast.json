@@ -1,0 +1,447 @@
+{
+  "duration_s": 1.43,
+  "error": null,
+  "metrics": {
+    "best_baseline_mae30_gbp_by_dataset": {
+      "P1-base": 765.73,
+      "P2-base": 4877.24,
+      "S4-shock": 4532.98
+    },
+    "breach_brier": null,
+    "by_dataset": {
+      "P1-base": {
+        "account": "acct_main",
+        "baselines": {
+          "B0": {
+            "mae_minor": {
+              "30": 76572.7742,
+              "60": 94285.5806,
+              "7": 161670.6129
+            },
+            "mape": {
+              "30": 1.5814,
+              "60": 0.9584,
+              "7": 0.6449
+            }
+          },
+          "B1": {
+            "mae_minor": {
+              "30": 125301.1613,
+              "60": 201515.2581,
+              "7": 76161.3871
+            },
+            "mape": {
+              "30": 2.031,
+              "60": 1.9044,
+              "7": 0.2965
+            }
+          },
+          "B2": {
+            "mae_minor": {
+              "30": 125301.1613,
+              "60": 201515.2581,
+              "7": 166147.2581
+            },
+            "mape": {
+              "30": 2.031,
+              "60": 1.9044,
+              "7": 0.6245
+            }
+          },
+          "B3": {
+            "mae_minor": {
+              "30": 206097.4516,
+              "60": 389338.3548,
+              "7": 50505.3548
+            },
+            "mape": {
+              "30": 1.7675,
+              "60": 2.8364,
+              "7": 0.2502
+            }
+          }
+        },
+        "best_baseline": {
+          "30": {
+            "baseline": "B0",
+            "mae_minor": 76572.7742
+          },
+          "60": {
+            "baseline": "B0",
+            "mae_minor": 94285.5806
+          },
+          "7": {
+            "baseline": "B3",
+            "mae_minor": 50505.3548
+          }
+        },
+        "currency": "GBP",
+        "first_origin": "2026-01-10",
+        "foresight": {
+          "coverage_p10_p90": 0.4973,
+          "mae_minor": {
+            "30": 62394.7742,
+            "60": 97035.0968,
+            "7": 24351.2903
+          },
+          "mape": {
+            "30": 0.5821,
+            "60": 0.6877,
+            "7": 0.1153
+          },
+          "pay_cycle_low_mae_minor": 52209.78
+        },
+        "horizons": [
+          7,
+          30,
+          60
+        ],
+        "last_origin": "2026-08-08",
+        "leaked_rows": 0,
+        "n_origins": 31,
+        "skill_vs_B1": {
+          "30": 0.502,
+          "60": 0.5185,
+          "7": 0.6803
+        },
+        "skill_vs_B2": {
+          "30": 0.502,
+          "60": 0.5185,
+          "7": 0.8534
+        },
+        "skill_vs_best_baseline": {
+          "30": 0.1852,
+          "60": -0.0292,
+          "7": 0.5178
+        }
+      },
+      "P2-base": {
+        "account": "acct_main",
+        "baselines": {
+          "B0": {
+            "mae_minor": {
+              "30": 487724.0702,
+              "60": 346168.1404,
+              "7": 298334.0175
+            },
+            "mape": {
+              "30": 0.5578,
+              "60": 0.5055,
+              "7": 0.4276
+            }
+          },
+          "B1": {
+            "mae_minor": {
+              "30": 881480.7895,
+              "60": 1143926.386,
+              "7": 382785.0702
+            },
+            "mape": {
+              "30": 0.9878,
+              "60": 1.2345,
+              "7": 0.4824
+            }
+          },
+          "B2": {
+            "mae_minor": {
+              "30": 881480.7895,
+              "60": 1143926.386,
+              "7": 362761.7544
+            },
+            "mape": {
+              "30": 0.9878,
+              "60": 1.2345,
+              "7": 0.5067
+            }
+          },
+          "B3": {
+            "mae_minor": {
+              "30": 506200.386,
+              "60": 384262.5965,
+              "7": 309100.2456
+            },
+            "mape": {
+              "30": 0.5461,
+              "60": 0.4618,
+              "7": 0.4367
+            }
+          }
+        },
+        "best_baseline": {
+          "30": {
+            "baseline": "B0",
+            "mae_minor": 487724.0702
+          },
+          "60": {
+            "baseline": "B0",
+            "mae_minor": 346168.1404
+          },
+          "7": {
+            "baseline": "B0",
+            "mae_minor": 298334.0175
+          }
+        },
+        "currency": "GBP",
+        "first_origin": "2025-07-11",
+        "foresight": {
+          "coverage_p10_p90": 0.0982,
+          "mae_minor": {
+            "30": 526472.5439,
+            "60": 504206.0351,
+            "7": 316708.3684
+          },
+          "mape": {
+            "30": 0.5401,
+            "60": 0.5196,
+            "7": 0.4395
+          },
+          "pay_cycle_low_mae_minor": 279646.84
+        },
+        "horizons": [
+          7,
+          30,
+          60
+        ],
+        "last_origin": "2026-08-07",
+        "leaked_rows": 0,
+        "n_origins": 57,
+        "skill_vs_B1": {
+          "30": 0.4027,
+          "60": 0.5592,
+          "7": 0.1726
+        },
+        "skill_vs_B2": {
+          "30": 0.4027,
+          "60": 0.5592,
+          "7": 0.127
+        },
+        "skill_vs_best_baseline": {
+          "30": -0.0794,
+          "60": -0.4565,
+          "7": -0.0616
+        }
+      },
+      "S4-shock": {
+        "account": "acct_main",
+        "baselines": {
+          "B0": {
+            "mae_minor": {
+              "30": 459207.3226,
+              "60": 477740.2258,
+              "7": 268982.8065
+            },
+            "mape": {
+              "30": 1.1892,
+              "60": 1.4822,
+              "7": 0.6171
+            }
+          },
+          "B1": {
+            "mae_minor": {
+              "30": 816831.2581,
+              "60": 1258358.1613,
+              "7": 325487.6452
+            },
+            "mape": {
+              "30": 1.8476,
+              "60": 3.2805,
+              "7": 0.6093
+            }
+          },
+          "B2": {
+            "mae_minor": {
+              "30": 816831.2581,
+              "60": 1258358.1613,
+              "7": 285931.7742
+            },
+            "mape": {
+              "30": 1.8476,
+              "60": 3.2805,
+              "7": 0.6649
+            }
+          },
+          "B3": {
+            "mae_minor": {
+              "30": 453297.5161,
+              "60": 510860.7097,
+              "7": 251968.4516
+            },
+            "mape": {
+              "30": 1.162,
+              "60": 1.563,
+              "7": 0.572
+            }
+          }
+        },
+        "best_baseline": {
+          "30": {
+            "baseline": "B3",
+            "mae_minor": 453297.5161
+          },
+          "60": {
+            "baseline": "B0",
+            "mae_minor": 477740.2258
+          },
+          "7": {
+            "baseline": "B3",
+            "mae_minor": 251968.4516
+          }
+        },
+        "currency": "GBP",
+        "first_origin": "2026-01-10",
+        "foresight": {
+          "coverage_p10_p90": 0.1156,
+          "mae_minor": {
+            "30": 436407.129,
+            "60": 444838.7419,
+            "7": 256125.0
+          },
+          "mape": {
+            "30": 1.036,
+            "60": 1.2401,
+            "7": 0.5606
+          },
+          "pay_cycle_low_mae_minor": 420540.26
+        },
+        "horizons": [
+          7,
+          30,
+          60
+        ],
+        "last_origin": "2026-08-08",
+        "leaked_rows": 0,
+        "n_origins": 31,
+        "skill_vs_B1": {
+          "30": 0.4657,
+          "60": 0.6465,
+          "7": 0.2131
+        },
+        "skill_vs_B2": {
+          "30": 0.4657,
+          "60": 0.6465,
+          "7": 0.1042
+        },
+        "skill_vs_best_baseline": {
+          "30": 0.0373,
+          "60": 0.0689,
+          "7": -0.0165
+        }
+      }
+    },
+    "by_horizon": {
+      "30": {
+        "best_baseline": "B0",
+        "best_baseline_mae_gbp": 765.73,
+        "coverage_p10_p90": 0.4973,
+        "mae_gbp": 623.95,
+        "mape": 0.5821
+      },
+      "60": {
+        "best_baseline": "B0",
+        "best_baseline_mae_gbp": 942.86,
+        "coverage_p10_p90": 0.4973,
+        "mae_gbp": 970.35,
+        "mape": 0.6877
+      },
+      "7": {
+        "best_baseline": "B3",
+        "best_baseline_mae_gbp": 505.05,
+        "coverage_p10_p90": 0.4973,
+        "mae_gbp": 243.51,
+        "mape": 0.1153
+      }
+    },
+    "coverage_by_dataset": {
+      "P1-base": 0.4973,
+      "P2-base": 0.0982,
+      "S4-shock": 0.1156
+    },
+    "engine_version": "fc-1.0.0",
+    "headline_dataset": "P1-base",
+    "mae30_gbp_by_dataset": {
+      "P1-base": 623.95,
+      "P2-base": 5264.73,
+      "S4-shock": 4364.07
+    },
+    "method": {
+      "anchor": "truth balance at the origin",
+      "inputs": "detected (import \u2192 rules \u2192 detect), truncated at each origin",
+      "mape": "as computed by finance_core backtest: |error| / |actual| (no \u00a3250 floor)",
+      "n_paths": 500,
+      "origins": "every 7 days from day 90 to end \u2212 60"
+    },
+    "pay_cycle_low_mae_gbp": 522.1,
+    "skill_vs": {
+      "B1-repeat30": {
+        "30": 0.502,
+        "60": 0.5185,
+        "7": 0.6803
+      },
+      "B2-meanflow": {
+        "30": 0.502,
+        "60": 0.5185,
+        "7": 0.8534
+      },
+      "best_baseline": {
+        "30": 0.1852,
+        "60": -0.0292,
+        "7": 0.5178
+      }
+    }
+  },
+  "name": "forecast",
+  "notes": [
+    "Inputs are built from detected data with finance_core only; truth is used for the anchor balance at each origin and for scoring.",
+    "Irregular income: the detector's monthly totals are replaced by the stream's individual credits in the engine's 90-day window, which is what the engine's arrival model expects.",
+    "S4-shock coverage after the shift is expected to miss (docs/09 \u00a77.4) and is not gated.",
+    "Breach Brier and the long-January check are not computed yet."
+  ],
+  "suite": "E-FC",
+  "targets": [
+    {
+      "dataset": "P1",
+      "id": "FC-skill-B1",
+      "label": "Skill vs B1-repeat30, MAE(30)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 0.2",
+      "value": 0.502
+    },
+    {
+      "dataset": "P1",
+      "id": "FC-skill-B2",
+      "label": "Skill vs B2-meanflow, MAE(30)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 0.15",
+      "value": 0.502
+    },
+    {
+      "dataset": "P1",
+      "id": "FC-mape",
+      "label": "MAPE(30)",
+      "met": false,
+      "stage1": true,
+      "target": "<= 0.12",
+      "value": 0.5821
+    },
+    {
+      "dataset": "P1-base",
+      "id": "FC-coverage-P1",
+      "label": "P10\u2013P90 coverage (all h)",
+      "met": false,
+      "stage1": true,
+      "target": "0.72\u20130.88",
+      "value": 0.4973
+    },
+    {
+      "dataset": "P2-base",
+      "id": "FC-coverage-P2",
+      "label": "P10\u2013P90 coverage (all h)",
+      "met": false,
+      "stage1": true,
+      "target": "0.72\u20130.88",
+      "value": 0.0982
+    }
+  ]
+}

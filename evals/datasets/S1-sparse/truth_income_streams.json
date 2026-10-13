@@ -1,0 +1,24 @@
+{
+  "income_streams": [
+    {
+      "account": "acct_main",
+      "cadence": "monthly",
+      "key": "inc_salary",
+      "net_amount_minor": 405000,
+      "payday_rule": {
+        "day_of_month": 28,
+        "december_day": 18,
+        "kind": "fixed_day",
+        "prev_working_day": true
+      },
+      "paydays": [
+        "2026-07-28",
+        "2026-08-28",
+        "2026-09-28"
+      ],
+      "provenance_expected": "detected",
+      "source": "Acme Analytics Ltd",
+      "split_pct": null
+    }
+  ]
+}

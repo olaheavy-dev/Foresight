@@ -1,0 +1,9 @@
+{
+  "clean_data_rows": 15,
+  "data_rows": 15,
+  "defect": "broken_balance",
+  "expected_outcome": "rejected",
+  "file": "generic_04_broken_balance.csv",
+  "first_failing_row": 9,
+  "format": "generic"
+}

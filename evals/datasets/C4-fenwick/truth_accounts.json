@@ -1,0 +1,21 @@
+{
+  "accounts": [
+    {
+      "closing_balance_minor": 199254,
+      "currency": "GBP",
+      "file": "exports/fenwick.csv",
+      "has_balance_column": true,
+      "id": "acct_main",
+      "institution": "Fenwick",
+      "label": "Fenwick current account",
+      "min_balance_minor": 18250,
+      "n_transactions": 1093,
+      "opening_balance_minor": 289910
+    }
+  ],
+  "row_defaults": {
+    "currency": "GBP",
+    "file": "exports/fenwick.csv",
+    "table": "acct_main"
+  }
+}

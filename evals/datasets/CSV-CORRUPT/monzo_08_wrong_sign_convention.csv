@@ -1,0 +1,14 @@
+Transaction ID,Date,Time,Type,Name,Emoji,Category,Amount,Currency,Local amount,Local currency,Notes and #tags,Address,Receipt,Description,Category split,Money Out,Money In
+tx_0000azNHo0uzI6RHcbItpDsvSG,02/09/2026,09:00:00,Card payment,Octopus Energy,,Bills,100.54,GBP,100.54,GBP,,,,OCTOPUS ENERGY,,-100.54,
+tx_0000CSiu5bsWhCiaQMweXtOPhp,03/09/2026,10:07:00,Card payment,Octopus Energy,,Bills,58.62,GBP,58.62,GBP,,,,OCTOPUS ENERGY,,-58.62,
+tx_0000naJw0jDX1BQtvfk9dwqEIE,04/09/2026,11:14:00,Card payment,Pret,,Eating out,7.06,GBP,7.06,GBP,,,,PRET A MANGER 0412,,-7.06,
+tx_0000V6VfrDn7fAbH95csPZmo9X,06/09/2026,12:21:00,Bacs (Direct Credit),Acme Analytics Ltd,,Income,-2100.00,GBP,-2100.00,GBP,,,,ACME ANALYTICS LTD SALARY,,,2100.00
+tx_0000CiM8k07anMCVwM0daMnHQk,07/09/2026,13:28:00,Card payment,Amazon,,Shopping,29.85,GBP,29.85,GBP,,,,AMAZON.CO.UK*K2B7Q,,-29.85,
+tx_0000VIQ8E7Z1tOB0RUqXBy4k6J,07/09/2026,14:35:00,Card payment,Boots,,Personal care,14.18,GBP,14.18,GBP,,,,BOOTS 1180,,-14.18,
+tx_0000Yx88fhA3Twv7xNpnlmORMP,08/09/2026,15:42:00,Card payment,Deliveroo,,Eating out,19.42,GBP,19.42,GBP,,,,DELIVEROO,,-19.42,
+tx_0000RMA7csUP2fA1Vd75scvNyh,10/09/2026,16:49:00,Card payment,Northern,,Transport,4.28,GBP,4.28,GBP,,,,NORTHERN TRAINS,,-4.28,
+tx_0000eWtJj6e8y7k5cTAUKGblTF,12/09/2026,17:56:00,Card payment,Northern,,Transport,3.80,GBP,3.80,GBP,,,,NORTHERN TRAINS,,-3.80,
+tx_0000XUfpER7AbNXLkNdFYoOJT2,14/09/2026,18:03:00,Card payment,Northern,,Transport,7.48,GBP,7.48,GBP,,,,NORTHERN TRAINS,,-7.48,
+tx_000092aNICzlUQV7QSMyxi0KhX,14/09/2026,19:10:00,Card payment,Costa,,Eating out,4.77,GBP,4.77,GBP,,,,COSTA COFFEE 22,,-4.77,
+tx_0000X2JLDudHiKk0rn55mGKPmT,16/09/2026,20:17:00,Card payment,Boots,,Personal care,15.15,GBP,15.15,GBP,,,,BOOTS 1180,,-15.15,
+tx_0000gS8qaqP10BH7v0pVGyVF7X,16/09/2026,09:24:00,Card payment,Costa,,Eating out,4.05,GBP,4.05,GBP,,,,COSTA COFFEE 22,,-4.05,

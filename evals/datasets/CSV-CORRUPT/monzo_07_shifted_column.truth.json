@@ -1,0 +1,9 @@
+{
+  "clean_data_rows": 13,
+  "data_rows": 13,
+  "defect": "shifted_column",
+  "expected_outcome": "rejected",
+  "file": "monzo_07_shifted_column.csv",
+  "first_failing_row": 8,
+  "format": "monzo"
+}

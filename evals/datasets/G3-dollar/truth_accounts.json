@@ -1,0 +1,21 @@
+{
+  "accounts": [
+    {
+      "closing_balance_minor": 307126,
+      "currency": "USD",
+      "file": "exports/statement.csv",
+      "has_balance_column": true,
+      "id": "acct_main",
+      "institution": "Generic bank",
+      "label": "Dollar account",
+      "min_balance_minor": 15000,
+      "n_transactions": 244,
+      "opening_balance_minor": 167353
+    }
+  ],
+  "row_defaults": {
+    "currency": "USD",
+    "file": "exports/statement.csv",
+    "table": "acct_main"
+  }
+}

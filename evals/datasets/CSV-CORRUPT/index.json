@@ -1,0 +1,186 @@
+{
+  "cases": [
+    {
+      "clean_data_rows": 18,
+      "data_rows": 18,
+      "defect": "broken_balance",
+      "expected_outcome": "rejected",
+      "file": "generic_01_broken_balance.csv",
+      "first_failing_row": 10,
+      "format": "generic"
+    },
+    {
+      "clean_data_rows": 16,
+      "data_rows": 16,
+      "defect": "broken_balance",
+      "expected_outcome": "rejected",
+      "file": "generic_02_broken_balance.csv",
+      "first_failing_row": 4,
+      "format": "generic"
+    },
+    {
+      "clean_data_rows": 12,
+      "data_rows": 12,
+      "defect": "broken_balance",
+      "expected_outcome": "rejected",
+      "file": "generic_03_broken_balance.csv",
+      "first_failing_row": 7,
+      "format": "generic"
+    },
+    {
+      "clean_data_rows": 15,
+      "data_rows": 15,
+      "defect": "broken_balance",
+      "expected_outcome": "rejected",
+      "file": "generic_04_broken_balance.csv",
+      "first_failing_row": 9,
+      "format": "generic"
+    },
+    {
+      "clean_data_rows": 18,
+      "data_rows": 17,
+      "defect": "dropped_row",
+      "expected_outcome": "rejected",
+      "file": "generic_05_dropped_row.csv",
+      "first_failing_row": 15,
+      "format": "generic"
+    },
+    {
+      "clean_data_rows": 14,
+      "data_rows": 13,
+      "defect": "dropped_row",
+      "expected_outcome": "rejected",
+      "file": "generic_06_dropped_row.csv",
+      "first_failing_row": 9,
+      "format": "generic"
+    },
+    {
+      "clean_data_rows": 18,
+      "data_rows": 17,
+      "defect": "dropped_row",
+      "expected_outcome": "rejected",
+      "file": "generic_07_dropped_row.csv",
+      "first_failing_row": 5,
+      "format": "generic"
+    },
+    {
+      "clean_data_rows": 14,
+      "data_rows": 14,
+      "defect": "shifted_column",
+      "expected_outcome": "rejected",
+      "file": "generic_08_shifted_column.csv",
+      "first_failing_row": 4,
+      "format": "generic"
+    },
+    {
+      "clean_data_rows": 17,
+      "data_rows": 17,
+      "defect": "shifted_column",
+      "expected_outcome": "rejected",
+      "file": "generic_09_shifted_column.csv",
+      "first_failing_row": 7,
+      "format": "generic"
+    },
+    {
+      "clean_data_rows": 15,
+      "data_rows": 15,
+      "defect": "shifted_column",
+      "expected_outcome": "rejected",
+      "file": "generic_10_shifted_column.csv",
+      "first_failing_row": 5,
+      "format": "generic"
+    },
+    {
+      "clean_data_rows": 14,
+      "data_rows": 15,
+      "defect": "duplicated_row",
+      "expected_outcome": "flagged",
+      "file": "monzo_01_duplicated_row.csv",
+      "first_failing_row": 5,
+      "format": "monzo"
+    },
+    {
+      "clean_data_rows": 16,
+      "data_rows": 17,
+      "defect": "duplicated_row",
+      "expected_outcome": "flagged",
+      "file": "monzo_02_duplicated_row.csv",
+      "first_failing_row": 4,
+      "format": "monzo"
+    },
+    {
+      "clean_data_rows": 16,
+      "data_rows": 17,
+      "defect": "duplicated_row",
+      "expected_outcome": "flagged",
+      "file": "monzo_03_duplicated_row.csv",
+      "first_failing_row": 11,
+      "format": "monzo"
+    },
+    {
+      "clean_data_rows": 13,
+      "data_rows": 14,
+      "defect": "duplicated_row",
+      "expected_outcome": "flagged",
+      "file": "monzo_04_duplicated_row.csv",
+      "first_failing_row": 4,
+      "format": "monzo"
+    },
+    {
+      "clean_data_rows": 17,
+      "data_rows": 17,
+      "defect": "shifted_column",
+      "expected_outcome": "rejected",
+      "file": "monzo_05_shifted_column.csv",
+      "first_failing_row": 12,
+      "format": "monzo"
+    },
+    {
+      "clean_data_rows": 15,
+      "data_rows": 15,
+      "defect": "shifted_column",
+      "expected_outcome": "rejected",
+      "file": "monzo_06_shifted_column.csv",
+      "first_failing_row": 8,
+      "format": "monzo"
+    },
+    {
+      "clean_data_rows": 13,
+      "data_rows": 13,
+      "defect": "shifted_column",
+      "expected_outcome": "rejected",
+      "file": "monzo_07_shifted_column.csv",
+      "first_failing_row": 8,
+      "format": "monzo"
+    },
+    {
+      "clean_data_rows": 13,
+      "data_rows": 13,
+      "defect": "wrong_sign_convention",
+      "expected_outcome": "flagged",
+      "file": "monzo_08_wrong_sign_convention.csv",
+      "first_failing_row": 0,
+      "format": "monzo"
+    },
+    {
+      "clean_data_rows": 17,
+      "data_rows": 17,
+      "defect": "wrong_sign_convention",
+      "expected_outcome": "flagged",
+      "file": "monzo_09_wrong_sign_convention.csv",
+      "first_failing_row": 0,
+      "format": "monzo"
+    },
+    {
+      "clean_data_rows": 13,
+      "data_rows": 13,
+      "defect": "wrong_sign_convention",
+      "expected_outcome": "flagged",
+      "file": "monzo_10_wrong_sign_convention.csv",
+      "first_failing_row": 0,
+      "format": "monzo"
+    }
+  ],
+  "generator_version": "gen-1.0.0",
+  "seed": 1729
+}

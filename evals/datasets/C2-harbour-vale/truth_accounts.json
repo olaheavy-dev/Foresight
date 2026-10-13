@@ -1,0 +1,21 @@
+{
+  "accounts": [
+    {
+      "closing_balance_minor": 273885,
+      "currency": "EUR",
+      "file": "exports/harbour_vale.csv",
+      "has_balance_column": false,
+      "id": "acct_main",
+      "institution": "Harbour & Vale",
+      "label": "Harbour & Vale account",
+      "min_balance_minor": 15000,
+      "n_transactions": 1041,
+      "opening_balance_minor": 201842
+    }
+  ],
+  "row_defaults": {
+    "currency": "EUR",
+    "file": "exports/harbour_vale.csv",
+    "table": "acct_main"
+  }
+}

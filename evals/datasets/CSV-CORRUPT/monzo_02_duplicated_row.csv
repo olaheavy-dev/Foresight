@@ -1,0 +1,18 @@
+Transaction ID,Date,Time,Type,Name,Emoji,Category,Amount,Currency,Local amount,Local currency,Notes and #tags,Address,Receipt,Description,Category split,Money Out,Money In
+tx_0000qtwNqtQZcHyACoYwT0oFx7,02/09/2026,09:00:00,Card payment,Northern,,Transport,-4.33,GBP,-4.33,GBP,,,,NORTHERN TRAINS,,-4.33,
+tx_0000MgiwC3gbQhxVS4AmRt9zBr,03/09/2026,10:07:00,Card payment,Tesco,,Groceries,-11.87,GBP,-11.87,GBP,,,,TESCO STORES 3021,,-11.87,
+tx_0000wE6OeHahS1cUOiNvM96ZzW,03/09/2026,11:14:00,Card payment,Deliveroo,,Eating out,-12.52,GBP,-12.52,GBP,,,,DELIVEROO,,-12.52,
+tx_0000AqCVHcgSCGscnhspSH2bMY,03/09/2026,12:21:00,Bacs (Direct Credit),Acme Analytics Ltd,,Income,2100.00,GBP,2100.00,GBP,,,,ACME ANALYTICS LTD SALARY,,,2100.00
+tx_0000AqCVHcgSCGscnhspSH2bMY,03/09/2026,12:21:00,Bacs (Direct Credit),Acme Analytics Ltd,,Income,2100.00,GBP,2100.00,GBP,,,,ACME ANALYTICS LTD SALARY,,,2100.00
+tx_0000LkEkrixaxfbERY2NKdIJ9b,03/09/2026,13:28:00,Card payment,Octopus Energy,,Bills,-102.60,GBP,-102.60,GBP,,,,OCTOPUS ENERGY,,-102.60,
+tx_000065CwgsQpSqzDl9EhXNoIZc,04/09/2026,14:35:00,Card payment,Tesco,,Groceries,-21.76,GBP,-21.76,GBP,,,,TESCO STORES 3021,,-21.76,
+tx_0000RJhuBbYrbmRSlZURqzt50f,05/09/2026,15:42:00,Card payment,Northern,,Transport,-6.09,GBP,-6.09,GBP,,,,NORTHERN TRAINS,,-6.09,
+tx_0000yUxlKjsFQWT4VeMv1q9mqQ,07/09/2026,16:49:00,Card payment,Northern,,Transport,-3.97,GBP,-3.97,GBP,,,,NORTHERN TRAINS,,-3.97,
+tx_00002C6mxCxTsmwqAMOHvHRyf6,08/09/2026,17:56:00,Card payment,Deliveroo,,Eating out,-14.95,GBP,-14.95,GBP,,,,DELIVEROO,,-14.95,
+tx_00009r14aXCMuH2cF1mvAk2FG0,08/09/2026,18:03:00,Card payment,Tesco,,Groceries,-24.55,GBP,-24.55,GBP,,,,TESCO STORES 3021,,-24.55,
+tx_00005swO7rxKlyn2NDyfYqwMPI,08/09/2026,19:10:00,Card payment,Deliveroo,,Eating out,-17.16,GBP,-17.16,GBP,,,,DELIVEROO,,-17.16,
+tx_0000G7PNFLh3JogZI9KPRnBp5M,08/09/2026,20:17:00,Card payment,Costa,,Eating out,-4.04,GBP,-4.04,GBP,,,,COSTA COFFEE 22,,-4.04,
+tx_0000UyMgGgsuEJvh4GTIslqXYR,08/09/2026,09:24:00,Card payment,Tesco,,Groceries,-10.92,GBP,-10.92,GBP,,,,TESCO STORES 3021,,-10.92,
+tx_0000ftBQ27GOrBtuznHI1ceGhA,10/09/2026,10:31:00,Card payment,Northern,,Transport,-6.00,GBP,-6.00,GBP,,,,NORTHERN TRAINS,,-6.00,
+tx_00008MqgNhkltqApJwTd9eoE76,12/09/2026,11:38:00,Card payment,Northern,,Transport,-5.86,GBP,-5.86,GBP,,,,NORTHERN TRAINS,,-5.86,
+tx_00008kSeaIefkrVdDAbQXTyAeO,13/09/2026,12:45:00,Card payment,Octopus Energy,,Bills,-106.26,GBP,-106.26,GBP,,,,OCTOPUS ENERGY,,-106.26,

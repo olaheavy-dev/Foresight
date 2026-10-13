@@ -1,0 +1,13 @@
+{
+  "anomalies": [
+    {
+      "expected_findings": [
+        "income_drop"
+      ],
+      "from": "2026-06-12",
+      "key": "income_shock",
+      "magnitude_pct": -60,
+      "type": "income_drop"
+    }
+  ]
+}

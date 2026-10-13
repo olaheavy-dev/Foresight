@@ -1,0 +1,50 @@
+{
+  "anomalies": [
+    {
+      "expected_findings": [
+        "category_spike"
+      ],
+      "key": "food_delivery_spike",
+      "magnitude_pct": 41,
+      "subject": "food.delivery",
+      "type": "category_trend"
+    },
+    {
+      "expected_findings": [
+        "subscription_overlap"
+      ],
+      "key": "subscription_overlap",
+      "subject": [
+        "rob_netflix",
+        "rob_sky"
+      ],
+      "type": "subscription_overlap"
+    },
+    {
+      "expected_findings": [
+        "price_change"
+      ],
+      "from": "2026-06-22",
+      "key": "spotify_price_rise",
+      "new_minor": -1299,
+      "old_minor": -1199,
+      "subject": "rob_spotify",
+      "type": "price_change"
+    },
+    {
+      "key": "food_delivery_windows",
+      "last_30_total_minor": 28640,
+      "orders_last_30": 23,
+      "prior_window_totals_minor": [
+        19870,
+        20310,
+        null
+      ],
+      "type": "reference",
+      "window_last_30": [
+        "2026-09-12",
+        "2026-10-11"
+      ]
+    }
+  ]
+}

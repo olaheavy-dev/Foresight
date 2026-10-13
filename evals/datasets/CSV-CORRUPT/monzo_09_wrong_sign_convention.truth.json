@@ -1,0 +1,9 @@
+{
+  "clean_data_rows": 17,
+  "data_rows": 17,
+  "defect": "wrong_sign_convention",
+  "expected_outcome": "flagged",
+  "file": "monzo_09_wrong_sign_convention.csv",
+  "first_failing_row": 0,
+  "format": "monzo"
+}

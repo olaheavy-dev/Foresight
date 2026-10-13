@@ -1,0 +1,21 @@
+{
+  "accounts": [
+    {
+      "closing_balance_minor": 213584,
+      "currency": "GBP",
+      "file": "exports/pennine_statement.csv",
+      "has_balance_column": true,
+      "id": "acct_main",
+      "institution": "Pennine BS",
+      "label": "Pennine current account",
+      "min_balance_minor": 15000,
+      "n_transactions": 1063,
+      "opening_balance_minor": 281290
+    }
+  ],
+  "row_defaults": {
+    "currency": "GBP",
+    "file": "exports/pennine_statement.csv",
+    "table": "acct_main"
+  }
+}

@@ -1,0 +1,14 @@
+Transaction ID,Date,Time,Type,Name,Emoji,Category,Amount,Currency,Local amount,Local currency,Notes and #tags,Address,Receipt,Description,Category split,Money Out,Money In
+tx_0000gj5TUbdTdmqXcQogSkiSAf,02/09/2026,09:00:00,Card payment,Northern,,Transport,5.11,GBP,5.11,GBP,,,,NORTHERN TRAINS,,-5.11,
+tx_0000Ji5cJrOlxerSLyku1wsyUP,04/09/2026,10:07:00,Card payment,Deliveroo,,Eating out,17.32,GBP,17.32,GBP,,,,DELIVEROO,,-17.32,
+tx_00003h7LWLfx4zzcY0XimMt6yg,04/09/2026,11:14:00,Card payment,Deliveroo,,Eating out,12.86,GBP,12.86,GBP,,,,DELIVEROO,,-12.86,
+tx_0000DW8ryOfnfUktxaZdtf69px,04/09/2026,12:21:00,Bacs (Direct Credit),Acme Analytics Ltd,,Income,-2100.00,GBP,-2100.00,GBP,,,,ACME ANALYTICS LTD SALARY,,,2100.00
+tx_0000xCQg3piZ8sGOJs6RFcVQHp,06/09/2026,13:28:00,Card payment,Pret,,Eating out,4.17,GBP,4.17,GBP,,,,PRET A MANGER 0412,,-4.17,
+tx_0000a9vjyTfNP7WIFwZCQdt2at,07/09/2026,14:35:00,Card payment,Pret,,Eating out,5.43,GBP,5.43,GBP,,,,PRET A MANGER 0412,,-5.43,
+tx_0000150SXNFTWNNpor5mYBepBb,09/09/2026,15:42:00,Card payment,Octopus Energy,,Bills,52.17,GBP,52.17,GBP,,,,OCTOPUS ENERGY,,-52.17,
+tx_0000t3TpQiM0sRhQLIdRFaTrVq,10/09/2026,16:49:00,Card payment,Tesco,,Groceries,16.55,GBP,16.55,GBP,,,,TESCO STORES 3021,,-16.55,
+tx_00002hITQ8HOtyPaDyXKYzPxgO,10/09/2026,17:56:00,Card payment,Pret,,Eating out,6.82,GBP,6.82,GBP,,,,PRET A MANGER 0412,,-6.82,
+tx_0000JPbsgaFY5UVSXN7Hp14LBV,10/09/2026,18:03:00,Card payment,Tesco,,Groceries,22.33,GBP,22.33,GBP,,,,TESCO STORES 3021,,-22.33,
+tx_00001tLP56VYI4TPud5LoMIipK,10/09/2026,19:10:00,Card payment,Tesco,,Groceries,14.08,GBP,14.08,GBP,,,,TESCO STORES 3021,,-14.08,
+tx_00003xMwQv9zLABYnsPOQYhXnA,11/09/2026,20:17:00,Card payment,Octopus Energy,,Bills,94.98,GBP,94.98,GBP,,,,OCTOPUS ENERGY,,-94.98,
+tx_0000t3HTDKb6pfPQ5MgCI7invW,12/09/2026,09:24:00,Card payment,Deliveroo,,Eating out,20.05,GBP,20.05,GBP,,,,DELIVEROO,,-20.05,

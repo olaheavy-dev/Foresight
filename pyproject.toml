@@ -75,6 +75,8 @@ name = "tools never depend on the HTTP layer"
 type = "forbidden"
 source_modules = ["tools"]
 forbidden_modules = ["backend.app"]
+# The UI contracts are plain Pydantic models (no FastAPI); exporting their schema is the tool's job.
+ignore_imports = ["tools.export_schemas -> backend.app.ui_contracts.schema"]
 
 [[tool.importlinter.contracts]]
 name = "storage and mesh never import app or agents"

@@ -1,0 +1,45 @@
+{
+  "accounts": [
+    {
+      "closing_balance_minor": 325758,
+      "currency": "GBP",
+      "file": "exports/revolut_consolidated.csv",
+      "has_balance_column": true,
+      "id": "acct_gbp",
+      "institution": "Revolut",
+      "label": "Revolut GBP",
+      "min_balance_minor": 4947,
+      "n_transactions": 324,
+      "opening_balance_minor": 8500
+    },
+    {
+      "closing_balance_minor": 0,
+      "currency": "USD",
+      "file": "exports/revolut_consolidated.csv",
+      "has_balance_column": true,
+      "id": "acct_usd",
+      "institution": "Revolut",
+      "label": "Revolut USD",
+      "min_balance_minor": 0,
+      "n_transactions": 0,
+      "opening_balance_minor": 0
+    },
+    {
+      "closing_balance_minor": 4400,
+      "currency": "EUR",
+      "file": "exports/revolut_consolidated.csv",
+      "has_balance_column": true,
+      "id": "acct_eur",
+      "institution": "Revolut",
+      "label": "Revolut EUR",
+      "min_balance_minor": 0,
+      "n_transactions": 4,
+      "opening_balance_minor": 0
+    }
+  ],
+  "row_defaults": {
+    "currency": "GBP",
+    "file": "exports/revolut_consolidated.csv",
+    "table": "acct_gbp"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "clean_data_rows": 13,
+  "data_rows": 14,
+  "defect": "duplicated_row",
+  "expected_outcome": "flagged",
+  "file": "monzo_04_duplicated_row.csv",
+  "first_failing_row": 4,
+  "format": "monzo"
+}

@@ -1,0 +1,18 @@
+Transaction ID,Date,Time,Type,Name,Emoji,Category,Amount,Currency,Local amount,Local currency,Notes and #tags,Address,Receipt,Description,Category split,Money Out,Money In
+tx_0000McGPJby0nCdjlXKR1WSwKn,01/09/2026,09:00:00,Card payment,Deliveroo,,Eating out,19.23,GBP,19.23,GBP,,,,DELIVEROO,,-19.23,
+tx_0000FgdwiDEok1z5iwXn1uxQZL,02/09/2026,10:07:00,Card payment,Boots,,Personal care,7.08,GBP,7.08,GBP,,,,BOOTS 1180,,-7.08,
+tx_0000Ih6UTtcWV28pr4cVj9lQjR,02/09/2026,11:14:00,Card payment,Costa,,Eating out,3.20,GBP,3.20,GBP,,,,COSTA COFFEE 22,,-3.20,
+tx_0000AVo6gGuRjbpiqsU3xDbfvh,02/09/2026,12:21:00,Bacs (Direct Credit),Acme Analytics Ltd,,Income,-2100.00,GBP,-2100.00,GBP,,,,ACME ANALYTICS LTD SALARY,,,2100.00
+tx_0000MtcaeR2Gop7BgQ3I5hQd94,03/09/2026,13:28:00,Card payment,Amazon,,Shopping,22.58,GBP,22.58,GBP,,,,AMAZON.CO.UK*K2B7Q,,-22.58,
+tx_0000ELkqO459AeJsmOMy7Cj4wE,05/09/2026,14:35:00,Card payment,Northern,,Transport,4.71,GBP,4.71,GBP,,,,NORTHERN TRAINS,,-4.71,
+tx_0000giBtPizYiy8Ebeas7AbbiF,06/09/2026,15:42:00,Card payment,Boots,,Personal care,11.52,GBP,11.52,GBP,,,,BOOTS 1180,,-11.52,
+tx_0000HgcBsQzBYjU3Ds5Tlr3LH4,08/09/2026,16:49:00,Card payment,Boots,,Personal care,12.32,GBP,12.32,GBP,,,,BOOTS 1180,,-12.32,
+tx_0000Lfs1qmsKEGK70FnHtl2uOC,10/09/2026,17:56:00,Card payment,Northern,,Transport,4.90,GBP,4.90,GBP,,,,NORTHERN TRAINS,,-4.90,
+tx_0000DXdXgDSEd995KLjN5eSPAh,12/09/2026,18:03:00,Card payment,Tesco,,Groceries,12.90,GBP,12.90,GBP,,,,TESCO STORES 3021,,-12.90,
+tx_0000SxZEt5UXlrJfUKbeuN6vEE,12/09/2026,19:10:00,Card payment,Boots,,Personal care,12.93,GBP,12.93,GBP,,,,BOOTS 1180,,-12.93,
+tx_0000cCjENxrctwqQqyjEbgsWAO,12/09/2026,20:17:00,Card payment,Amazon,,Shopping,18.34,GBP,18.34,GBP,,,,AMAZON.CO.UK*K2B7Q,,-18.34,
+tx_0000loK29smO6t6F1iAhXlWf3g,14/09/2026,09:24:00,Card payment,Pret,,Eating out,8.37,GBP,8.37,GBP,,,,PRET A MANGER 0412,,-8.37,
+tx_0000JUj72CdpeVj1IPSklze6SC,16/09/2026,10:31:00,Card payment,Amazon,,Shopping,23.81,GBP,23.81,GBP,,,,AMAZON.CO.UK*K2B7Q,,-23.81,
+tx_0000fLN5hM47BPBgipDs95jRx5,17/09/2026,11:38:00,Card payment,Tesco,,Groceries,13.20,GBP,13.20,GBP,,,,TESCO STORES 3021,,-13.20,
+tx_0000qhcZdK6XySnc1lgd73WVmE,19/09/2026,12:45:00,Card payment,Boots,,Personal care,14.48,GBP,14.48,GBP,,,,BOOTS 1180,,-14.48,
+tx_0000xtwEt0Q5m89DPBG8paPaiJ,21/09/2026,13:52:00,Card payment,Octopus Energy,,Bills,51.72,GBP,51.72,GBP,,,,OCTOPUS ENERGY,,-51.72,

@@ -1,0 +1,38 @@
+{
+  "exports/harbour_vale.csv": {
+    "delimiter": ";",
+    "format": "C2_harbour_vale",
+    "tables": [
+      {
+        "balance_column": null,
+        "columns": {
+          "date": "Value Day",
+          "description": "Purpose",
+          "in": "Credit",
+          "out": "Debit"
+        },
+        "currency": "EUR",
+        "currency_source": "preamble",
+        "date_format": "%d.%m.%Y",
+        "decimal": ",",
+        "first_row": 4,
+        "group": ".",
+        "header_row": 3,
+        "headers": [
+          "Value Day",
+          "Purpose",
+          "Debit",
+          "Credit"
+        ],
+        "last_row": 1044,
+        "n_rows": 1041,
+        "sign_convention": "split_out_in",
+        "skip_rules": [
+          "preamble_rows"
+        ],
+        "table": "acct_main",
+        "title": null
+      }
+    ]
+  }
+}

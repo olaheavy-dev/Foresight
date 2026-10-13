@@ -1,0 +1,20 @@
+{
+  "as_of": "2026-10-11",
+  "buffer_minor": 50000,
+  "closing_balance_minor": 430355,
+  "country": "GB",
+  "dataset": "S4-shock",
+  "declared_balance": null,
+  "discretionary_scale": "1.0",
+  "display_name": "Jamie Clarke",
+  "generator_version": "gen-1.0.0",
+  "history_start": "2025-10-12",
+  "home_currency": "GBP",
+  "locale": "en-GB",
+  "min_balance_minor": 78521,
+  "notes": [],
+  "opening_balance_minor": 420000,
+  "seed": 1729,
+  "timezone": "Europe/London",
+  "today": "2026-10-12"
+}

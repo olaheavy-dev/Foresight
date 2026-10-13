@@ -1,0 +1,541 @@
+{
+  "duration_s": 0.37,
+  "error": null,
+  "metrics": {
+    "arms": {
+      "hybrid": {
+        "accuracy": null,
+        "flow_class_accuracy": null,
+        "llm_call_rate": null,
+        "macro_f1": null,
+        "note": "Stage 2"
+      },
+      "llm_only": {
+        "accuracy": null,
+        "macro_f1": null,
+        "note": "Stage 2"
+      },
+      "majority_class": {
+        "accuracy": 0.2048,
+        "label": "groceries",
+        "macro_f1": 0.0121
+      },
+      "monzo_category_mapped": {
+        "accuracy": 0.3592,
+        "macro_f1": 0.1717,
+        "n": 284,
+        "rules_only_on_same_rows": 0.9085
+      },
+      "rules_only": {
+        "abstention_rate": 0.1044,
+        "accuracy": 0.8394,
+        "accuracy_ci95": [
+          0.8045,
+          0.869
+        ],
+        "amount_weighted_accuracy": 0.3587,
+        "coverage": {
+          "0.5": {
+            "coverage": 0.8956,
+            "selective_accuracy": 0.9372
+          },
+          "0.7": {
+            "coverage": 0.8695,
+            "selective_accuracy": 0.9423
+          },
+          "0.85": {
+            "coverage": 0.8414,
+            "selective_accuracy": 0.9737
+          },
+          "0.95": {
+            "coverage": 0.0,
+            "selective_accuracy": null
+          }
+        },
+        "ece": 0.1272,
+        "flow_class_accuracy": 0.9659,
+        "llm_call_rate": 0.0,
+        "macro_f1": 0.7318,
+        "n": 498,
+        "weighted_f1": 0.8761
+      }
+    },
+    "by_dataset": {
+      "P1-base": {
+        "dev_n": 842,
+        "rules_only": {
+          "abstention_rate": 0.0599,
+          "accuracy": 0.9085,
+          "accuracy_ci95": [
+            0.8692,
+            0.9368
+          ],
+          "amount_weighted_accuracy": 0.9745,
+          "coverage": {
+            "0.5": {
+              "coverage": 0.9401,
+              "selective_accuracy": 0.9663
+            },
+            "0.7": {
+              "coverage": 0.8944,
+              "selective_accuracy": 0.9764
+            },
+            "0.85": {
+              "coverage": 0.8873,
+              "selective_accuracy": 0.9841
+            },
+            "0.95": {
+              "coverage": 0.0,
+              "selective_accuracy": null
+            }
+          },
+          "ece": 0.0885,
+          "flow_class_accuracy": 0.993,
+          "llm_call_rate": 0.0,
+          "macro_f1": 0.7644,
+          "n": 284,
+          "weighted_f1": 0.9274
+        }
+      },
+      "P2-base": {
+        "dev_n": 1038,
+        "rules_only": {
+          "abstention_rate": 0.1636,
+          "accuracy": 0.7477,
+          "accuracy_ci95": [
+            0.6855,
+            0.8011
+          ],
+          "amount_weighted_accuracy": 0.1182,
+          "coverage": {
+            "0.5": {
+              "coverage": 0.8364,
+              "selective_accuracy": 0.8939
+            },
+            "0.7": {
+              "coverage": 0.8364,
+              "selective_accuracy": 0.8939
+            },
+            "0.85": {
+              "coverage": 0.7804,
+              "selective_accuracy": 0.9581
+            },
+            "0.95": {
+              "coverage": 0.0,
+              "selective_accuracy": null
+            }
+          },
+          "ece": 0.1815,
+          "flow_class_accuracy": 0.9299,
+          "llm_call_rate": 0.0,
+          "macro_f1": 0.7815,
+          "n": 214,
+          "weighted_f1": 0.8021
+        }
+      }
+    },
+    "confusion": {
+      "cash.withdrawal": {
+        "cash.withdrawal": 2
+      },
+      "entertainment": {
+        "entertainment": 7
+      },
+      "family_support_abroad": {
+        "family_support_abroad": 3
+      },
+      "food.delivery": {
+        "food.delivery": 55
+      },
+      "food.eating_out": {
+        "food.eating_out": 88,
+        "uncategorised": 14
+      },
+      "groceries": {
+        "groceries": 98,
+        "uncategorised": 4
+      },
+      "health": {
+        "health": 5
+      },
+      "housing.council_tax": {
+        "housing.council_tax": 5
+      },
+      "housing.rent": {
+        "housing.rent": 3,
+        "uncategorised": 3
+      },
+      "income.salary": {
+        "income.salary": 3
+      },
+      "income.self_employed": {
+        "income.salary": 4,
+        "inflow_unconfirmed": 12
+      },
+      "personal_care": {
+        "uncategorised": 5
+      },
+      "refund": {
+        "inflow_unconfirmed": 1
+      },
+      "savings_investment": {
+        "savings_investment": 3
+      },
+      "shopping.clothing": {
+        "shopping.clothing": 12
+      },
+      "shopping.general": {
+        "health": 4,
+        "shopping.general": 43,
+        "uncategorised": 3
+      },
+      "subscriptions.fitness": {
+        "subscriptions.fitness": 3
+      },
+      "subscriptions.software_cloud": {
+        "subscriptions.software_cloud": 3,
+        "uncategorised": 3
+      },
+      "subscriptions.streaming": {
+        "entertainment": 3,
+        "subscriptions.streaming": 15
+      },
+      "tax.self_assessment": {
+        "tax.self_assessment": 1
+      },
+      "transfer.reimbursement": {
+        "inflow_unconfirmed": 1
+      },
+      "transfer.untracked": {
+        "savings_investment": 3
+      },
+      "transport.public": {
+        "transport.public": 37,
+        "uncategorised": 17
+      },
+      "transport.taxi": {
+        "transport.taxi": 11
+      },
+      "utilities.broadband_tv": {
+        "uncategorised": 3,
+        "utilities.broadband_tv": 6
+      },
+      "utilities.energy": {
+        "utilities.energy": 6
+      },
+      "utilities.mobile": {
+        "utilities.mobile": 3
+      },
+      "utilities.water": {
+        "utilities.water": 6
+      }
+    },
+    "dataset": "generated test split (last 3 months) of P1-base, P2-base",
+    "holdout": {
+      "accuracy": null,
+      "dataset": "holdout_narrations@h-1",
+      "macro_f1": null,
+      "note": "UK hand-labelled holdout not built yet"
+    },
+    "per_class": {
+      "cash.withdrawal": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 2
+      },
+      "entertainment": {
+        "f1": 0.8235,
+        "precision": 0.7,
+        "recall": 1.0,
+        "support": 7
+      },
+      "family_support_abroad": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 3
+      },
+      "food.delivery": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 55
+      },
+      "food.eating_out": {
+        "f1": 0.9263,
+        "precision": 1.0,
+        "recall": 0.8627,
+        "support": 102
+      },
+      "groceries": {
+        "f1": 0.98,
+        "precision": 1.0,
+        "recall": 0.9608,
+        "support": 102
+      },
+      "health": {
+        "f1": 0.7143,
+        "precision": 0.5556,
+        "recall": 1.0,
+        "support": 5
+      },
+      "housing.council_tax": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 5
+      },
+      "housing.rent": {
+        "f1": 0.6667,
+        "precision": 1.0,
+        "recall": 0.5,
+        "support": 6
+      },
+      "income.salary": {
+        "f1": 0.6,
+        "precision": 0.4286,
+        "recall": 1.0,
+        "support": 3
+      },
+      "income.self_employed": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 16
+      },
+      "personal_care": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 5
+      },
+      "refund": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 1
+      },
+      "savings_investment": {
+        "f1": 0.6667,
+        "precision": 0.5,
+        "recall": 1.0,
+        "support": 3
+      },
+      "shopping.clothing": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 12
+      },
+      "shopping.general": {
+        "f1": 0.9247,
+        "precision": 1.0,
+        "recall": 0.86,
+        "support": 50
+      },
+      "subscriptions.fitness": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 3
+      },
+      "subscriptions.software_cloud": {
+        "f1": 0.6667,
+        "precision": 1.0,
+        "recall": 0.5,
+        "support": 6
+      },
+      "subscriptions.streaming": {
+        "f1": 0.9091,
+        "precision": 1.0,
+        "recall": 0.8333,
+        "support": 18
+      },
+      "tax.self_assessment": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 1
+      },
+      "transfer.reimbursement": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 1
+      },
+      "transfer.untracked": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 3
+      },
+      "transport.public": {
+        "f1": 0.8132,
+        "precision": 1.0,
+        "recall": 0.6852,
+        "support": 54
+      },
+      "transport.taxi": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 11
+      },
+      "utilities.broadband_tv": {
+        "f1": 0.8,
+        "precision": 1.0,
+        "recall": 0.6667,
+        "support": 9
+      },
+      "utilities.energy": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 6
+      },
+      "utilities.mobile": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 3
+      },
+      "utilities.water": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 6
+      }
+    },
+    "top_errors": [
+      {
+        "count": 17,
+        "gold": "transport.public",
+        "pred": "uncategorised"
+      },
+      {
+        "count": 14,
+        "gold": "food.eating_out",
+        "pred": "uncategorised"
+      },
+      {
+        "count": 12,
+        "gold": "income.self_employed",
+        "pred": "inflow_unconfirmed"
+      },
+      {
+        "count": 5,
+        "gold": "personal_care",
+        "pred": "uncategorised"
+      },
+      {
+        "count": 4,
+        "gold": "shopping.general",
+        "pred": "health"
+      },
+      {
+        "count": 4,
+        "gold": "income.self_employed",
+        "pred": "income.salary"
+      },
+      {
+        "count": 4,
+        "gold": "groceries",
+        "pred": "uncategorised"
+      },
+      {
+        "count": 3,
+        "gold": "utilities.broadband_tv",
+        "pred": "uncategorised"
+      },
+      {
+        "count": 3,
+        "gold": "subscriptions.software_cloud",
+        "pred": "uncategorised"
+      },
+      {
+        "count": 3,
+        "gold": "subscriptions.streaming",
+        "pred": "entertainment"
+      },
+      {
+        "count": 3,
+        "gold": "shopping.general",
+        "pred": "uncategorised"
+      },
+      {
+        "count": 3,
+        "gold": "transfer.untracked",
+        "pred": "savings_investment"
+      },
+      {
+        "count": 3,
+        "gold": "housing.rent",
+        "pred": "uncategorised"
+      },
+      {
+        "count": 1,
+        "gold": "refund",
+        "pred": "inflow_unconfirmed"
+      },
+      {
+        "count": 1,
+        "gold": "transfer.reimbursement",
+        "pred": "inflow_unconfirmed"
+      }
+    ]
+  },
+  "name": "categorisation",
+  "notes": [
+    "Every docs/09 \u00a75.3 target is for the hybrid arm or the UK holdout; neither exists in Stage 1, so they are listed unmet-unknown (null) and the gate uses 'ran without errors'.",
+    "Majority-class baseline predicts 'groceries' (most frequent dev-split label)."
+  ],
+  "suite": "E-CAT",
+  "targets": [
+    {
+      "dataset": "P1, P2 test split",
+      "id": "CAT-hybrid-acc-generated",
+      "label": "Accuracy, hybrid (generated test split)",
+      "met": null,
+      "stage1": false,
+      "target": ">= 0.93",
+      "value": null
+    },
+    {
+      "dataset": "UK holdout",
+      "id": "CAT-hybrid-acc",
+      "label": "Accuracy, hybrid (holdout)",
+      "met": null,
+      "stage1": false,
+      "target": ">= 0.85",
+      "value": null
+    },
+    {
+      "dataset": "UK holdout",
+      "id": "CAT-hybrid-f1",
+      "label": "Macro-F1, hybrid (holdout)",
+      "met": null,
+      "stage1": false,
+      "target": ">= 0.8",
+      "value": null
+    },
+    {
+      "dataset": "UK holdout",
+      "id": "CAT-hybrid-flow",
+      "label": "Flow-class accuracy, hybrid (holdout)",
+      "met": null,
+      "stage1": false,
+      "target": ">= 0.95",
+      "value": null
+    },
+    {
+      "dataset": "UK holdout",
+      "id": "CAT-selective",
+      "label": "Selective accuracy@0.85 (holdout)",
+      "met": null,
+      "stage1": false,
+      "target": ">= 0.95",
+      "value": null
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "anomalies": [
+    {
+      "key": "food_delivery_windows",
+      "last_30_total_minor": 20490,
+      "orders_last_30": 16,
+      "prior_window_totals_minor": [
+        19870,
+        20310,
+        21140
+      ],
+      "type": "reference",
+      "window_last_30": [
+        "2026-09-12",
+        "2026-10-11"
+      ]
+    }
+  ]
+}

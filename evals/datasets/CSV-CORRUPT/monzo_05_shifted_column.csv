@@ -1,0 +1,18 @@
+Transaction ID,Date,Time,Type,Name,Emoji,Category,Amount,Currency,Local amount,Local currency,Notes and #tags,Address,Receipt,Description,Category split,Money Out,Money In
+tx_0000bEwfEkZfGe7Hk49Ce0SzYn,01/09/2026,09:00:00,Card payment,Boots,,Personal care,-7.43,GBP,-7.43,GBP,,,,BOOTS 1180,,-7.43,
+tx_0000pe1XGicCjdvEZ7Oo8pp4FF,01/09/2026,10:07:00,Card payment,Pret,,Eating out,-4.66,GBP,-4.66,GBP,,,,PRET A MANGER 0412,,-4.66,
+tx_0000N53ndB11of6Fiz3vxXoN3K,02/09/2026,11:14:00,Card payment,Tesco,,Groceries,-24.55,GBP,-24.55,GBP,,,,TESCO STORES 3021,,-24.55,
+tx_0000nWajNLRHkCPsRj0SW94iJr,03/09/2026,12:21:00,Bacs (Direct Credit),Acme Analytics Ltd,,Income,2100.00,GBP,2100.00,GBP,,,,ACME ANALYTICS LTD SALARY,,,2100.00
+tx_00003bRF7eJ1yMg6jYY2byVFTg,04/09/2026,13:28:00,Card payment,Octopus Energy,,Bills,-56.92,GBP,-56.92,GBP,,,,OCTOPUS ENERGY,,-56.92,
+tx_0000ZsKBen2INv2WxqR4GXvGhf,05/09/2026,14:35:00,Card payment,Tesco,,Groceries,-12.99,GBP,-12.99,GBP,,,,TESCO STORES 3021,,-12.99,
+tx_00009ZOp9BDBh1VSD6HNnXHnuI,05/09/2026,15:42:00,Card payment,Amazon,,Shopping,-25.12,GBP,-25.12,GBP,,,,AMAZON.CO.UK*K2B7Q,,-25.12,
+tx_0000PKLnzxdUedpO98Ib4WWJYi,07/09/2026,16:49:00,Card payment,Octopus Energy,,Bills,-68.47,GBP,-68.47,GBP,,,,OCTOPUS ENERGY,,-68.47,
+tx_0000TFnOAqyvGC3oN0jlLRQLeb,07/09/2026,17:56:00,Card payment,Deliveroo,,Eating out,-11.90,GBP,-11.90,GBP,,,,DELIVEROO,,-11.90,
+tx_00006QoVgW22WjqrLqO90Dd3uK,08/09/2026,18:03:00,Card payment,Costa,,Eating out,-3.75,GBP,-3.75,GBP,,,,COSTA COFFEE 22,,-3.75,
+tx_0000XGUWuHvJ5wz3GZV43yzeWB,09/09/2026,19:10:00,Card payment,Tesco,,Groceries,-11.56,GBP,-11.56,GBP,,,,TESCO STORES 3021,,-11.56,
+tx_00006hcGNrmX05m0psdgL30qI6,09/09/2026,20:17:00,Card payment,Pret,,Eating out,-5.17,GBP,-5.17,GBP,,,,PRET A MANGER 0412,,-5.17,
+tx_0000aSFah0U8xNRnL40uVpUqej,11/09/2026,09:24:00,Card payment,Ama,zon,,Shopping,-20.38,GBP,-20.38,GBP,,,,AMAZON.CO.UK*K2B7Q,,-20.38,
+tx_0000NH4YF1KTfs0rtK8DF9n53R,12/09/2026,10:31:00,Card payment,Tesco,,Groceries,-16.32,GBP,-16.32,GBP,,,,TESCO STORES 3021,,-16.32,
+tx_0000na4k7WjCSqY0W5VRvmOiPX,13/09/2026,11:38:00,Card payment,Tesco,,Groceries,-23.21,GBP,-23.21,GBP,,,,TESCO STORES 3021,,-23.21,
+tx_0000rQ6qxbE3gXWvHfP27WqaUZ,13/09/2026,12:45:00,Card payment,Pret,,Eating out,-8.13,GBP,-8.13,GBP,,,,PRET A MANGER 0412,,-8.13,
+tx_0000XIdfmo24rW2uvmtxXbsTai,15/09/2026,13:52:00,Card payment,Boots,,Personal care,-13.80,GBP,-13.80,GBP,,,,BOOTS 1180,,-13.80,

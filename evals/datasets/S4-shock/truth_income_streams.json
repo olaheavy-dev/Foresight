@@ -1,0 +1,75 @@
+{
+  "income_streams": [
+    {
+      "account": "acct_main",
+      "cadence": "irregular",
+      "invoice_range_minor": [
+        36000,
+        615000
+      ],
+      "key": "inc_client_brightwater",
+      "provenance_expected": "detected",
+      "source": "Brightwater Media"
+    },
+    {
+      "account": "acct_main",
+      "cadence": "irregular",
+      "invoice_range_minor": [
+        36000,
+        615000
+      ],
+      "key": "inc_client_kestrel",
+      "provenance_expected": "detected",
+      "source": "Kestrel Design Co"
+    },
+    {
+      "account": "acct_main",
+      "cadence": "irregular",
+      "invoice_range_minor": [
+        36000,
+        615000
+      ],
+      "key": "inc_client_severn",
+      "provenance_expected": "detected",
+      "source": "Severn Studio"
+    },
+    {
+      "account": "acct_main",
+      "cadence": "irregular",
+      "invoice_range_minor": [
+        36000,
+        615000
+      ],
+      "key": "inc_client_oakfield",
+      "provenance_expected": "detected",
+      "source": "Oakfield Events"
+    },
+    {
+      "account": "acct_main",
+      "cadence": "monthly",
+      "key": "inc_client_lumen",
+      "net_amount_minor": 200000,
+      "payday_rule": {
+        "day_of_month": 5,
+        "kind": "fixed_day",
+        "next_working_day": true
+      },
+      "paydays": [
+        "2025-11-05",
+        "2025-12-05",
+        "2026-01-05",
+        "2026-02-05",
+        "2026-03-05",
+        "2026-04-07",
+        "2026-05-05",
+        "2026-06-05",
+        "2026-07-06",
+        "2026-08-05",
+        "2026-09-07",
+        "2026-10-05"
+      ],
+      "provenance_expected": "detected",
+      "source": "Lumen Labs"
+    }
+  ]
+}

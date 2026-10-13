@@ -13,3 +13,6 @@ evals/external/cache
 *.csv
 *.xls
 *.xlsx
+# Synthetic demo personas copied into the backend image for the demo seed (backend/Dockerfile).
+!evals/datasets/P1-base/exports/*.csv
+!evals/datasets/P2-base/exports/*.csv

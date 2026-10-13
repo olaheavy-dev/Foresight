@@ -502,6 +502,8 @@ Pairing (`detect_transfer_pairs`): out on tracked A, in on tracked B ≠ A, `amo
 
 `detect_recurring` groups by `counterparty_id` (+ ±15% amount band for variable bills). Cadence tests on gaps: monthly [27, 33], four-weekly [27, 29] with ≥ 4 occurrences and drifting day-of-month, weekly [6, 8], quarterly [85, 95], annual [355, 375]. UK rules:
 - **DD/SO** falling on a weekend or bank holiday post on the **next working day** (England & Wales bank holiday list 2025–27 shipped as data).
+  *Engine v1.2 (`fc-1.2.0`):* each `RecurringObligation` carries `shift` (`none` | `next_working_day`). For monthly direct debits and standing orders the detector searches for the nominal day and shift that explain the most observed dates against the pack's calendar (python-holidays, England for `uk`), and records the pack's debit shift only when it explains strictly more dates than taking each date as it is; card payments always keep `none`. The forecast projects the shifted date. `PaydayRule.shift` works the same way for fixed-day pay: `None` means the pack default (previous working day in `uk`), and a payer whose history fits next-working-day or no shift strictly better records that.
+- **Counterparties** drop trailing invoice and reference numbers (`SEVERN STUDIO INV178` → `SEVERN STUDIO`): reference-shaped tokens (≤ 4 letters then ≥ 2 digits) and the pack's `reference_markers`, never the whole name. Every invoice from one client then keys to one payer, which income confirmation and recurring detection need.
 - **Council tax**: 10 monthly instalments Apr–Jan (`seasonal_monthly`, `active_months`), learned from history (gap in Feb–Mar) or default for `housing.council_tax` if history < 12 months — flagged as an assumption. P1: £162 on the 15th, Apr–Jan.
 - **BNPL** (Klarna/Clearpay/PayPal Pay in 3): `instalments` with `remaining_instalments` inferred from equal amounts at ~monthly/biweekly gaps; ends automatically.
 - **Price change** (≥5%) raises `price_change`. **Overlap**: ≥ 2 active services in the same subscription family or a streaming add-on overlapping a TV package (P1: Netflix overlaps Sky TV) raises `subscription_overlap` — an *overlap*, never a claim of non-use.
@@ -520,11 +522,11 @@ Pairing (`detect_transfer_pairs`): out on tracked A, in on tracked B ≠ A, `amo
 - Declaration only when unobservable; declared streams carry a badge and a divergence flag if later observations differ > 10%.
 - Collected: net take-home only — never gross pay, NI number, date of birth or bank credentials.
 - Bonus/back pay (> 1.5× median) excluded as one-off. Four-weekly pay supported (13 paydays/year).
-- **Irregular (P2 Jamie)**: monthly income total drawn from the empirical distribution of the last 6–12 months' totals, split into k invoices (k empirical), placed on historical days; known invoices may be added as user-sourced expected inflows. Self Assessment payments on account (31 Jan / 31 Jul) are `tax` obligations; when no history exists, a provisioning assumption (declared) can be added.
+- **Irregular (P2 Jamie)**: monthly income total drawn from the empirical distribution of the last 6–12 months' totals, split into k invoices (k empirical), placed on historical days; known invoices may be added as user-sourced expected inflows. *Engine v1.1 (`fc-1.1.0`):* the detector reports one total per calendar month the ledger fully covers (last 12), **months with no irregular credit count as zero**; the engine draws each horizon month's total from them and lands it on a uniformly random day of that month (k = 1; days on or before `as_of` are dropped, so a part-elapsed month contributes pro rata). Payers the user confirms as income in "Check what we found" (`00` §6a) feed this stream; unconfirmed inflows still never do. Self Assessment payments on account (31 Jan / 31 Jul) are `tax` obligations; when no history exists, a provisioning assumption (declared) can be added.
 
 ### 4.6 Uncertain future spending and one-offs
 
-Discretionary spend is block-bootstrapped (§6.2). One-offs (≥3× category median with no recurrence, or known one-off classes such as `insurance` annual renewals, visa/immigration fees, device purchases) are flagged `is_one_off`, **excluded from the bootstrap pool** and listed as assumptions. P1: car insurance renewal £410 on 9 Oct — explains why October is tight without inflating future months.
+Discretionary spend is block-bootstrapped (§6.2). One-offs (≥3× category median with no recurrence, or known one-off classes such as `insurance` annual renewals, visa/immigration fees, device purchases) are flagged `is_one_off`, **excluded from the bootstrap pool** and listed as assumptions. *Engine v1.1:* rather than assuming none will happen, the forecast carries them as a **compound process** estimated over up to 365 days of history: on each horizon day a one-off arrives with probability (one-offs seen) / (days of history), its size drawn from those seen. Rows in a category too rare to have its own median (< 3 rows) are judged against the median of all outflows. Backtests showed that assuming no future one-offs left the P10–P90 band far too narrow (`09` E-FC). P1: car insurance renewal £410 on 9 Oct — explains why October is tight without inflating future months.
 
 ### 4.7 Provenance chain
 
@@ -618,7 +620,7 @@ All functions are pure: `(inputs, params, seed) → result`. No I/O, no clock re
 - Calendar from the workspace's `LocalePack` (holidays, payday conventions); the engine itself is locale-free.
 - `B₀`: sum of **cash** accounts in scope (current/savings/wallet/cash) **in the forecast currency** from anchors/reconstruction; card and loan balances are liabilities entering through settlements (§6.3a). P1: £2,184.50 (declared).
 - Active `IncomeStream`s, `RecurringObligation`s (incl. commitments, savings transfers, BNPL instalments, seasonal council tax) and `DeclaredObligation`s that move tracked cash.
-- Discretionary pool: last `W = 90` days of active rows with `flow_kind ∈ {spending, fee, betting}` minus refunds, not recurring, not one-off, from all accounts in scope (cards included, routed via the card cycle).
+- Discretionary pool: last `W = 90` days of active rows with `flow_kind ∈ {spending, fee, betting}` minus refunds, not recurring, not one-off, from all accounts in scope (cards included, routed via the card cycle). *Engine v1.1:* callers pass every **unscheduled outflow** (any non-recurring outflow except `transfer_own` and `card_settlement`, so ad-hoc savings transfers, extra family support and tax payments count) for up to 365 days; the engine splits one-offs from everyday spend itself (`split_history`, §4.6), bootstraps everyday spend from the last 90 days (never reaching before the first day of history) and estimates the one-off process over the whole span. Leaving ad-hoc savings sweeps out made forecasts too optimistic for users who move surplus by hand.
 
 Seed: `seed = int(sha256(f"{workspace_id}|{data_version}|{scope}|{scope_account_id or '-'}|{currency}")[:8], 16)`. **Simulations reuse the baseline seed** (common random numbers) so Δ is attributable to the scenario; scenario-specific randomness uses a spawned child stream.
 
@@ -627,7 +629,8 @@ Seed: `seed = int(sha256(f"{workspace_id}|{data_version}|{scope}|{scope_account_
 1. Daily discretionary outflow series `x₁…x_W` (0 on no-spend days), per category.
 2. Fill days 1…H with blocks of length `L ~ Geometric(p = 1/7)`; block starts are **weekday-aligned** (same weekday as the target day) to keep weekend effects; **payday-aligned option** (default on): for the first 3 days after a payday, blocks are drawn from historical post-payday days (captures payday splurges).
 3. All categories use the same block positions (coherent per-path category totals — needed for caps).
-4. No trend extrapolation in v1; backtests compare W = 60/90/120.
+4. No trend extrapolation in v1; backtests compare W = 60/90/120 (v1.1 sweep on dev origins: W ∈ {90, 120, 180, 365} × mean block {7, 14, 30} days changed P1 coverage by < 0.02, so the defaults stay).
+5. *Engine v1.1:* **parameter uncertainty** (posterior predictive, not plug-in). Each path first re-weights the history days with Dirichlet(1, …, 1) weights (Bayesian bootstrap) before drawing blocks, and the one-off process draws its rate per path from the Gamma(n + ½, days) posterior (Jeffreys prior) with Bayesian-bootstrap weights on the sizes. A short history therefore gives a wider band; with a year of data the effect is small.
 
 ### 6.3 Known flows: calendar
 
@@ -642,7 +645,7 @@ Card spend accrues to liability `C[p, t]`; on `statement_day` statement `S = C`;
 `balance[p, t] = B₀ + Σ_{s≤t} (income[p,s] + recurring_in[p,s] − recurring_out[p,s] − discretionary_cash[p,s] − card_settlement[p,s] + scenario_flow[p,s])`
 
 Outputs (`Calculation.kind = forecast`):
-- Daily **P10 / P50 / P90** (`np.quantile`, linear).
+- Daily **P10 / P50 / P90** (`np.quantile`, linear). *Engine v1.1:* computed exactly in integers (same linear interpolation, halves rounded up to a whole minor unit), so adding a constant to every path moves every quantile by exactly that constant (SIM-3 holds to the penny).
 - `p_breach_buffer(window)` = fraction of paths whose minimum over the window < buffer. Windows: today → day before next payday; each subsequent pay cycle; whole horizon.
 - **Pre-salary lows** per pay cycle (P10/P50/P90 of the path minimum in the cycle, and its modal date) — the primary summary for salaried users.
 - `min_balance` (P50 path-wise minimum and modal date), `month_end` quantiles, `drivers` (top contributors to the change from today to the low: recurring by obligation, discretionary by category, commitments separately), `assumptions`.
@@ -686,7 +689,7 @@ Canonical P1 fixture: £1,200 on 6 Nov → P50 low **26 Nov −£148** (P10 −�
 
 ### 6.6 Behaviour detectors (summary; thresholds in `00` §13 / `01` FR-37–FR-41; agent tools in `06`)
 
-- **Category trend**: last-30-day spend `s` vs median `m` of the three prior 30-day windows; robust `z = (s − m)/(1.4826·MAD + ε)`; spike if `z ≥ 2.0` and `|s − m| ≥ max(£25, 15% of m)`. P1: £286.40 vs £203.10 (+41%), 23 orders.
+- **Category trend**: last-30-day spend `s` vs median `m` of the three prior 30-day windows; robust `z = (s − m)/(1.4826·MAD + ε)`; spike if `z ≥ 2.0` and `|s − m| ≥ max(£25, 15% of m)`. P1: £286.40 vs £203.10 (+41%), 23 orders. Excluded before comparing: `uncategorised` (mixed merchants, not a behaviour), one-offs (rows ≥ 3× the category median over the four windows **when such rows are rare there**, at most two; where large amounts are routine they are behaviour), and categories with `m = 0` (no baseline: a new-merchant finding, not a trend). Known limitation: a MAD over three window totals can be near zero by chance, which makes noisy low-volume categories look like spikes (E-ANOM false positives); a sampling-noise floor on the scale was measured and rejected because it also hides the +41% food-delivery spike (16 → 23 orders is within compound-Poisson noise). Choosing the scale is an owner decision.
 - **Long pay gap**: next pay interval ≥35 days → `long_pay_gap` with the cycle's projected low (P1: 41 days, 18 Dec → 28 Jan).
 - **Subscription overlap**, **price change**, **new merchant spike**, **large one-off**, **recurring missed** (expected + jitter + 3 working days), **income delay** (salary not seen by expected + 2 working days), **betting activity** (opt-in only; neutral wording; net of returns).
 

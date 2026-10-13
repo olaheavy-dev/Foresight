@@ -1,0 +1,37 @@
+{
+  "exports/statement.csv": {
+    "delimiter": ",",
+    "format": "G3_dollar",
+    "tables": [
+      {
+        "balance_column": "Balance",
+        "columns": {
+          "amount": "Amount",
+          "balance": "Balance",
+          "date": "Date",
+          "description": "Description"
+        },
+        "currency": "USD",
+        "currency_ambiguous": true,
+        "currency_source": "user_confirmed",
+        "date_format": "%d/%m/%Y",
+        "decimal": ".",
+        "first_row": 1,
+        "group": ",",
+        "header_row": 0,
+        "headers": [
+          "Date",
+          "Description",
+          "Amount",
+          "Balance"
+        ],
+        "last_row": 244,
+        "n_rows": 244,
+        "sign_convention": "signed",
+        "skip_rules": [],
+        "table": "acct_main",
+        "title": null
+      }
+    ]
+  }
+}

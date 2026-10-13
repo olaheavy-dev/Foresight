@@ -1,0 +1,9 @@
+{
+  "clean_data_rows": 14,
+  "data_rows": 13,
+  "defect": "dropped_row",
+  "expected_outcome": "rejected",
+  "file": "generic_06_dropped_row.csv",
+  "first_failing_row": 9,
+  "format": "generic"
+}

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from fastapi import FastAPI, Response, status
 
+from backend.app.routers import engine, imports, ledger
+from backend.app.routers import session as profile
 from backend.features import load_features
 from backend.settings import get_settings
 from backend.storage.db import database_reachable
@@ -37,6 +39,8 @@ def create_app() -> FastAPI:
             ]
         }
 
+    for router in (profile.router, imports.router, ledger.router, engine.router):
+        app.include_router(router)
     return app
 
 

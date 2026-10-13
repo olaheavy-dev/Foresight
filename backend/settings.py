@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     # .env file uses, so runtime configuration cannot mask the build being served.
     build_sha: str = Field(default="local", validation_alias="FORESIGHT_BUILD_SHA")
     features_file: str = "features.yaml"
+    # Signs the profile cookie (docs/05 §7.1). Empty → a random per-process secret, so sessions
+    # simply end when the API restarts.
+    session_secret: str = ""
+    session_cookie_secure: bool = True
 
 
 @lru_cache
