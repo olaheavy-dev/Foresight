@@ -98,7 +98,7 @@ def test_core_metrics_come_first_with_tier_gates() -> None:
             "by_tier": {"verifier": {"models": ["anthropic/claude-sonnet-5.5"],
                                      "accuracy_gates": ["E-VER"], "cost_per_answer_usd": 0.004,
                                      "call_latency_p50_s": 4.8, "call_latency_p95_s": 7.0}},
-            "by_answer_type": {"advice": {"answers": 9, "cost_mean_usd": 0.02,
+            "by_answer_type": {"advice": {"count": 9, "cost_mean_usd": 0.02,
                                           "cost_p95_usd": 0.03, "latency_p50_s": 31.0,
                                           "latency_p95_s": 61.0}},
         }},

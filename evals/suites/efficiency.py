@@ -62,7 +62,7 @@ def _group(every: list[dict[str, Any]], tier_p50_ms: dict[str, float]) -> dict[s
     first = [a["first_step_ms"] for a in answers if a["first_step_ms"] is not None]
     est = [e for a in answers if (e := estimate_e2e(a, tier_p50_ms)) is not None]
     return {
-        "answers": len(answers),
+        "count": len(answers),  # not "answers": the summary drops that key as per-row detail
         "degraded_left_out": len(every) - len(answers),
         "cost_mean_usd": _usd(_mean(costs)),
         "cost_p95_usd": _usd(percentile(costs, 95)),
@@ -125,27 +125,27 @@ def run(fast: bool = False, cases: Any = None) -> dict[str, Any]:
         "answers": answers,
     }
     a, s, adv = groups["all"], groups["simple"], groups["advice"]
-    n = f"{a['answers']} E-UI answers"
+    n = f"{a['count']} E-UI answers"
     targets: list[Target] = [
         target("EFF-1", "Mean cost per answer (USD)", a["cost_mean_usd"], "<=", 0.03, n,
                stage1=False),
         target("EFF-2", "Mean cost per advice answer (USD)", adv["cost_mean_usd"], "<=", 0.05,
-               f"{adv['answers']} advice answers", stage1=False),
+               f"{adv['count']} advice answers", stage1=False),
         target("EFF-3", "p95 cost per answer (USD)", a["cost_p95_usd"], "<=", 0.10, n,
                stage1=False),
         target("EFF-4", "Time to first progress step, p95 (s)", a["first_step_p95_s"], "<=", 2.0,
                n, stage1=False),
         target("EFF-5", "Simple answer latency p50 (s)", s["latency_p50_s"], "<=", 10.0,
-               f"{s['answers']} simple answers", stage1=False),
+               f"{s['count']} simple answers", stage1=False),
         target("EFF-6", "Advice answer latency p50 (s)", adv["latency_p50_s"], "<=", 35.0,
-               f"{adv['answers']} advice answers", stage1=False),
+               f"{adv['count']} advice answers", stage1=False),
         target("EFF-7", "Advice answer latency p95 (s)", adv["latency_p95_s"], "<=", 60.0,
-               f"{adv['answers']} advice answers", stage1=False),
+               f"{adv['count']} advice answers", stage1=False),
     ]  # fmt: skip
     notes = [
         f"{eval_mode()} mode. Latency is measured only in replay, from the live latency each "
         "cassette stores; an answer with an older recording (no latency) leaves its group's "
-        f"latency not measured. Latency measured on {a['latency_measured']} of {a['answers']} "
+        f"latency not measured. Latency measured on {a['latency_measured']} of {a['count']} "
         f"answers. {len(answers) - len(clean)} answers with a failed or unrecorded model step "
         "are left out of every statistic.",
         "Where latency is not measured, `latency_estimated_*` counts each unmeasured call at its "

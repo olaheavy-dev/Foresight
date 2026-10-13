@@ -82,7 +82,7 @@ def core_metrics(summary: dict[str, Any]) -> dict[str, Any]:
         answers.append({
             "type": key,
             "label": label,
-            "answers": g.get("answers"),
+            "count": g.get("count"),
             "cost_mean_usd": g.get("cost_mean_usd"),
             "cost_p95_usd": g.get("cost_p95_usd"),
             "latency_p50_s": g.get("latency_p50_s"),
@@ -131,7 +131,7 @@ def _core_table(core: dict[str, Any]) -> list[str]:
                 f"{_sec(a.get('latency_estimated_p95_s'))})"
             )
         lines.append(
-            f"| {a['label']} | {_f(a['answers'])} | {_usd(a['cost_mean_usd'])} · "
+            f"| {a['label']} | {_f(a['count'])} | {_usd(a['cost_mean_usd'])} · "
             f"{_usd(a['cost_p95_usd'])} | {latency} |"
         )
     met = " · ".join(

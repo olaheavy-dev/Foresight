@@ -17,7 +17,7 @@ export type CoreMetricsData = {
   answers: {
     type: string;
     label: string;
-    answers: number | null;
+    count: number | null;
     cost_mean_usd: number | null;
     cost_p95_usd: number | null;
     latency_p50_s: number | null;
@@ -85,7 +85,7 @@ export function CoreMetrics({ data }: { data: CoreMetricsData }) {
           {data.answers.map((a) => (
             <tr key={a.type}>
               <td className="lead">{a.label}</td>
-              <td data-label="Count">{a.answers ?? "—"}</td>
+              <td data-label="Count">{a.count ?? "—"}</td>
               <td data-label="Cost mean · p95">
                 {usd(a.cost_mean_usd)} · {usd(a.cost_p95_usd)}
               </td>

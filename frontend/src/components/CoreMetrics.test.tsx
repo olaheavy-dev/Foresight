@@ -19,7 +19,7 @@ const data: CoreMetricsData = {
     {
       type: "advice",
       label: "Advice answers",
-      answers: 9,
+      count: 9,
       cost_mean_usd: 0.02,
       cost_p95_usd: 0.03,
       latency_p50_s: 31,
