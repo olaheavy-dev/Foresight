@@ -44,6 +44,27 @@ def eval_mode() -> str:
     return mode
 
 
+HOLD_ENV = "FORESIGHT_EVAL_HOLD"  # e.g. "advisor,verifier_judge": answered from recordings only
+
+
+class HoldMesh:
+    """Record mode, except the structured calls named in FORESIGHT_EVAL_HOLD: those are answered
+    only from what is already recorded (a miss stays a miss, never a live call). Used to record
+    everything else while a model choice for the held roles is pending."""
+
+    def __init__(self, inner: MeshClient, replay: MeshClient, hold: frozenset[str]) -> None:
+        self._inner = inner
+        self._replay = replay
+        self._hold = hold
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._inner, name)
+
+    def structured(self, **kwargs: Any) -> Any:
+        client = self._replay if kwargs.get("name") in self._hold else self._inner
+        return client.structured(**kwargs)
+
+
 def eval_mesh() -> MeshClient:
     """The product's Mesh client in replay or record mode, on the committed cassettes.
 
@@ -53,7 +74,12 @@ def eval_mesh() -> MeshClient:
     settings = get_settings().model_copy(
         update={"mesh_cassette_mode": eval_mode(), "mesh_cassette_dir": str(CASSETTES)}
     )
-    return MeshClient(settings=settings)
+    client = MeshClient(settings=settings)
+    hold = frozenset(n.strip() for n in os.environ.get(HOLD_ENV, "").split(",") if n.strip())
+    if hold and eval_mode() == "record":
+        replay = MeshClient(settings=settings.model_copy(update={"mesh_cassette_mode": "replay"}))
+        return HoldMesh(client, replay, hold)  # type: ignore[return-value]
+    return client
 
 
 USAGE: dict[str, int] = {"calls": 0, "tokens": 0}  # recorded usage of the requests answered
