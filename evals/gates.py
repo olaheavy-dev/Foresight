@@ -2,9 +2,11 @@
 
 Rule, per suite:
 1. The suite raised an error → fail.
-2. Some docs/09 targets that apply to Stage 1 were measured → pass only if every measured one is
-   met. Unmeasured (null) targets are listed and never counted as met.
-3. No Stage 1 target was measured → pass if the suite ran without errors.
+2. Some docs/09 targets were measured → pass only if every measured one is met. Since Stage 2
+   (14 Oct 2026) every measured target counts, not only Stage 1 ones; a target is exempt only if
+   it sets `"gated": false` with a documented reason. Unmeasured (null) targets are listed and
+   never counted as met.
+3. No target was measured → pass if the suite ran without errors.
 Suites that did not run are "fail" (not run is never a pass).
 """
 
@@ -30,12 +32,19 @@ ALL_SUITES = (
     "E-ORC",
     "E-UI",
     "E-AUD",
+    "E-SEC",
+    "E-CTX",
 )
 
 RULE_TARGETS = "docs/09 targets"
 RULE_RAN = "ran without errors"
 RULE_ERROR = "suite error"
 RULE_NOT_RUN = "not run"
+
+
+def is_gated(target: dict[str, Any]) -> bool:
+    """Every target counts unless it opts out explicitly (docs/09 §16)."""
+    return target.get("gated", True) is not False
 
 
 def gate(result: dict[str, Any] | None) -> dict[str, Any]:
@@ -49,9 +58,9 @@ def gate(result: dict[str, Any] | None) -> dict[str, Any]:
             "unmeasured": [],
             "error": result["error"],
         }
-    stage1 = [t for t in result.get("targets", []) if t.get("stage1")]
-    measured = [t for t in stage1 if t.get("met") is not None]
-    unmeasured = [t["id"] for t in stage1 if t.get("met") is None]
+    gated = [t for t in result.get("targets", []) if is_gated(t)]
+    measured = [t for t in gated if t.get("met") is not None]
+    unmeasured = [t["id"] for t in gated if t.get("met") is None]
     if measured:
         failed = [t["id"] for t in measured if t["met"] is not True]
         return {

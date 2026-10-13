@@ -45,7 +45,7 @@ def test_sim3_one_off_outflow_is_linear(inputs: ForecastInputs) -> None:
     prep = prepare(inputs)
     index = {d: i for i, d in enumerate(prep.dates)}
     base = balance_paths(prep, prep.flows)
-    sim = balance_paths(prep, _apply(list(prep.flows), holiday(on, amount), inputs, index))
+    sim = balance_paths(prep, _apply(list(prep.flows), holiday(on, amount), prep, index))
     day = index[on]
     assert np.array_equal(base[:, :day], sim[:, :day])
     assert np.all(base[:, day:] - sim[:, day:] == amount)
@@ -65,7 +65,7 @@ def test_sim6_income_delay_conservation(inputs: ForecastInputs) -> None:
     prep = prepare(inputs)
     index = {d: i for i, d in enumerate(prep.dates)}
     base = balance_paths(prep, prep.flows)
-    sim = balance_paths(prep, _apply(list(prep.flows), delay, inputs, index))
+    sim = balance_paths(prep, _apply(list(prep.flows), delay, prep, index))
     pay = index[date(2026, 10, 28)]
     new_pay = index[date(2026, 11, 2)]  # 28 Oct + 5 = Mon 2 Nov
     diff = base - sim

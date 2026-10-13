@@ -12,7 +12,30 @@ import time
 _CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
 
 PREFIXES = frozenset(
-    {"wsp", "acct", "imp", "txn", "ctg", "cpty", "fmt", "bal", "inc", "rob", "calc", "aud"}
+    {
+        "wsp",
+        "acct",
+        "imp",
+        "txn",
+        "ctg",
+        "cpty",
+        "fmt",
+        "bal",
+        "inc",
+        "rob",
+        "calc",
+        "aud",
+        # agent runtime (migration 0004)
+        "run",
+        "step",
+        "ver",
+        "rec",
+        "rsp",
+        "thr",
+        "msg",
+        # behaviour findings (migration 0005)
+        "fnd",
+    }
 )
 
 

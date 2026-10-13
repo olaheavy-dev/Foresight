@@ -76,6 +76,10 @@ def test_demo_forecast_simulate_and_evidence(api: TestClient) -> None:
     assert calc["kind"] == "forecast"
     assert calc["currency"] == "GBP"
     assert calc["result"]["min_balance_p50_minor"] == chart["summary"]["min_balance"]["minor"]
+    # The headline low is one of the pay-cycle lows shown, never a different figure.
+    lowest = min(chart["pay_cycles"], key=lambda c: c["low"]["minor"])
+    assert chart["summary"]["min_balance"]["minor"] == lowest["low"]["minor"]
+    assert chart["summary"]["min_date"]["value"] == lowest["low_date"]
 
     as_of = date.fromisoformat(chart["as_of"])
     spec = {

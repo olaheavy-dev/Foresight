@@ -1,0 +1,439 @@
+{
+  "duration_s": 20.43,
+  "error": null,
+  "metrics": {
+    "composition": {
+      "answered": 12,
+      "detail": [
+        {
+          "case": "UIQ-001",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-002",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-003",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-004",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-005",
+          "got": [
+            "ClarifyingQuestion"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIQ-006",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-007",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-008",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-009",
+          "got": [
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIQ-010",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-011",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-012",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-013",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-014",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-015",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-016",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-017",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-018",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-019",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-020",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-021",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-022",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-023",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-024",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-025",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-026",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-027",
+          "got": [
+            "ClarifyingQuestion"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "RiskAssessment"
+          ]
+        },
+        {
+          "case": "UIQ-028",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-029",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-030",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-031",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-032",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-033",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-034",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIQ-035",
+          "got": [
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "EvidencePanel",
+            "FinancialMetricGroup",
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIQ-036",
+          "got": [
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIQ-037",
+          "got": [
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIQ-038",
+          "got": [
+            "ClarifyingQuestion"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIQ-039",
+          "got": [
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIQ-040",
+          "got": [
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIP-001",
+          "got": [
+            "ClarifyingQuestion"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIP-002",
+          "got": [
+            "ClarifyingQuestion"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIP-003",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIP-004",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIP-005",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIP-006",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIP-007",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIP-008",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIP-009",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIP-010",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIP-011",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIP-012",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIP-013",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIP-014",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIP-015",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIP-016",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIP-017",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIP-018",
+          "got": [
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIP-019",
+          "error": "not recorded"
+        },
+        {
+          "case": "UIP-020",
+          "error": "not recorded"
+        }
+      ],
+      "not_answered": 48,
+      "ui10_skeleton": 1.0,
+      "ui1_schema_valid": 1.0,
+      "ui2_block_precision": 0.5833,
+      "ui2_block_recall": 0.2121,
+      "ui7_overview_budget": 1.0,
+      "ui9_tab_placement": 1.0
+    },
+    "mode": "replay",
+    "ui8_intent": {
+      "accuracy": 0.9298,
+      "low_confidence_clarified": 1.0,
+      "macro_f1": 0.9332,
+      "not_recorded": 0,
+      "scored": 60
+    }
+  },
+  "name": "ui",
+  "notes": [
+    "replay mode; 0 Understand requests not recorded.",
+    "Composition scores depend on the specialist nodes present when they were recorded (compose's value catalogue follows their outputs); re-record after specialist changes."
+  ],
+  "suite": "E-UI",
+  "targets": [
+    {
+      "dataset": "60 questions",
+      "id": "UI-8",
+      "label": "Intent accuracy (Understand)",
+      "met": true,
+      "stage1": false,
+      "target": ">= 0.9",
+      "value": 0.9298
+    },
+    {
+      "dataset": "clarify rows",
+      "id": "UI-8b",
+      "label": "Low-confidence questions clarified",
+      "met": true,
+      "stage1": false,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "60 answers",
+      "id": "UI-1",
+      "label": "Schema validity",
+      "met": true,
+      "stage1": false,
+      "target": ">= 0.98",
+      "value": 1.0
+    },
+    {
+      "dataset": "60 answers",
+      "id": "UI-2",
+      "label": "Block-selection precision",
+      "met": false,
+      "stage1": false,
+      "target": ">= 0.85",
+      "value": 0.5833
+    },
+    {
+      "dataset": "60 answers",
+      "id": "UI-2b",
+      "label": "Block-selection recall",
+      "met": false,
+      "stage1": false,
+      "target": ">= 0.8",
+      "value": 0.2121
+    },
+    {
+      "dataset": "60 answers",
+      "id": "UI-7",
+      "label": "Overview budget respected",
+      "met": true,
+      "stage1": false,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "60 answers",
+      "id": "UI-9",
+      "label": "Tab placement",
+      "met": true,
+      "stage1": false,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "60 answers",
+      "id": "UI-10",
+      "label": "Answer skeleton followed",
+      "met": true,
+      "stage1": false,
+      "target": ">= 1.0",
+      "value": 1.0
+    }
+  ]
+}

@@ -1284,8 +1284,10 @@ export interface AgentExecutionTimeline {
  * via the `definition` "RunCost".
  */
 export interface RunCost {
+  cached: boolean;
+  model_calls: number;
   tokens: number;
-  usd: number | null;
+  usd_estimate: number | null;
 }
 /**
  * This interface was referenced by `UiContracts`'s JSON-Schema
@@ -1321,7 +1323,7 @@ export interface AgentStepView {
   note?: string | null;
   outputs?: string[];
   started_at: string;
-  status: "ok" | "rejected" | "retried" | "error";
+  status: "ok" | "rejected" | "retried" | "error" | "skipped" | "cached";
   step_id: string;
   tokens?: number | null;
 }

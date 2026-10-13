@@ -1,0 +1,339 @@
+{
+  "persona": "P1-base (synthetic)",
+  "question": "My car needs a £650 repair on 14 October. Will I be OK before payday, and what should I do?",
+  "recorded_at": "2026-10-13T14:12:56+00:00",
+  "run": {
+    "status": "succeeded",
+    "partial": true,
+    "answered": true
+  },
+  "steps": [
+    {
+      "seq": 1,
+      "node": "intake",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Reading your question",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 2,
+      "node": "prefetch",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Loading your latest forecast",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 3,
+      "node": "understand",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Understanding your question",
+      "model": "openai/gpt-6-luna",
+      "llm_calls": 1,
+      "tokens_in": 1038,
+      "tokens_out": 249,
+      "cost_estimate_usd": 0.0002283,
+      "latency_ms": 521
+    },
+    {
+      "seq": 4,
+      "node": "triage",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Deciding how to answer",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 5,
+      "node": "cache_lookup",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Planning the work",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 13
+    },
+    {
+      "seq": 6,
+      "node": "forecaster",
+      "agent": "forecaster",
+      "status": "ok",
+      "label": "Simulating your what-if on the same forecast",
+      "model": "openai/gpt-6-luna",
+      "llm_calls": 1,
+      "tokens_in": 2046,
+      "tokens_out": 133,
+      "cost_estimate_usd": 0.0002711,
+      "latency_ms": 2669
+    },
+    {
+      "seq": 7,
+      "node": "advise",
+      "agent": "advisor",
+      "status": "ok",
+      "label": "Drafting a recommendation",
+      "model": "anthropic/claude-sonnet-5.5",
+      "llm_calls": 1,
+      "tokens_in": 4224,
+      "tokens_out": 1358,
+      "cost_estimate_usd": 0.022028,
+      "latency_ms": 11876
+    },
+    {
+      "seq": 8,
+      "node": "verify",
+      "agent": "verifier",
+      "status": "ok",
+      "label": "Verifier rejected 1 draft(s)",
+      "model": "gpt-6.1-sol",
+      "llm_calls": 2,
+      "tokens_in": 2059,
+      "tokens_out": 278,
+      "cost_estimate_usd": 0.006898,
+      "latency_ms": 11390
+    },
+    {
+      "seq": 9,
+      "node": "revise",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Verifier rejected a draft; revising",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 10,
+      "node": "advise",
+      "agent": "advisor",
+      "status": "ok",
+      "label": "Revising the recommendation",
+      "model": "anthropic/claude-sonnet-5.5",
+      "llm_calls": 1,
+      "tokens_in": 4539,
+      "tokens_out": 1600,
+      "cost_estimate_usd": 0.025078,
+      "latency_ms": 13871
+    },
+    {
+      "seq": 11,
+      "node": "verify",
+      "agent": "verifier",
+      "status": "ok",
+      "label": "Verifier rejected 1 draft(s)",
+      "model": "gpt-6.1-sol",
+      "llm_calls": 2,
+      "tokens_in": 2052,
+      "tokens_out": 264,
+      "cost_estimate_usd": 0.006744,
+      "latency_ms": 8643
+    },
+    {
+      "seq": 12,
+      "node": "revise",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Verifier rejected a draft; revising",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 13,
+      "node": "advise",
+      "agent": "advisor",
+      "status": "ok",
+      "label": "Revising the recommendation",
+      "model": "anthropic/claude-sonnet-5.5",
+      "llm_calls": 2,
+      "tokens_in": 9135,
+      "tokens_out": 3200,
+      "cost_estimate_usd": 0.05027,
+      "latency_ms": 28450
+    },
+    {
+      "seq": 14,
+      "node": "verify",
+      "agent": "verifier",
+      "status": "skipped",
+      "label": "Checking the recommendation: stopped, run deadline reached",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 15,
+      "node": "compose",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Composing the answer",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 1398
+    },
+    {
+      "seq": 16,
+      "node": "persist_response",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Answer ready",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 4
+    }
+  ],
+  "recommendations": [
+    {
+      "status": "in_review",
+      "revisions": 1,
+      "final": {
+        "action": "move_purchase_date",
+        "params": {
+          "label": "Car repair",
+          "to_date": "2026-10-28",
+          "from_date": "2026-10-14",
+          "amount_minor": 65000
+        },
+        "title": "Book the car repair for payday"
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "verdict": "REJECT",
+          "failed": [
+            "V-05@1"
+          ],
+          "critique": "Choose an action worth at least £10 a month or 5 points less risk."
+        },
+        {
+          "round": 2,
+          "verdict": "REJECT",
+          "failed": [
+            "V-05@1"
+          ],
+          "critique": "Choose an action worth at least £10 a month or 5 points less risk."
+        }
+      ]
+    },
+    {
+      "status": "approved",
+      "revisions": 0,
+      "final": {
+        "action": "cap_category",
+        "params": {
+          "category_key": "food.eating_out",
+          "monthly_cap_minor": 26135
+        },
+        "title": "Cap eating out at your usual level"
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "verdict": "APPROVE",
+          "failed": [],
+          "critique": null
+        }
+      ]
+    },
+    {
+      "status": "approved",
+      "revisions": 0,
+      "final": {
+        "action": "cap_category",
+        "params": {
+          "category_key": "food.delivery",
+          "monthly_cap_minor": 20310
+        },
+        "title": "Cap food delivery at your usual level"
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "verdict": "APPROVE",
+          "failed": [],
+          "critique": null
+        }
+      ]
+    },
+    {
+      "status": "approved",
+      "revisions": 1,
+      "final": {
+        "action": "cap_category",
+        "params": {
+          "category_key": "food.eating_out",
+          "monthly_cap_minor": 26135
+        },
+        "title": "Cap eating out at your usual level"
+      },
+      "rounds": [
+        {
+          "round": 2,
+          "verdict": "APPROVE",
+          "failed": [],
+          "critique": null
+        }
+      ]
+    },
+    {
+      "status": "approved",
+      "revisions": 1,
+      "final": {
+        "action": "cap_category",
+        "params": {
+          "category_key": "food.delivery",
+          "monthly_cap_minor": 20310
+        },
+        "title": "Cap food delivery at your usual level"
+      },
+      "rounds": [
+        {
+          "round": 2,
+          "verdict": "APPROVE",
+          "failed": [],
+          "critique": null
+        }
+      ]
+    }
+  ],
+  "cost": {
+    "model_calls": 10,
+    "tokens": 32175,
+    "usd_estimate": 0.1115174
+  }
+}

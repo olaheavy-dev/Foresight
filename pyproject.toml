@@ -41,6 +41,9 @@ include_external_packages = true
 [[tool.importlinter.contracts]]
 name = "Only backend.mesh may talk to model providers"
 type = "forbidden"
+# Direct imports only: agents reach models *through* backend.mesh (docs/05 §3.1), which is the one
+# module allowed to import openai. tests/unit/test_mesh_only.py scans tools/ and evals/ too.
+allow_indirect_imports = true
 source_modules = [
     "backend.app",
     "backend.agents",

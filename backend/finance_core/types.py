@@ -7,6 +7,7 @@ ISO 4217 currency code; never floats for stored amounts.
 
 from __future__ import annotations
 
+import datetime as _dt
 from dataclasses import dataclass, field
 from datetime import date, time
 from enum import Enum
@@ -306,16 +307,26 @@ class ForecastResult:
 
 @dataclass(frozen=True)
 class ScenarioModifier:
-    """docs/07 §6.5. v1 types: one_off_outflow, one_off_inflow, income_delay."""
+    """docs/07 §6.5. Types: one_off_outflow, one_off_inflow, split_outflow, income_delay,
+    income_change_pct, recurring_add, recurring_change, recurring_cancel, category_cut_pct,
+    category_cap, buffer_override (move_to_goal needs goals, not built yet)."""
 
     type: str
     date: date | None = None
-    amount_minor: int | None = None  # positive magnitude
+    amount_minor: int | None = None  # positive magnitude (recurring_change: the new amount)
     label: str = ""
     category_key: str | None = None
-    income_stream_key: str | None = None
+    income_stream_key: str | None = None  # "all_income" = every stream (income_change_pct)
     days: int | None = None
     occurrences: int | None = None  # None = all
+    recurring_id: str | None = None  # recurring_change / recurring_cancel
+    from_date: _dt.date | None = None
+    to_date: _dt.date | None = None  # inclusive; None = to the end of the horizon
+    pct: int | None = None  # income_change_pct (−100…300) / category_cut_pct (0…100)
+    cadence: str | None = None  # split_outflow / recurring_add: weekly | fortnightly | monthly
+    instalments: int | None = None  # split_outflow
+    monthly_cap_minor: int | None = None  # category_cap
+    buffer_minor: int | None = None  # buffer_override
 
 
 @dataclass(frozen=True)

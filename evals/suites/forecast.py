@@ -4,22 +4,35 @@ Inputs at each origin come from the full deterministic pipeline run on the histo
 the origin (import → rules categorisation → income and recurring detection → discretionary
 history), so nothing after the origin leaks in. The anchor is the truth balance at the origin
 (§7.1 step 2). Baselines B0–B3 are the ones `backtest` computes.
+
+Engine v1.3 (docs/07 §6.2b, §6.8a): every forecast carries the ONS irregular-expense prior, and
+each scored forecast is calibrated from the engine's raw forecasts at earlier weekly origins
+(from day CALIBRATION_WARMUP_DAYS), scored only on balances up to the origin, as the product does.
+
+Results are also split into dev and test origins (docs/09 §3.8): an origin is dev when its
+60-day window ends at least three months before the data's last day. Engine choices (prior
+strength, event interval, calibration buckets) were made on dev origins only.
 """
 
 from __future__ import annotations
 
+import calendar as _calendar
 from collections.abc import Sequence
 from datetime import date, timedelta
+from functools import lru_cache
+from pathlib import Path
 from typing import Any
 
 from backend.finance_core.detect.income import detect_income_streams
 from backend.finance_core.detect.recurring import detect_recurring
-from backend.finance_core.forecast.backtest import BASELINES, backtest
+from backend.finance_core.forecast.backtest import BASELINES, backtest, summarise_origins
+from backend.finance_core.forecast.calibration import CALIBRATION_VERSION
 from backend.finance_core.forecast.engine import (
     ENGINE_VERSION,
     LOOKBACK_DAYS,
     is_unscheduled_outflow,
 )
+from backend.finance_core.forecast.prior import IrregularPrior, load_irregular_prior
 from backend.finance_core.types import Categorisation, FlowKind, ForecastInputs, Transaction
 from evals.common import (
     Dataset,
@@ -42,6 +55,15 @@ WARMUP_DAYS = 90
 STEP_DAYS = 7
 N_PATHS = 500
 QUESTIONS = 3  # "Check what we found" asks about at most three unconfirmed payers
+CALIBRATION_WARMUP_DAYS = 28  # earliest calibration-only origin (4 weeks of history)
+DEV_GAP_MONTHS = 3  # dev origins' windows end at least this many months before the data ends
+PRIOR_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "backend"
+    / "finance_core"
+    / "locale_packs"
+    / "uk_irregular_expenses.yaml"
+)
 # Arms. The headline arm simulates the user answering the onboarding question about detected
 # income (docs/06 H8, docs/00 §6a) from the truth labels; the other arm takes detection as is.
 ARM_CONFIRMED = "with_onboarding_confirmation"
@@ -53,6 +75,38 @@ ARM_NOTES = {
     "labels",
     ARM_UNCONFIRMED: "detection only: no user answers",
 }
+
+
+@lru_cache
+def uk_irregular_prior() -> IrregularPrior:
+    return load_irregular_prior(PRIOR_PATH.read_text(encoding="utf-8"))
+
+
+def _months_before(d: date, months: int) -> date:
+    month = d.month - 1 - months
+    year = d.year + month // 12
+    month = month % 12 + 1
+    return date(year, month, min(d.day, _calendar.monthrange(year, month)[1]))
+
+
+def is_dev(origin: date, last_day: date, max_h: int = max(HORIZONS)) -> bool:
+    """docs/09 §3.8: the origin's window ends at least DEV_GAP_MONTHS before the data ends."""
+    return origin + timedelta(days=max_h) <= _months_before(last_day, DEV_GAP_MONTHS)
+
+
+def calibration_origins_for(history: dict[date, int], first_scored: date | None) -> list[date]:
+    """Weekly calibration-only origins from day CALIBRATION_WARMUP_DAYS up to the first scored
+    origin (scored origins also serve as calibration windows for later ones)."""
+    days = sorted(history)
+    if not days or first_scored is None:
+        return []
+    out = []
+    d = days[0] + timedelta(days=CALIBRATION_WARMUP_DAYS)
+    while d < first_scored:
+        if d in history:
+            out.append(d)
+        d += timedelta(days=STEP_DAYS)
+    return out
 
 
 def confirmed_income_sources(
@@ -135,12 +189,15 @@ def origins_for(history: dict[date, int], max_h: int = max(HORIZONS)) -> list[da
     return out
 
 
-def _dataset(name: str, confirm: bool = True) -> dict[str, Any]:
+def _dataset(
+    name: str, confirm: bool = True, *, use_prior: bool = True, calibrate: bool = True
+) -> dict[str, Any]:
     ds = load_dataset(name)
     account = str(ds.accounts[0]["id"])
     ledger = build_ledger(ds)
     history = ds.balances(account)
     origins = origins_for(history)
+    cal_origins = calibration_origins_for(history, origins[0] if origins else None)
     leaks = 0
 
     def build(origin: date) -> ForecastInputs:
@@ -149,7 +206,24 @@ def _dataset(name: str, confirm: bool = True) -> dict[str, Any]:
         leaks += sum(1 for d, _c, _a in inputs.discretionary_history if d > origin)
         return inputs
 
-    result = backtest(history, origins, build, HORIZONS)
+    result = backtest(
+        history,
+        origins,
+        build,
+        HORIZONS,
+        prior=uk_irregular_prior() if use_prior else None,
+        calibrate=calibrate,
+        calibration_origins=cal_origins,
+    )
+    last_day = max(history)
+    per_origin = result.pop("per_origin")
+    splits = {
+        split: summarise_origins(
+            [r for r in per_origin if is_dev(date.fromisoformat(r["origin"]), last_day) == dev],
+            HORIZONS,
+        )
+        for split, dev in (("dev", True), ("test", False))
+    }
     ours = result["foresight"]["mae_minor"]
     best: dict[str, Any] = {}
     for h in HORIZONS:
@@ -163,6 +237,13 @@ def _dataset(name: str, confirm: bool = True) -> dict[str, Any]:
         b2 = result["baselines"]["B2"]["mae_minor"][str(h)]
         o = ours[str(h)]
         skill_b2[str(h)] = r4(1 - o / b2) if o is not None and b2 else None
+    best_mase: dict[str, Any] = {}
+    for h in HORIZONS:
+        mases = {b: result["baselines"][b]["mase"][str(h)] for b in BASELINES}
+        scored_m = {k: v for k, v in mases.items() if v is not None}
+        if scored_m:
+            name_m = min(scored_m, key=lambda k: scored_m[k])
+            best_mase[str(h)] = {"baseline": name_m, "mase": scored_m[name_m]}
     skill_best = {
         str(h): r4(1 - ours[str(h)] / best[str(h)]["mae_minor"])
         if ours[str(h)] is not None and str(h) in best and best[str(h)]["mae_minor"]
@@ -176,6 +257,9 @@ def _dataset(name: str, confirm: bool = True) -> dict[str, Any]:
         "first_origin": origins[0].isoformat() if origins else None,
         "last_origin": origins[-1].isoformat() if origins else None,
         "best_baseline": best,
+        "best_baseline_mase": best_mase,
+        "splits": splits,
+        "calibration_origins": len(cal_origins),
         "skill_vs_B2": skill_b2,
         "skill_vs_best_baseline": skill_best,
         "leaked_rows": leaks,
@@ -186,12 +270,24 @@ def _gbp(minor: float | None) -> float | None:
     return None if minor is None else round(minor / 100, 2)
 
 
+def _split_view(summary: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "n_origins": summary["n_origins"],
+        "coverage_p10_p90": summary["coverage_p10_p90"],
+        "mae30_gbp": _gbp(summary["mae_minor"]["30"]),
+        "mase30": summary["mase"]["30"],
+        "pinball_gbp": _gbp(summary["pinball_minor"]),
+        "mape30": summary["mape"]["30"],
+    }
+
+
 def _arm_summary(per: dict[str, dict[str, Any]]) -> dict[str, Any]:
     return {
         "coverage_by_dataset": {n: d["foresight"]["coverage_p10_p90"] for n, d in per.items()},
         "mae30_gbp_by_dataset": {
             n: _gbp(d["foresight"]["mae_minor"]["30"]) for n, d in per.items()
         },
+        "mase30_by_dataset": {n: d["foresight"]["mase"]["30"] for n, d in per.items()},
         "pinball_gbp_by_dataset": {
             n: _gbp(d["foresight"].get("pinball_minor")) for n, d in per.items()
         },
@@ -211,6 +307,8 @@ def run(fast: bool = False) -> dict[str, Any]:
     by_horizon = {
         str(h): {
             "mae_gbp": gbp(p1["foresight"]["mae_minor"][str(h)]),
+            "mase": p1["foresight"]["mase"][str(h)],
+            "best_baseline_mase": p1["best_baseline_mase"].get(str(h), {}).get("mase"),
             "mape": p1["foresight"]["mape"][str(h)],
             "coverage_p10_p90": p1["foresight"]["coverage_p10_p90"],
             "best_baseline": p1["best_baseline"].get(str(h), {}).get("baseline"),
@@ -219,8 +317,12 @@ def run(fast: bool = False) -> dict[str, Any]:
         for h in HORIZONS
     }
     coverages = {n: d["foresight"]["coverage_p10_p90"] for n, d in per.items()}
+    mase30 = p1["foresight"]["mase"]["30"]
+    best_mase30 = p1["best_baseline_mase"].get("30", {}).get("mase")
     metrics: dict[str, Any] = {
         "engine_version": ENGINE_VERSION,
+        "calibration_version": CALIBRATION_VERSION,
+        "prior": uk_irregular_prior().source,
         "headline_dataset": "P1-base",
         "headline_arm": HEADLINE_ARM,
         "simulated_user_step": ARM_NOTES[HEADLINE_ARM],
@@ -237,6 +339,13 @@ def run(fast: bool = False) -> dict[str, Any]:
         "best_baseline_mae30_gbp_by_dataset": {
             n: gbp(d["best_baseline"].get("30", {}).get("mae_minor")) for n, d in per.items()
         },
+        "mase30_by_dataset": {n: d["foresight"]["mase"]["30"] for n, d in per.items()},
+        "best_baseline_mase30_by_dataset": {
+            n: d["best_baseline_mase"].get("30", {}).get("mase") for n, d in per.items()
+        },
+        "by_split": {
+            n: {split: _split_view(v) for split, v in d["splits"].items()} for n, d in per.items()
+        },
         "pay_cycle_low_mae_gbp": gbp(p1["foresight"]["pay_cycle_low_mae_minor"]),
         "breach_brier": None,
         "by_dataset": per,
@@ -245,7 +354,13 @@ def run(fast: bool = False) -> dict[str, Any]:
             "n_paths": N_PATHS,
             "inputs": "detected (import → rules → detect), truncated at each origin",
             "anchor": "truth balance at the origin",
-            "mape": "as computed by finance_core backtest: |error| / |actual| (no £250 floor)",
+            "mape": "reported, not a target: |error| / |actual| explodes near £0, exactly the "
+            "pre-payday lows that matter (target replaced by MASE on 13 Oct 2026)",
+            "mase": "MAE ÷ the in-sample mean absolute h-step change before each origin "
+            "(Hyndman & Koehler 2006); below 1 beats in-sample naive",
+            "calibration": f"{CALIBRATION_VERSION}: tail scales from raw forecasts at earlier "
+            f"weekly origins (from day {CALIBRATION_WARMUP_DAYS}), scored up to the origin",
+            "dev_test": f"dev = origin + {max(HORIZONS)} d ≤ last day − {DEV_GAP_MONTHS} months",
         },
     }
     targets: list[Target] = [
@@ -265,7 +380,15 @@ def run(fast: bool = False) -> dict[str, Any]:
             0.15,
             "P1",
         ),
-        target("FC-mape", "MAPE(30)", p1["foresight"]["mape"]["30"], "<=", 0.12, "P1"),
+        target("FC-mase", "MASE(30)", mase30, "<", 1.0, "P1"),
+        target(
+            "FC-mase-vs-best",
+            "MASE(30) ÷ best naive baseline MASE(30)",
+            round(mase30 / best_mase30, 4) if mase30 is not None and best_mase30 else None,
+            "<",
+            1.0,
+            "P1",
+        ),
     ]
     for n in ("P1-base", "P2-base"):
         if n in per:
@@ -292,6 +415,11 @@ def run(fast: bool = False) -> dict[str, Any]:
         "labels. The no-confirmation arm (detection only) is reported alongside in "
         "forecast.arms.",
         "S4-shock coverage after the shift is expected to miss (docs/09 §7.4) and is not gated.",
+        "Every forecast carries the ONS FYE 2025 irregular-expense prior (docs/07 §6.2b) and is "
+        "calibrated from the engine's own earlier forecasts, scored only up to the origin "
+        "(docs/07 §6.8a). Dev/test splits are in forecast.by_split.",
+        "MAPE is reported but no longer a target (owner decision 13 Oct 2026): it divides by a "
+        "balance that is near £0 at the pre-payday lows. FC-mase replaces FC-mape.",
         "Breach Brier and the long-January check are not computed yet.",
     ]
     return {"metrics": metrics, "targets": targets, "notes": notes}

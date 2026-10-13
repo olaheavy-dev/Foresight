@@ -4,6 +4,14 @@
 the balance anchors and the workspace's buffer. The same stored data always yields the same inputs
 (and so the same `inputs_hash` and calculation id); any ledger change bumps `data_version`, which
 changes the seed and the hash.
+
+Engine v1.3 (docs/07 §6.2b, §6.8a): every forecast carries the irregular-expense prior for its
+currency (pack data, e.g. locale_packs/uk_irregular_expenses.yaml) and a calibration fitted from
+the engine's own raw forecasts at weekly origins over the last three months, scored against the
+balances the ledger shows since. Both are stored in the calculation's params, so `verify` rebuilds
+the identical result. Caveat: those past forecasts reuse today's detected income streams and
+obligations (detection is not re-run per origin), so the calibration is slightly optimistic for a
+brand-new stream; the eval backtest (E-FC) re-runs detection at every origin.
 """
 
 from __future__ import annotations
@@ -14,12 +22,27 @@ from collections import defaultdict
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date, timedelta
+from functools import lru_cache
 from typing import Any
 
 from backend.finance_core.calc import Calculation as CalcRecord
 from backend.finance_core.calc import recompute, record
 from backend.finance_core.forecast import build_forecast
+from backend.finance_core.forecast.calibration import (
+    MAX_LOOKBACK_DAYS,
+    Calibration,
+    PastForecast,
+    fit_calibration,
+)
+from backend.finance_core.forecast.calibration import (
+    from_jsonable as calibration_from_json,
+)
+from backend.finance_core.forecast.calibration import (
+    to_jsonable as calibration_json,
+)
 from backend.finance_core.forecast.engine import LOOKBACK_DAYS, is_unscheduled_outflow
+from backend.finance_core.forecast.prior import IrregularPrior, load_irregular_prior
+from backend.finance_core.forecast.prior import to_jsonable as prior_json
 from backend.finance_core.importers.anchors import balance_on
 from backend.finance_core.simulate import simulate
 from backend.finance_core.types import (
@@ -40,6 +63,20 @@ from backend.storage.repositories import WorkspaceContext
 # last 90 days and estimates one-off expenses (≥3× the category median) over the whole span.
 HISTORY_DAYS = LOOKBACK_DAYS
 SCOPE = "all"
+CALIBRATION_STEP_DAYS = 7  # past forecasts are made weekly
+CALIBRATION_WARMUP_DAYS = 28  # the earliest past forecast needs four weeks of history
+CALIBRATION_HORIZON_DAYS = 60
+CALIBRATION_PATHS = 200  # past forecasts only need their P10/P50/P90
+
+
+@lru_cache
+def irregular_prior(currency: str) -> IrregularPrior | None:
+    """The irregular-expense prior for a currency, from the pack data (None if there is none)."""
+    for file in sorted(packs.PACK_DIR.glob("*_irregular_expenses.yaml")):
+        prior = load_irregular_prior(file.read_text(encoding="utf-8"))
+        if prior.currency == currency:
+            return prior
+    return None
 
 
 class NoLedgerData(LookupError):
@@ -172,6 +209,84 @@ def forecast_inputs(
     )
 
 
+def _daily_balances(ctx: WorkspaceContext, first: date, last: date) -> dict[date, int]:
+    """End-of-day balance of the forecast's accounts for every day in [first, last], rolled from
+    the best anchor and the ledger (only when the balance is real, not relative)."""
+    ws = ctx.workspace
+    currency = ws.home_currency
+    accounts = [
+        a.id
+        for a in ctx.all(m.Account)
+        if a.include_in_forecast and a.tracked and a.currency == currency
+    ]
+    rows = ctx.transactions(account_ids=accounts, currency=currency)
+    start, provenance = _starting_balance(ctx, accounts, rows, first)
+    if provenance == "relative":
+        return {}
+    net: dict[date, int] = defaultdict(int)
+    for r in rows:
+        if first < r.posted_on <= last:
+            net[r.posted_on] += r.amount_minor
+    out: dict[date, int] = {}
+    balance = start
+    day = first
+    while day <= last:
+        if day > first:
+            balance += net.get(day, 0)
+        out[day] = balance
+        day += timedelta(days=1)
+    return out
+
+
+def calibration_for(
+    ctx: WorkspaceContext,
+    inputs: ForecastInputs,
+    prior: IrregularPrior | None,
+    window_days: int = HISTORY_DAYS,
+) -> Calibration | None:
+    """Fit the band calibration (docs/07 §6.8a) from raw forecasts at weekly origins in the last
+    MAX_LOOKBACK_DAYS, scored on the ledger's balances up to `inputs.as_of`. None when the
+    balance is relative or there is too little history for a single past forecast."""
+    if inputs.starting_balance_provenance == "relative":
+        return None
+    first_day = min((d for d, _c, _a in inputs.discretionary_history), default=inputs.as_of)
+    earliest = max(
+        inputs.as_of - timedelta(days=MAX_LOOKBACK_DAYS),
+        first_day + timedelta(days=CALIBRATION_WARMUP_DAYS),
+    )
+    origins = []
+    origin = inputs.as_of - timedelta(days=CALIBRATION_STEP_DAYS)
+    while origin >= earliest:
+        origins.append(origin)
+        origin -= timedelta(days=CALIBRATION_STEP_DAYS)
+    if not origins:
+        return None
+    past = []
+    for o in sorted(origins):
+        past_inputs = forecast_inputs(
+            ctx,
+            as_of=o,
+            horizon_days=CALIBRATION_HORIZON_DAYS,
+            n_paths=CALIBRATION_PATHS,
+            window_days=window_days,
+        )
+        if past_inputs.starting_balance_provenance == "relative":
+            continue
+        raw = build_forecast(past_inputs, prior=prior)
+        past.append(PastForecast(o, raw.p10, raw.p50, raw.p90))
+    if not past:
+        return None
+    actual = _daily_balances(ctx, past[0].origin, inputs.as_of)
+    return fit_calibration(past, actual, inputs.as_of)
+
+
+def _model_params(prior: IrregularPrior | None, calibration: Calibration | None) -> dict[str, Any]:
+    return {
+        "prior": None if prior is None else prior_json(prior),
+        "calibration": None if calibration is None else calibration_json(calibration),
+    }
+
+
 def _params(ctx: WorkspaceContext, inputs: ForecastInputs, window_days: int) -> dict[str, Any]:
     # The workspace id keeps calculation ids distinct between workspaces with identical data.
     return {
@@ -227,11 +342,12 @@ def run_forecast(
         known_flows=known_flows,
     )
     started = time.perf_counter()
-    result = build_forecast(inputs)
+    prior = irregular_prior(inputs.currency)
+    calibration = calibration_for(ctx, inputs, prior, window_days)
+    result = build_forecast(inputs, prior=prior, calibration=calibration)
     elapsed = int((time.perf_counter() - started) * 1000)
-    rec = record(
-        "forecast", inputs, _params(ctx, inputs, window_days), result, result.engine_version
-    )
+    params = {**_params(ctx, inputs, window_days), **_model_params(prior, calibration)}
+    rec = record("forecast", inputs, params, result, result.engine_version)
     row, created = _store(ctx, rec, elapsed)
     if created:
         ctx.append_audit(
@@ -255,9 +371,15 @@ def run_simulation(
         ctx, as_of=as_of, horizon_days=horizon_days, n_paths=n_paths, window_days=window_days
     )
     started = time.perf_counter()
-    result = simulate(inputs, spec)
+    prior = irregular_prior(inputs.currency)
+    calibration = calibration_for(ctx, inputs, prior, window_days)
+    result = simulate(inputs, spec, prior=prior, calibration=calibration)
     elapsed = int((time.perf_counter() - started) * 1000)
-    params = {**_params(ctx, inputs, window_days), "spec": spec}
+    params = {
+        **_params(ctx, inputs, window_days),
+        **_model_params(prior, calibration),
+        "spec": spec,
+    }
     rec = record("simulation", inputs, params, result, result.simulated.engine_version)
     row, created = _store(ctx, rec, elapsed)
     return StoredSimulation(row, result, created)
@@ -284,5 +406,13 @@ def verify(ctx: WorkspaceContext, calc_id: str) -> bool:
     stored = CalcRecord(
         row.id, row.kind, row.inputs_hash, row.params, row.result, row.engine_version
     )
-    _, same = recompute(stored, inputs, build_forecast)
+    # Rebuild with the calibration the forecast was made with (stored in its params) and the
+    # current prior; if the prior's pack data has changed since, the result differs (not same).
+    prior = irregular_prior(inputs.currency) if p.get("prior") is not None else None
+    calibration = (
+        calibration_from_json(p["calibration"]) if p.get("calibration") is not None else None
+    )
+    _, same = recompute(
+        stored, inputs, lambda i: build_forecast(i, prior=prior, calibration=calibration)
+    )
     return same

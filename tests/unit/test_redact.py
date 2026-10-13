@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from backend.mesh.mesh_client import redact
+from backend.mesh.redact import redact_text as redact
 
 
 def test_masks_identifiers_but_keeps_merchant_text() -> None:
@@ -41,6 +41,13 @@ def test_phone_and_grouped_account_numbers_are_masked(identifier: str) -> None:
     assert "about the payment" in out
 
 
-@pytest.mark.parametrize("safe", ["£1,284.50", "12-10-2026", "2 Sept 2026", "UPI/DR/412345678901"])
-def test_amounts_dates_and_references_survive(safe: str) -> None:
+@pytest.mark.parametrize("safe", ["£1,284.50", "12-10-2026", "2 Sept 2026"])
+def test_amounts_and_dates_survive(safe: str) -> None:
     assert safe in redact(f"row {safe} end")
+
+
+def test_retrieval_references_and_ni_numbers_are_masked() -> None:
+    """Stricter than the retired text-only patterns: references never reach Mesh (docs/05 §7.3)."""
+    out = redact("UPI/DR/412345678901 and NI QQ123456C")
+    assert "412345678901" not in out
+    assert "QQ123456C" not in out

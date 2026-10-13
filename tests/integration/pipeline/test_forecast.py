@@ -61,6 +61,26 @@ def test_forecast_is_persisted_and_recomputes_identically(session: Session) -> N
     session.rollback()
 
 
+def test_product_forecast_carries_the_prior_and_a_calibration_it_can_rebuild(
+    session: Session,
+) -> None:
+    """Engine v1.3 (docs/07 §6.2b, §6.8a): the stored forecast records the irregular-expense
+    prior and the calibration fitted from the user's own past forecasts, and `verify` rebuilds
+    the identical result from them."""
+    ctx, _acct, on, _amount = _p1(session)
+    stored = run_forecast(ctx, as_of=on, n_paths=200)
+    params = stored.calculation.params
+    assert params["prior"]["currency"] == "GBP"
+    assert "ONS" in params["prior"]["source"]
+    cal = params["calibration"]
+    assert cal is not None
+    assert cal["as_of"] == on.isoformat()
+    assert any(b["windows"] >= 4 for b in cal["buckets"])  # a year of P1 history: calibrated
+    assert stored.result.engine_version == "fc-1.3.0"
+    assert verify(ctx, stored.calculation.id)
+    session.rollback()
+
+
 def test_simulation_is_persisted_against_the_same_baseline(session: Session) -> None:
     ctx, _, on, _ = _p1(session)
     spec = ScenarioSpec(

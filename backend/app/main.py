@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from fastapi import FastAPI, Response, status
 
-from backend.app.routers import engine, imports, ledger
+from backend.app.routers import ask, engine, imports, ledger
 from backend.app.routers import session as profile
 from backend.features import load_features
 from backend.settings import get_settings
@@ -27,6 +27,8 @@ def create_app() -> FastAPI:
             "status": "ok" if ready else "unavailable",
             "sha": settings.build_sha,
             "database": db_ok,
+            # A word only (ok | low | unavailable), never a balance figure.
+            "ai": ask.ai_status(ask.get_mesh()),
         }
 
     @app.get("/api/features")
@@ -39,7 +41,7 @@ def create_app() -> FastAPI:
             ]
         }
 
-    for router in (profile.router, imports.router, ledger.router, engine.router):
+    for router in (profile.router, imports.router, ledger.router, engine.router, ask.router):
         app.include_router(router)
     return app
 

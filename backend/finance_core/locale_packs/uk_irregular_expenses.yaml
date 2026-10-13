@@ -1,0 +1,33 @@
+# Prior for irregular household expenses, United Kingdom (GBP). DATA ONLY — read by
+# backend/finance_core/forecast/prior.py, documented in docs/07 §6.2b.
+#
+# Source: Office for National Statistics, "Family spending workbook 1: detailed expenditure and
+# trends", financial year ending 2025, Table A1 ("Detailed expenditure with full-method standard
+# errors", UK), Living Costs and Food Survey. Average weekly expenditure, all households, £.
+# https://www.ons.gov.uk/peoplepopulationandcommunity/personalandhouseholdfinances/expenditure/datasets/familyspendingworkbook1detailedexpenditureandtrends
+# File: fye2025/workbook1detailedexpenditureandtrends.xlsx (sha256 af8d4a44…8d931076, read 13 Oct 2026).
+#
+# "Irregular" means lumpy, non-routine purchases and repairs that a short bank history may not
+# have shown yet. Categories paid by direct debit (insurance, subscriptions) and vehicle purchases
+# (usually financed) are excluded: they enter the forecast as scheduled obligations instead.
+currency: GBP
+source: "ONS Family spending workbook 1, FYE 2025, Table A1"
+total_weekly_expenditure_minor: 67660  # Total expenditure, all households
+excluded_from_comparison_weekly_minor:
+  housing_fuel_power: 11840  # group 4, Housing (net), fuel & power: scheduled rent/bills
+  other_expenditure_items: 9410  # group 13: mortgage interest, council tax, licences etc.
+irregular_weekly_minor:
+  maintenance_and_repair_of_dwelling: 1190  # 4.2
+  furniture_furnishings_carpets: 2170  # 5.1
+  household_appliances: 400  # 5.3
+  tools_and_equipment_house_garden: 280  # 5.5
+  spectacles_lenses: 230  # 6.1.2
+  private_medical_optical_dental: 440  # 6.2.1.2
+  audio_visual_photographic_it_equipment: 390  # 9.1
+  package_holidays: 3540  # 9.6
+  holiday_in_the_uk: 760  # 11.2.1
+  holiday_abroad: 680  # 11.2.2
+# Assumptions (not from the source; documented in docs/07 §6.2b and chosen on dev windows only):
+event_interval_days: 30  # a lump arrives about once a month on average
+strength_days: 180  # the prior counts as this many days of the user's own history
+scale_bounds: [0.5, 1.5]  # household scaling relative to the ONS average is clamped to this range

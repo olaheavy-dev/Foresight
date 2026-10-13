@@ -30,12 +30,18 @@ from evals.report import render_report
 from evals.suites import (
     anomalies,
     categorisation,
+    conversation,
     forecast,
+    grounding,
     income,
     ingestion,
     locales,
     recurring,
+    scenarios,
+    security,
     simulation,
+    ui,
+    verifier,
 )
 
 SCHEMA_VERSION = "1.1"
@@ -49,6 +55,12 @@ SUITES: tuple[ModuleType, ...] = (
     anomalies,
     forecast,
     simulation,
+    security,
+    scenarios,
+    verifier,
+    grounding,
+    conversation,
+    ui,
 )
 # Bulky per-row detail stays in the per-suite JSON; summary.json keeps the numbers.
 _DETAIL_KEYS = frozenset(

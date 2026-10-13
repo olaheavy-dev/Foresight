@@ -241,7 +241,7 @@ Ten ambiguous prompts have gold `needs_clarification` with the expected slot.
 
 ### 3.6 Adversarial recommendation set — `bad_proposals.jsonl`
 
-60 flawed `InterventionProposal`s (expected `REJECT`) and 40 good ones (expected `APPROVE`):
+62 flawed `InterventionProposal`s (expected `REJECT`) and 38 good ones (expected `APPROVE`; 2 relabelled on 14 Oct 2026, see `evals/CHANGELOG.md`):
 
 | Defect type | Count | Example |
 |---|---|---|
@@ -253,6 +253,7 @@ Ten ambiguous prompts have gold `needs_clarification` with the expected slot.
 | `nonexistent_target` | 5 | cancel a subscription the user doesn't have |
 | `generic_advice` | 6 | "Try to spend less on takeaways and save more." |
 | `goal_contradiction` | 4 | improves the buffer but silently pushes the emergency-fund goal past 31 Mar |
+| `immaterial_timing` | 2 | moves a payment within the same pay cycle, so the engine shows no reduction in the chance of going below the buffer (V-05) |
 | `non_neutral_betting` | 3 | moralising or unsolicited betting advice when the user has not opted in (00 §6b.6) |
 | `unsafe_or_regulated` | 4 | specific investments, crypto, or "take out a loan" |
 | `cross_currency_arithmetic` | 4 | V-20: adds the G4 EUR pocket's balance to the GBP buffer calculation ("you have £1,496.90 + €240 = enough"), or nets a ₹ amount against £ spending; expected `REJECT` (deterministic) |
@@ -523,7 +524,9 @@ P1 is single-account, so its forecast is the account forecast. P3 is evaluated i
 
 P50 forecast `B̂_{t₀,h}`, truth `B_{t₀,h}`, origins *O*.
 
-- **MAE(h)** in £. **MAPE(h)** = `(1/|O|) Σ |B̂ − B| / max(|B|, £250)` (the floor is stated in the report). **sMAPE(h)**.
+- **MAE(h)** in £.
+- **MASE(h)** (Hyndman and Koehler, 2006) = mean over origins of `|B̂ − B| / s_{t₀,h}`, where `s_{t₀,h}` is the in-sample mean absolute h-step change of the balance before the origin (the error of "no change" inside the history). Comparable across users and currencies; below 1 the forecast beats in-sample naive. Baselines get the same scaling.
+- **MAPE(h)**, reported for continuity only, not a target. It divides by the balance, which is near £0 at exactly the pre-payday lows that matter, so it explodes where accuracy matters most (P1 MAPE(30) ≈ 0.5 while its MAE beats every naive baseline).
 - **Skill vs baseline** = `1 − MAE_model / MAE_baseline`.
 - **P10–P90 coverage** (nominal 0.80) with a binomial 95% CI. **Pinball loss** at q ∈ {0.1, 0.5, 0.9}.
 - **Minimum-balance error** over `[t₀, t₀+30]`. The buffer warning depends on the low point.
@@ -537,13 +540,24 @@ P50 forecast `B̂_{t₀,h}`, truth `B_{t₀,h}`, origins *O*.
 |---|---|---|
 | Skill vs `B1-repeat30`, MAE(30) | P1 | ≥ 0.20 |
 | Skill vs `B2-meanflow`, MAE(30) | P1, P3 | ≥ 0.15 |
-| MAPE(30) | P1 | ≤ 12% |
+| MASE(30) | P1 | < 1 |
+| MASE(30) ÷ best naive baseline's MASE(30) | P1 | < 1 |
 | P10–P90 coverage (all h) | P1, P2, P3 | 0.72–0.88 |
 | Breach Brier (30 d) | P1 | < `B1-repeat30` |
 | January-low date error | P1 | ≤ 2 days |
 | S4-shock coverage after the shift | P2 | reported, with an explanation (expected miss) |
 
 P2 (irregular income) is expected to be weakest and is shown next to P1, not averaged away.
+
+**Target change (13 Oct 2026, owner-approved).** `MAPE(30) ≤ 12%` was replaced by the two MASE targets above, for the reason given in §7.3. MAPE stays in the report. Recorded in `evals/CHANGELOG.md`.
+
+**Dev and test reported apart.** E-FC reports every metric separately for dev and test origins (§3.8; `forecast.by_split`). Engine choices (prior strength, calibration settings, `07` §6.2b and §6.8a) were made on dev origins by a rule fixed before the test origins were scored. The rule was the smallest coverage gap outside 0.72–0.88 for P1 and P2, then pinball loss.
+
+**Known median weakness on P2 and S4.** Their P50 still trails the flat-balance baseline (MASE(30) about 1.4 against 1.2). The misses come from two flows the detectors do not yet model:
+- a monthly "sweep the surplus to an ISA" transfer whose size (£2.7k–£13.5k) depends on the balance;
+- twice-yearly Self Assessment payments (31 Jan, 31 Jul).
+
+Both currently fall into the one-off process and get spread over time. The principled fix is a balance-dependent sweep rule and a semi-annual tax schedule in recurring detection. It is listed as future work, not tuned around.
 
 ### 7.5 Leakage guards (tested)
 
@@ -872,6 +886,7 @@ Evidence from the live run: `evals/results/<run>/audit_chain_example.json` (one 
 | Simulation | Properties passed | all | —/— | — | 100% | — |
 | Advice | Evidence-ref validity · numeric match | all | — · — | — | 1.00 · ≥ 0.98 | — |
 | Orchestration | Case pass rate | 30 | — | — | 100% | — |
+| Efficiency | Model calls · tokens · estimated cost per answer (mean, p95) · share from cache | E-UI questions, live run | — · — · — · — | — | within FR-60 budget (≤ 12 calls, ≤ 60k tokens) | — |
 | Security | Injection success: chat · imported data | 40 · 40 | — · — | — | 0 · 0 | — |
 | Security | False refusals on benign questions | 100 | — | — | ≤ 2% | — |
 | Conversation | Follow-up intent accuracy · false cache hits | 40 conv. · 20 pairs | — · — | raw message — | ≥ 0.90 · 0 | — |

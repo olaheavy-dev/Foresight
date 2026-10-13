@@ -1,7 +1,9 @@
 """E-ING: the generic `csv_statement` importer (docs/09 §4.1). Deterministic arms only.
 
-The LLM-proposed FormatProfile arm (§4.1.3 `heuristic+llm`) and every `pdf_statement` row are
-Stage 2/4 and stay null. C1–C4 run heuristic-only, which docs/09 expects to be low by design.
+C1–C4 run heuristic-only (low by design) and with the Ledger Agent's proposed FormatProfile
+(§4.1.3 `heuristic+llm`), replayed from recorded Mesh responses: a proposal counts as a success
+only if the file then parses with row precision and recall 1.000; the confirmed profile is then
+reused by signature with no model call. Every `pdf_statement` row is Tier 2 and stays null.
 """
 
 from __future__ import annotations
@@ -9,7 +11,10 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from backend.agents import format_profile as fp
+from backend.finance_core.importers import blocking_questions
 from backend.finance_core.importers.table_locator import decode, locate_tables
+from backend.mesh.mesh_client import CassetteMiss, MeshCallError, MeshConfigError
 from evals.common import (
     DATASETS,
     expected_rows,
@@ -69,6 +74,83 @@ def _table_locator(names: list[str]) -> dict[str, Any]:
         "boundary_acc": r4(boundary / truth_total) if truth_total else None,
         "junk_rows_parsed": junk,
         "files": per_file,
+    }
+
+
+def _unseen_with_llm(names: list[str]) -> dict[str, Any]:
+    """§4.1.3 heuristic+llm: propose columns for tables the heuristic can't read, confirm, parse."""
+    from evals.suites.categorisation import eval_mesh
+
+    mesh = eval_mesh()
+    ok = calls = proposals = reused = 0
+    files: list[dict[str, Any]] = []
+    for name in names:
+        ds = load_dataset(name)
+        for file in ds.layout:
+            data = ds.file_bytes(file)
+            first = import_bytes(file, data, home_currency=ds.home_currency)
+            located = [t for t in locate_tables(decode(data)) if t.rows]
+            saved = []
+            entry: dict[str, Any] = {"dataset": name, "file": file, "problems": []}
+            for i, t in enumerate(first.tables):
+                if not any(q.kind == "columns" for q in blocking_questions(t.result)):
+                    continue
+                try:
+                    proposal = fp.propose(
+                        located[i].headers, [c for _r, c in located[i].rows], mesh
+                    )
+                except (CassetteMiss, MeshConfigError, MeshCallError) as exc:
+                    return {
+                        "success": None,
+                        "llm_calls_per_file": None,
+                        "reuse_rate": None,
+                        "note": f"not measured: no recorded Mesh response ({type(exc).__name__}); "
+                        "re-record with MESH_CASSETTE_MODE=record",
+                    }
+                calls += len(proposal.calls)
+                proposals += 1
+                entry["problems"] += proposal.problems
+                if proposal.profile is not None:
+                    saved.append(fp.confirmed(proposal.profile))
+            fi = import_bytes(file, data, home_currency=ds.home_currency, saved_profiles=saved)
+            answers = {
+                q.kind: q.preselected or (q.options[0] if q.options else "")
+                for t in fi.tables
+                for q in blocking_questions(t.result)
+                if q.kind != "columns"
+            }
+            if answers:
+                fi = import_bytes(
+                    file, data, home_currency=ds.home_currency, saved_profiles=saved,
+                    answers=answers,
+                )  # fmt: skip
+            rows = [r for t in fi.tables for r in t.result.rows]
+            truth = [t for t in expected_rows(ds) if t["file"] == file]
+            _p, _r, matched, n_p, n_t = row_precision_recall(rows, truth)
+            success = bool(n_p) and matched == n_p == n_t
+            ok += success
+            # Re-import: the confirmed profile matches by header signature (0 model calls).
+            again = import_bytes(file, data, home_currency=ds.home_currency, saved_profiles=saved)
+            reuse = bool(saved) and not any(
+                q.kind == "columns" for t in again.tables for q in t.result.questions
+            )
+            reused += reuse
+            entry.update(
+                row_precision=r4(matched / n_p) if n_p else None,
+                row_recall=r4(matched / n_t) if n_t else None,
+                success=success,
+                profiles=[p.profile_id for p in saved],
+                reused_without_model=reuse,
+            )
+            files.append(entry)
+    n = len(files)
+    return {
+        "success": r4(ok / n) if n else None,
+        "files": n,
+        "llm_calls_per_file": r4(calls / n) if n else None,
+        "proposals": proposals,
+        "reuse_rate": r4(reused / n) if n else None,
+        "per_file": files,
     }
 
 
@@ -206,6 +288,7 @@ def run(fast: bool = False) -> dict[str, Any]:
     clean = FAST_CLEAN if fast else CLEAN
     locator_builtin = _table_locator([n for n in clean])
     locator_unseen = _table_locator(UNSEEN)
+    unseen_llm = _unseen_with_llm(UNSEEN)
     profiles_parse, extra = _profiles_and_parse(clean + UNSEEN)
     corrupt = _corrupted()
     builtin_parse = [v for k, v in profiles_parse["parse"].items() if k in BUILTIN_FORMATS]
@@ -229,12 +312,7 @@ def run(fast: bool = False) -> dict[str, Any]:
             **profiles_parse,
             "format_profile_unseen": {
                 "heuristic_only": {"success": r4(unseen_ok / len(UNSEEN)), "files": len(UNSEEN)},
-                "heuristic_llm": {
-                    "success": None,
-                    "llm_calls_per_file": None,
-                    "reuse_rate": None,
-                    "note": "Stage 2 (Ledger Agent via Mesh)",
-                },
+                "heuristic_llm": unseen_llm,
             },
             "reconciliation": {
                 "corrupted_csv": corrupt,
@@ -247,6 +325,15 @@ def run(fast: bool = False) -> dict[str, Any]:
     }
     corrupt_rate = corrupt["detection_rate"]
     targets: list[Target] = [
+        target(
+            "ING-format-unseen-llm",
+            "FormatProfile success, unseen layouts (heuristic + Ledger Agent)",
+            unseen_llm.get("success"),
+            ">=",
+            0.85,
+            "C1–C4",
+            stage1=False,
+        ),
         target(
             "ING-locator-P",
             "Table locator precision (built-in + common)",
@@ -341,7 +428,8 @@ def run(fast: bool = False) -> dict[str, Any]:
         ),
     ]
     notes = [
-        "C1–C4 run heuristic-only: the LLM FormatProfile proposal (§4.1.3) is Stage 2.",
+        "C1–C4 also run heuristic+llm: the Ledger Agent's proposed FormatProfile, replayed from "
+        "recorded Mesh responses, with the user's confirmation simulated (§4.1.3).",
         "CSV-CORRUPT files that raise a blocking question are re-imported with the locale default "
         "answer, as a user accepting the pre-selected option would.",
         "Truth row match = equal date and signed amount to the penny (multiset).",

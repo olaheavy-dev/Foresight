@@ -11,3 +11,5 @@ pyyaml==6.0.2
 numpy==2.2.1
 holidays==0.62
 python-multipart==0.0.32
+langgraph==1.2.15
+langgraph-checkpoint-postgres==3.1.3
