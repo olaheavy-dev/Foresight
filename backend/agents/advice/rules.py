@@ -87,7 +87,10 @@ def v01(p: InterventionProposal, world: AdviceWorld, impact: Impact) -> RuleResu
 
 
 def v02(p: InterventionProposal, world: AdviceWorld, impact: Impact) -> RuleResult:
-    ok = any(r.kind in ("finding", "forecast") and r.role == "trigger" for r in p.trigger_refs)
+    ok = any(
+        r.kind in ("finding", "forecast", "simulation") and r.role == "trigger"
+        for r in p.trigger_refs
+    )
     return _result("V-02", ok, "" if ok else "no finding or forecast triggers it")
 
 

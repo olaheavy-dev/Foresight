@@ -281,3 +281,29 @@ def persist(
             row.status = "resolved"
     ctx.session.flush()
     return rows
+
+
+def refresh(ctx: WorkspaceContext, *, today: date | None = None) -> list[m.Finding]:
+    """Deterministic refresh (no model): rebuild the candidates from the stored ledger and
+    persist them. Runs at seed and import time, so every route, the question route included,
+    sees current findings without running the Analyst's model ranking."""
+    from backend.pipeline import ledger, packs  # the pipeline imports this module
+
+    ws = ctx.workspace
+    rows = ctx.transactions(currency=ws.home_currency)
+    if not rows:
+        return []
+    latest = ctx.latest_categorisations()
+    txns = [ledger.transaction(r) for r in rows]
+    cats = [ledger.categorisation(latest[r.id]) for r in rows if r.id in latest]
+    as_of = data_end(txns, today or datetime.now(timezone.utc).date())
+    specs = build_candidates(
+        txns,
+        cats,
+        packs.categorisation_pack(ws.country),
+        as_of=as_of,
+        workspace_id=ctx.workspace_id,
+        currency=ws.home_currency,
+        holidays=packs.holidays(ws.country, (t.posted_on for t in txns)),
+    )
+    return persist(ctx, specs)

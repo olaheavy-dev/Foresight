@@ -491,6 +491,10 @@ def detect(ctx: WorkspaceContext) -> tuple[int, int]:
         m.RecurringObligation, [ledger.obligation_row(o) for o in report.obligations]
     )
     ctx.session.flush()
+    # Deterministic behaviour findings (no model), so every route sees current findings.
+    from backend.agents import findings
+
+    findings.refresh(ctx)
     return (len(streams), len(report.obligations))
 
 

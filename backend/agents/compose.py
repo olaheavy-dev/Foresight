@@ -1093,6 +1093,17 @@ def clarify_response(
 # --------------------------------------------------------------------------- the node
 
 
+NOT_CHECKED_IN_TIME = "No recommendation was checked in time."
+
+
+def _advice_unchecked(state: ForesightState) -> bool:
+    """Advice was asked for or drafted, but nothing was approved before the run stopped."""
+    wanted = bool((state.get("intent") or {}).get("needs_advice")) or bool(
+        state.get("withdrawn") or state.get("verifications") or state.get("proposals")
+    )
+    return wanted and not state.get("approved_recs")
+
+
 def ai_paused(ctx: RunContext) -> bool:
     """True when no model call should be made now (no client, or AI answers are paused)."""
     if ctx.mesh is None:
@@ -1115,7 +1126,10 @@ def compose(state: ForesightState, ctx: RunContext) -> NodeOutput:
     strategy = "template"
     problems: list[str] = []
     choice = composer.template_output()
-    if not state.get("ai_paused") and not ai_paused(ctx) and composer.sources.values:
+    late = bool(state.get("partial"))  # deadline or budget: deterministic answer, no model call
+    if late and _advice_unchecked(state):
+        choice = choice.model_copy(update={"verdict": f"{choice.verdict} {NOT_CHECKED_IN_TIME}"})
+    if not late and not state.get("ai_paused") and not ai_paused(ctx) and composer.sources.values:
         assert ctx.mesh is not None
         from backend.mesh.mesh_client import MeshCallError, MeshSpendLimitError
 

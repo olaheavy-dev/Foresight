@@ -28,7 +28,7 @@ from backend.storage.agent_repo import AgentStore
 
 # docs/05 §6.4: run deadlines.
 DEADLINES = {
-    "conversation": timedelta(seconds=45),
+    "conversation": timedelta(seconds=60),
     "ingestion": timedelta(seconds=120),
 }
 DEFAULT_DEADLINE = timedelta(seconds=120)
@@ -98,6 +98,9 @@ class NodeSpec:
     kind: str  # llm | tool | control
     fn: NodeFn
     label: str  # default templated label, e.g. "Building forecast"
+    # Runs instead of skipping once the run deadline has passed: deterministic, no model calls
+    # (withdraw, compose and persist, so a late run still ends with an answer, docs/05 §6.4).
+    on_deadline: NodeFn | None = None
 
 
 def _usage(results: Sequence[MeshResult]) -> dict[str, Any]:
@@ -176,7 +179,11 @@ def write_step(
 def instrument(spec: NodeSpec, ctx: RunContext) -> Callable[[ForesightState], dict[str, Any]]:
     def node(state: ForesightState) -> dict[str, Any]:
         started = ctx.clock()
-        if ctx.deadline_passed():
+        if ctx.deadline_passed() and spec.on_deadline is not None:
+            late: ForesightState = {**state, "partial": True}
+            out = spec.on_deadline(late, ctx)
+            out.update = {**out.update, "partial": True}
+        elif ctx.deadline_passed():
             out = NodeOutput(
                 status="skipped",
                 label=f"{spec.label}: stopped, run deadline reached",

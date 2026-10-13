@@ -15,10 +15,12 @@ an honest skipped step and changes nothing.
 from __future__ import annotations
 
 import dataclasses
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 from typing import Any
 
 from backend.agents.advice.advisor import advise as run_advisor
+from backend.agents.advice.card import build_card
 from backend.agents.advice.impact import Impact
 from backend.agents.advice.models import InterventionProposal
 from backend.agents.advice.verifier import verification_record, verify
@@ -43,6 +45,58 @@ def _skip(reason: str, label: str) -> NodeOutput:
 
 
 # --------------------------------------------------------------------------- the world
+
+JUDGE_POOL = 3  # judge calls for one round's proposals run concurrently (docs/05 §6.4)
+SUMMARIES = {
+    "category_spike": "Spending in {subject} over the last 30 days is well above its usual level "
+    "for the previous three months.",
+    "price_change": "The recurring payment {subject} rose in price.",
+    "subscription_overlap": "Two subscriptions overlap: {subject}.",
+}
+
+
+def _finding(row: m.Finding) -> Finding:
+    """A stored finding as the Advisor and the judge see it (deterministic, number-free)."""
+    subject_data = row.subject or {}
+    subject = str(
+        subject_data.get("category_key")
+        or "+".join(subject_data.get("obligation_keys") or ())
+        or subject_data.get("key")
+        or row.kind
+    )
+    template = SUMMARIES.get(row.kind, "{kind} about {subject}.")
+    return Finding(
+        id=row.id,
+        finding_type=row.kind,
+        subject=subject,
+        summary=template.format(subject=subject.replace(".", " "), kind=row.kind),
+    )
+
+
+def normalise_refs(raw: dict[str, Any], ctx: RunContext, world: AdviceWorld) -> dict[str, Any]:
+    """Give each cited ID the kind the store says it is, before the Verifier (V-01/V-02).
+
+    A `calc_` ID that is this run's stored forecast or simulation becomes `forecast` or
+    `simulation`; a stored finding becomes `finding`. IDs the store doesn't have are left as they
+    are, so V-01 still rejects evidence that doesn't exist. The lookup is by ID in the store, never
+    by prefix."""
+    refs = []
+    with ctx.lock:
+        for ref in raw.get("trigger_refs") or []:
+            ref = dict(ref)
+            rid = str(ref.get("id") or "")
+            calc = ctx.store.ctx.calculation(rid)
+            if (
+                calc is not None
+                and calc.kind in ("forecast", "simulation")
+                and (rid in world.forecast_ids)
+            ):
+                ref["kind"] = calc.kind
+            elif rid in world.findings:
+                ref["kind"] = "finding"
+            refs.append(ref)
+    return {**raw, "trigger_refs": refs}
+
 
 DATE_FIELDS = ("date", "from_date", "to_date")
 
@@ -92,18 +146,19 @@ def world_from_store(
             )
             for t in w.transactions(currency=ws.home_currency)
         )
-        findings = {
-            f.id: Finding(
-                id=f.id,
-                finding_type=f.kind,
-                subject=str(
-                    (f.subject or {}).get("key") or (f.subject or {}).get("category") or f.subject
+        findings = {f.id: _finding(f) for f in w.all(m.Finding) if f.status in LIVE_FINDING}
+        active = tuple(
+            (
+                str((r.proposal or {}).get("action")),
+                str(
+                    ((r.proposal or {}).get("params") or {}).get("category_key")
+                    or ((r.proposal or {}).get("params") or {}).get("recurring_id")
+                    or ""
                 ),
-                summary=f"{f.kind} finding ({f.severity})",
             )
-            for f in w.all(m.Finding)
-            if f.status in LIVE_FINDING
-        }
+            for r in w.all(m.Recommendation)
+            if r.status in ("approved", "accepted")
+        )
         pack = packs.categorisation_pack(ws.country)
     slots = (state.get("intent") or {}).get("slots") or {}
     asked = slots.get("category") if isinstance(slots.get("category"), str) else None
@@ -125,6 +180,7 @@ def world_from_store(
         user_requested_category=asked,
         forecast_inputs=inputs,
         pending_scenario=pending,
+        active_recommendations=active,
     )
 
 
@@ -327,12 +383,25 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
     approved = list(state.get("approved_recs") or [])
     remaining = []
     prompt = None
-    for raw in proposals:
+    normalised = [normalise_refs(raw, ctx, world) for raw in proposals]
+    with ctx.lock:
+        locale = ctx.store.ctx.workspace.locale
+
+    def guarded() -> None:
+        with ctx.lock:
+            ctx.before_llm()
+
+    def check(raw: dict[str, Any]) -> tuple[dict[str, Any], InterventionProposal, Any]:
         p = InterventionProposal.model_validate(
             {k: v for k, v in raw.items() if k in InterventionProposal.model_fields}
         )
-        outcome = verify(p, world, round=round_, mesh=mesh, before_llm=ctx.before_llm)
-        ctx.charge(outcome.llm)
+        return raw, p, verify(p, world, round=round_, mesh=mesh, before_llm=guarded)
+
+    with ThreadPoolExecutor(max_workers=JUDGE_POOL) as pool:
+        checked = list(pool.map(check, normalised))
+    for raw, p, outcome in checked:
+        with ctx.lock:
+            ctx.charge(outcome.llm)
         llm += outcome.llm
         prompt = outcome.prompt_version or prompt
         v = outcome.verification
@@ -366,6 +435,21 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
             )
         verifications.append(ver.id)
         if v.verdict == "APPROVE":
+            card = build_card(
+                p,
+                outcome.impact,
+                v,
+                recommendation_id=rec_id,
+                verification_id=ver.id,
+                revisions=round_ - 1,
+                locale=locale,
+                forecast_calc_id=state.get("forecast_id"),
+            )
+            if card is not None:
+                with ctx.lock:
+                    stored = ctx.store.recommendation(rec_id)
+                    if stored is not None:
+                        stored.proposal = {**p.model_dump(), "card": card}
             approved.append(rec_id)
         elif v.verdict == "REJECT":
             remaining.append({**raw, "rec_id": rec_id, "critique": v.critique})

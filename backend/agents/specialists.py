@@ -32,17 +32,43 @@ def _slot(name: str, agent: str, kind: str, task: str, label: str) -> NodeSpec:
 
 
 def withdraw(state: ForesightState, ctx: RunContext) -> NodeOutput:
-    """The cap was reached with no approval: nothing is shown; history stays in the audit trail."""
-    keys = [str(p.get("proposal_key", i)) for i, p in enumerate(state.get("proposals") or [])]
+    """The cap was reached, or the run ran out of time, with no approval: nothing is shown; history
+    stays in the audit trail. Deterministic, so it also runs after the deadline."""
+    proposals = list(state.get("proposals") or [])
+    keys = [str(p.get("proposal_key", i)) for i, p in enumerate(proposals)]
+    reason = "deadline" if state.get("partial") else "revision_cap"
+    with ctx.lock:
+        for p in proposals:
+            rec_id = p.get("rec_id")
+            if rec_id and ctx.store.recommendation(rec_id) is not None:
+                ctx.store.set_recommendation_status(rec_id, "withdrawn")
+                ctx.store.ctx.append_audit(
+                    "recommendation_withdrawn",
+                    "recommendation",
+                    rec_id,
+                    actor="agent:coordinator",
+                    after={"reason": reason},
+                    run_id=ctx.run_id,
+                )
     return NodeOutput(
         update={"withdrawn": keys, "proposals": [], "verdict": "none"},
-        output={"withdrawn": keys, "rounds": int(state.get("revision_round") or 0) + 1},
-        label="No recommendation passed the checks",
+        output={
+            "withdrawn": keys,
+            "rounds": int(state.get("revision_round") or 0) + 1,
+            "reason": reason,
+        },
+        label="No recommendation was checked in time"
+        if reason == "deadline"
+        else "No recommendation passed the checks",
     )
 
 
 def decide_after_verify(state: ForesightState) -> str:
     """W4 edge: approve/none → leave the loop; reject → revise (≤ 2) or withdraw."""
+    if state.get("partial") and state.get("proposals"):
+        # Out of time (or budget) with drafts still unchecked: withdraw them, never leave them
+        # in review and never loop.
+        return "withdraw"
     if state.get("verdict") != "reject":
         return "leave"
     if state.get("partial"):
@@ -75,7 +101,14 @@ def specialist_nodes() -> dict[str, NodeSpec]:
             ledger_nodes.nodes()["analyst"],
             *core_loop.nodes().values(),
             NodeSpec("revise", "coordinator", "control", revise_marker, "Revising the draft"),
-            NodeSpec("withdraw", "coordinator", "control", withdraw, "Withdrawing the draft"),
+            NodeSpec(
+                "withdraw",
+                "coordinator",
+                "control",
+                withdraw,
+                "Withdrawing the draft",
+                on_deadline=withdraw,
+            ),
             _slot("briefing", "coordinator", "tool", "PRO-01", "Updating the Home briefing"),
             _slot("compose", "coordinator", "llm", "AGT-10", "Composing the answer"),
             _slot("freshness_check", "coordinator", "tool", "PRO-03", "Checking data freshness"),

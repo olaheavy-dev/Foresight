@@ -34,7 +34,14 @@ def coordinator_nodes() -> dict[str, NodeSpec]:
             NodeSpec("refuse", "coordinator", "control", c.refuse, "Out of scope"),
             NodeSpec("clarify", "coordinator", "control", c.clarify, "Asking to clarify"),
             NodeSpec("cache_lookup", "coordinator", "tool", c.cache_lookup, "Checking answers"),
-            NodeSpec("persist_response", "coordinator", "tool", c.persist_response, "Answer ready"),
+            NodeSpec(
+                "persist_response",
+                "coordinator",
+                "tool",
+                c.persist_response,
+                "Answer ready",
+                on_deadline=c.persist_response,
+            ),
         )
     }
 
@@ -42,7 +49,11 @@ def coordinator_nodes() -> dict[str, NodeSpec]:
 def composer_nodes() -> dict[str, NodeSpec]:
     from backend.agents.compose import compose
 
-    return {"compose": NodeSpec("compose", "coordinator", "llm", compose, "Composing the answer")}
+    return {
+        "compose": NodeSpec(
+            "compose", "coordinator", "llm", compose, "Composing the answer", on_deadline=compose
+        )
+    }
 
 
 def default_nodes() -> dict[str, NodeSpec]:

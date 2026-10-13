@@ -611,7 +611,7 @@ The system **never** executes financial actions (no payments, no cancellations).
 | Mesh transport error / 5xx / timeout | ≤ 2 retries, exponential backoff (1s, 4s), then fallback model in the same tier, 1 attempt | Step error. Deterministic parts still returned (e.g. findings without LLM ranking use the deterministic salience score) |
 | Mesh 429 | Respect `Retry-After` up to 10s, then as above | Same |
 | Mesh outage (circuit breaker open, 05 §6.4) | none: nodes skip to the degraded path at once | Same as above, without waiting for timeouts |
-| Node timeout (`fast` 8 s, `reasoning` 25 s) or run deadline (45 s questions, 120 s ingestion) | timeout counts as a transport error; deadline: none | Compose from what exists, `partial=true` |
+| Node timeout (`fast` 8 s, `reasoning` 25 s) or run deadline (60 s questions, 120 s ingestion) | timeout counts as a transport error; deadline: none | Withdraw unchecked drafts ("deadline"), compose deterministically from engine numbers with "No recommendation was checked in time", `partial=true` (05 §6.4) |
 | Prompt canary in output, or output screen failure (05 §7.4a) | none | Output dropped, step `failed`, `AuditEvent prompt_leak_blocked`; the block falls back to a deterministic template |
 | Schema-invalid LLM output | 1 repair retry (validation errors fed back), then degrade; two total attempts | Ledger rows → `uncategorised` + review; Advisor → no proposals ("couldn't generate advice"); plan → default block plan for the intent |
 | Verifier revision loop | max 2 revisions (3 rounds) | `WITHDRAW` |
