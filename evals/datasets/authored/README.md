@@ -9,6 +9,9 @@ Synthetic / fictional. Written before any prompt or Verifier rule is tuned, then
 | `orchestration_cases.jsonl` | 30 | docs/09 §3.7 and §10, suite E-ORC |
 | `ui_questions.jsonl` | 40 questions + 20 paraphrases | docs/09 §10a, suite E-UI |
 | `followup_cases.jsonl` | 40 conversations + 20 paraphrase pairs + 20 near-miss pairs | docs/09 §3.10, suite E-CTX |
+| `injection_cases.jsonl` | 40 chat + 40 data-plane attacks (narrations, CSV headers, filenames, PDF lines) | docs/09 §3.9, suite E-SEC |
+| `injection_cases_dev.jsonl` | 20 + 7 dev cases (the only set the guard rule pack may be tuned on) | docs/09 §3.9 |
+| `injection_benign_questions.jsonl` | 60 benign questions (false-refusal control, with the E-UI/E-SCN/E-CTX questions) | docs/09 §10b SEC-5 |
 
 ## Conventions the runners rely on
 
@@ -33,6 +36,8 @@ The 30-day windows end on `as_of`; feasibility (V-04) compares the cap with the 
 **`expected_rules`** lists the rules that should reject the proposal. Any one of them firing counts as a correct rejection (for example V-08 or V-17 for a goal-delaying savings move).
 
 **ScenarioSpec modifiers** use the docs/07 §6.5 field names. Where the table says "as named", these sets use: `recurring_add {label, amount_minor, cadence, start_date, category_key}`, `recurring_change {recurring_id, amount_minor, from_date}` (the new amount), `recurring_cancel {recurring_id, from_date}`. IDs are truth keys (`inc_salary`, `rob_rent`). `move_to_goal` is not used, because the personas have no goals.
+
+**Injection cases** carry no evidence references: they test the input screen, the import-time `suspicious_text` flag and the output screen, not proposals. Chat cases may include a `simulated_output` (a hostile model reply, with `{{CANARY}}` replaced at run time by an evaluation-only canary) to test the output screen without a model call. `expected.first_layer_expected_to_stop` is the design intent (`screen`, `understand`, `verifier`, `output_screen`); E-SEC reports the layer that actually stopped each case. Rows in the other sets labelled `smalltalk_or_out_of_scope` or `terminal_state: refused` are counted as expected refusals, never as false refusals.
 
 **Follow-up near misses** that differ only by `data_version`, `prefs_version` or `advice_state_version` repeat the same question with an `event_between` (an import, a buffer change, an accepted recommendation) that must invalidate the answer cache.
 

@@ -13,7 +13,7 @@
 # Patterns are Python regular expressions, matched case-insensitively against text that has been
 # NFKC-normalised, stripped of hidden characters and folded from look-alike letters to Latin.
 
-version: guard-1.1.0
+version: guard-1.2.0
 
 limits:
   chat_max_chars: 2000
@@ -66,9 +66,10 @@ rules:
     applies_to: [data]
     pattern: '\b(categori[sz]e|classify|label|mark|tag|treat|count|record|file)\s+(this\s+|me\s+|it\s+|row\s+|as\s+)?(as\s+)?(income|salary|wages|essential|refund|transfer|savings|investment|uncategori[sz]ed|benefit|not\s+spending)\b'
   - id: G-OVR-09
+    # Data only: in chat, "set the buffer to zero" is the user's own what-if or preference change.
     severity: block
     reason: injection
-    applies_to: [chat, data]
+    applies_to: [data]
     pattern: '\b(set|change|force|update)\s+(the\s+)?(category|balance|buffer|forecast|amount|verdict|approval)\s+(to|=)'
   - id: G-OVR-10
     severity: block

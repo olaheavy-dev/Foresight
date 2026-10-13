@@ -8,6 +8,18 @@
       "rows": 80,
       "sha256": "9dd01fbf5935d6b72d7cf2141c5ab9ebd42435384e3ca7c5a3fbecec65725ae5"
     },
+    "injection_benign_questions.jsonl": {
+      "rows": 60,
+      "sha256": "59d673a7ebbf493808251affcd3dbc1b0162043d7991cf8a699e60be6b9af6ab"
+    },
+    "injection_cases.jsonl": {
+      "rows": 80,
+      "sha256": "a28ab0c22e3dbc22a47e568528c0513863afa8af1ac027e6adc7c6b585cfce1f"
+    },
+    "injection_cases_dev.jsonl": {
+      "rows": 27,
+      "sha256": "78f6f75a4155192a7627365b03f87e1205bf37c476b6c7cff137a9ed922bce94"
+    },
     "orchestration_cases.jsonl": {
       "rows": 30,
       "sha256": "c86017cad44ccdf121d0166f3691639c0a1fc6c3f7305e6dee2f72e957d7b019"

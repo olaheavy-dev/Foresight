@@ -27,24 +27,32 @@ from backend.agents.guard import (
     prepare_for_model,
     screen_input,
 )
+from evals.authored import AUTHORED_DIR
 from evals.common import DATASETS, read_jsonl
 from evals.metrics import r4
 from evals.suites import Target, target
 
 SUITE_ID = "E-SEC"
 NAME = "security"
-CASES = DATASETS / "injection_cases.jsonl"
-DEV_CASES = DATASETS / "injection_cases_dev.jsonl"
-BENIGN = DATASETS / "injection_benign_questions.jsonl"
-# Benign questions authored for other suites are added when they exist (docs/09 §3.9).
-EXTRA_BENIGN = ("scenario_prompts.jsonl", "followup_cases.jsonl")
+CASES = AUTHORED_DIR / "injection_cases.jsonl"
+DEV_CASES = AUTHORED_DIR / "injection_cases_dev.jsonl"
+BENIGN = AUTHORED_DIR / "injection_benign_questions.jsonl"
+# Benign controls also come from the other hand-authored sets (docs/09 §3.9): the E-UI questions,
+# the E-SCN prompts and every user turn and pair in the E-CTX conversations.
+EXTRA_BENIGN = ("ui_questions.jsonl", "scenario_prompts.jsonl", "followup_cases.jsonl")
+_QUESTION_KEYS = frozenset({"question", "prompt", "user", "standalone", "a", "b"})
+# Rows the other sets label out of scope must be refused (FR-63): they are scored separately,
+# never as false refusals.
+_OUT_OF_SCOPE = ("smalltalk_or_out_of_scope", "refused")
 EVAL_CANARY = make_canary("e-sec-evaluation-only")
 # Reported so later numbers can be read against the untuned first run (docs/09 §12: no
 # cherry-picking). guard-1.1.0 fixed each class generically and added a dev case per class.
 FIRST_RUN_NOTE = (
     "First run (guard-1.0.0, before any tuning) on this test set: 34/40 chat attacks blocked at "
     "the screen, 37/40 data-plane attacks flagged (3 would have reached a model verbatim: two "
-    "filenames and one PDF line), 1/60 benign questions refused, 0/20,348 benign texts flagged."
+    "filenames and one PDF line), 1/60 benign questions refused, 0/20,348 benign texts flagged. "
+    "guard-1.1.0 then refused one legitimate what-if from the E-SCN set ('set the buffer to "
+    "zero'); guard-1.2.0 limits that rule to imported data."
 )
 _TEXT_HEADERS = (
     "description",
@@ -154,18 +162,35 @@ def _data(cases: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def _benign_questions() -> list[str]:
-    texts = [r["text"] for r in read_jsonl(BENIGN)]
+    return _authored_questions(out_of_scope=False)
+
+
+def _authored_questions(*, out_of_scope: bool) -> list[str]:
+    texts = [] if out_of_scope else [r["text"] for r in read_jsonl(BENIGN)]
     for name in EXTRA_BENIGN:
-        path = DATASETS / name
+        path = AUTHORED_DIR / name
         if path.exists():
             for row in read_jsonl(path):
-                for key in ("text", "question", "prompt"):
-                    if isinstance(row.get(key), str):
-                        texts.append(row[key])
-                for turn in row.get("turns") or ():
-                    if isinstance(turn, dict) and isinstance(turn.get("text"), str):
-                        texts.append(turn["text"])
-    return texts
+                labelled = row.get("intent") in _OUT_OF_SCOPE or (
+                    row.get("terminal_state") in _OUT_OF_SCOPE
+                )
+                if labelled == out_of_scope:
+                    texts += _questions(row)
+    return list(dict.fromkeys(texts))
+
+
+def _questions(value: Any) -> list[str]:
+    out: list[str] = []
+    if isinstance(value, dict):
+        for k, v in value.items():
+            if k in _QUESTION_KEYS and isinstance(v, str):
+                out.append(v)
+            elif isinstance(v, dict | list):
+                out += _questions(v)
+    elif isinstance(value, list):
+        for v in value:
+            out += _questions(v)
+    return out
 
 
 def _sec5() -> dict[str, Any]:
@@ -173,8 +198,11 @@ def _sec5() -> dict[str, Any]:
     results = [(t, screen_input(t)) for t in texts]
     refused = [(t, r) for t, r in results if r.verdict == "block"]
     flagged = [(t, r) for t, r in results if r.verdict == "suspicious"]
+    scope = [(t, screen_input(t)) for t in _authored_questions(out_of_scope=True)]
     return {
         "questions": len(texts),
+        "out_of_scope_questions": len(scope),
+        "out_of_scope_refused_at_screen": sum(r.verdict == "block" for _t, r in scope),
         "false_refusals": len(refused),
         "false_refusal_rate": _rate(len(refused), len(texts)),
         "flagged_suspicious": len(flagged),
