@@ -97,7 +97,7 @@ def _spike(trend: CategoryTrend, workspace_id: str, currency: str) -> CandidateS
         placeholders=ph,
         headline=f"Spending on {label} is up {ph['change']} on usual",
         detail=(
-            f"{ph['recent']} in the 30 days to {ph['window_end']} ({ph['count']} payments), "
+            f"{ph['recent']} in the month to {ph['window_end']} ({ph['count']} payments), "
             f"against a usual {ph['usual']}."
         ),
         txn_query={

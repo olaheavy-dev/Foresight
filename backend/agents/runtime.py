@@ -204,8 +204,12 @@ def instrument(spec: NodeSpec, ctx: RunContext) -> Callable[[ForesightState], di
                     error=str(exc),
                 )
             except MeshCallError as exc:
-                # Degrade (docs/06 §10.1): record it, keep the deterministic parts going.
+                # Degrade (docs/06 §10.1): record it, keep the deterministic parts going. Calls
+                # made before a schema failure still count towards the budget and the cost.
+                spent = tuple(getattr(exc, "calls", ()))
+                ctx.charge(spent)
                 out = NodeOutput(
+                    llm=spent,
                     status="failed",
                     label=f"{spec.label}: AI explanation unavailable",
                     output={"reason": type(exc).__name__},

@@ -90,7 +90,14 @@ class MeshUnavailableError(MeshCallError):
 
 
 class MeshSchemaError(MeshCallError):
-    """The model's output failed validation twice (initial attempt + one repair)."""
+    """The model's output failed validation twice (initial attempt + one repair).
+
+    `calls` holds every Mesh call made before giving up, so budgets and cost still count them.
+    """
+
+    def __init__(self, message: str, calls: tuple[MeshResult, ...] = ()) -> None:
+        super().__init__(message)
+        self.calls = calls
 
 
 @dataclass(frozen=True)
@@ -441,7 +448,8 @@ class MeshClient:
                 if repair:
                     raise MeshSchemaError(
                         f"{structured.name}: output invalid after one repair "
-                        f"({exc.error_count()} error(s))"
+                        f"({exc.error_count()} error(s))",
+                        calls=tuple(calls),
                     ) from exc
                 errors = json.dumps(exc.errors(include_url=False, include_input=False))[:2000]
                 convo = [

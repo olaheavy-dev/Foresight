@@ -8,6 +8,7 @@ at two revisions (docs/06 §1 rule 4, W4).
 
 from __future__ import annotations
 
+from backend.agents import ledger_nodes
 from backend.agents.runtime import NodeOutput, NodeSpec, RunContext
 from backend.agents.state import ForesightState
 
@@ -63,9 +64,9 @@ def specialist_nodes() -> dict[str, NodeSpec]:
     return {
         spec.name: spec
         for spec in (
-            _slot("ledger", "ledger", "llm", "AGT-03", "Categorising transactions"),
-            _slot("ledger_query", "ledger", "tool", "AGT-03", "Finding the transactions"),
-            _slot("analyst", "analyst", "llm", "AGT-04", "Analysing spending patterns"),
+            ledger_nodes.nodes()["ledger"],
+            ledger_nodes.nodes()["ledger_query"],
+            ledger_nodes.nodes()["analyst"],
             _slot("forecaster", "forecaster", "llm", "AGT-05", "Building the forecast"),
             _slot("risk_check", "forecaster", "tool", "AGT-05", "Checking for risks"),
             _slot("advise", "advisor", "llm", "AGT-06", "Drafting a recommendation"),

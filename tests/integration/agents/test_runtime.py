@@ -82,9 +82,16 @@ def test_orc8_system_event_routes_with_no_model_call(session: Session) -> None:
     assert run is not None
     assert run.status == "succeeded"
     assert run.llm_calls == 0
-    # Specialist slots that aren't built yet say so; they never invent output.
-    assert {s.status for s in steps[1:]} == {"skipped"}
-    assert all(s.output.get("reason") == "not built yet" for s in steps[1:])
+    # An empty profile gives the Ledger Agent and the Analyst nothing to do (and no model is
+    # configured): they finish without a call. Slots not built yet say so; none invents output.
+    by_node = {s.node: s for s in steps}
+    assert by_node["ledger"].status == "ok"
+    assert by_node["ledger"].output["candidates"] == 0
+    assert by_node["analyst"].status == "ok"
+    assert by_node["analyst"].output["candidates"] == 0
+    for s in steps[1:]:
+        if s.status == "skipped":
+            assert s.output.get("reason") == "not built yet"
 
 
 def test_every_step_has_a_hash_label_and_contiguous_sequence(session: Session) -> None:
