@@ -7,17 +7,20 @@ from typing import Any, cast
 
 import httpx
 from fastapi import FastAPI
-from fastapi.routing import APIRoute
+from fastapi.routing import APIRoute, iter_route_contexts
 from fastapi.testclient import TestClient
 from pydantic import BaseModel
 
 
 def route_for(app: FastAPI, method: str, path_template: str) -> APIRoute:
-    for route in app.routes:
+    # Routes from include_router() sit behind their router since FastAPI 0.14x, so walk the
+    # effective route contexts (full path incl. prefix) rather than app.routes.
+    for context in iter_route_contexts(app.routes):
+        route = context.route
         if (
             isinstance(route, APIRoute)
-            and route.path_format == path_template
-            and method.upper() in route.methods
+            and context.path_format == path_template
+            and method.upper() in (context.methods or set())
         ):
             return route
     raise AssertionError(f"no route {method} {path_template}")
