@@ -1,5 +1,5 @@
 """The authored E-VER set is internally honest (evals/datasets/authored/README.md, CHANGELOG
-2026-10-14): every evidence ref a good proposal cites truly resolves in its persona's world,
+2026-10-13): every evidence ref a good proposal cites truly resolves in its persona's world,
 deliberately dangling refs stay dangling, the 14 Oct corrections hold, and every good proposal
 passes the deterministic rules as written."""
 

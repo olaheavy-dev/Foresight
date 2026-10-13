@@ -4,7 +4,7 @@ Synthetic / fictional. Written before any prompt or Verifier rule is tuned, then
 
 | File | Rows | Spec |
 |---|---|---|
-| `bad_proposals.jsonl` | 62 `REJECT` + 38 `APPROVE` (2 relabelled 14 Oct 2026, see `evals/CHANGELOG.md`) | docs/09 §3.6, suite E-VER / E-GRD |
+| `bad_proposals.jsonl` | 62 `REJECT` + 38 `APPROVE` (2 relabelled 13 Oct 2026, see `evals/CHANGELOG.md`) | docs/09 §3.6, suite E-VER / E-GRD |
 | `scenario_prompts.jsonl` | 70 with a gold `ScenarioSpec` + 10 `needs_clarification` | docs/09 §3.5, suite E-SCN |
 | `orchestration_cases.jsonl` | 30 | docs/09 §3.7 and §10, suite E-ORC |
 | `ui_questions.jsonl` | 40 questions + 20 paraphrases | docs/09 §10a, suite E-UI |
@@ -33,7 +33,7 @@ Synthetic / fictional. Written before any prompt or Verifier rule is tuned, then
 
 The 30-day windows end on `as_of`; feasibility (V-04) compares the cap with the median of three consecutive 30-day windows. `basis` records the numbers used, so a runner whose `recompute_impact` disagrees shows up as a definitional difference, not a silent miss.
 
-**`immaterial_timing`** (added 14 Oct 2026): a date move the engine shows doesn't reduce the chance of going below the buffer (V-05). GP-039 and GP-040 keep their IDs for traceability.
+**`immaterial_timing`** (added 13 Oct 2026): a date move the engine shows doesn't reduce the chance of going below the buffer (V-05). GP-039 and GP-040 keep their IDs for traceability.
 
 **`expected_rules`** lists the rules that should reject the proposal. Any one of them firing counts as a correct rejection (for example V-08 or V-17 for a goal-delaying savings move).
 
