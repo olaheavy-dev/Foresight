@@ -1,0 +1,470 @@
+{
+  "persona": "P1-base (synthetic)",
+  "question": "My car needs a £650 repair on 14 October. Will I be OK before payday, and what should I do?",
+  "recorded_at": "2026-10-13T14:21:24+00:00",
+  "run": {
+    "status": "succeeded",
+    "partial": true,
+    "answered": true
+  },
+  "steps": [
+    {
+      "seq": 1,
+      "node": "intake",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Reading your question",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 2,
+      "node": "prefetch",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Loading your latest forecast",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 6
+    },
+    {
+      "seq": 3,
+      "node": "understand",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Understanding your question",
+      "model": "openai/gpt-6-luna",
+      "llm_calls": 1,
+      "tokens_in": 1038,
+      "tokens_out": 249,
+      "cost_estimate_usd": 0.0002283,
+      "latency_ms": 1643
+    },
+    {
+      "seq": 4,
+      "node": "triage",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Deciding how to answer",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 5,
+      "node": "cache_lookup",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Planning the work",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 11
+    },
+    {
+      "seq": 6,
+      "node": "forecaster",
+      "agent": "forecaster",
+      "status": "ok",
+      "label": "Simulating your what-if on the same forecast",
+      "model": "gpt-6-luna",
+      "llm_calls": 1,
+      "tokens_in": 2046,
+      "tokens_out": 206,
+      "cost_estimate_usd": 0.0003076,
+      "latency_ms": 4464
+    },
+    {
+      "seq": 7,
+      "node": "advise",
+      "agent": "advisor",
+      "status": "ok",
+      "label": "Drafting a recommendation",
+      "model": "anthropic/claude-sonnet-5.5",
+      "llm_calls": 1,
+      "tokens_in": 4228,
+      "tokens_out": 1273,
+      "cost_estimate_usd": 0.021186,
+      "latency_ms": 13795
+    },
+    {
+      "seq": 8,
+      "node": "verify",
+      "agent": "verifier",
+      "status": "ok",
+      "label": "Verifier rejected 1 draft(s)",
+      "model": "openai/gpt-6.1-sol",
+      "llm_calls": 2,
+      "tokens_in": 2041,
+      "tokens_out": 298,
+      "cost_estimate_usd": 0.007062,
+      "latency_ms": 10199
+    },
+    {
+      "seq": 9,
+      "node": "revise",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Verifier rejected a draft; revising",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 10,
+      "node": "advise",
+      "agent": "advisor",
+      "status": "ok",
+      "label": "Revising the recommendation",
+      "model": "anthropic/claude-sonnet-5.5",
+      "llm_calls": 1,
+      "tokens_in": 4556,
+      "tokens_out": 1592,
+      "cost_estimate_usd": 0.025032,
+      "latency_ms": 13593
+    },
+    {
+      "seq": 11,
+      "node": "verify",
+      "agent": "verifier",
+      "status": "ok",
+      "label": "Verifier rejected 1 draft(s)",
+      "model": "gpt-6.1-sol",
+      "llm_calls": 1,
+      "tokens_in": 1038,
+      "tokens_out": 123,
+      "cost_estimate_usd": 0.003306,
+      "latency_ms": 6514
+    },
+    {
+      "seq": 12,
+      "node": "revise",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Verifier rejected a draft; revising",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 13,
+      "node": "advise",
+      "agent": "advisor",
+      "status": "ok",
+      "label": "Revising the recommendation",
+      "model": "anthropic/claude-sonnet-5.5",
+      "llm_calls": 1,
+      "tokens_in": 4578,
+      "tokens_out": 1424,
+      "cost_estimate_usd": 0.023396,
+      "latency_ms": 12031
+    },
+    {
+      "seq": 14,
+      "node": "verify",
+      "agent": "verifier",
+      "status": "skipped",
+      "label": "Checking the recommendation: stopped, run deadline reached",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 15,
+      "node": "withdraw",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "No recommendation was checked in time",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 4
+    },
+    {
+      "seq": 16,
+      "node": "compose",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Composing the answer",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 1382
+    },
+    {
+      "seq": 17,
+      "node": "persist_response",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Answer ready",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 4
+    }
+  ],
+  "recommendations": [
+    {
+      "status": "in_review",
+      "revisions": 0,
+      "final": {
+        "action": "move_purchase_date",
+        "params": {
+          "label": "Car repair",
+          "to_date": "2026-10-28",
+          "from_date": "2026-10-14",
+          "amount_minor": 65000
+        },
+        "title": "Book the car repair for payday if it is safe to wait"
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "verdict": "REJECT",
+          "failed": [
+            "V-05@1"
+          ],
+          "critique": "Choose an action worth at least £10 a month or 5 points less risk."
+        }
+      ]
+    },
+    {
+      "status": "approved",
+      "revisions": 0,
+      "final": {
+        "action": "cap_category",
+        "params": {
+          "category_key": "food.eating_out",
+          "monthly_cap_minor": 20000
+        },
+        "title": "Cap eating out for the next month"
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "verdict": "APPROVE",
+          "failed": [],
+          "critique": null
+        }
+      ]
+    },
+    {
+      "status": "approved",
+      "revisions": 0,
+      "final": {
+        "action": "cap_category",
+        "params": {
+          "category_key": "food.delivery",
+          "monthly_cap_minor": 16000
+        },
+        "title": "Cap food delivery for the next month"
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "verdict": "APPROVE",
+          "failed": [],
+          "critique": null
+        }
+      ]
+    },
+    {
+      "status": "withdrawn",
+      "revisions": 1,
+      "final": {
+        "action": "cap_category",
+        "params": {
+          "category_key": "food.eating_out",
+          "monthly_cap_minor": 26135
+        },
+        "title": "Cap eating out at your usual level"
+      },
+      "rounds": [
+        {
+          "round": 2,
+          "verdict": "REJECT",
+          "failed": [
+            "V-09@1"
+          ],
+          "critique": "the same advice is already active"
+        }
+      ]
+    },
+    {
+      "status": "withdrawn",
+      "revisions": 1,
+      "final": {
+        "action": "cap_category",
+        "params": {
+          "category_key": "food.delivery",
+          "monthly_cap_minor": 20310
+        },
+        "title": "Cap food delivery at your usual level"
+      },
+      "rounds": [
+        {
+          "round": 2,
+          "verdict": "REJECT",
+          "failed": [
+            "V-09@1"
+          ],
+          "critique": "the same advice is already active"
+        }
+      ]
+    },
+    {
+      "status": "withdrawn",
+      "revisions": 1,
+      "final": {
+        "action": "cap_category",
+        "params": {
+          "category_key": "transport.taxi",
+          "monthly_cap_minor": 1553
+        },
+        "title": "Cap taxi spending at your usual level"
+      },
+      "rounds": [
+        {
+          "round": 2,
+          "verdict": "REJECT",
+          "failed": [
+            "V-11@1"
+          ],
+          "critique": "V-11: The evidence supports elevated taxi spending but does not establish that the car is being repaired."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "type": "Narrative",
+      "where": "verdict",
+      "text": "Here is how that would change your balance before each payday."
+    },
+    {
+      "type": "FinancialMetricGroup",
+      "where": "key_numbers"
+    },
+    {
+      "type": "ScenarioComparison",
+      "where": "main_visual"
+    },
+    {
+      "type": "InterventionCard",
+      "where": "what_to_do",
+      "title": "Cap eating out for the next month",
+      "status": "approved",
+      "verification": {
+        "verdict": "approved",
+        "revisions": 0,
+        "checks_total": 21,
+        "checks_passed": 21,
+        "verification_id": "ver_01M4TT6DNBC7P4SNQ1EDWGWGS2"
+      },
+      "monthly_saving": "£189.93",
+      "p_breach": [
+        "100%",
+        "100%"
+      ],
+      "low_deltas": [
+        [
+          "Before 28 Oct",
+          "−£346",
+          "−£325"
+        ],
+        [
+          "Before 27 Nov",
+          "−£384",
+          "−£329"
+        ],
+        [
+          "Before 18 Dec",
+          "£132",
+          "£214"
+        ]
+      ]
+    },
+    {
+      "type": "CashFlowForecastChart",
+      "where": "details"
+    },
+    {
+      "type": "InterventionCard",
+      "where": "recommendation",
+      "title": "Cap food delivery for the next month",
+      "status": "approved",
+      "verification": {
+        "verdict": "approved",
+        "revisions": 0,
+        "checks_total": 21,
+        "checks_passed": 21,
+        "verification_id": "ver_01M4TT6DNG5Q8278DW89WC7Q8H"
+      },
+      "monthly_saving": "£126.40",
+      "p_breach": [
+        "100%",
+        "100%"
+      ],
+      "low_deltas": [
+        [
+          "Before 28 Oct",
+          "−£346",
+          "−£306"
+        ],
+        [
+          "Before 27 Nov",
+          "−£384",
+          "−£274"
+        ],
+        [
+          "Before 18 Dec",
+          "£132",
+          "£294"
+        ]
+      ]
+    },
+    {
+      "type": "AgentExecutionTimeline",
+      "where": "checked"
+    },
+    {
+      "evidence_line": {
+        "agents": 4,
+        "run_id": "run_01M4TT5G67YMF6TM2CXHENF3XE",
+        "rejected_drafts": 0
+      }
+    }
+  ],
+  "cost": {
+    "model_calls": 8,
+    "tokens": 24690,
+    "usd_estimate": 0.0805179
+  }
+}

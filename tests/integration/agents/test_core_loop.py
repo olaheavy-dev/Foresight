@@ -406,3 +406,30 @@ def test_drafts_unchecked_at_the_deadline_are_withdrawn(p1: AgentStore) -> None:
     recs = [r for r in p1.ctx.all(m.Recommendation) if r.run_id == out.run_id]
     assert recs
     assert {r.status for r in recs} == {"withdrawn"}
+
+
+def test_a_rejected_draft_the_advisor_drops_is_withdrawn(p1: AgentStore) -> None:
+    def round1(kwargs: dict[str, Any]) -> Any:
+        d = _data(kwargs)
+        return _two(d, _cap(d, CATEGORY, 0.8, "delivery"), _cap(d, "food.eating_out", 0.2, "out"))
+
+    def round2(kwargs: dict[str, Any]) -> Any:
+        d = _data(kwargs)  # the rejected "out" draft is not revised; a new one replaces it
+        return json_ok({"proposals": [_cap(d, "transport.taxi", 0.9, "taxi")]})
+
+    out, _ = _run(p1, round1, JUDGE_PASS, round2, JUDGE_PASS)
+    recs = {
+        r.proposal["proposal_id"]: r for r in p1.ctx.all(m.Recommendation) if r.run_id == out.run_id
+    }
+    assert recs["out"].status == "withdrawn"
+    assert not [r for r in recs.values() if r.status == "in_review"]
+    withdrawn_id = recs["out"].id
+    audit = [
+        e
+        for e in p1.ctx.all(m.AuditEvent)
+        if e.action == "recommendation_withdrawn" and e.subject_id == withdrawn_id
+    ]
+    assert audit[0].after["reason"] == "dropped_in_revision"
+    first = next(s for s in p1.steps(out.run_id) if s.node == "verify")
+    assert first.output["rejected_drafts"] == 1
+    assert first.output["verdict"] == "reject"

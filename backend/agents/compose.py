@@ -968,7 +968,9 @@ def evidence_line(store: Any, run_id: str) -> EvidenceLine:
         s.agent for s in steps if s.status in {"ok", "retried"} and s.agent in TIMELINE_AGENTS
     }
     rejected = sum(
-        1 for s in steps if s.node == "verify" and (s.output or {}).get("verdict") == "reject"
+        int((s.output or {}).get("rejected_drafts", (s.output or {}).get("verdict") == "reject"))
+        for s in steps
+        if s.node == "verify"
     )
     return EvidenceLine(agents=len(agents), rejected_drafts=rejected, run_id=run_id)
 

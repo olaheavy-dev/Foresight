@@ -321,6 +321,23 @@ def advise_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
     )
     ctx.charge(advice.llm)
     keys = {p.get("proposal_id"): p.get("proposal_key") for p in previous}
+    returned = {p.proposal_id for p in advice.proposals}
+    with ctx.lock:
+        for dropped in previous:
+            rec_id = dropped.get("rec_id")
+            if dropped.get("proposal_id") in returned or not rec_id:
+                continue
+            # A rejected draft the Advisor didn't revise is over: withdraw it, never leave it
+            # in review.
+            ctx.store.set_recommendation_status(rec_id, "withdrawn")
+            ctx.store.ctx.append_audit(
+                "recommendation_withdrawn",
+                "recommendation",
+                rec_id,
+                actor="agent:advisor",
+                after={"reason": "dropped_in_revision"},
+                run_id=ctx.run_id,
+            )
     proposals = []
     for p in advice.proposals:
         impact = advice.impacts[p.proposal_id]
@@ -399,6 +416,7 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
 
     with ThreadPoolExecutor(max_workers=JUDGE_POOL) as pool:
         checked = list(pool.map(check, normalised))
+    not_approved = 0
     for raw, p, outcome in checked:
         with ctx.lock:
             ctx.charge(outcome.llm)
@@ -434,6 +452,7 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
                 critique="\n".join(v.critique) or None,
             )
         verifications.append(ver.id)
+        not_approved += v.verdict != "APPROVE"
         if v.verdict == "APPROVE":
             card = build_card(
                 p,
@@ -470,9 +489,11 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
             "approved_recs": approved,
         },
         output={
+            "verdict": verdict,
             "round": round_,
             "approved": len(approved),
             "rejected": rejected,
+            "rejected_drafts": not_approved,  # rejected or withdrawn this round (evidence line)
             "failed_rules": [r.get("critique") for r in remaining],
         },
         llm=llm,
