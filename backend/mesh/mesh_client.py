@@ -6,8 +6,7 @@ contract and tests/test_mesh_only.py enforce that (docs/05 §3.1).
 
 What a call goes through (docs/05 §6.4, docs/06 §10.1):
 
-1. Redaction of every message (this module's patterns, then the locale-aware hook in
-   `backend.mesh.redact` when present).
+1. Redaction of every message by `backend.mesh.redact` (locale-aware, deterministic).
 2. Replay mode answers from a recorded cassette and never touches the network.
 3. Otherwise the circuit breaker may refuse at once (`MeshUnavailableError`).
 4. The tier's primary model: up to `mesh_max_retries` retries on transport errors, timeouts and 5xx
@@ -22,7 +21,6 @@ What a call goes through (docs/05 §6.4, docs/06 §10.1):
 
 from __future__ import annotations
 
-import importlib
 import json
 import re
 import time
@@ -41,6 +39,7 @@ from openai import (
 )
 from pydantic import BaseModel, ValidationError
 
+import backend.mesh.redact as redaction
 from backend.mesh.breaker import CircuitBreaker
 from backend.mesh.capabilities import capabilities_for
 from backend.mesh.cassettes import CassetteMiss, CassetteStore, RecordedResponse, request_hash
@@ -64,7 +63,6 @@ __all__ = [
     "ModelTier",
     "StructuredResult",
     "Usage",
-    "redact",
     "redact_messages",
 ]
 
@@ -132,59 +130,40 @@ class StructuredResult(Generic[T]):
     calls: tuple[MeshResult, ...]  # every Mesh call made, for budgets and AgentStep accounting
 
 
-# Patterns removed before any text leaves the app (docs/07 §8). Order matters: longer
-# numbers first so a card number is not partly matched as a phone or account number.
-_REDACTIONS: tuple[tuple[re.Pattern[str], str], ...] = (
-    (re.compile(r"\b(?:\d[ -]?){13,19}\b"), "[CARD]"),
-    (re.compile(r"\b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b"), "[IBAN]"),
-    # UK numbers: 07700 900123, 0161 496 0000, +44 7700 900123, +44 (0)20 7946 0000
+# Second, transport-level layer (docs/05 §7.3: "a missed field at one layer is caught by the
+# other"). Plain identifier shapes only; it runs after `backend.mesh.redact` on the final text.
+_TRANSPORT_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
+    (re.compile(r"\b(?:\d[ -]?){13,19}\b"), "CARD"),
+    (re.compile(r"\b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b"), "IBAN"),
     (
         re.compile(r"(?<![\w+])(?:\+44\s?(?:\(0\)\s?)?|0)\d{2,4}[\s-]?\d{3,4}[\s-]?\d{3,4}(?!\d)"),
-        "[PHONE]",
+        "PHONE",
     ),
-    # Indian mobiles: 98765 43210, +91 98765 43210, +91-9876543210
-    (re.compile(r"(?<![\w+])(?:\+91[\s-]?)?[6-9]\d{4}[\s-]?\d{5}(?!\d)"), "[PHONE]"),
-    (re.compile(r"(?<![\d-])\d{2}-\d{2}-\d{2}(?![\d-])"), "[SORT_CODE]"),
-    # Account numbers: 41234567 or grouped as 4123 4567
-    (re.compile(r"\b\d{4} ?\d{4}\b"), "[ACCOUNT]"),
-    (re.compile(r"\b[A-CEGHJ-PR-TW-Z]{2}\d{6}[A-D]\b"), "[NI_NUMBER]"),
-    (re.compile(r"\b[\w.+-]+@[\w-]+(?:\.[\w-]+)+\b"), "[EMAIL]"),
-    (re.compile(r"\b[\w.-]{2,}@[a-z]{2,}\b", re.IGNORECASE), "[UPI_ID]"),
+    (re.compile(r"(?<![\w+])(?:\+91[\s-]?)?[6-9]\d{4}[\s-]?\d{5}(?!\d)"), "PHONE"),
+    (re.compile(r"(?<![\d-])\d{2}-\d{2}-\d{2}(?![\d-])"), "SORT_CODE"),
+    (re.compile(r"\b\d{4} ?\d{4}\b"), "ACCOUNT"),
+    (re.compile(r"\b[A-CEGHJ-PR-TW-Z]{2}\d{6}[A-D]\b"), "ID"),
+    (re.compile(r"\b[\w.+-]+@[\w-]+(?:\.[\w-]+)+\b"), "EMAIL"),
 )
 
 
-def redact(text: str) -> str:
-    """Mask account identifiers, card numbers and contact details before a model sees text."""
-    for pattern, replacement in _REDACTIONS:
+def _transport_redact(text: str) -> str:
+    for pattern, replacement in _TRANSPORT_PATTERNS:
         text = pattern.sub(replacement, text)
     return text
-
-
-_REDACT_HOOK_MODULE = "backend.mesh.redact"
-
-
-def _redact_hook() -> Callable[..., dict[str, Any]] | None:
-    """The locale-aware redaction layer (docs/05 §7.3), if that module exists."""
-    try:
-        module = importlib.import_module(_REDACT_HOOK_MODULE)
-    except ModuleNotFoundError as exc:
-        if exc.name == _REDACT_HOOK_MODULE:
-            return None
-        raise
-    hook = getattr(module, "redact", None)
-    return hook if callable(hook) else None
 
 
 def redact_messages(
     messages: list[dict[str, str]], *, locale_pack: str = "uk"
 ) -> list[dict[str, str]]:
-    """Both redaction layers, applied to every message before it can leave the app."""
-    safe = [{**m, "content": redact(m["content"])} for m in messages]
-    hook = _redact_hook()
-    if hook is not None:
-        payload = hook({"messages": safe}, locale_pack=locale_pack)
-        safe = list(payload["messages"])
-    return safe
+    """Mask identifiers in every message before it can leave the app (docs/05 §7.3, §7.4a L2).
+
+    Layer 1 is `backend.mesh.redact`: locale-aware (uk, in), deterministic; it masks cards, IBANs,
+    sort codes, account numbers, references, phones, e-mail, UPI IDs, Indian identifiers and person
+    names in transfer narrations. Layer 2 re-checks the final text for plain identifier shapes.
+    """
+    payload = redaction.redact({"messages": messages}, locale_pack=locale_pack)
+    return [{**m, "content": _transport_redact(str(m["content"]))} for m in payload["messages"]]
 
 
 _RETRY_BACKOFF_SECONDS = (1.0, 4.0)

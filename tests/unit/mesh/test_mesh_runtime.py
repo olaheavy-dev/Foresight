@@ -4,7 +4,6 @@ No test touches the network."""
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 import pytest
@@ -257,8 +256,20 @@ def test_replay_of_changed_request_is_a_cassette_miss(tmp_path: Path) -> None:
 # ------------------------------------------------------------------------------ redaction hook
 
 
-def test_locale_redaction_hook_runs_before_the_transport(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setitem(sys.modules, "backend.mesh.redact", fake_redact_module(str.upper))
+def test_payload_redaction_runs_before_the_transport(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake = fake_redact_module(str.upper)
+    monkeypatch.setattr("backend.mesh.redact.redact", fake.redact)
     calls = ScriptedCompletions(ok())
     client(calls).complete(tier=ModelTier.FAST, messages=MSG, locale_pack="in")
     assert calls.calls[0]["messages"][0]["content"] == "CATEGORISE DEB TESCO STORES|in"
+
+
+def test_real_redaction_masks_identifiers_at_the_transport() -> None:
+    calls = ScriptedCompletions(ok())
+    sort_code = "-".join(["40", "11", "62"])
+    msg = [{"role": "user", "content": f"FPO from {sort_code} acct 41234567 to a@b.com"}]
+    client(calls).complete(tier=ModelTier.FAST, messages=msg)
+    sent = calls.calls[0]["messages"][0]["content"]
+    assert sort_code not in sent
+    assert "41234567" not in sent
+    assert "a@b.com" not in sent
