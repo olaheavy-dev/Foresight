@@ -114,7 +114,7 @@
     const showHistory = cfg.history !== false;
     const start = showHistory ? (cfg.start || F.historyStart) : F.today;
     const end = cfg.end || F.end;
-    const H = cfg.height || 300;
+    const H = Number(cfg.height) || 300;
     const W = Math.max(320, el.clientWidth);
     const compact = W < 560;
     const m = { t: 28, r: compact ? 12 : 24, b: 28, l: compact ? 44 : 56 };
@@ -130,7 +130,7 @@
     const y = (v) => m.t + (1 - (v - ymin) / (ymax - ymin)) * ih;
     const path = (pts) => pts.map(([t, v], i) => (i ? "L" : "M") + x(t).toFixed(1) + "," + y(v).toFixed(1)).join("");
 
-    let s = `<svg width="${W}" height="${H}" role="img" aria-label="${el.getAttribute("aria-label") || "Cash flow forecast"}">`;
+    let s = `<svg width="${W}" height="${H}" role="img" aria-label="${esc(el.getAttribute("aria-label") || "Cash flow forecast")}">`;
     // grid + y ticks
     const step = [250, 500, 1000, 2000].find((q) => (ymax - ymin) / q <= 7) || 2000;
     s += `<g class="axis">`;
