@@ -19,7 +19,8 @@ def disable_external_tracing() -> None:
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    # A blank value in .env (e.g. `MESH_MODEL_FAST=`) means "use the default", never "".
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore", env_ignore_empty=True)
 
     mesh_api_key: str = ""
     # Model IDs per tier (docs/06 §13), chosen from Mesh's catalogue (docs/00 §12.1). The Verifier
