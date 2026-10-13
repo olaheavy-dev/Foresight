@@ -1,0 +1,213 @@
+{
+  "duration_s": 0.71,
+  "error": null,
+  "metrics": {
+    "by_dataset": {
+      "P1-base": {
+        "spikes": [
+          {
+            "change_pct": 277.4,
+            "count": 2,
+            "recent_minor": 30743,
+            "robust_z": 4.97,
+            "subject": "shopping.clothing",
+            "usual_minor": 8147
+          },
+          {
+            "change_pct": 397.6,
+            "count": 5,
+            "recent_minor": 12977,
+            "robust_z": 9.21,
+            "subject": "health",
+            "usual_minor": 2608
+          },
+          {
+            "change_pct": 41.0,
+            "count": 23,
+            "recent_minor": 28640,
+            "robust_z": 12.77,
+            "subject": "food.delivery",
+            "usual_minor": 20310
+          },
+          {
+            "change_pct": 34.8,
+            "count": 22,
+            "recent_minor": 29204,
+            "robust_z": 2.25,
+            "subject": "food.eating_out",
+            "usual_minor": 21659
+          },
+          {
+            "change_pct": 78.5,
+            "count": 7,
+            "recent_minor": 16736,
+            "robust_z": 3.2,
+            "subject": "uncategorised",
+            "usual_minor": 9375
+          },
+          {
+            "change_pct": 429.1,
+            "count": 4,
+            "recent_minor": 8217,
+            "robust_z": 2.89,
+            "subject": "transport.taxi",
+            "usual_minor": 1553
+          }
+        ],
+        "truth": [
+          {
+            "expected_findings": [
+              "category_spike"
+            ],
+            "key": "food_delivery_spike",
+            "magnitude_pct": 41,
+            "subject": "food.delivery",
+            "type": "category_trend"
+          }
+        ]
+      },
+      "P1-clean": {
+        "spikes": [
+          {
+            "change_pct": 277.4,
+            "count": 2,
+            "recent_minor": 30744,
+            "robust_z": 4.97,
+            "subject": "shopping.clothing",
+            "usual_minor": 8147
+          },
+          {
+            "change_pct": 397.6,
+            "count": 5,
+            "recent_minor": 12977,
+            "robust_z": 9.21,
+            "subject": "health",
+            "usual_minor": 2608
+          },
+          {
+            "change_pct": 34.8,
+            "count": 22,
+            "recent_minor": 29206,
+            "robust_z": 2.25,
+            "subject": "food.eating_out",
+            "usual_minor": 21660
+          },
+          {
+            "change_pct": 78.5,
+            "count": 7,
+            "recent_minor": 16736,
+            "robust_z": 3.2,
+            "subject": "uncategorised",
+            "usual_minor": 9375
+          },
+          {
+            "change_pct": 429.1,
+            "count": 4,
+            "recent_minor": 8217,
+            "robust_z": 2.89,
+            "subject": "transport.taxi",
+            "usual_minor": 1553
+          }
+        ]
+      },
+      "P2-base": {
+        "spikes": [
+          {
+            "change_pct": 39.5,
+            "count": 19,
+            "recent_minor": 57850,
+            "robust_z": 8.09,
+            "subject": "groceries",
+            "usual_minor": 41472
+          },
+          {
+            "change_pct": 0.0,
+            "count": 1,
+            "recent_minor": 4138,
+            "robust_z": null,
+            "subject": "cash.withdrawal",
+            "usual_minor": 0
+          },
+          {
+            "change_pct": 0.0,
+            "count": 2,
+            "recent_minor": 3037,
+            "robust_z": null,
+            "subject": "health",
+            "usual_minor": 0
+          }
+        ],
+        "truth": []
+      },
+      "P2-clean": {
+        "spikes": [
+          {
+            "change_pct": 171.5,
+            "count": 7,
+            "recent_minor": 32135,
+            "robust_z": 6.45,
+            "subject": "shopping.general",
+            "usual_minor": 11836
+          },
+          {
+            "change_pct": 0.0,
+            "count": 1,
+            "recent_minor": 5191,
+            "robust_z": null,
+            "subject": "cash.withdrawal",
+            "usual_minor": 0
+          }
+        ]
+      }
+    },
+    "fp_per_persona_month_clean": 3.5,
+    "magnitude_error_pp": 0.0,
+    "precision": 0.1111,
+    "recall": 1.0,
+    "scope": "category_trend findings only"
+  },
+  "name": "anomalies",
+  "notes": [
+    "Trend part only: one 30-day window at as_of per persona, so one persona-month each.",
+    "A spike matches an injected anomaly when its category equals the anomaly subject."
+  ],
+  "suite": "E-ANOM",
+  "targets": [
+    {
+      "dataset": "P1-base, P2-base",
+      "id": "ANOM-recall",
+      "label": "Recall (category trends)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 0.85",
+      "value": 1.0
+    },
+    {
+      "dataset": "P1-base, P2-base",
+      "id": "ANOM-precision",
+      "label": "Precision (category trends)",
+      "met": false,
+      "stage1": true,
+      "target": ">= 0.75",
+      "value": 0.1111
+    },
+    {
+      "dataset": "P1-clean, P2-clean",
+      "id": "ANOM-fp",
+      "label": "False positives per persona-month (clean)",
+      "met": false,
+      "stage1": true,
+      "target": "<= 0.5",
+      "value": 3.5
+    },
+    {
+      "dataset": "P1-base, P2-base",
+      "id": "ANOM-magnitude",
+      "label": "Surge magnitude error (pp)",
+      "met": true,
+      "stage1": true,
+      "target": "<= 5",
+      "value": 0.0
+    }
+  ]
+}

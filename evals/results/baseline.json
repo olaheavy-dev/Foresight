@@ -1,0 +1,926 @@
+{
+  "durations_s": {
+    "E-ANOM": 0.71,
+    "E-CAT": 0.37,
+    "E-FC": 1.43,
+    "E-INC": 0.72,
+    "E-ING": 0.33,
+    "E-LOC": 0.33,
+    "E-REC": 0.36,
+    "E-SIM": 8.06
+  },
+  "engine_version": "fc-1.0.0",
+  "errors": {},
+  "fast": false,
+  "gate_detail": {
+    "E-ACCT": {
+      "failed": [],
+      "rule": "not run",
+      "status": "fail",
+      "unmeasured": []
+    },
+    "E-ALIAS": {
+      "failed": [],
+      "rule": "not run",
+      "status": "fail",
+      "unmeasured": []
+    },
+    "E-ANOM": {
+      "failed": [
+        "ANOM-precision",
+        "ANOM-fp"
+      ],
+      "rule": "docs/09 targets (4 measured)",
+      "status": "fail",
+      "unmeasured": []
+    },
+    "E-AUD": {
+      "failed": [],
+      "rule": "not run",
+      "status": "fail",
+      "unmeasured": []
+    },
+    "E-CAT": {
+      "failed": [],
+      "rule": "ran without errors",
+      "status": "pass",
+      "unmeasured": []
+    },
+    "E-FC": {
+      "failed": [
+        "FC-mape",
+        "FC-coverage-P1",
+        "FC-coverage-P2"
+      ],
+      "rule": "docs/09 targets (5 measured)",
+      "status": "fail",
+      "unmeasured": []
+    },
+    "E-GRD": {
+      "failed": [],
+      "rule": "not run",
+      "status": "fail",
+      "unmeasured": []
+    },
+    "E-INC": {
+      "failed": [
+        "INC-1-R",
+        "INC-2"
+      ],
+      "rule": "docs/09 targets (5 measured)",
+      "status": "fail",
+      "unmeasured": []
+    },
+    "E-ING": {
+      "failed": [
+        "ING-locator-unseen",
+        "ING-corrupt"
+      ],
+      "rule": "docs/09 targets (11 measured)",
+      "status": "fail",
+      "unmeasured": []
+    },
+    "E-LOC": {
+      "failed": [],
+      "rule": "docs/09 targets (6 measured)",
+      "status": "pass",
+      "unmeasured": []
+    },
+    "E-ORC": {
+      "failed": [],
+      "rule": "not run",
+      "status": "fail",
+      "unmeasured": []
+    },
+    "E-REC": {
+      "failed": [],
+      "rule": "docs/09 targets (5 measured)",
+      "status": "pass",
+      "unmeasured": []
+    },
+    "E-SCN": {
+      "failed": [],
+      "rule": "not run",
+      "status": "fail",
+      "unmeasured": []
+    },
+    "E-SIM": {
+      "failed": [
+        "SIM"
+      ],
+      "rule": "docs/09 targets (1 measured)",
+      "status": "fail",
+      "unmeasured": []
+    },
+    "E-UI": {
+      "failed": [],
+      "rule": "not run",
+      "status": "fail",
+      "unmeasured": []
+    },
+    "E-VER": {
+      "failed": [],
+      "rule": "not run",
+      "status": "fail",
+      "unmeasured": []
+    },
+    "E-XFER": {
+      "failed": [],
+      "rule": "not run",
+      "status": "fail",
+      "unmeasured": []
+    }
+  },
+  "gates": {
+    "E-ACCT": "fail",
+    "E-ALIAS": "fail",
+    "E-ANOM": "fail",
+    "E-AUD": "fail",
+    "E-CAT": "pass",
+    "E-FC": "fail",
+    "E-GRD": "fail",
+    "E-INC": "fail",
+    "E-ING": "fail",
+    "E-LOC": "pass",
+    "E-ORC": "fail",
+    "E-REC": "pass",
+    "E-SCN": "fail",
+    "E-SIM": "fail",
+    "E-UI": "fail",
+    "E-VER": "fail",
+    "E-XFER": "fail"
+  },
+  "generator_version": "gen-1.0.0",
+  "git_dirty": true,
+  "git_sha": "2732b6cd0c6a372b43d17017c32a99dd781b4604",
+  "holdout_version": null,
+  "home_currency_primary": "GBP",
+  "layout_set_version": null,
+  "locales": [
+    "uk"
+  ],
+  "mesh_models": {
+    "advisor": null,
+    "coordinator": null,
+    "ledger": null,
+    "verifier": null
+  },
+  "mode": "deterministic",
+  "notes": [
+    "Deterministic suites only: every LLM arm (hybrid/llm-only categorisation, profile proposals, Verifier, orchestration, grounding, UI) is Stage 2+ and null here.",
+    "null = not run. Gates: a suite that did not run is 'fail'; see gate_detail.rule."
+  ],
+  "prompt_versions": {},
+  "run_id": "evalrun_20261013T080503Z_2732b6c",
+  "schema_version": "1.1",
+  "seeds": [
+    1729
+  ],
+  "suites": {
+    "anomalies": {
+      "fp_per_persona_month_clean": 3.5,
+      "magnitude_error_pp": 0.0,
+      "precision": 0.1111,
+      "recall": 1.0,
+      "scope": "category_trend findings only"
+    },
+    "categorisation": {
+      "arms": {
+        "hybrid": {
+          "accuracy": null,
+          "flow_class_accuracy": null,
+          "llm_call_rate": null,
+          "macro_f1": null,
+          "note": "Stage 2"
+        },
+        "llm_only": {
+          "accuracy": null,
+          "macro_f1": null,
+          "note": "Stage 2"
+        },
+        "majority_class": {
+          "accuracy": 0.2048,
+          "label": "groceries",
+          "macro_f1": 0.0121
+        },
+        "monzo_category_mapped": {
+          "accuracy": 0.3592,
+          "macro_f1": 0.1717,
+          "n": 284,
+          "rules_only_on_same_rows": 0.9085
+        },
+        "rules_only": {
+          "abstention_rate": 0.1044,
+          "accuracy": 0.8394,
+          "accuracy_ci95": [
+            0.8045,
+            0.869
+          ],
+          "amount_weighted_accuracy": 0.3587,
+          "coverage": {
+            "0.5": {
+              "coverage": 0.8956,
+              "selective_accuracy": 0.9372
+            },
+            "0.7": {
+              "coverage": 0.8695,
+              "selective_accuracy": 0.9423
+            },
+            "0.85": {
+              "coverage": 0.8414,
+              "selective_accuracy": 0.9737
+            },
+            "0.95": {
+              "coverage": 0.0,
+              "selective_accuracy": null
+            }
+          },
+          "ece": 0.1272,
+          "flow_class_accuracy": 0.9659,
+          "llm_call_rate": 0.0,
+          "macro_f1": 0.7318,
+          "n": 498,
+          "weighted_f1": 0.8761
+        }
+      },
+      "dataset": "generated test split (last 3 months) of P1-base, P2-base",
+      "holdout": {
+        "accuracy": null,
+        "dataset": "holdout_narrations@h-1",
+        "macro_f1": null,
+        "note": "UK hand-labelled holdout not built yet"
+      }
+    },
+    "forecast": {
+      "best_baseline_mae30_gbp_by_dataset": {
+        "P1-base": 765.73,
+        "P2-base": 4877.24,
+        "S4-shock": 4532.98
+      },
+      "breach_brier": null,
+      "by_horizon": {
+        "30": {
+          "best_baseline": "B0",
+          "best_baseline_mae_gbp": 765.73,
+          "coverage_p10_p90": 0.4973,
+          "mae_gbp": 623.95,
+          "mape": 0.5821
+        },
+        "60": {
+          "best_baseline": "B0",
+          "best_baseline_mae_gbp": 942.86,
+          "coverage_p10_p90": 0.4973,
+          "mae_gbp": 970.35,
+          "mape": 0.6877
+        },
+        "7": {
+          "best_baseline": "B3",
+          "best_baseline_mae_gbp": 505.05,
+          "coverage_p10_p90": 0.4973,
+          "mae_gbp": 243.51,
+          "mape": 0.1153
+        }
+      },
+      "coverage_by_dataset": {
+        "P1-base": 0.4973,
+        "P2-base": 0.0982,
+        "S4-shock": 0.1156
+      },
+      "engine_version": "fc-1.0.0",
+      "headline_dataset": "P1-base",
+      "mae30_gbp_by_dataset": {
+        "P1-base": 623.95,
+        "P2-base": 5264.73,
+        "S4-shock": 4364.07
+      },
+      "method": {
+        "anchor": "truth balance at the origin",
+        "inputs": "detected (import \u2192 rules \u2192 detect), truncated at each origin",
+        "mape": "as computed by finance_core backtest: |error| / |actual| (no \u00a3250 floor)",
+        "n_paths": 500,
+        "origins": "every 7 days from day 90 to end \u2212 60"
+      },
+      "pay_cycle_low_mae_gbp": 522.1,
+      "skill_vs": {
+        "B1-repeat30": {
+          "30": 0.502,
+          "60": 0.5185,
+          "7": 0.6803
+        },
+        "B2-meanflow": {
+          "30": 0.502,
+          "60": 0.5185,
+          "7": 0.8534
+        },
+        "best_baseline": {
+          "30": 0.1852,
+          "60": -0.0292,
+          "7": 0.5178
+        }
+      }
+    },
+    "income": {
+      "amount_within_2pct": 0.6667,
+      "four_weekly_cadence_ok": true,
+      "payday_rule_ok": 1.0,
+      "salaried_precision": 1.0,
+      "salaried_recall": 0.75
+    },
+    "ingestion": {
+      "csv_statement": {
+        "builtin_profile": {
+          "false_match_rate": 0.0,
+          "match_rate": 1.0,
+          "n_builtin_files": 3,
+          "n_other_files": 7
+        },
+        "format_profile_unseen": {
+          "heuristic_llm": {
+            "llm_calls_per_file": null,
+            "note": "Stage 2 (Ledger Agent via Mesh)",
+            "reuse_rate": null,
+            "success": null
+          },
+          "heuristic_only": {
+            "success": 0.0
+          }
+        },
+        "parse": {
+          "C1_pennine": {
+            "row_precision": null,
+            "row_recall": 0.0,
+            "truth_rows": 1063
+          },
+          "C2_harbour_vale": {
+            "row_precision": null,
+            "row_recall": 0.0,
+            "truth_rows": 1041
+          },
+          "C3_northgate": {
+            "row_precision": null,
+            "row_recall": 0.0,
+            "truth_rows": 1082
+          },
+          "C4_fenwick": {
+            "row_precision": null,
+            "row_recall": 0.0,
+            "truth_rows": 1093
+          },
+          "G1_eur": {
+            "row_precision": 1.0,
+            "row_recall": 1.0,
+            "truth_rows": 503
+          },
+          "generic_in_out": {
+            "row_precision": 1.0,
+            "row_recall": 1.0,
+            "truth_rows": 30
+          },
+          "generic_signed": {
+            "row_precision": 1.0,
+            "row_recall": 1.0,
+            "truth_rows": 1252
+          },
+          "monzo": {
+            "row_precision": 1.0,
+            "row_recall": 1.0,
+            "truth_rows": 1667
+          },
+          "revolut_consolidated": {
+            "row_precision": 1.0,
+            "row_recall": 1.0,
+            "truth_rows": 328
+          }
+        },
+        "reconciliation": {
+          "clean_tables_rejected": 0,
+          "corrupted_csv": {
+            "correct_first_row": 13,
+            "detected": 17,
+            "detection_rate": 0.85,
+            "detection_rate_ci95": [
+              0.6396,
+              0.9476
+            ],
+            "rejected_cases": 13,
+            "rows_committed_from_failed_files": 0,
+            "total": 20
+          },
+          "no_balance_labelled_reconciled": 0
+        },
+        "table_locator": {
+          "builtin_and_common": {
+            "boundary_acc": 1.0,
+            "junk_rows_parsed": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "unseen_C1_C4": {
+            "boundary_acc": 0.2,
+            "junk_rows_parsed": 0,
+            "precision": 1.0,
+            "recall": 0.2
+          }
+        }
+      },
+      "pdf_statement": {
+        "note": "Tier 2, not shipped"
+      }
+    },
+    "locales": {
+      "ambiguous_symbol_asked": true,
+      "cross_currency_violations": null,
+      "currency_detection_acc": 1.0,
+      "date_order_acc": 1.0,
+      "h13": {
+        "all_clauses_ok": true,
+        "llm_calls": 0,
+        "repeat_questions": 0,
+        "uncommitted_until_answered": true
+      },
+      "minor_unit_exact": true,
+      "not_run": {
+        "E-LOC-6": "G4 (EUR pocket forecast) not generated yet",
+        "E-LOC-7": "XLS/XLSX exports not generated yet (Tier 1 XLSX is a later task)"
+      },
+      "number_format_acc": 1.0,
+      "xls_csv_parity": null
+    },
+    "recurring": {
+      "council_tax_months_exact": true,
+      "median_amount_error": 0.0,
+      "median_next_date_error_days": 0,
+      "precision": 1.0,
+      "price_rise_within_one_cycle": false,
+      "recall": 0.92,
+      "subscription_overlap_detected": false
+    },
+    "simulation": {
+      "as_of": "2026-10-11",
+      "dataset": "P1-base",
+      "horizon_days": 90,
+      "n_paths": 200,
+      "not_run": [
+        "SIM-4",
+        "SIM-5",
+        "SIM-7",
+        "SIM-8",
+        "SIM-9",
+        "SIM-10",
+        "SIM-11",
+        "SIM-12",
+        "SIM-13"
+      ],
+      "pass_rate": 0.8187,
+      "passed": 655,
+      "properties": {
+        "SIM-1": {
+          "failed": 0,
+          "first_failing_case": null,
+          "label": "Determinism",
+          "passed": 200,
+          "skipped": 0
+        },
+        "SIM-2": {
+          "failed": 0,
+          "first_failing_case": null,
+          "label": "Zero scenario = baseline",
+          "passed": 200,
+          "skipped": 0
+        },
+        "SIM-3": {
+          "failed": 145,
+          "first_failing_case": 0,
+          "label": "One-off linearity",
+          "max_abs_deviation_minor": 1,
+          "passed": 55,
+          "skipped": 0
+        },
+        "SIM-6": {
+          "failed": 0,
+          "first_failing_case": null,
+          "label": "Income-delay conservation",
+          "passed": 200,
+          "skipped": 0
+        }
+      },
+      "total": 800
+    }
+  },
+  "suites_run": [
+    "E-ANOM",
+    "E-CAT",
+    "E-FC",
+    "E-INC",
+    "E-ING",
+    "E-LOC",
+    "E-REC",
+    "E-SIM"
+  ],
+  "targets": {
+    "E-ANOM": [
+      {
+        "dataset": "P1-base, P2-base",
+        "id": "ANOM-recall",
+        "label": "Recall (category trends)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.85",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1-base, P2-base",
+        "id": "ANOM-precision",
+        "label": "Precision (category trends)",
+        "met": false,
+        "stage1": true,
+        "target": ">= 0.75",
+        "value": 0.1111
+      },
+      {
+        "dataset": "P1-clean, P2-clean",
+        "id": "ANOM-fp",
+        "label": "False positives per persona-month (clean)",
+        "met": false,
+        "stage1": true,
+        "target": "<= 0.5",
+        "value": 3.5
+      },
+      {
+        "dataset": "P1-base, P2-base",
+        "id": "ANOM-magnitude",
+        "label": "Surge magnitude error (pp)",
+        "met": true,
+        "stage1": true,
+        "target": "<= 5",
+        "value": 0.0
+      }
+    ],
+    "E-CAT": [
+      {
+        "dataset": "P1, P2 test split",
+        "id": "CAT-hybrid-acc-generated",
+        "label": "Accuracy, hybrid (generated test split)",
+        "met": null,
+        "stage1": false,
+        "target": ">= 0.93",
+        "value": null
+      },
+      {
+        "dataset": "UK holdout",
+        "id": "CAT-hybrid-acc",
+        "label": "Accuracy, hybrid (holdout)",
+        "met": null,
+        "stage1": false,
+        "target": ">= 0.85",
+        "value": null
+      },
+      {
+        "dataset": "UK holdout",
+        "id": "CAT-hybrid-f1",
+        "label": "Macro-F1, hybrid (holdout)",
+        "met": null,
+        "stage1": false,
+        "target": ">= 0.8",
+        "value": null
+      },
+      {
+        "dataset": "UK holdout",
+        "id": "CAT-hybrid-flow",
+        "label": "Flow-class accuracy, hybrid (holdout)",
+        "met": null,
+        "stage1": false,
+        "target": ">= 0.95",
+        "value": null
+      },
+      {
+        "dataset": "UK holdout",
+        "id": "CAT-selective",
+        "label": "Selective accuracy@0.85 (holdout)",
+        "met": null,
+        "stage1": false,
+        "target": ">= 0.95",
+        "value": null
+      }
+    ],
+    "E-FC": [
+      {
+        "dataset": "P1",
+        "id": "FC-skill-B1",
+        "label": "Skill vs B1-repeat30, MAE(30)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.2",
+        "value": 0.502
+      },
+      {
+        "dataset": "P1",
+        "id": "FC-skill-B2",
+        "label": "Skill vs B2-meanflow, MAE(30)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.15",
+        "value": 0.502
+      },
+      {
+        "dataset": "P1",
+        "id": "FC-mape",
+        "label": "MAPE(30)",
+        "met": false,
+        "stage1": true,
+        "target": "<= 0.12",
+        "value": 0.5821
+      },
+      {
+        "dataset": "P1-base",
+        "id": "FC-coverage-P1",
+        "label": "P10\u2013P90 coverage (all h)",
+        "met": false,
+        "stage1": true,
+        "target": "0.72\u20130.88",
+        "value": 0.4973
+      },
+      {
+        "dataset": "P2-base",
+        "id": "FC-coverage-P2",
+        "label": "P10\u2013P90 coverage (all h)",
+        "met": false,
+        "stage1": true,
+        "target": "0.72\u20130.88",
+        "value": 0.0982
+      }
+    ],
+    "E-INC": [
+      {
+        "dataset": "P1-base, P2-base, S8-salary-split, S11-fourweekly",
+        "id": "INC-1-P",
+        "label": "Salaried stream precision",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.95",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1-base, P2-base, S8-salary-split, S11-fourweekly",
+        "id": "INC-1-R",
+        "label": "Salaried stream recall",
+        "met": false,
+        "stage1": true,
+        "target": ">= 0.95",
+        "value": 0.75
+      },
+      {
+        "dataset": "P1-base, P2-base, S8-salary-split, S11-fourweekly",
+        "id": "INC-2",
+        "label": "Amount within \u00b12% (matched salaried)",
+        "met": false,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 0.6667
+      },
+      {
+        "dataset": "P1-base, P2-base, S8-salary-split",
+        "id": "INC-3",
+        "label": "Payday rule and next payday exact (monthly)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "S11",
+        "id": "INC-4",
+        "label": "Four-weekly pay detected as 28-day cadence",
+        "met": true,
+        "stage1": true,
+        "target": "== 1",
+        "value": 1.0
+      }
+    ],
+    "E-ING": [
+      {
+        "dataset": "P1-base, P2-base, S14-side-account, S8-salary-split, G1-eur",
+        "id": "ING-locator-P",
+        "label": "Table locator precision (built-in + common)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1-base, P2-base, S14-side-account, S8-salary-split, G1-eur",
+        "id": "ING-locator-R",
+        "label": "Table locator recall (built-in + common)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "C1\u2013C4",
+        "id": "ING-locator-unseen",
+        "label": "Table locator recall (C1\u2013C4)",
+        "met": false,
+        "stage1": true,
+        "target": ">= 0.95",
+        "value": 0.2
+      },
+      {
+        "dataset": "all",
+        "id": "ING-junk",
+        "label": "Junk rows parsed as transactions",
+        "met": true,
+        "stage1": true,
+        "target": "== 0",
+        "value": 0.0
+      },
+      {
+        "dataset": "Monzo, Revolut",
+        "id": "ING-builtin-match",
+        "label": "Built-in profile match rate",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "generic, C1\u2013C4",
+        "id": "ING-false-match",
+        "label": "Built-in false match rate",
+        "met": true,
+        "stage1": true,
+        "target": "<= 0.0",
+        "value": 0.0
+      },
+      {
+        "dataset": "Monzo, Revolut",
+        "id": "ING-parse-P",
+        "label": "Row precision (built-in formats)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "Monzo, Revolut",
+        "id": "ING-parse-R",
+        "label": "Row recall (built-in formats)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "CSV-CORRUPT (20)",
+        "id": "ING-corrupt",
+        "label": "CSV-CORRUPT defects detected",
+        "met": false,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 0.85
+      },
+      {
+        "dataset": "P1-base, P2-base, S14-side-account, S8-salary-split, G1-eur",
+        "id": "ING-clean-rejected",
+        "label": "Clean tables rejected",
+        "met": true,
+        "stage1": true,
+        "target": "== 0",
+        "value": 0.0
+      },
+      {
+        "dataset": "P1-base, P2-base, S14-side-account, S8-salary-split, G1-eur",
+        "id": "ING-honest",
+        "label": "Balance-free files labelled reconciled",
+        "met": true,
+        "stage1": true,
+        "target": "== 0",
+        "value": 0.0
+      },
+      {
+        "dataset": "C1\u2013C4",
+        "id": "ING-heuristic+llm",
+        "label": "FormatProfile success, heuristic+LLM",
+        "met": null,
+        "stage1": false,
+        "target": ">= 0.85",
+        "value": null
+      }
+    ],
+    "E-LOC": [
+      {
+        "dataset": "P1-base, G1-eur, S14-side-account",
+        "id": "E-LOC-1",
+        "label": "Currency detection",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "G3",
+        "id": "E-LOC-2",
+        "label": "Ambiguous $ asked, nothing committed",
+        "met": true,
+        "stage1": true,
+        "target": "== 1",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1-base, P2-base, G1-eur, S14-side-account",
+        "id": "E-LOC-3",
+        "label": "Number format inference",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1-base, P2-base, G1-eur, S14-side-account",
+        "id": "E-LOC-4",
+        "label": "Date order inference (files with day > 12)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1-base, P2-base, G1-eur, S14-side-account",
+        "id": "E-LOC-5",
+        "label": "Minor units exact",
+        "met": true,
+        "stage1": true,
+        "target": "== 1",
+        "value": 1.0
+      },
+      {
+        "dataset": "G3, G5",
+        "id": "E-LOC-13",
+        "label": "H13: uncommitted until answered \u00b7 0 LLM calls \u00b7 0 repeat questions",
+        "met": true,
+        "stage1": true,
+        "target": "== 1",
+        "value": 1.0
+      }
+    ],
+    "E-REC": [
+      {
+        "dataset": "P1-base, P2-base",
+        "id": "REC-P",
+        "label": "Obligation precision",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.9",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1-base, P2-base",
+        "id": "REC-R",
+        "label": "Obligation recall",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.9",
+        "value": 0.92
+      },
+      {
+        "dataset": "P1-base, P2-base",
+        "id": "REC-amount",
+        "label": "Median amount error",
+        "met": true,
+        "stage1": true,
+        "target": "<= 0.02",
+        "value": 0.0
+      },
+      {
+        "dataset": "P1-base, P2-base",
+        "id": "REC-next-date",
+        "label": "Median next-date error (days)",
+        "met": true,
+        "stage1": true,
+        "target": "<= 2",
+        "value": 0
+      },
+      {
+        "dataset": "P1-base, P2-base",
+        "id": "REC-council-tax",
+        "label": "Council tax active Apr\u2013Jan only",
+        "met": true,
+        "stage1": true,
+        "target": "== 1",
+        "value": 1.0
+      }
+    ],
+    "E-SIM": [
+      {
+        "dataset": "P1-base",
+        "id": "SIM",
+        "label": "Properties passed (SIM-1/2/3/6)",
+        "met": false,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 0.8187
+      }
+    ]
+  },
+  "timestamp_utc": "2026-10-13T08:05:03Z"
+}
