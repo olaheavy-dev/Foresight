@@ -29,6 +29,7 @@ from evals.suites import Target, target
 SUITE_ID = "E-UI"
 NAME = "ui"
 CASES = AUTHORED_DIR / "ui_questions.jsonl"
+DEV_CASES = AUTHORED_DIR / "ui_questions_dev.jsonl"  # the only set tuning may look at
 PERSONA = {"P1-base": "P1", "P2-base": "P2"}
 
 
@@ -146,8 +147,8 @@ def _composition(rows: list[dict[str, Any]], mesh: Any) -> dict[str, Any] | None
         }
 
 
-def run(fast: bool = False) -> dict[str, Any]:
-    rows = read_jsonl(CASES)
+def run(fast: bool = False, cases: Any = None) -> dict[str, Any]:
+    rows = read_jsonl(cases or CASES)
     if fast:
         rows = rows[:8]
     mesh = eval_mesh()

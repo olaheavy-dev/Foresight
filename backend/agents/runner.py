@@ -119,8 +119,22 @@ def run_workflow(
 
 
 def _history(store: AgentStore, thread_id: str) -> list[dict[str, Any]]:
+    """The last three turns as the Understand step left them: the standalone question plus its
+    intent and slots (the previous answer's structured refs, docs/05 §4.2 stage 2), so a
+    follow-up can carry over what it does not change. Never figures from an answer."""
     turns = [m for m in store.messages(thread_id) if m.role == "user"][-3:]
-    return [{"question": m.standalone_question or m.text} for m in turns]
+    out: list[dict[str, Any]] = []
+    for msg in turns:
+        entry: dict[str, Any] = {"question": msg.standalone_question or msg.text}
+        understood = next(
+            (s.output for s in store.steps(msg.run_id) if s.node == "understand" and s.output),
+            None,
+        ) if msg.run_id else None  # fmt: skip
+        if understood and understood.get("intent"):
+            entry["intent"] = understood["intent"]
+            entry["slots"] = understood.get("slots") or {}
+        out.append(entry)
+    return out
 
 
 def ask(

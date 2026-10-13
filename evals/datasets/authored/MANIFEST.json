@@ -8,6 +8,10 @@
       "rows": 80,
       "sha256": "9dd01fbf5935d6b72d7cf2141c5ab9ebd42435384e3ca7c5a3fbecec65725ae5"
     },
+    "followup_cases_dev.jsonl": {
+      "rows": 37,
+      "sha256": "1674e31ef3f122c120e415a293c45834cc4fcd6a0ac17635ff8e41f03ac5e3e3"
+    },
     "injection_benign_questions.jsonl": {
       "rows": 60,
       "sha256": "59d673a7ebbf493808251affcd3dbc1b0162043d7991cf8a699e60be6b9af6ab"
@@ -31,6 +35,10 @@
     "ui_questions.jsonl": {
       "rows": 60,
       "sha256": "96c6237e6b5f378d2a84c4cef16a618b1016e7bb298ed848d49ba9a9064112b7"
+    },
+    "ui_questions_dev.jsonl": {
+      "rows": 30,
+      "sha256": "d3e393237c93643528ed6bd4266a8dda8aca52ed75f624d4f2d015b917af98ee"
     }
   },
   "note": "synthetic / fictional, hand-authored",

@@ -50,6 +50,8 @@ from backend.app.ui_contracts.blocks import (
     Metric,
     Narrative,
     Reproducible,
+    Risk,
+    RiskAssessment,
     RunCost,
     ScenarioComparison,
     Segment,
@@ -85,9 +87,15 @@ from backend.app.ui_contracts.validation import (
 )
 from backend.finance_core.calc import record
 from backend.finance_core.forecast.engine import ENGINE_VERSION
-from backend.finance_core.types import ScenarioModifier, ScenarioSpec
+from backend.finance_core.types import ScenarioSpec
 from backend.mesh.mesh_client import ModelTier
-from backend.pipeline.forecast import NoLedgerData, StoredForecast, run_forecast, run_simulation
+from backend.pipeline.forecast import (
+    NoLedgerData,
+    StoredForecast,
+    run_forecast,
+    run_simulation,
+    spec_from_json,
+)
 from backend.pipeline.packs import UnsupportedCountry, categorisation_pack
 from backend.storage import models as m
 from backend.storage.ids import new_id
@@ -114,7 +122,7 @@ PLAN_INTENT: dict[str, str] = {
 }
 
 # docs/08 §7a: the main visual for each intent, in order of preference. The first one this run's
-# records can support is offered first; the model may pick another from the offered list.
+# records can support is the main visual: the table decides, never the model.
 MAIN_VISUALS: dict[str, tuple[str, ...]] = {
     "affordability": ("ScenarioComparison", "CashFlowForecastChart"),
     "scenario": ("ScenarioComparison", "CashFlowForecastChart"),
@@ -123,7 +131,7 @@ MAIN_VISUALS: dict[str, tuple[str, ...]] = {
     "subscription_review": ("TransactionTable", "SpendingBreakdownChart"),
     "transaction_lookup": ("TransactionTable",),
     "goal_status": ("FinancialMetricGroup", "CashFlowForecastChart"),
-    "risk_check": ("CashFlowForecastChart",),
+    "risk_check": ("RiskAssessment", "CashFlowForecastChart"),
     "advice_request": ("InterventionCard", "CashFlowForecastChart"),
     "explain_recommendation": ("EvidencePanel",),
 }
@@ -132,11 +140,17 @@ DETAILS: dict[str, tuple[str, ...]] = {
     "affordability": ("CashFlowForecastChart",),
     "scenario": ("CashFlowForecastChart",),
     "risk_check": ("CashFlowForecastChart",),
-    "advice_request": ("CashFlowForecastChart",),
+    "advice_request": ("ScenarioComparison",),  # the effect of the checked option
     "goal_status": ("CashFlowForecastChart",),
     "spending_breakdown": ("SpendingBreakdownChart",),
     "trend_or_change": ("SpendingBreakdownChart",),
+    "subscription_review": ("SpendingBreakdownChart",),  # price changes over time
+    "transaction_lookup": ("TransactionTable",),  # the full filtered list
+    "explain_recommendation": ("EvidencePanel",),  # the calculation inputs
 }
+# Kinds the Details tab repeats in full even when the Overview already shows them (docs/08 §7a:
+# "full filtered list", "calculation inputs"); every other kind appears once per answer.
+DETAIL_REPEATS = frozenset({"TransactionTable", "EvidencePanel"})
 SPENDING_FLOWS = frozenset(
     {None, "spending", "commitment", "loan_repayment", "fee", "tax", "betting"}
 )
@@ -257,25 +271,9 @@ def _resolve(data: Any, path: str) -> Any:
 
 
 def _scenario_spec(params: dict[str, Any]) -> ScenarioSpec:
-    raw = params["spec"]
-    return ScenarioSpec(
-        name=str(raw["name"]),
-        currency=str(raw["currency"]),
-        modifiers=tuple(
-            ScenarioModifier(
-                type=str(mod["type"]),
-                date=date.fromisoformat(mod["date"]) if mod.get("date") else None,
-                amount_minor=mod.get("amount_minor"),
-                label=str(mod.get("label") or ""),
-                category_key=mod.get("category_key"),
-                income_stream_key=mod.get("income_stream_key"),
-                days=mod.get("days"),
-                occurrences=mod.get("occurrences"),
-            )
-            for mod in raw.get("modifiers") or []
-        ),
-        horizon_days=raw.get("horizon_days"),
-    )
+    # Every modifier field (caps, start dates, recurring ids), not a subset: a simulation is
+    # rebuilt from exactly the spec it was stored with.
+    return spec_from_json(params["spec"])
 
 
 class Composer:
@@ -327,9 +325,23 @@ class Composer:
             card = self._intervention(str(rec_id))
             if card is not None:
                 src.recommendations.append(card)
+        if self.name == "advice_request" and not src.simulations:
+            # "Effect of each option" (docs/08 §7a): the checked option's stored impact.
+            for ref in self._impact_refs()[:1]:
+                self._simulation(ref)
         self._catalogue_values()
         self.case = self._verdict_case() if self.name in VERDICT_INTENTS else None
         return src
+
+    def _impact_refs(self) -> list[str]:
+        out: list[str] = []
+        for rec_id in self.state.get("approved_recs") or []:
+            rec = self.ctx.get(m.Recommendation, str(rec_id))
+            for cid in (rec.impact_calc_refs if rec else []) or []:
+                calc = self.ctx.calculation(str(cid))
+                if calc is not None and calc.kind == "simulation":
+                    out.append(calc.id)
+        return out
 
     def _verdict_case(self) -> VerdictCase | None:
         """docs/08 §5.4: goes_negative if any cycle's likely low is below £0; breaches_buffer if
@@ -682,6 +694,9 @@ class Composer:
             "InterventionCard": bool(src.recommendations),
             "EvidencePanel": bool(src.calcs),
             "FinancialMetricGroup": len(src.values) >= 2,
+            "RiskAssessment": src.forecast is not None
+            and self.chart().buffer_minor is not None
+            and bool(self.chart().pay_cycles),
         }
         return [v for v in MAIN_VISUALS.get(self.name, ()) if can.get(v)]
 
@@ -703,7 +718,7 @@ class Composer:
             "intent": self.name,
             "needs_advice": bool(self.intent.get("needs_advice")),
             "checked_recommendations": len(self.sources.recommendations),
-            "visual_options": self.available_visuals(),
+            "visual_options": self.available_visuals()[:1],
             "values": [{"key": v.key, "label": v.label} for v in self.sources.values],
         }
         if self.case is not None:
@@ -717,7 +732,6 @@ class Composer:
         """Keep only valid choices; reject text that breaks the output screen (docs/05 §7.4a)."""
         problems: list[str] = []
         keys = {v.key for v in self.sources.values}
-        visuals = self.available_visuals()
         template = self.template_output()
         verdict = out.verdict.strip()
         unknown = [
@@ -743,9 +757,8 @@ class Composer:
         if not verdict.strip():
             verdict = template.verdict
         numbers = [k for k in out.key_numbers if k in keys][:3] or template.key_numbers
-        main = out.main_visual if out.main_visual in visuals else template.main_visual
-        if out.main_visual and out.main_visual not in visuals:
-            problems.append(f"main visual {out.main_visual!r} not available")
+        # The main visual is the §7a table's choice for the intent, never the model's.
+        main = template.main_visual
         return ComposerOutput(verdict=verdict, key_numbers=numbers, main_visual=main), problems
 
     # ------------------------------------------------------------------ hydration
@@ -879,6 +892,62 @@ class Composer:
             ),  # fmt: skip
         )
 
+    def risk_assessment(self) -> RiskAssessment | None:
+        """docs/08 §5.6 from the forecast's pay cycles (engine values only): every cycle whose
+        likely low is below the buffer or below £0, or with a chance of dipping below the buffer of
+        at least 10%, up to 4; otherwise the lowest cycle as a low risk."""
+        if self.sources.forecast is None:
+            return None
+        chart = self.chart()
+        if chart.buffer_minor is None or not chart.pay_cycles:
+            return None
+        as_of = self.sources.forecast.result.as_of
+        risks: list[Risk] = []
+        start = as_of
+        for cycle in chart.pay_cycles:
+            chance = cycle.chance_below_buffer.value if cycle.chance_below_buffer else 0.0
+            negative = cycle.low.minor < 0
+            if negative or chance >= 0.5:
+                level = "high"
+            elif cycle.below_buffer or chance >= 0.1:
+                level = "watch"
+            else:
+                level = "low"
+            when = views.short_date(cycle.payday)
+            headline = (
+                f"Below £0 before your {when} payday"
+                if negative
+                else f"Below your buffer before your {when} payday"
+                if cycle.below_buffer
+                else f"Lowest point before your {when} payday"
+            )
+            window_end = max(start, cycle.payday)
+            risks.append(
+                Risk(
+                    risk_id=f"risk-{cycle.payday.isoformat()}",
+                    level=level,  # type: ignore[arg-type]
+                    headline=headline,
+                    probability=cycle.chance_below_buffer,
+                    window=DateRange(**{"from": start, "to": window_end}),
+                    impact=cycle.low,
+                    status="open",
+                )
+            )
+            start = cycle.payday
+        flagged = [r for r in risks if r.level != "low"][:4]
+        if not flagged:
+            lowest = min(risks, key=lambda r: r.impact.minor if r.impact else 0)
+            flagged = [lowest]
+        forecast_id = self.sources.forecast.calculation.id
+        return RiskAssessment(
+            type="RiskAssessment",
+            block_id=self.block_id("risk"),
+            title="Risk before each payday",
+            placement=PLACEHOLDER_TAB,
+            evidence=[f"{forecast_id}#pay_cycles"],
+            risks=flagged,
+        )
+
     def evidence_panel(self) -> EvidencePanel | None:
         items: list[EvidenceItem] = []
         for calc in list(self.sources.calcs.values())[:8]:
@@ -936,6 +1005,7 @@ class Composer:
             "SpendingBreakdownChart": lambda: src.spending,
             "TransactionTable": self.transactions,
             "EvidencePanel": self.evidence_panel,
+            "RiskAssessment": self.risk_assessment,
         }
         main_type = choice.main_visual
         used: set[str] = set()
@@ -965,7 +1035,7 @@ class Composer:
             for card in src.recommendations[1:]:
                 blocks.append(card.model_copy(update={"placement": _place_tab("recommendation")}))
         for kind in DETAILS.get(self.name, ()):
-            if kind not in used and kind in visuals:
+            if (kind not in used or kind in DETAIL_REPEATS) and kind in visuals:
                 block = visuals[kind]()
                 if block is not None:
                     blocks.append(block.model_copy(update={"placement": _place_tab("details")}))
@@ -1320,7 +1390,17 @@ def compose(state: ForesightState, ctx: RunContext) -> NodeOutput:
     late = bool(state.get("partial"))  # deadline or budget: deterministic answer, no model call
     if late and _advice_unchecked(state):
         choice = choice.model_copy(update={"verdict": f"{choice.verdict} {NOT_CHECKED_IN_TIME}"})
-    if not late and not state.get("ai_paused") and not ai_paused(ctx) and composer.sources.values:
+    # When the verdict is the engine's own outcome (docs/08 §5.4 verdict case), the blocks come
+    # from the §7a table and the key numbers from the catalogue order: there is nothing left for a
+    # model to choose, so no model call is made.
+    wording_needed = composer.case is None
+    if (
+        wording_needed
+        and not late
+        and not state.get("ai_paused")
+        and not ai_paused(ctx)
+        and composer.sources.values
+    ):
         assert ctx.mesh is not None
         from backend.mesh.mesh_client import MeshCallError, MeshSpendLimitError
 

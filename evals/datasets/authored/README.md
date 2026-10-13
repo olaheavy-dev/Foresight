@@ -12,6 +12,10 @@ Synthetic / fictional. Written before any prompt or Verifier rule is tuned, then
 | `injection_cases.jsonl` | 40 chat + 40 data-plane attacks (narrations, CSV headers, filenames, PDF lines) | docs/09 §3.9, suite E-SEC |
 | `injection_cases_dev.jsonl` | 20 + 7 dev cases (the only set the guard rule pack may be tuned on) | docs/09 §3.9 |
 | `injection_benign_questions.jsonl` | 60 benign questions (false-refusal control, with the E-UI/E-SCN/E-CTX questions) | docs/09 §10b SEC-5 |
+| `ui_questions_dev.jsonl` | 30 practice questions (P1, P2), written separately from `ui_questions.jsonl`; expected blocks follow the docs/08 §7a slot table | the only E-UI set the composer and the Understand prompt may be tuned on |
+| `followup_cases_dev.jsonl` | 25 practice conversations + 6 paraphrase pairs + 6 near-miss pairs, written separately from `followup_cases.jsonl` | the only E-CTX set the Understand prompt and the cache key may be tuned on |
+
+**Practice-set slot conventions** (written with the practice sets, 13 Oct 2026, before any tuning): amounts in minor units; a single day as `YYYY-MM-DD`, the next such day after `as_of`; a month with no day is the 1st of that month (the Forecaster's rule, docs/06 §4.3 prompt); a follow-up keeps the earlier turn's intent and every slot it doesn't change; `purpose` is the user's own noun, labels the question and doesn't enter the answer-cache key; spending periods use `period` (`last_30d`, `last_month`, `this_month`, `next_30d`, or `YYYY-MM`).
 
 ## Conventions the runners rely on
 

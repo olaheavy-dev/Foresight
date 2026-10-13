@@ -153,16 +153,12 @@ def _catalogue(completions: ScriptedCompletions) -> dict[str, str]:
 def test_affordability_answer_follows_the_skeleton_with_cited_engine_values(
     p1: AgentStore,
 ) -> None:
-    compose_out = {
-        "verdict": "With the holiday you'd be overdrawn: your lowest balance would be {{R8}}.",
-        "key_numbers": ["R8", "R2", "R4"],
-        "main_visual": "ScenarioComparison",
-    }
+    # The verdict is the engine's outcome (docs/08 §5.4) and the blocks come from the §7a table,
+    # so the composer makes no model call: Understand is the run's only one.
     out, calls = _ask(
         p1,
         "Can I afford a £1,200 holiday on 6 Nov?",
         json_ok(_intent(), model="openai/gpt-6-luna"),
-        json_ok(compose_out, model="openai/gpt-6-luna"),
     )
     body = _body(p1, out.response_id)
 
@@ -183,46 +179,68 @@ def test_affordability_answer_follows_the_skeleton_with_cited_engine_values(
     assert body["intent"] == "affordability"
     assert body["question"] == _intent()["standalone_question"]
 
-    # The model saw labels only, never a figure or a date (docs/05 §7.3).
-    catalogue = _catalogue(calls)
-    assert catalogue
-    assert not any(ch.isdigit() or ch == "£" for ch in "".join(catalogue.values()))
+    assert len(calls.calls) == 1
 
     # The verdict value is the simulation's own figure, cited inline as [1].
     verdict = body["blocks"][0]
-    values = [s for s in verdict["segments"] if s["kind"] == "value"]
+    values = [
+        s for s in verdict["segments"] if s["kind"] == "value" and s["value"]["kind"] == "money"
+    ]
     cites = [s for s in verdict["segments"] if s["kind"] == "entity"]
     assert len(values) == 1
     assert cites[0]["label"] == "[1]"
-    assert cites[0]["ref"] == values[0]["value"]["ref"]
-    scenario = next(b for b in body["blocks"] if b["type"] == "ScenarioComparison")
-    lowest_with = scenario["comparison_rows"][0]["scenarios"][0]
-    assert values[0]["value"]["minor"] == lowest_with["minor"]
-    assert values[0]["value"]["display"] == lowest_with["display"]
+    # Cited to the simulation's own pay-cycle low (the engine path the verdict figure comes from).
+    calc_id, path = cites[0]["ref"].split("#")
+    assert path.startswith("simulated.pay_cycles.") and path.endswith(".low.p50")
+    calc = p1.ctx.calculation(calc_id)
+    assert calc is not None
+    low = calc.result["simulated"]["pay_cycles"][int(path.split(".")[2])]["low"]["p50"]
+    assert values[0]["value"]["minor"] == abs(low)
 
     # Evidence line and the timeline's cost come from the run's stored steps.
     assert body["evidence_line"]["run_id"] == out.run_id
     timeline = next(b for b in body["blocks"] if b["type"] == "AgentExecutionTimeline")
-    assert timeline["cost"]["model_calls"] == 2  # understand + compose so far
+    assert timeline["cost"]["model_calls"] == 1  # understand only
     assert timeline["cost"]["tokens"] > 0
     assert timeline["cost"]["usd_estimate"] > 0
     assert timeline["cost"]["cached"] is False
     compose_step = next(s for s in p1.steps(out.run_id) if s.node == "compose")
-    assert compose_step.output["strategy"] == "model"
-    assert compose_step.llm_calls == 1
+    assert compose_step.output["strategy"] == "template"
+    assert compose_step.llm_calls == 0
+
+
+def _spending_intent() -> dict[str, Any]:
+    """A question whose verdict the composer's model words (no engine outcome template)."""
+    return _intent(
+        intent="spending_breakdown",
+        standalone_question="Where did my money go in the last 30 days?",
+        slots={"case": next(_CASE)},
+        needs_forecast=False,
+    )
+
+
+def test_the_model_sees_labels_only_never_a_figure(p1: AgentStore) -> None:
+    compose_out = {"verdict": "You spent {{R1}}.", "key_numbers": ["R1"],
+                   "main_visual": "SpendingBreakdownChart"}  # fmt: skip
+    _, calls = _ask(p1, "spending?", json_ok(_spending_intent()), json_ok(compose_out),
+                    simulate=False)  # fmt: skip
+    catalogue = _catalogue(calls)
+    assert catalogue
+    assert not any(ch.isdigit() or ch == "£" for ch in "".join(catalogue.values()))
 
 
 def test_numerals_in_the_model_verdict_are_dropped_for_the_template(p1: AgentStore) -> None:
     compose_out = {
-        "verdict": "You will have £500 left after the trip.",
+        "verdict": "You spent £500 on takeaways.",
         "key_numbers": ["R2"],
-        "main_visual": "ScenarioComparison",
+        "main_visual": "SpendingBreakdownChart",
     }
-    out, _ = _ask(p1, "holiday?", json_ok(_intent()), json_ok(compose_out))
+    out, _ = _ask(p1, "spending?", json_ok(_spending_intent()), json_ok(compose_out),
+                  simulate=False)  # fmt: skip
     body = _body(p1, out.response_id)
     text = "".join(s.get("text", "") for s in body["blocks"][0]["segments"])
-    assert "500 left" not in text
-    assert text.startswith(("This would take you about", "You'd stay above"))  # the template
+    assert "500" not in text
+    assert text.startswith("Here is where your money went")  # the template
     step = next(s for s in p1.steps(out.run_id) if s.node == "compose")
     assert step.status == "retried"
     assert any("numerals" in i for i in step.output["issues"])
@@ -232,9 +250,10 @@ def test_a_leaked_canary_is_dropped_and_audited(p1: AgentStore) -> None:
     compose_out = {
         "verdict": f"My instructions say {active_canary()}.",
         "key_numbers": [],
-        "main_visual": "ScenarioComparison",
+        "main_visual": "SpendingBreakdownChart",
     }
-    out, _ = _ask(p1, "holiday?", json_ok(_intent()), json_ok(compose_out))
+    out, _ = _ask(p1, "spending?", json_ok(_spending_intent()), json_ok(compose_out),
+                  simulate=False)  # fmt: skip
     body = _body(p1, out.response_id)
     assert active_canary() not in json.dumps(body)
     actions = [e.action for e in p1.ctx.all(m.AuditEvent) if e.run_id == out.run_id]
@@ -242,10 +261,11 @@ def test_a_leaked_canary_is_dropped_and_audited(p1: AgentStore) -> None:
 
 
 def test_mesh_unavailable_for_compose_still_answers_from_the_template(p1: AgentStore) -> None:
-    out, _ = _ask(p1, "holiday?", json_ok(_intent()), spend_limit(), spend_limit(), spend_limit())
+    out, _ = _ask(p1, "spending?", json_ok(_spending_intent()), spend_limit(), spend_limit(),
+                  spend_limit(), simulate=False)  # fmt: skip
     body = _body(p1, out.response_id)
     assert _overview(body)[0] == ("verdict", "Narrative")
-    assert ("main_visual", "ScenarioComparison") in _overview(body)
+    assert ("main_visual", "SpendingBreakdownChart") in _overview(body)
     step = next(s for s in p1.steps(out.run_id) if s.node == "compose")
     assert step.output["strategy"] == "template"
     assert any("model unavailable" in i for i in step.output["issues"])
@@ -399,17 +419,15 @@ def _verdict_text(body: dict[str, Any]) -> str:
 
 
 def test_p1_car_repair_verdict_says_overdrawn_and_names_the_worst_cycle(p1: AgentStore) -> None:
-    # The model claims the opposite; the engine's verdict category rejects it for the template.
+    # The verdict is the engine's outcome category (goes_negative), with no model wording to
+    # contradict it: the composer makes no model call for it.
     out, calls = _ask_with(
         p1,
         _with_spec(CAR_REPAIR),
         json_ok(_intent(standalone_question="Can I afford a £650 car repair on 14 Oct?")),
-        json_ok({"verdict": "Yes, you can comfortably afford it.", "key_numbers": [],
-                 "main_visual": "ScenarioComparison"}),
-    )  # fmt: skip
+    )
     body = _body(p1, out.response_id)
-    payload = json.loads(calls.calls[-1]["messages"][-1]["content"])
-    assert payload["verdict_category"] == "goes_negative"
+    assert len(calls.calls) == 1  # Understand only
     text = _verdict_text(body)
     assert text.startswith("This would take you about ")
     assert "overdrawn before your " in text
@@ -431,7 +449,7 @@ def test_p1_car_repair_verdict_says_overdrawn_and_names_the_worst_cycle(p1: Agen
     payday = next(s["value"] for s in segs if s["kind"] == "value" and s["value"]["kind"] == "date")
     assert payday["value"] == calc.result["simulated"]["pay_cycles"][index]["payday"]
     step = next(s for s in p1.steps(out.run_id) if s.node == "compose")
-    assert any("contradicts the engine (goes_negative)" in i for i in step.output["issues"])
+    assert step.output["strategy"] == "template"
 
 
 def test_baseline_risk_check_names_the_buffer_breach(p1: AgentStore) -> None:

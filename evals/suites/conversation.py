@@ -33,14 +33,15 @@ from evals.suites import Target, target
 SUITE_ID = "E-CTX"
 NAME = "conversation"
 CASES = AUTHORED_DIR / "followup_cases.jsonl"
+DEV_CASES = AUTHORED_DIR / "followup_cases_dev.jsonl"  # the only set tuning may look at
 
 
 def _rate(n: int, d: int) -> float | None:
     return r4(n / d) if d else None
 
 
-def run(fast: bool = False) -> dict[str, Any]:
-    rows = read_jsonl(CASES)
+def run(fast: bool = False, cases: Any = None) -> dict[str, Any]:
+    rows = read_jsonl(cases or CASES)
     conversations = [r for r in rows if r["kind"] == "conversation"]
     pairs = [r for r in rows if r["kind"] in {"paraphrase_pair", "near_miss_pair"}]
     if fast:
@@ -85,7 +86,10 @@ def run(fast: bool = False) -> dict[str, Any]:
                         ) == canonical(dict(pred.slots))
                         adequacy["same"] += same
                         row["standalone_alone_same"] = same
-                history.append({"question": pred.standalone_question})
+                # Exactly what the runner sends (backend.agents.runner._history): the question as
+                # understood plus its intent and slots.
+                history.append({"question": pred.standalone_question, "intent": pred.intent,
+                                "slots": dict(pred.slots)})  # fmt: skip
             else:
                 history.append({"question": turn["standalone"]})
             detail.append(row)

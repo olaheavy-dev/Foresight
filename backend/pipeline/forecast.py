@@ -414,7 +414,8 @@ def _spec_json(spec: ScenarioSpec) -> dict[str, Any]:
     }
 
 
-def _spec_from_json(raw: dict[str, Any]) -> ScenarioSpec:
+def spec_from_json(raw: dict[str, Any]) -> ScenarioSpec:
+    """A stored ScenarioSpec (from `_spec_json` or the engine's own JSON) back as the dataclass."""
     mods: list[ScenarioModifier] = []
     for mod in raw.get("modifiers") or []:
         fields: dict[str, Any] = {
@@ -475,7 +476,7 @@ def verify_simulation(ctx: WorkspaceContext, calc_id: str) -> bool:
         raise LookupError(calc_id)
     p = row.params
     inputs = _inputs_from_params(ctx, p)
-    spec = _spec_from_json(p["spec"])
+    spec = spec_from_json(p["spec"])
     prior = irregular_prior(inputs.currency) if p.get("prior") is not None else None
     calibration = (
         calibration_from_json(p["calibration"]) if p.get("calibration") is not None else None
