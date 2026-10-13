@@ -191,7 +191,8 @@ def test_affordability_answer_follows_the_skeleton_with_cited_engine_values(
     assert cites[0]["label"] == "[1]"
     # Cited to the simulation's own pay-cycle low (the engine path the verdict figure comes from).
     calc_id, path = cites[0]["ref"].split("#")
-    assert path.startswith("simulated.pay_cycles.") and path.endswith(".low.p50")
+    assert path.startswith("simulated.pay_cycles.")
+    assert path.endswith(".low.p50")
     calc = p1.ctx.calculation(calc_id)
     assert calc is not None
     low = calc.result["simulated"]["pay_cycles"][int(path.split(".")[2])]["low"]["p50"]

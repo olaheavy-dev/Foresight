@@ -167,3 +167,25 @@ def test_direct_debit_on_fixed_dates_keeps_no_shift() -> None:
     rows, hol = _collected("DD SEVERN TRENT WATER", 3100, 20, TWELVE, moved=False)
     (ob,) = detect_recurring(rows, [categorise(r, PACK) for r in rows], PACK, hol).obligations
     assert (ob.anchor_day, ob.shift) == (20, WorkingDayShift.NONE)
+
+
+def test_one_payee_recurring_in_two_categories_gets_two_unique_keys() -> None:
+    """Rent and a parking space paid to the same landlord: both are recurring, keys stay unique
+    (the larger group keeps the plain key), so storing them never collides."""
+    from backend.finance_core.types import Categorisation, CategorisationMethod
+
+    rows, cats = [], []
+    for month in range(1, 7):
+        rent = txn("DD HARBOURSIDE HOMES", -90000, date(2026, month, 1))
+        rows.append(rent)
+        cats.append(Categorisation(rent.id, "housing.rent", FlowKind.SPENDING,
+                                   CategorisationMethod.RULE, 0.95))  # fmt: skip
+        if month < 6:
+            parking = txn("DD HARBOURSIDE HOMES", -6000, date(2026, month, 2))
+            rows.append(parking)
+            cats.append(Categorisation(parking.id, "transport.car", FlowKind.SPENDING,
+                                       CategorisationMethod.RULE, 0.95))  # fmt: skip
+    keys = [o.key for o in detect_recurring(rows, cats, PACK).obligations]
+    assert len(keys) == len(set(keys)) == 2
+    assert keys.count("rob_harbourside_homes") == 1
+    assert any(k.startswith("rob_harbourside_homes_transport") for k in keys)

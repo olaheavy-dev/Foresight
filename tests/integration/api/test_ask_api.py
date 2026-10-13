@@ -175,7 +175,9 @@ def test_retrying_a_message_returns_the_same_run(
     assert again.status_code == 202
     assert again.json() == {"run_id": run_id, "thread_id": thread, "reused": True}
     _events(api, run_id)
-    assert len(scripted.calls) == 2  # one run: Understand + compose
+    # One run: Understand only (a balance question's verdict is the engine's outcome, so the
+    # composer makes no model call).
+    assert len(scripted.calls) == 1
 
 
 def test_a_blocked_question_never_reaches_a_model(
@@ -308,15 +310,21 @@ def test_a_repeated_question_is_answered_from_the_cache_while_paused(
     last = _events(api, second)[-1]
     assert last["event"] == "answer"
     assert last["data"]["rsp_id"] == answered["data"]["rsp_id"]  # the cached answer
-    assert len(scripted.calls) == 2  # nothing new was sent to a model
+    assert len(scripted.calls) == 1  # Understand once; nothing new was sent to a model
 
 
 def test_a_spend_refusal_mid_run_keeps_the_engine_numbers_without_model_text(
     api: TestClient, scripted: ScriptedCompletions
 ) -> None:
-    scripted.steps += [json_ok(_intent()), spend_limit()]
+    # A spending question: its verdict is model-worded, so the refusal lands on compose's call.
+    spending = _intent(
+        intent="spending_breakdown",
+        standalone_question="Where did my money go in the last 30 days?",
+        needs_forecast=False,
+    )
+    scripted.steps += [json_ok(spending), spend_limit()]
     _demo(api)
-    _, run_id = _ask(api, "How low will my balance get?", client_msg_id="s1")
+    _, run_id = _ask(api, "Where did my money go?", client_msg_id="s1")
     last = _events(api, run_id)[-1]
     assert last["event"] == "answer"
     body = last["data"]["snapshot"]
@@ -325,6 +333,6 @@ def test_a_spend_refusal_mid_run_keeps_the_engine_numbers_without_model_text(
         s.get("text") or s.get("value", {}).get("display", "")
         for s in body["blocks"][0]["segments"]
     )
-    assert verdict.endswith(EXPLANATION_UNAVAILABLE)  # the engine's verdict, then the label
-    assert "CashFlowForecastChart" in [b["type"] for b in body["blocks"]]
+    assert verdict.endswith(EXPLANATION_UNAVAILABLE)  # no model text, just the label
+    assert "SpendingBreakdownChart" in [b["type"] for b in body["blocks"]]  # engine numbers
     assert api.get("/api/ai-status").json()["status"] == "unavailable"

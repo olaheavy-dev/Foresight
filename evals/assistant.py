@@ -127,6 +127,7 @@ def seeded_database() -> Iterator[sessionmaker[Session] | None]:
     from alembic.config import Config
 
     from backend.pipeline.seed_demo import seed_all
+    from backend.storage.ids import reproducible_ids
 
     server = make_url(server_url)
     name = f"foresight_eval_{uuid.uuid4().hex[:12]}"
@@ -140,9 +141,12 @@ def seeded_database() -> Iterator[sessionmaker[Session] | None]:
         config.set_main_option("sqlalchemy.url", url.replace("%", "%%"))
         command.upgrade(config, "head")
         factory = sessionmaker(bind=engine, expire_on_commit=False)
-        with factory() as session:
-            seed_all(session)
-        yield factory
+        # Reproducible ids for the whole database's life (seed and every run on it), so recorded
+        # model requests that cite ids replay on the next fresh seed.
+        with reproducible_ids():
+            with factory() as session:
+                seed_all(session)
+            yield factory
     finally:
         engine.dispose()
         with admin.connect() as conn:
