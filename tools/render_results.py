@@ -187,7 +187,27 @@ def _forecast_arms(s: dict[str, Any]) -> list[str]:
             f"{' · '.join(_gbp(v) for v in mae.values())} | "
             f"{' · '.join(_gbp(v) for v in pin.values())} |"
         )
-    return [*out, ""]
+    out.append(
+        "| best naive baseline | — | "
+        + " · ".join(
+            _gbp(v)
+            for v in (dig(s, "forecast", "best_baseline_mae30_gbp_by_dataset") or {}).values()
+        )
+        + " | — |"
+    )
+    out.append("")
+    head_mae = arms[headline_arm].get("mae30_gbp_by_dataset") or {}
+    base_mae = dig(s, "forecast", "best_baseline_mae30_gbp_by_dataset") or {}
+    worse = [d for d, v in head_mae.items() if d in base_mae and v > base_mae[d]]
+    if worse:
+        out.append(
+            "**Median forecast worse than a naive baseline on "
+            + ", ".join(f"{d} ({_gbp(head_mae[d])} vs {_gbp(base_mae[d])})" for d in worse)
+            + ".** The likely range is better calibrated there, but the middle line is not yet"
+            " more accurate than the simplest baseline."
+        )
+        out.append("")
+    return out
 
 
 def update(readme: str, block: str) -> str:

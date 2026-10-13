@@ -1,0 +1,658 @@
+{
+  "duration_s": 0.4,
+  "error": null,
+  "metrics": {
+    "csv_statement": {
+      "builtin_profile": {
+        "false_match_rate": 0.0,
+        "match_rate": 1.0,
+        "n_builtin_files": 3,
+        "n_other_files": 7
+      },
+      "files": [
+        {
+          "dataset": "P1-base",
+          "file": "exports/monzo.csv",
+          "format": "monzo",
+          "profiles": [
+            "builtin.monzo_csv.v1"
+          ],
+          "questions": [
+            "balance_today"
+          ],
+          "reconciliation": [
+            "not_reconcilable_no_balance"
+          ],
+          "row_precision": 1.0,
+          "row_recall": 1.0
+        },
+        {
+          "dataset": "P2-base",
+          "file": "exports/statement.csv",
+          "format": "generic_signed",
+          "profiles": [
+            "heuristic.a6496c36b3bb"
+          ],
+          "questions": [],
+          "reconciliation": [
+            "reconciled"
+          ],
+          "row_precision": 1.0,
+          "row_recall": 1.0
+        },
+        {
+          "dataset": "S14-side-account",
+          "file": "exports/revolut_consolidated.csv",
+          "format": "revolut_consolidated",
+          "profiles": [
+            "builtin.revolut_consolidated_csv.v1"
+          ],
+          "questions": [],
+          "reconciliation": [
+            "reconciled"
+          ],
+          "row_precision": 1.0,
+          "row_recall": 1.0
+        },
+        {
+          "dataset": "S8-salary-split",
+          "file": "exports/monzo.csv",
+          "format": "monzo",
+          "profiles": [
+            "builtin.monzo_csv.v1"
+          ],
+          "questions": [
+            "balance_today"
+          ],
+          "reconciliation": [
+            "not_reconcilable_no_balance"
+          ],
+          "row_precision": 1.0,
+          "row_recall": 1.0
+        },
+        {
+          "dataset": "S8-salary-split",
+          "file": "exports/second_account.csv",
+          "format": "generic_in_out",
+          "profiles": [
+            "heuristic.74d86188f3de"
+          ],
+          "questions": [],
+          "reconciliation": [
+            "reconciled"
+          ],
+          "row_precision": 1.0,
+          "row_recall": 1.0
+        },
+        {
+          "dataset": "G1-eur",
+          "file": "exports/statement.csv",
+          "format": "G1_eur",
+          "profiles": [
+            "heuristic.a6496c36b3bb"
+          ],
+          "questions": [],
+          "reconciliation": [
+            "reconciled"
+          ],
+          "row_precision": 1.0,
+          "row_recall": 1.0
+        },
+        {
+          "dataset": "C1-pennine",
+          "file": "exports/pennine_statement.csv",
+          "format": "C1_pennine",
+          "profiles": [],
+          "questions": [
+            "columns"
+          ],
+          "reconciliation": [
+            "not_reconcilable_no_balance"
+          ],
+          "row_precision": null,
+          "row_recall": 0.0
+        },
+        {
+          "dataset": "C2-harbour-vale",
+          "file": "exports/harbour_vale.csv",
+          "format": "C2_harbour_vale",
+          "profiles": [],
+          "questions": [
+            "columns"
+          ],
+          "reconciliation": [
+            "not_reconcilable_no_balance"
+          ],
+          "row_precision": null,
+          "row_recall": 0.0
+        },
+        {
+          "dataset": "C3-northgate",
+          "file": "exports/northgate.csv",
+          "format": "C3_northgate",
+          "profiles": [],
+          "questions": [
+            "columns"
+          ],
+          "reconciliation": [
+            "not_reconcilable_no_balance"
+          ],
+          "row_precision": null,
+          "row_recall": 0.0
+        },
+        {
+          "dataset": "C4-fenwick",
+          "file": "exports/fenwick.csv",
+          "format": "C4_fenwick",
+          "profiles": [],
+          "questions": [
+            "columns"
+          ],
+          "reconciliation": [
+            "not_reconcilable_no_balance"
+          ],
+          "row_precision": null,
+          "row_recall": 0.0
+        }
+      ],
+      "format_profile_unseen": {
+        "heuristic_llm": {
+          "llm_calls_per_file": null,
+          "note": "Stage 2 (Ledger Agent via Mesh)",
+          "reuse_rate": null,
+          "success": null
+        },
+        "heuristic_only": {
+          "files": 4,
+          "success": 0.0
+        }
+      },
+      "parse": {
+        "C1_pennine": {
+          "files": 1,
+          "row_precision": null,
+          "row_recall": 0.0,
+          "truth_rows": 1063
+        },
+        "C2_harbour_vale": {
+          "files": 1,
+          "row_precision": null,
+          "row_recall": 0.0,
+          "truth_rows": 1041
+        },
+        "C3_northgate": {
+          "files": 1,
+          "row_precision": null,
+          "row_recall": 0.0,
+          "truth_rows": 1082
+        },
+        "C4_fenwick": {
+          "files": 1,
+          "row_precision": null,
+          "row_recall": 0.0,
+          "truth_rows": 1093
+        },
+        "G1_eur": {
+          "files": 1,
+          "row_precision": 1.0,
+          "row_recall": 1.0,
+          "truth_rows": 503
+        },
+        "generic_in_out": {
+          "files": 1,
+          "row_precision": 1.0,
+          "row_recall": 1.0,
+          "truth_rows": 30
+        },
+        "generic_signed": {
+          "files": 1,
+          "row_precision": 1.0,
+          "row_recall": 1.0,
+          "truth_rows": 1252
+        },
+        "monzo": {
+          "files": 2,
+          "row_precision": 1.0,
+          "row_recall": 1.0,
+          "truth_rows": 1667
+        },
+        "revolut_consolidated": {
+          "files": 1,
+          "row_precision": 1.0,
+          "row_recall": 1.0,
+          "truth_rows": 328
+        }
+      },
+      "reconciliation": {
+        "clean_tables_rejected": 0,
+        "corrupted_csv": {
+          "cases": [
+            {
+              "answered_with_default": [
+                "date_order"
+              ],
+              "defect": "broken_balance",
+              "detected": true,
+              "expected": "rejected",
+              "expected_first_failing_row": 10,
+              "file": "generic_01_broken_balance.csv",
+              "first_failing_row": 10,
+              "status": "failed"
+            },
+            {
+              "answered_with_default": [],
+              "defect": "broken_balance",
+              "detected": true,
+              "expected": "rejected",
+              "expected_first_failing_row": 4,
+              "file": "generic_02_broken_balance.csv",
+              "first_failing_row": 4,
+              "status": "failed"
+            },
+            {
+              "answered_with_default": [],
+              "defect": "broken_balance",
+              "detected": true,
+              "expected": "rejected",
+              "expected_first_failing_row": 7,
+              "file": "generic_03_broken_balance.csv",
+              "first_failing_row": 7,
+              "status": "failed"
+            },
+            {
+              "answered_with_default": [],
+              "defect": "broken_balance",
+              "detected": true,
+              "expected": "rejected",
+              "expected_first_failing_row": 9,
+              "file": "generic_04_broken_balance.csv",
+              "first_failing_row": 9,
+              "status": "failed"
+            },
+            {
+              "answered_with_default": [],
+              "defect": "dropped_row",
+              "detected": true,
+              "expected": "rejected",
+              "expected_first_failing_row": 15,
+              "file": "generic_05_dropped_row.csv",
+              "first_failing_row": 15,
+              "status": "failed"
+            },
+            {
+              "answered_with_default": [],
+              "defect": "dropped_row",
+              "detected": true,
+              "expected": "rejected",
+              "expected_first_failing_row": 9,
+              "file": "generic_06_dropped_row.csv",
+              "first_failing_row": 9,
+              "status": "failed"
+            },
+            {
+              "answered_with_default": [],
+              "defect": "dropped_row",
+              "detected": true,
+              "expected": "rejected",
+              "expected_first_failing_row": 5,
+              "file": "generic_07_dropped_row.csv",
+              "first_failing_row": 5,
+              "status": "failed"
+            },
+            {
+              "answered_with_default": [
+                "date_order"
+              ],
+              "defect": "shifted_column",
+              "detected": true,
+              "expected": "rejected",
+              "expected_first_failing_row": 4,
+              "file": "generic_08_shifted_column.csv",
+              "first_failing_row": 4,
+              "status": "failed"
+            },
+            {
+              "answered_with_default": [],
+              "defect": "shifted_column",
+              "detected": true,
+              "expected": "rejected",
+              "expected_first_failing_row": 7,
+              "file": "generic_09_shifted_column.csv",
+              "first_failing_row": 7,
+              "status": "failed"
+            },
+            {
+              "answered_with_default": [],
+              "defect": "shifted_column",
+              "detected": true,
+              "expected": "rejected",
+              "expected_first_failing_row": 5,
+              "file": "generic_10_shifted_column.csv",
+              "first_failing_row": 5,
+              "status": "failed"
+            },
+            {
+              "answered_with_default": [],
+              "defect": "duplicated_row",
+              "detected": true,
+              "expected": "flagged",
+              "expected_first_failing_row": 5,
+              "file": "monzo_01_duplicated_row.csv",
+              "first_failing_row": null,
+              "status": "failed"
+            },
+            {
+              "answered_with_default": [],
+              "defect": "duplicated_row",
+              "detected": true,
+              "expected": "flagged",
+              "expected_first_failing_row": 4,
+              "file": "monzo_02_duplicated_row.csv",
+              "first_failing_row": null,
+              "status": "failed"
+            },
+            {
+              "answered_with_default": [],
+              "defect": "duplicated_row",
+              "detected": true,
+              "expected": "flagged",
+              "expected_first_failing_row": 11,
+              "file": "monzo_03_duplicated_row.csv",
+              "first_failing_row": null,
+              "status": "failed"
+            },
+            {
+              "answered_with_default": [],
+              "defect": "duplicated_row",
+              "detected": true,
+              "expected": "flagged",
+              "expected_first_failing_row": 4,
+              "file": "monzo_04_duplicated_row.csv",
+              "first_failing_row": null,
+              "status": "failed"
+            },
+            {
+              "answered_with_default": [],
+              "defect": "shifted_column",
+              "detected": true,
+              "expected": "rejected",
+              "expected_first_failing_row": 12,
+              "file": "monzo_05_shifted_column.csv",
+              "first_failing_row": 12,
+              "status": "failed"
+            },
+            {
+              "answered_with_default": [],
+              "defect": "shifted_column",
+              "detected": true,
+              "expected": "rejected",
+              "expected_first_failing_row": 8,
+              "file": "monzo_06_shifted_column.csv",
+              "first_failing_row": 8,
+              "status": "failed"
+            },
+            {
+              "answered_with_default": [],
+              "defect": "shifted_column",
+              "detected": true,
+              "expected": "rejected",
+              "expected_first_failing_row": 8,
+              "file": "monzo_07_shifted_column.csv",
+              "first_failing_row": 8,
+              "status": "failed"
+            },
+            {
+              "answered_with_default": [],
+              "defect": "wrong_sign_convention",
+              "detected": true,
+              "expected": "flagged",
+              "expected_first_failing_row": 0,
+              "file": "monzo_08_wrong_sign_convention.csv",
+              "first_failing_row": 0,
+              "status": "failed"
+            },
+            {
+              "answered_with_default": [],
+              "defect": "wrong_sign_convention",
+              "detected": true,
+              "expected": "flagged",
+              "expected_first_failing_row": 0,
+              "file": "monzo_09_wrong_sign_convention.csv",
+              "first_failing_row": 0,
+              "status": "failed"
+            },
+            {
+              "answered_with_default": [],
+              "defect": "wrong_sign_convention",
+              "detected": true,
+              "expected": "flagged",
+              "expected_first_failing_row": 0,
+              "file": "monzo_10_wrong_sign_convention.csv",
+              "first_failing_row": 0,
+              "status": "failed"
+            }
+          ],
+          "correct_first_row": 13,
+          "detected": 20,
+          "detection_rate": 1.0,
+          "detection_rate_ci95": [
+            0.8389,
+            1.0
+          ],
+          "rejected_cases": 13,
+          "rows_committed_from_failed_files": 0,
+          "total": 20
+        },
+        "no_balance_labelled_reconciled": 0
+      },
+      "table_locator": {
+        "builtin_and_common": {
+          "boundary_acc": 1.0,
+          "files": [
+            {
+              "correct": 1,
+              "dataset": "P1-base",
+              "file": "exports/monzo.csv",
+              "found": 1,
+              "truth_tables": 1
+            },
+            {
+              "correct": 1,
+              "dataset": "P2-base",
+              "file": "exports/statement.csv",
+              "found": 1,
+              "truth_tables": 1
+            },
+            {
+              "correct": 3,
+              "dataset": "S14-side-account",
+              "file": "exports/revolut_consolidated.csv",
+              "found": 3,
+              "truth_tables": 3
+            },
+            {
+              "correct": 1,
+              "dataset": "S8-salary-split",
+              "file": "exports/monzo.csv",
+              "found": 1,
+              "truth_tables": 1
+            },
+            {
+              "correct": 1,
+              "dataset": "S8-salary-split",
+              "file": "exports/second_account.csv",
+              "found": 1,
+              "truth_tables": 1
+            },
+            {
+              "correct": 1,
+              "dataset": "G1-eur",
+              "file": "exports/statement.csv",
+              "found": 1,
+              "truth_tables": 1
+            }
+          ],
+          "junk_rows_parsed": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "unseen_C1_C4": {
+          "boundary_acc": 1.0,
+          "files": [
+            {
+              "correct": 1,
+              "dataset": "C1-pennine",
+              "file": "exports/pennine_statement.csv",
+              "found": 1,
+              "truth_tables": 1
+            },
+            {
+              "correct": 1,
+              "dataset": "C2-harbour-vale",
+              "file": "exports/harbour_vale.csv",
+              "found": 1,
+              "truth_tables": 1
+            },
+            {
+              "correct": 2,
+              "dataset": "C3-northgate",
+              "file": "exports/northgate.csv",
+              "found": 2,
+              "truth_tables": 2
+            },
+            {
+              "correct": 1,
+              "dataset": "C4-fenwick",
+              "file": "exports/fenwick.csv",
+              "found": 1,
+              "truth_tables": 1
+            }
+          ],
+          "junk_rows_parsed": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      }
+    },
+    "pdf_statement": {
+      "note": "Tier 2, not shipped"
+    }
+  },
+  "name": "ingestion",
+  "notes": [
+    "C1\u2013C4 run heuristic-only: the LLM FormatProfile proposal (\u00a74.1.3) is Stage 2.",
+    "CSV-CORRUPT files that raise a blocking question are re-imported with the locale default answer, as a user accepting the pre-selected option would.",
+    "Truth row match = equal date and signed amount to the penny (multiset)."
+  ],
+  "suite": "E-ING",
+  "targets": [
+    {
+      "dataset": "P1-base, P2-base, S14-side-account, S8-salary-split, G1-eur",
+      "id": "ING-locator-P",
+      "label": "Table locator precision (built-in + common)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "P1-base, P2-base, S14-side-account, S8-salary-split, G1-eur",
+      "id": "ING-locator-R",
+      "label": "Table locator recall (built-in + common)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "C1\u2013C4",
+      "id": "ING-locator-unseen",
+      "label": "Table locator recall (C1\u2013C4)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 0.95",
+      "value": 1.0
+    },
+    {
+      "dataset": "all",
+      "id": "ING-junk",
+      "label": "Junk rows parsed as transactions",
+      "met": true,
+      "stage1": true,
+      "target": "== 0",
+      "value": 0.0
+    },
+    {
+      "dataset": "Monzo, Revolut",
+      "id": "ING-builtin-match",
+      "label": "Built-in profile match rate",
+      "met": true,
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "generic, C1\u2013C4",
+      "id": "ING-false-match",
+      "label": "Built-in false match rate",
+      "met": true,
+      "stage1": true,
+      "target": "<= 0.0",
+      "value": 0.0
+    },
+    {
+      "dataset": "Monzo, Revolut",
+      "id": "ING-parse-P",
+      "label": "Row precision (built-in formats)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "Monzo, Revolut",
+      "id": "ING-parse-R",
+      "label": "Row recall (built-in formats)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "CSV-CORRUPT (20)",
+      "id": "ING-corrupt",
+      "label": "CSV-CORRUPT defects detected",
+      "met": true,
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "P1-base, P2-base, S14-side-account, S8-salary-split, G1-eur",
+      "id": "ING-clean-rejected",
+      "label": "Clean tables rejected",
+      "met": true,
+      "stage1": true,
+      "target": "== 0",
+      "value": 0.0
+    },
+    {
+      "dataset": "P1-base, P2-base, S14-side-account, S8-salary-split, G1-eur",
+      "id": "ING-honest",
+      "label": "Balance-free files labelled reconciled",
+      "met": true,
+      "stage1": true,
+      "target": "== 0",
+      "value": 0.0
+    },
+    {
+      "dataset": "C1\u2013C4",
+      "id": "ING-heuristic+llm",
+      "label": "FormatProfile success, heuristic+LLM",
+      "met": null,
+      "stage1": false,
+      "target": ">= 0.85",
+      "value": null
+    }
+  ]
+}

@@ -1,15 +1,15 @@
 {
   "durations_s": {
-    "E-ANOM": 0.71,
-    "E-CAT": 0.37,
-    "E-FC": 1.43,
-    "E-INC": 0.72,
-    "E-ING": 0.33,
+    "E-ANOM": 0.74,
+    "E-CAT": 0.38,
+    "E-FC": 5.55,
+    "E-INC": 0.8,
+    "E-ING": 0.4,
     "E-LOC": 0.33,
-    "E-REC": 0.36,
-    "E-SIM": 8.06
+    "E-REC": 0.38,
+    "E-SIM": 15.87
   },
-  "engine_version": "fc-1.0.0",
+  "engine_version": "fc-1.2.0",
   "errors": {},
   "fast": false,
   "gate_detail": {
@@ -49,8 +49,7 @@
     "E-FC": {
       "failed": [
         "FC-mape",
-        "FC-coverage-P1",
-        "FC-coverage-P2"
+        "FC-coverage-P1"
       ],
       "rule": "docs/09 targets (5 measured)",
       "status": "fail",
@@ -63,21 +62,15 @@
       "unmeasured": []
     },
     "E-INC": {
-      "failed": [
-        "INC-1-R",
-        "INC-2"
-      ],
+      "failed": [],
       "rule": "docs/09 targets (5 measured)",
-      "status": "fail",
+      "status": "pass",
       "unmeasured": []
     },
     "E-ING": {
-      "failed": [
-        "ING-locator-unseen",
-        "ING-corrupt"
-      ],
+      "failed": [],
       "rule": "docs/09 targets (11 measured)",
-      "status": "fail",
+      "status": "pass",
       "unmeasured": []
     },
     "E-LOC": {
@@ -105,11 +98,9 @@
       "unmeasured": []
     },
     "E-SIM": {
-      "failed": [
-        "SIM"
-      ],
+      "failed": [],
       "rule": "docs/09 targets (1 measured)",
-      "status": "fail",
+      "status": "pass",
       "unmeasured": []
     },
     "E-UI": {
@@ -139,20 +130,20 @@
     "E-CAT": "pass",
     "E-FC": "fail",
     "E-GRD": "fail",
-    "E-INC": "fail",
-    "E-ING": "fail",
+    "E-INC": "pass",
+    "E-ING": "pass",
     "E-LOC": "pass",
     "E-ORC": "fail",
     "E-REC": "pass",
     "E-SCN": "fail",
-    "E-SIM": "fail",
+    "E-SIM": "pass",
     "E-UI": "fail",
     "E-VER": "fail",
     "E-XFER": "fail"
   },
   "generator_version": "gen-1.0.0",
-  "git_dirty": true,
-  "git_sha": "2732b6cd0c6a372b43d17017c32a99dd781b4604",
+  "git_dirty": false,
+  "git_sha": "7c250445c5f21e98a75c5119c4bd3964b8b1d643",
   "holdout_version": null,
   "home_currency_primary": "GBP",
   "layout_set_version": null,
@@ -171,16 +162,16 @@
     "null = not run. Gates: a suite that did not run is 'fail'; see gate_detail.rule."
   ],
   "prompt_versions": {},
-  "run_id": "evalrun_20261013T080503Z_2732b6c",
+  "run_id": "evalrun_20261013T084626Z_7c25044",
   "schema_version": "1.1",
   "seeds": [
     1729
   ],
   "suites": {
     "anomalies": {
-      "fp_per_persona_month_clean": 3.5,
+      "fp_per_persona_month_clean": 2.0,
       "magnitude_error_pp": 0.0,
-      "precision": 0.1111,
+      "precision": 0.2,
       "recall": 1.0,
       "scope": "category_trend findings only"
     },
@@ -207,20 +198,20 @@
           "accuracy": 0.3592,
           "macro_f1": 0.1717,
           "n": 284,
-          "rules_only_on_same_rows": 0.9085
+          "rules_only_on_same_rows": 0.9472
         },
         "rules_only": {
-          "abstention_rate": 0.1044,
-          "accuracy": 0.8394,
+          "abstention_rate": 0.0823,
+          "accuracy": 0.8614,
           "accuracy_ci95": [
-            0.8045,
-            0.869
+            0.8283,
+            0.889
           ],
-          "amount_weighted_accuracy": 0.3587,
+          "amount_weighted_accuracy": 0.362,
           "coverage": {
             "0.5": {
-              "coverage": 0.8956,
-              "selective_accuracy": 0.9372
+              "coverage": 0.9177,
+              "selective_accuracy": 0.9387
             },
             "0.7": {
               "coverage": 0.8695,
@@ -235,12 +226,12 @@
               "selective_accuracy": null
             }
           },
-          "ece": 0.1272,
+          "ece": 0.1294,
           "flow_class_accuracy": 0.9659,
           "llm_call_rate": 0.0,
-          "macro_f1": 0.7318,
+          "macro_f1": 0.7649,
           "n": 498,
-          "weighted_f1": 0.8761
+          "weighted_f1": 0.8928
         }
       },
       "dataset": "generated test split (last 3 months) of P1-base, P2-base",
@@ -252,46 +243,85 @@
       }
     },
     "forecast": {
+      "arms": {
+        "no_confirmation": {
+          "coverage_by_dataset": {
+            "P1-base": 0.5844,
+            "P2-base": 0.4,
+            "S4-shock": 0.436
+          },
+          "mae30_gbp_by_dataset": {
+            "P1-base": 552.54,
+            "P2-base": 7058.0,
+            "S4-shock": 6024.75
+          },
+          "note": "detection only: no user answers",
+          "pinball_gbp_by_dataset": {
+            "P1-base": 173.17,
+            "P2-base": 2509.63,
+            "S4-shock": 2197.55
+          }
+        },
+        "with_onboarding_confirmation": {
+          "coverage_by_dataset": {
+            "P1-base": 0.5844,
+            "P2-base": 0.8336,
+            "S4-shock": 0.7118
+          },
+          "mae30_gbp_by_dataset": {
+            "P1-base": 552.54,
+            "P2-base": 5630.33,
+            "S4-shock": 4972.86
+          },
+          "note": "simulates the user confirming detected income at onboarding (06 H8): the top 3 unconfirmed payers at each origin are asked about and answered from the truth labels",
+          "pinball_gbp_by_dataset": {
+            "P1-base": 173.17,
+            "P2-base": 1537.84,
+            "S4-shock": 1591.38
+          }
+        }
+      },
       "best_baseline_mae30_gbp_by_dataset": {
         "P1-base": 765.73,
         "P2-base": 4877.24,
-        "S4-shock": 4532.98
+        "S4-shock": 4592.07
       },
       "breach_brier": null,
       "by_horizon": {
         "30": {
           "best_baseline": "B0",
           "best_baseline_mae_gbp": 765.73,
-          "coverage_p10_p90": 0.4973,
-          "mae_gbp": 623.95,
-          "mape": 0.5821
+          "coverage_p10_p90": 0.5844,
+          "mae_gbp": 552.54,
+          "mape": 0.4985
         },
         "60": {
           "best_baseline": "B0",
           "best_baseline_mae_gbp": 942.86,
-          "coverage_p10_p90": 0.4973,
-          "mae_gbp": 970.35,
-          "mape": 0.6877
+          "coverage_p10_p90": 0.5844,
+          "mae_gbp": 859.03,
+          "mape": 0.6224
         },
         "7": {
           "best_baseline": "B3",
-          "best_baseline_mae_gbp": 505.05,
-          "coverage_p10_p90": 0.4973,
-          "mae_gbp": 243.51,
-          "mape": 0.1153
+          "best_baseline_mae_gbp": 510.28,
+          "coverage_p10_p90": 0.5844,
+          "mae_gbp": 232.14,
+          "mape": 0.107
         }
       },
       "coverage_by_dataset": {
-        "P1-base": 0.4973,
-        "P2-base": 0.0982,
-        "S4-shock": 0.1156
+        "P1-base": 0.5844,
+        "P2-base": 0.8336,
+        "S4-shock": 0.7118
       },
-      "engine_version": "fc-1.0.0",
+      "engine_version": "fc-1.2.0",
+      "headline_arm": "with_onboarding_confirmation",
       "headline_dataset": "P1-base",
       "mae30_gbp_by_dataset": {
-        "P1-base": 623.95,
-        "P2-base": 5264.73,
-        "S4-shock": 4364.07
+        "P1-base": 552.54,
+        "P2-base": 5630.33,
+        "S4-shock": 4972.86
       },
       "method": {
         "anchor": "truth balance at the origin",
@@ -300,31 +330,38 @@
         "n_paths": 500,
         "origins": "every 7 days from day 90 to end \u2212 60"
       },
-      "pay_cycle_low_mae_gbp": 522.1,
+      "pay_cycle_low_mae_gbp": 467.63,
+      "pinball_gbp_by_dataset": {
+        "P1-base": 173.17,
+        "P2-base": 1537.84,
+        "S4-shock": 1591.38
+      },
+      "simulated_user_step": "simulates the user confirming detected income at onboarding (06 H8): the top 3 unconfirmed payers at each origin are asked about and answered from the truth labels",
       "skill_vs": {
         "B1-repeat30": {
-          "30": 0.502,
-          "60": 0.5185,
-          "7": 0.6803
+          "30": 0.559,
+          "60": 0.5737,
+          "7": 0.6952
         },
         "B2-meanflow": {
-          "30": 0.502,
-          "60": 0.5185,
-          "7": 0.8534
+          "30": 0.559,
+          "60": 0.5737,
+          "7": 0.8603
         },
         "best_baseline": {
-          "30": 0.1852,
-          "60": -0.0292,
-          "7": 0.5178
+          "30": 0.2784,
+          "60": 0.0889,
+          "7": 0.5451
         }
       }
     },
     "income": {
-      "amount_within_2pct": 0.6667,
+      "amount_within_2pct": 1.0,
       "four_weekly_cadence_ok": true,
       "payday_rule_ok": 1.0,
+      "paydays_equal_credit_dates": 0.6667,
       "salaried_precision": 1.0,
-      "salaried_recall": 0.75
+      "salaried_recall": 1.0
     },
     "ingestion": {
       "csv_statement": {
@@ -396,11 +433,11 @@
           "clean_tables_rejected": 0,
           "corrupted_csv": {
             "correct_first_row": 13,
-            "detected": 17,
-            "detection_rate": 0.85,
+            "detected": 20,
+            "detection_rate": 1.0,
             "detection_rate_ci95": [
-              0.6396,
-              0.9476
+              0.8389,
+              1.0
             ],
             "rejected_cases": 13,
             "rows_committed_from_failed_files": 0,
@@ -416,10 +453,10 @@
             "recall": 1.0
           },
           "unseen_C1_C4": {
-            "boundary_acc": 0.2,
+            "boundary_acc": 1.0,
             "junk_rows_parsed": 0,
             "precision": 1.0,
-            "recall": 0.2
+            "recall": 1.0
           }
         }
       },
@@ -471,8 +508,8 @@
         "SIM-12",
         "SIM-13"
       ],
-      "pass_rate": 0.8187,
-      "passed": 655,
+      "pass_rate": 1.0,
+      "passed": 800,
       "properties": {
         "SIM-1": {
           "failed": 0,
@@ -489,11 +526,11 @@
           "skipped": 0
         },
         "SIM-3": {
-          "failed": 145,
-          "first_failing_case": 0,
+          "failed": 0,
+          "first_failing_case": null,
           "label": "One-off linearity",
-          "max_abs_deviation_minor": 1,
-          "passed": 55,
+          "max_abs_deviation_minor": 0,
+          "passed": 200,
           "skipped": 0
         },
         "SIM-6": {
@@ -535,7 +572,7 @@
         "met": false,
         "stage1": true,
         "target": ">= 0.75",
-        "value": 0.1111
+        "value": 0.2
       },
       {
         "dataset": "P1-clean, P2-clean",
@@ -544,7 +581,7 @@
         "met": false,
         "stage1": true,
         "target": "<= 0.5",
-        "value": 3.5
+        "value": 2.0
       },
       {
         "dataset": "P1-base, P2-base",
@@ -611,7 +648,7 @@
         "met": true,
         "stage1": true,
         "target": ">= 0.2",
-        "value": 0.502
+        "value": 0.559
       },
       {
         "dataset": "P1",
@@ -620,7 +657,7 @@
         "met": true,
         "stage1": true,
         "target": ">= 0.15",
-        "value": 0.502
+        "value": 0.559
       },
       {
         "dataset": "P1",
@@ -629,7 +666,7 @@
         "met": false,
         "stage1": true,
         "target": "<= 0.12",
-        "value": 0.5821
+        "value": 0.4985
       },
       {
         "dataset": "P1-base",
@@ -638,16 +675,16 @@
         "met": false,
         "stage1": true,
         "target": "0.72\u20130.88",
-        "value": 0.4973
+        "value": 0.5844
       },
       {
         "dataset": "P2-base",
         "id": "FC-coverage-P2",
         "label": "P10\u2013P90 coverage (all h)",
-        "met": false,
+        "met": true,
         "stage1": true,
         "target": "0.72\u20130.88",
-        "value": 0.0982
+        "value": 0.8336
       }
     ],
     "E-INC": [
@@ -664,19 +701,19 @@
         "dataset": "P1-base, P2-base, S8-salary-split, S11-fourweekly",
         "id": "INC-1-R",
         "label": "Salaried stream recall",
-        "met": false,
+        "met": true,
         "stage1": true,
         "target": ">= 0.95",
-        "value": 0.75
+        "value": 1.0
       },
       {
         "dataset": "P1-base, P2-base, S8-salary-split, S11-fourweekly",
         "id": "INC-2",
         "label": "Amount within \u00b12% (matched salaried)",
-        "met": false,
+        "met": true,
         "stage1": true,
         "target": ">= 1.0",
-        "value": 0.6667
+        "value": 1.0
       },
       {
         "dataset": "P1-base, P2-base, S8-salary-split",
@@ -720,10 +757,10 @@
         "dataset": "C1\u2013C4",
         "id": "ING-locator-unseen",
         "label": "Table locator recall (C1\u2013C4)",
-        "met": false,
+        "met": true,
         "stage1": true,
         "target": ">= 0.95",
-        "value": 0.2
+        "value": 1.0
       },
       {
         "dataset": "all",
@@ -774,10 +811,10 @@
         "dataset": "CSV-CORRUPT (20)",
         "id": "ING-corrupt",
         "label": "CSV-CORRUPT defects detected",
-        "met": false,
+        "met": true,
         "stage1": true,
         "target": ">= 1.0",
-        "value": 0.85
+        "value": 1.0
       },
       {
         "dataset": "P1-base, P2-base, S14-side-account, S8-salary-split, G1-eur",
@@ -915,12 +952,12 @@
         "dataset": "P1-base",
         "id": "SIM",
         "label": "Properties passed (SIM-1/2/3/6)",
-        "met": false,
+        "met": true,
         "stage1": true,
         "target": ">= 1.0",
-        "value": 0.8187
+        "value": 1.0
       }
     ]
   },
-  "timestamp_utc": "2026-10-13T08:05:03Z"
+  "timestamp_utc": "2026-10-13T08:46:26Z"
 }
