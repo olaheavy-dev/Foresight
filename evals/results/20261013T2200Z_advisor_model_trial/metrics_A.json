@@ -1,0 +1,21 @@
+{
+ "arm": "A",
+ "advisor": "anthropic/claude-sonnet-5.5",
+ "judge": "openai/gpt-6.1-sol",
+ "revisable_rejected_r1": 10,
+ "revision_success": 1.0,
+ "withdraw_correctness": 1.0,
+ "good_approved_r1": 6,
+ "good_total": 6,
+ "approved_final": 18,
+ "grounding_rate": 1.0,
+ "grounding_violations": [],
+ "advisor_calls": 13,
+ "fallback_calls": 0,
+ "repair_or_failure_rate": 0.0,
+ "advisor_latency_p50_s": 10.66,
+ "advisor_cost_usd": 0.2726,
+ "total_cost_usd": 0.3396,
+ "cost_per_case_usd": 0.0189,
+ "errors": []
+}

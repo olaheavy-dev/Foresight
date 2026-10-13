@@ -1,0 +1,370 @@
+{
+  "persona": "P1-base (synthetic)",
+  "question": "My car needs a £650 repair on 14 October. Will I be OK before payday, and what should I do?",
+  "recorded_at": "2026-10-13T20:32:57+00:00",
+  "run": {
+    "status": "succeeded",
+    "partial": true,
+    "answered": true
+  },
+  "steps": [
+    {
+      "seq": 1,
+      "node": "intake",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Reading your question",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 2,
+      "node": "prefetch",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Loading your latest forecast",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 7
+    },
+    {
+      "seq": 3,
+      "node": "understand",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Understanding your question",
+      "model": "gpt-6-luna",
+      "llm_calls": 1,
+      "tokens_in": 1816,
+      "tokens_out": 249,
+      "cost_estimate_usd": 0.0003061,
+      "latency_ms": 5639
+    },
+    {
+      "seq": 4,
+      "node": "triage",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Deciding how to answer",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 5,
+      "node": "cache_lookup",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Planning the work",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 16
+    },
+    {
+      "seq": 6,
+      "node": "forecaster",
+      "agent": "forecaster",
+      "status": "ok",
+      "label": "Simulating your what-if on the same forecast",
+      "model": "gpt-6-luna",
+      "llm_calls": 1,
+      "tokens_in": 2046,
+      "tokens_out": 138,
+      "cost_estimate_usd": 0.0002736,
+      "latency_ms": 3602
+    },
+    {
+      "seq": 7,
+      "node": "advise",
+      "agent": "advisor",
+      "status": "ok",
+      "label": "Drafting a recommendation",
+      "model": "openai-gpt-56-luna-pro",
+      "llm_calls": 1,
+      "tokens_in": 14167,
+      "tokens_out": 4226,
+      "cost_estimate_usd": 0.00988075,
+      "latency_ms": 49417
+    },
+    {
+      "seq": 8,
+      "node": "verify",
+      "agent": "verifier",
+      "status": "ok",
+      "label": "Verifier rejected 1 draft(s)",
+      "model": "anthropic/claude-sonnet-5.5",
+      "llm_calls": 2,
+      "tokens_in": 3815,
+      "tokens_out": 553,
+      "cost_estimate_usd": 0.01316,
+      "latency_ms": 7477
+    },
+    {
+      "seq": 9,
+      "node": "revise",
+      "agent": "coordinator",
+      "status": "skipped",
+      "label": "Revising the draft: stopped, run deadline reached",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 10,
+      "node": "advise",
+      "agent": "advisor",
+      "status": "skipped",
+      "label": "Drafting a recommendation: stopped, run deadline reached",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 11,
+      "node": "verify",
+      "agent": "verifier",
+      "status": "skipped",
+      "label": "Checking the recommendation: stopped, run deadline reached",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 0
+    },
+    {
+      "seq": 12,
+      "node": "withdraw",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "No recommendation was checked in time",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 3
+    },
+    {
+      "seq": 13,
+      "node": "compose",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Composing the answer",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 1391
+    },
+    {
+      "seq": 14,
+      "node": "persist_response",
+      "agent": "coordinator",
+      "status": "ok",
+      "label": "Answer ready",
+      "model": null,
+      "llm_calls": 0,
+      "tokens_in": 0,
+      "tokens_out": 0,
+      "cost_estimate_usd": null,
+      "latency_ms": 5
+    }
+  ],
+  "recommendations": [
+    {
+      "status": "withdrawn",
+      "revisions": 0,
+      "final": {
+        "action": "defer_purchase",
+        "params": {
+          "label": "Car repair",
+          "to_date": "2026-10-28",
+          "from_date": "2026-10-14",
+          "amount_minor": 65000
+        },
+        "title": "Defer the car repair until {{to_date}}"
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "verdict": "REJECT",
+          "failed": [
+            "V-05@1"
+          ],
+          "critique": "Choose an action worth at least £10 a month or 5 points less risk."
+        }
+      ]
+    },
+    {
+      "status": "approved",
+      "revisions": 0,
+      "final": {
+        "action": "cap_category",
+        "params": {
+          "category_key": "food.eating_out",
+          "monthly_cap_minor": 26135
+        },
+        "title": "Cap eating-out spending at {{cap}} per month"
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "verdict": "APPROVE",
+          "failed": [],
+          "critique": null
+        }
+      ]
+    },
+    {
+      "status": "approved",
+      "revisions": 0,
+      "final": {
+        "action": "cap_category",
+        "params": {
+          "category_key": "food.delivery",
+          "monthly_cap_minor": 20310
+        },
+        "title": "Cap food-delivery spending at {{cap}} per month"
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "verdict": "APPROVE",
+          "failed": [],
+          "critique": null
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "type": "Narrative",
+      "where": "verdict",
+      "text": "This would take you about   overdrawn before your   payday."
+    },
+    {
+      "type": "FinancialMetricGroup",
+      "where": "key_numbers"
+    },
+    {
+      "type": "ScenarioComparison",
+      "where": "main_visual"
+    },
+    {
+      "type": "InterventionCard",
+      "where": "what_to_do",
+      "title": "Cap eating-out spending at £261.35 per month",
+      "status": "approved",
+      "verification": {
+        "verdict": "approved",
+        "revisions": 0,
+        "checks_total": 21,
+        "checks_passed": 21,
+        "verification_id": "ver_01M4VFFPQKFR5YTDJFZAG6ANRT"
+      },
+      "monthly_saving": "£128.58",
+      "p_breach": [
+        "100%",
+        "100%"
+      ],
+      "low_deltas": [
+        [
+          "Before 28 Oct",
+          "−£327",
+          "−£327"
+        ],
+        [
+          "Before 27 Nov",
+          "−£428",
+          "−£428"
+        ],
+        [
+          "Before 18 Dec",
+          "£183",
+          "£183"
+        ]
+      ]
+    },
+    {
+      "type": "CashFlowForecastChart",
+      "where": "details"
+    },
+    {
+      "type": "InterventionCard",
+      "where": "recommendation",
+      "title": "Cap food-delivery spending at £203.10 per month",
+      "status": "approved",
+      "verification": {
+        "verdict": "approved",
+        "revisions": 0,
+        "checks_total": 21,
+        "checks_passed": 21,
+        "verification_id": "ver_01M4VFFPRWYEGAX061F8FSHFEZ"
+      },
+      "monthly_saving": "£83.30",
+      "p_breach": [
+        "100%",
+        "100%"
+      ],
+      "low_deltas": [
+        [
+          "Before 28 Oct",
+          "−£327",
+          "−£309"
+        ],
+        [
+          "Before 27 Nov",
+          "−£428",
+          "−£383"
+        ],
+        [
+          "Before 18 Dec",
+          "£183",
+          "£250"
+        ]
+      ]
+    },
+    {
+      "type": "Narrative",
+      "where": "recommendation",
+      "text": "None of the checked changes fully closes the gap. Free, impartial help with money worries is available from MoneyHelper: moneyhelper.org.uk."
+    },
+    {
+      "type": "AgentExecutionTimeline",
+      "where": "checked"
+    },
+    {
+      "evidence_line": {
+        "agents": 4,
+        "run_id": "run_01M4VFDP2ZB5MY4AJBJ1CVYDE4",
+        "rejected_drafts": 1
+      }
+    }
+  ],
+  "cost": {
+    "model_calls": 5,
+    "tokens": 27010,
+    "usd_estimate": 0.02362045
+  }
+}

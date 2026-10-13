@@ -14,6 +14,7 @@ PRICES_USD_PER_1M: dict[str, tuple[float, float]] = {
     "openai/gpt-6.1-sol": (2.00, 10.00),
     "google/gemini-3.1-pro": (2.00, 12.00),
     "google/gemini-3.8-flash": (0.75, 3.75),
+    "openai/gpt-5.6-luna-pro": (0.25, 1.50),
 }
 
 
@@ -24,7 +25,21 @@ def price_for(model: str) -> tuple[float, float] | None:
     if price is not None or "/" in model:
         return price
     matches = [p for key, p in PRICES_USD_PER_1M.items() if key.split("/", 1)[1] == model]
-    return matches[0] if len(matches) == 1 else None
+    if len(matches) == 1:
+        return matches[0]
+    # Some served names differ only in punctuation ("openai-gpt-56-luna-pro" for
+    # "openai/gpt-5.6-luna-pro", seen 13 Oct 2026): compare letters and digits only.
+    squash = _squash(model)
+    loose = [
+        p
+        for key, p in PRICES_USD_PER_1M.items()
+        if squash in (_squash(key), _squash(key.split("/", 1)[1]))
+    ]
+    return loose[0] if len(loose) == 1 else None
+
+
+def _squash(name: str) -> str:
+    return "".join(ch for ch in name.lower() if ch.isalnum())
 
 
 def cost_estimate(model: str, prompt_tokens: int, completion_tokens: int) -> float | None:

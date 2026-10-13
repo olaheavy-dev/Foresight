@@ -43,6 +43,8 @@ MODEL_CAPABILITIES: dict[str, ModelCapabilities] = {
         supports_temperature=True, supports_forced_tool_choice=True, structured_mode="tools"
     ),
     "google/gemini-3.8-flash": _OPENAI,
+    # Probed 13 Oct 2026 (advisor model trial): json_schema, forced tools and temperature work.
+    "openai/gpt-5.6-luna-pro": _OPENAI,
 }
 
 DEFAULT_CAPABILITIES = ModelCapabilities(

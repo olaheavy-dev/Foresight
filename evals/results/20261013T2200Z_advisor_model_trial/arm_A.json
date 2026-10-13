@@ -1,0 +1,1054 @@
+{
+ "arm": "A",
+ "models": {
+  "reasoning": "anthropic/claude-sonnet-5.5",
+  "verifier": "openai/gpt-6.1-sol"
+ },
+ "mode": "record",
+ "results": [
+  {
+   "case_id": "TR-G1",
+   "expected": "APPROVE",
+   "defect": null,
+   "rounds": [
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_g1",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.delivery",
+     "monthly_cap_minor": 14000
+    },
+    "title": "Hold delivery at {{cap}} a month until the next payday",
+    "rationale": "Your delivery spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.delivery",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 14640,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-G2",
+   "expected": "APPROVE",
+   "defect": null,
+   "rounds": [
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_g2",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.delivery",
+     "monthly_cap_minor": 16500
+    },
+    "title": "Hold delivery at {{cap}} a month until the next payday",
+    "rationale": "Your delivery spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.delivery",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 12140,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-G3",
+   "expected": "APPROVE",
+   "defect": null,
+   "rounds": [
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_g3",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.delivery",
+     "monthly_cap_minor": 18000
+    },
+    "title": "Hold delivery at {{cap}} a month until the next payday",
+    "rationale": "Your delivery spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.delivery",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 10640,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-G4",
+   "expected": "APPROVE",
+   "defect": null,
+   "rounds": [
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_g4",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.eating_out",
+     "monthly_cap_minor": 18000
+    },
+    "title": "Hold eating out at {{cap}} a month until the next payday",
+    "rationale": "Your eating out spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.eating_out",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 20993,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-G5",
+   "expected": "APPROVE",
+   "defect": null,
+   "rounds": [
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_g5",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.eating_out",
+     "monthly_cap_minor": 21000
+    },
+    "title": "Hold eating out at {{cap}} a month until the next payday",
+    "rationale": "Your eating out spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.eating_out",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 17993,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-G6",
+   "expected": "APPROVE",
+   "defect": null,
+   "rounds": [
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_g6",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.eating_out",
+     "monthly_cap_minor": 24000
+    },
+    "title": "Hold eating out at {{cap}} a month until the next payday",
+    "rationale": "Your eating out spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.eating_out",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 14993,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-B1",
+   "expected": "REJECT",
+   "defect": "impact_mismatch",
+   "rounds": [
+    "REJECT",
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_b1",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.delivery",
+     "monthly_cap_minor": 15000
+    },
+    "title": "Hold delivery at {{cap}} a month until the next payday",
+    "rationale": "Your delivery spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.delivery",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 13640,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-B2",
+   "expected": "REJECT",
+   "defect": "impact_mismatch",
+   "rounds": [
+    "REJECT",
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_b2",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.eating_out",
+     "monthly_cap_minor": 20000
+    },
+    "title": "Hold eating out at {{cap}} a month until the next payday",
+    "rationale": "Your eating out spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.eating_out",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 18993,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-B3",
+   "expected": "REJECT",
+   "defect": "infeasible_cut",
+   "rounds": [
+    "REJECT",
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_b3",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.delivery",
+     "monthly_cap_minor": 12500
+    },
+    "title": "Hold delivery at {{cap}} a month until the next payday",
+    "rationale": "Your delivery spending has risen above its usual level; holding it at {{cap}} a month, still close to your normal pattern, eases the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.delivery",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 16140,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-B4",
+   "expected": "REJECT",
+   "defect": "infeasible_cut",
+   "rounds": [
+    "REJECT",
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_b4",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.eating_out",
+     "monthly_cap_minor": 18000
+    },
+    "title": "Hold eating out at {{cap}} a month until payday",
+    "rationale": "Eating out has risen above its usual level. Keeping it to {{cap}} a month, still close to your normal pattern, could save about {{saving}} and lift the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.eating_out",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 20993,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-B5",
+   "expected": "REJECT",
+   "defect": "dangling_evidence",
+   "rounds": [
+    "REJECT",
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_b5",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.delivery",
+     "monthly_cap_minor": 15000
+    },
+    "title": "Hold delivery at {{cap}} a month until the next payday",
+    "rationale": "Your delivery spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.delivery",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 13640,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-B6",
+   "expected": "REJECT",
+   "defect": "dangling_evidence",
+   "rounds": [
+    "REJECT",
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_b6",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.eating_out",
+     "monthly_cap_minor": 20000
+    },
+    "title": "Hold eating out at {{cap}} a month until the next payday",
+    "rationale": "Your eating out spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.eating_out",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 18993,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-B7",
+   "expected": "REJECT",
+   "defect": "generic_advice",
+   "rounds": [
+    "REJECT",
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_b7",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.delivery",
+     "monthly_cap_minor": 15000
+    },
+    "title": "Cap food delivery orders for the month",
+    "rationale": "Food delivery spend has jumped well above its usual level. Keeping it to {{cap}} could save about {{saving}} and lift your balance before the next payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.delivery",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 13640,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-B8",
+   "expected": "REJECT",
+   "defect": "generic_advice",
+   "rounds": [
+    "REJECT",
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_b8",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.eating_out",
+     "monthly_cap_minor": 20000
+    },
+    "title": "Cap eating out spending for the month",
+    "rationale": "Eating out ran well above its usual level and the balance is forecast to dip below buffer before payday. Keeping restaurant and cafe spending to {{cap}} could free up about {{saving}}.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.eating_out",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 18993,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-B9",
+   "expected": "REJECT",
+   "defect": "wrong_evidence",
+   "rounds": [
+    "REJECT",
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_b9",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.delivery",
+     "monthly_cap_minor": 15000
+    },
+    "title": "Hold delivery at {{cap}} a month until the next payday",
+    "rationale": "Your delivery spending has risen above its usual level, and the forecast shows a low point before payday; holding it at {{cap}} a month could save about {{saving}}.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.delivery",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 13640,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-B10",
+   "expected": "REJECT",
+   "defect": "wrong_evidence",
+   "rounds": [
+    "REJECT",
+    "REJECT",
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_b10",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.eating_out",
+     "monthly_cap_minor": 20000
+    },
+    "title": "Hold eating out at {{cap}} a month until the next payday",
+    "rationale": "Your eating out spending has risen above its usual level recently. Holding it at {{cap}} a month could save about {{saving}} and ease the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.eating_out",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "context"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 18993,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-U1",
+   "expected": "REJECT",
+   "defect": "cut_commitment",
+   "rounds": [
+    "REJECT",
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_eatout_cap",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.eating_out",
+     "monthly_cap_minor": 26135
+    },
+    "title": "Cap eating out at {{cap}} a month",
+    "rationale": "Eating out is well above its usual level. Returning to {{cap}} a month would save about {{saving}} and lift the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.eating_out",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "context"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 12858,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-U2",
+   "expected": "REJECT",
+   "defect": "cut_commitment",
+   "rounds": [
+    "REJECT",
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_eo_cap",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.eating_out",
+     "monthly_cap_minor": 26000
+    },
+    "title": "Cap eating out at {{cap}} a month",
+    "rationale": "Eating out is well above its usual level. Keeping it near {{cap}} would free about {{saving}} a month and help the balance stay above the buffer before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.eating_out",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "context"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 12993,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  }
+ ],
+ "calls": [
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 5.620436625002185,
+   "tokens_in": 979,
+   "tokens_out": 140,
+   "cost": 0.003358,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 6.414056915993569,
+   "tokens_in": 979,
+   "tokens_out": 137,
+   "cost": 0.003328,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 5.708737249995465,
+   "tokens_in": 979,
+   "tokens_out": 144,
+   "cost": 0.003398,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 4.846805666005821,
+   "tokens_in": 991,
+   "tokens_out": 139,
+   "cost": 0.003372,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 4.144888000009814,
+   "tokens_in": 991,
+   "tokens_out": 142,
+   "cost": 0.003402,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 4.089573833000031,
+   "tokens_in": 991,
+   "tokens_out": 135,
+   "cost": 0.003332,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "anthropic/claude-sonnet-5.5",
+   "latency_s": 10.30908162498963,
+   "tokens_in": 4429,
+   "tokens_out": 1238,
+   "cost": 0.021238,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 4.38610395899741,
+   "tokens_in": 979,
+   "tokens_out": 136,
+   "cost": 0.003318,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "anthropic/claude-sonnet-5.5",
+   "latency_s": 10.816972750006244,
+   "tokens_in": 4431,
+   "tokens_out": 930,
+   "cost": 0.018162,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 4.801638916993397,
+   "tokens_in": 991,
+   "tokens_out": 137,
+   "cost": 0.003352,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "anthropic/claude-sonnet-5.5",
+   "latency_s": 11.791465375004918,
+   "tokens_in": 4439,
+   "tokens_out": 1221,
+   "cost": 0.021088,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 5.720116790995235,
+   "tokens_in": 987,
+   "tokens_out": 142,
+   "cost": 0.003394,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "anthropic/claude-sonnet-5.5",
+   "latency_s": 10.676025749999098,
+   "tokens_in": 4441,
+   "tokens_out": 1239,
+   "cost": 0.021272,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 4.382630666994373,
+   "tokens_in": 1001,
+   "tokens_out": 138,
+   "cost": 0.003382,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "anthropic/claude-sonnet-5.5",
+   "latency_s": 9.852227499999572,
+   "tokens_in": 4437,
+   "tokens_out": 1210,
+   "cost": 0.020974,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 0.0021753329929197207,
+   "tokens_in": 979,
+   "tokens_out": 136,
+   "cost": 0.003318,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "anthropic/claude-sonnet-5.5",
+   "latency_s": 9.765261207998265,
+   "tokens_in": 4436,
+   "tokens_out": 1238,
+   "cost": 0.021252,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 0.0023634999961359426,
+   "tokens_in": 991,
+   "tokens_out": 137,
+   "cost": 0.003352,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "anthropic/claude-sonnet-5.5",
+   "latency_s": 9.794180665994645,
+   "tokens_in": 4396,
+   "tokens_out": 1185,
+   "cost": 0.020642,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 5.451432624991867,
+   "tokens_in": 980,
+   "tokens_out": 137,
+   "cost": 0.00333,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "anthropic/claude-sonnet-5.5",
+   "latency_s": 10.731744250006159,
+   "tokens_in": 4397,
+   "tokens_out": 1220,
+   "cost": 0.020994,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 5.644042792002438,
+   "tokens_in": 995,
+   "tokens_out": 139,
+   "cost": 0.00338,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 4.196035166998627,
+   "tokens_in": 966,
+   "tokens_out": 138,
+   "cost": 0.003312,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "anthropic/claude-sonnet-5.5",
+   "latency_s": 10.661466542005655,
+   "tokens_in": 4439,
+   "tokens_out": 1216,
+   "cost": 0.021038,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 5.540498292000848,
+   "tokens_in": 988,
+   "tokens_out": 138,
+   "cost": 0.003356,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 4.148927292000735,
+   "tokens_in": 987,
+   "tokens_out": 137,
+   "cost": 0.003344,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "anthropic/claude-sonnet-5.5",
+   "latency_s": 10.151135749998502,
+   "tokens_in": 4450,
+   "tokens_out": 1195,
+   "cost": 0.02085,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "anthropic/claude-sonnet-5.5",
+   "latency_s": 9.119441499991808,
+   "tokens_in": 4434,
+   "tokens_out": 1131,
+   "cost": 0.020178,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 5.435253000003286,
+   "tokens_in": 998,
+   "tokens_out": 140,
+   "cost": 0.003396,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "anthropic/claude-sonnet-5.5",
+   "latency_s": 11.344049541992717,
+   "tokens_in": 4367,
+   "tokens_out": 1388,
+   "cost": 0.022614,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 5.383581749993027,
+   "tokens_in": 990,
+   "tokens_out": 133,
+   "cost": 0.00331,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "anthropic/claude-sonnet-5.5",
+   "latency_s": 10.763646084000356,
+   "tokens_in": 4370,
+   "tokens_out": 1353,
+   "cost": 0.02227,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 4.685771125004976,
+   "tokens_in": 994,
+   "tokens_out": 135,
+   "cost": 0.003338,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  }
+ ]
+}
