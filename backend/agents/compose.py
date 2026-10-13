@@ -24,7 +24,7 @@ import re
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 from sqlalchemy import func, select
@@ -64,6 +64,7 @@ from backend.app.ui_contracts.primitives import (
     AskAction,
     AskPayload,
     DateRange,
+    DateValue,
     MoneyAmount,
     MoneyValue,
     OverviewPlacement,
@@ -159,6 +160,13 @@ FALLBACK_VERDICT: dict[str, str] = {
     "advice_request": "Here is what the forecast shows and what was checked.",
     "explain_recommendation": "Here is the evidence behind the recommendation.",
 }
+# docs/05 §7.5: free help signposts (on the output screen's link allow-list).
+WHAT_ELSE = {
+    "uk": "None of the checked changes fully closes the gap. Free, impartial help with money "
+    "worries is available from MoneyHelper: moneyhelper.org.uk.",
+    "in": "None of the checked changes fully closes the gap. A free debt-advice service can "
+    "help you plan what to do next.",
+}
 STARTER_QUESTIONS = (
     ("Lowest balance before payday", "How low will my balance get before payday?"),
     ("Where my money went", "Where did my money go in the last 30 days?"),
@@ -185,6 +193,21 @@ class CatalogueValue:
     key: str  # R1, R2, …
     label: str  # no figures
     value: Any  # a hydrated Value (MoneyValue, PercentValue, DateValue …) with a ref
+    cite: str | None = None  # the engine value it derives from, when shown as a magnitude
+
+
+VerdictKind = Literal["goes_negative", "breaches_buffer", "tight", "comfortable"]
+VERDICT_INTENTS = frozenset({"affordability", "scenario", "risk_check"})
+
+
+@dataclass
+class VerdictCase:
+    """The deterministic answer (docs/08 §5.4 rule, over every pay cycle, naming the worst)."""
+
+    kind: VerdictKind
+    template: str  # with {{Rn}} placeholders filled from engine values
+    payday: date | None
+    shortfall_below: int | None  # the threshold the worst cycle falls under (0 or the buffer)
 
 
 @dataclass
@@ -199,10 +222,12 @@ class Sources:
     values: list[CatalogueValue] = field(default_factory=list)
     issues: list[str] = field(default_factory=list)
 
-    def add_value(self, label: str, value: Any) -> None:
+    def add_value(self, label: str, value: Any, cite: str | None = None) -> str | None:
         if value is None:
-            return
-        self.values.append(CatalogueValue(f"R{len(self.values) + 1}", label, value))
+            return None
+        key = f"R{len(self.values) + 1}"
+        self.values.append(CatalogueValue(key, label, value, cite))
+        return key
 
     def value(self, key: str) -> CatalogueValue | None:
         return next((v for v in self.values if v.key == key), None)
@@ -270,6 +295,7 @@ class Composer:
         self.issues: list[Issue] = []
         self.citations: dict[str, int] = {}
         self.screen_kinds: list[str] = []
+        self.case: VerdictCase | None = None
         self._block_seq = 0
 
     # ------------------------------------------------------------------ helpers
@@ -302,7 +328,89 @@ class Composer:
             if card is not None:
                 src.recommendations.append(card)
         self._catalogue_values()
+        self.case = self._verdict_case() if self.name in VERDICT_INTENTS else None
         return src
+
+    def _verdict_case(self) -> VerdictCase | None:
+        """docs/08 §5.4: goes_negative if any cycle's likely low is below £0; breaches_buffer if
+        any is below the buffer; tight if any unlucky (P10) low is; else comfortable. Uses the
+        scenario when there is one, else the baseline. None without a buffer (relative mode)."""
+        if self.sources.simulations:
+            calc = self.sources.simulations[0][0]
+            result, prefix = (calc.result or {}).get("simulated") or {}, "simulated."
+        elif self.sources.forecast is not None:
+            calc = self.sources.forecast.calculation
+            result, prefix = calc.result or {}, ""
+            if self.chart().buffer_minor is None:
+                return None
+        else:
+            return None
+        buffer = result.get("buffer_minor")
+        cycles = list(result.get("pay_cycles") or [])
+        if buffer is None or not cycles:
+            return None
+
+        def low(c: dict[str, Any], q: str) -> int:
+            return int((c.get("low") or {}).get(q, 0))
+
+        def pick(test: Callable[[dict[str, Any]], bool], q: str) -> tuple[int, dict[str, Any]]:
+            hits = [(i, c) for i, c in enumerate(cycles) if test(c)]
+            return min(hits, key=lambda ic: low(ic[1], q)) if hits else (-1, {})
+
+        base = f"{calc.id}#{prefix}pay_cycles"
+        now = "This would take you" if self.sources.simulations else "On your current path you'd be"
+
+        def payday_key(i: int, c: dict[str, Any]) -> str | None:
+            on = date.fromisoformat(str(c["payday"]))
+            return self.sources.add_value(
+                "Payday that ends the worst pay cycle",
+                DateValue(kind="date", value=on, display=views.short_date(on),
+                          ref=f"{base}.{i}.payday"),
+            )  # fmt: skip
+
+        i, c = pick(lambda c: low(c, "p50") < 0, "p50")
+        if c:
+            p50 = low(c, "p50")
+            short = self.sources.add_value(
+                "How far below zero the balance goes in the worst pay cycle (likely)",
+                self.money(-p50, "rounded", None),
+                cite=f"{base}.{i}.low.p50",
+            )
+            day = payday_key(i, c)
+            return VerdictCase(
+                "goes_negative",
+                f"{now} about {{{{{short}}}}} overdrawn before your {{{{{day}}}}} payday.",
+                date.fromisoformat(str(c["payday"])),
+                0,
+            )
+        i, c = pick(lambda c: low(c, "p50") < buffer, "p50")
+        if c:
+            buf = self.sources.add_value(
+                "Your buffer", self.money(buffer, "rounded", f"{calc.id}#{prefix}buffer_minor")
+            )
+            day = payday_key(i, c)
+            return VerdictCase(
+                "breaches_buffer",
+                f"You'd stay above {self.money(0, 'rounded', None).display} but drop below your "
+                f"{{{{{buf}}}}} buffer before "
+                f"{{{{{day}}}}}.",
+                date.fromisoformat(str(c["payday"])),
+                buffer,
+            )
+        i, c = pick(lambda c: low(c, "p10") < buffer, "p10")
+        if c:
+            day = payday_key(i, c)
+            return VerdictCase(
+                "tight",
+                f"Likely fine, but in some outcomes you dip below your buffer before "
+                f"{{{{{day}}}}}.",
+                date.fromisoformat(str(c["payday"])),
+                None,
+            )
+        lead = "Yes. " if self.sources.simulations else ""
+        return VerdictCase(
+            "comfortable", f"{lead}You stay above your buffer in every pay cycle.", None, None
+        )
 
     def _forecast(self) -> StoredForecast | None:
         try:
@@ -580,10 +688,13 @@ class Composer:
     def template_output(self) -> ComposerOutput:
         visuals = self.available_visuals()
         keys = [v.key for v in self.sources.values[:3]]
+        verdict = (
+            self.case.template
+            if self.case is not None
+            else FALLBACK_VERDICT.get(self.name, "Here is what your data shows.")
+        )
         return ComposerOutput(
-            verdict=FALLBACK_VERDICT.get(self.name, "Here is what your data shows."),
-            key_numbers=keys,
-            main_visual=visuals[0] if visuals else "",
+            verdict=verdict, key_numbers=keys, main_visual=visuals[0] if visuals else ""
         )
 
     def model_messages(self, question: str) -> list[dict[str, str]]:
@@ -595,6 +706,8 @@ class Composer:
             "visual_options": self.available_visuals(),
             "values": [{"key": v.key, "label": v.label} for v in self.sources.values],
         }
+        if self.case is not None:
+            payload["verdict_category"] = self.case.kind
         return [
             {"role": "system", "content": system_prompt(COMPOSE_PROMPT)},
             {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
@@ -624,6 +737,9 @@ class Composer:
         elif violations:
             problems.append("numerals outside placeholders")
             verdict = strip_numeral_sentences(verdict)
+        if verdict.strip() and self.case is not None and contradicts(self.case.kind, verdict):
+            problems.append(f"verdict contradicts the engine ({self.case.kind})")
+            verdict = ""
         if not verdict.strip():
             verdict = template.verdict
         numbers = [k for k in out.key_numbers if k in keys][:3] or template.key_numbers
@@ -649,7 +765,7 @@ class Composer:
             item = self.sources.value(match.group(1))
             if item is not None:
                 segments.append(ValueSegment(kind="value", value=item.value))
-                ref = getattr(item.value, "ref", None)
+                ref = getattr(item.value, "ref", None) or item.cite
                 if ref:
                     n = self.cite(ref)
                     segments.append(EntitySegment(kind="entity", ref=ref, label=f"[{n}]"))
@@ -838,6 +954,8 @@ class Composer:
                 used.add(main_type)
             elif main_type == "TransactionTable":
                 pass
+        cards = [self.explain_card(card) for card in src.recommendations]
+        src.recommendations = cards
         if self.name in ADVICE_INTENTS and src.recommendations and "InterventionCard" not in used:
             blocks.append(
                 src.recommendations[0].model_copy(
@@ -859,7 +977,78 @@ class Composer:
             table = self.transactions()
             if table is not None:
                 blocks.append(table.model_copy(update={"placement": _place_tab("transactions")}))
+        if (
+            self.case is not None
+            and self.case.kind in {"goes_negative", "breaches_buffer"}
+            and not any(self._removes_shortfall(card) for card in src.recommendations)
+        ):
+            blocks.append(self.what_else())
         return blocks
+
+    def _short_cycles(self, card: InterventionCard) -> list[Any]:
+        """The card's pay cycles that still end below the threshold after the change."""
+        threshold = self.case.shortfall_below if self.case is not None else None
+        if threshold is None:
+            return []
+        return [d for d in card.impact.low_deltas if d.after.minor < threshold]
+
+    def _removes_shortfall(self, card: InterventionCard) -> bool:
+        return bool(card.impact.low_deltas) and not self._short_cycles(card)
+
+    def explain_card(self, card: InterventionCard) -> InterventionCard:
+        """A checked action that narrows the shortfall without removing it says so (templated,
+        figures from the card's own engine values)."""
+        short = self._short_cycles(card)
+        narrowed = [d for d in short if d.after.minor > d.before.minor]
+        if not narrowed:
+            return card
+        worst = min(narrowed, key=lambda d: d.after.minor)
+        diff = self.money(worst.after.minor - worst.before.minor, "rounded", None)
+        when = worst.cycle_label[:1].lower() + worst.cycle_label[1:]
+        line: list[Segment] = [
+            TextSegment(kind="text", text=" Reduces the shortfall by "),
+            ValueSegment(kind="value", value=diff),
+            TextSegment(kind="text", text=f" {when}, but doesn't remove it."),
+        ]
+        return card.model_copy(update={"rationale_segments": [*card.rationale_segments, *line]})
+
+    def what_else(self) -> Narrative:
+        """No checked action removes the shortfall: point to free, impartial help (docs/05 §7.5)."""
+        pack = str(self.state.get("locale_pack") or "uk")
+        text = WHAT_ELSE.get(pack, WHAT_ELSE["uk"])
+        return Narrative(
+            type="Narrative",
+            block_id=self.block_id("what-else"),
+            title="What else",
+            placement=_place_tab("recommendation"),
+            segments=[TextSegment(kind="text", text=text)],
+        )
+
+
+_SAYS_NEGATIVE = re.compile(
+    r"overdrawn|in the red|below (?:£\s?)?0\b|below zero|negative balance|go(?:es)? negative|"
+    r"can(?:no|')t afford|cannot afford|not afford|won'?t be able",
+    re.IGNORECASE,
+)
+_SAYS_BELOW_BUFFER = re.compile(r"(?:below|under|dip|drop|fall)\b[^.]{0,30}\bbuffer", re.I)
+_SAYS_FINE = re.compile(
+    r"\byes\b|can afford|comfortabl|no problem|you'?(?:ll| will) be fine|stay above your buffer",
+    re.IGNORECASE,
+)
+
+
+def contradicts(kind: str, text: str) -> bool:
+    """Whether a model verdict contradicts the engine's verdict category (docs/08 §5.4)."""
+    negative = bool(_SAYS_NEGATIVE.search(text))
+    below_buffer = bool(_SAYS_BELOW_BUFFER.search(text))
+    fine = bool(_SAYS_FINE.search(text))
+    if kind == "goes_negative":
+        return not negative or fine
+    if kind == "breaches_buffer":
+        return negative or not below_buffer or fine
+    if kind == "tight":
+        return negative
+    return negative or below_buffer  # comfortable
 
 
 def _display_narration(text: str) -> str:
@@ -1166,7 +1355,10 @@ def compose(state: ForesightState, ctx: RunContext) -> NodeOutput:
             if isinstance(exc, MeshSpendLimitError):
                 # Mid-run spend refusal: engine numbers only, labelled, no model text.
                 spend_stopped = True
-                choice = choice.model_copy(update={"verdict": EXPLANATION_UNAVAILABLE})
+                verdict = EXPLANATION_UNAVAILABLE
+                if composer.case is not None:  # the engine's own answer is not model text
+                    verdict = f"{composer.case.template} {EXPLANATION_UNAVAILABLE}"
+                choice = composer.template_output().model_copy(update={"verdict": verdict})
 
     with ctx.lock:
         blocks = composer.build_blocks(choice)

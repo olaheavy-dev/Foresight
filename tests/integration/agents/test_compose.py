@@ -153,7 +153,7 @@ def test_affordability_answer_follows_the_skeleton_with_cited_engine_values(
     p1: AgentStore,
 ) -> None:
     compose_out = {
-        "verdict": "With the holiday your lowest balance would be {{R8}}.",
+        "verdict": "With the holiday you'd be overdrawn: your lowest balance would be {{R8}}.",
         "key_numbers": ["R8", "R2", "R4"],
         "main_visual": "ScenarioComparison",
     }
@@ -172,7 +172,9 @@ def test_affordability_answer_follows_the_skeleton_with_cited_engine_values(
         ("main_visual", "ScenarioComparison"),
     ]
     assert check_skeleton(AgentResponse.model_validate(body).blocks) == []
-    assert visible_tabs(body["blocks"]) == ["details", "checked"]
+    # The holiday takes P1 under the buffer and no checked action closes it: "What else".
+    assert visible_tabs(body["blocks"]) == ["details", "recommendation", "checked"]
+    assert _tab_types(body, "recommendation") == ["Narrative"]
     assert _tab_types(body, "details") == ["CashFlowForecastChart"]
     assert "AgentExecutionTimeline" in _tab_types(body, "checked")
     assert check_currency(body) == []
@@ -218,8 +220,8 @@ def test_numerals_in_the_model_verdict_are_dropped_for_the_template(p1: AgentSto
     out, _ = _ask(p1, "holiday?", json_ok(_intent()), json_ok(compose_out))
     body = _body(p1, out.response_id)
     text = "".join(s.get("text", "") for s in body["blocks"][0]["segments"])
-    assert "500" not in text
-    assert text.startswith("Here is how that would change")
+    assert "500 left" not in text
+    assert text.startswith(("This would take you about", "You'd stay above"))  # the template
     step = next(s for s in p1.steps(out.run_id) if s.node == "compose")
     assert step.status == "retried"
     assert any("numerals" in i for i in step.output["issues"])
@@ -353,3 +355,140 @@ def test_orc9_affordability_paraphrases_route_to_the_forecaster_and_compare(
     assert nodes.index("forecaster") < nodes.index("compose") < nodes.index("persist_response")
     body = _body(p1, out.response_id)
     assert ("main_visual", "ScenarioComparison") in _overview(body)
+
+
+# ------------------------------------------------------------------------------ the verdict
+
+CAR_REPAIR = ScenarioSpec(
+    name="£650 car repair on 14 Oct",
+    currency="GBP",
+    modifiers=(
+        ScenarioModifier(
+            type="one_off_outflow", date=date(2026, 10, 14), amount_minor=65_000, label="Car repair"
+        ),
+    ),
+)
+
+
+def _with_spec(spec: ScenarioSpec, extra: dict[str, NodeSpec] | None = None) -> dict[str, NodeSpec]:
+    nodes = _stand_ins()
+
+    def forecaster(state: ForesightState, ctx: RunContext) -> NodeOutput:
+        with ctx.lock:
+            sim = run_simulation(ctx.store.ctx, spec)
+        return NodeOutput(update={"simulation_ids": [sim.calculation.id]}, label="Simulating")
+
+    nodes["forecaster"] = NodeSpec("forecaster", "forecaster", "tool", forecaster, "Forecasting")
+    return {**nodes, **(extra or {})}
+
+
+def _ask_with(store: AgentStore, nodes: dict[str, NodeSpec], *steps: Any, **intent: Any) -> Any:
+    thread = store.create_thread()
+    store.session.commit()
+    completions = ScriptedCompletions(*steps)
+    out = ask(store, thread_id=thread.id, text="car repair?", client_msg_id=f"v-{thread.id}",
+              mesh=client(completions), nodes=nodes)  # fmt: skip
+    return out, completions
+
+
+def _verdict_text(body: dict[str, Any]) -> str:
+    segs = body["blocks"][0]["segments"]
+    return "".join(s.get("text") or s.get("value", {}).get("display") or "" for s in segs if
+                   s["kind"] != "entity")  # fmt: skip
+
+
+def test_p1_car_repair_verdict_says_overdrawn_and_names_the_worst_cycle(p1: AgentStore) -> None:
+    # The model claims the opposite; the engine's verdict category rejects it for the template.
+    out, calls = _ask_with(
+        p1,
+        _with_spec(CAR_REPAIR),
+        json_ok(_intent(standalone_question="Can I afford a £650 car repair on 14 Oct?")),
+        json_ok({"verdict": "Yes, you can comfortably afford it.", "key_numbers": [],
+                 "main_visual": "ScenarioComparison"}),
+    )  # fmt: skip
+    body = _body(p1, out.response_id)
+    payload = json.loads(calls.calls[-1]["messages"][-1]["content"])
+    assert payload["verdict_category"] == "goes_negative"
+    text = _verdict_text(body)
+    assert text.startswith("This would take you about ")
+    assert "overdrawn before your " in text
+    assert text.endswith(" payday.")
+
+    segs = body["blocks"][0]["segments"]
+    shown = next(s["value"] for s in segs if s["kind"] == "value" and s["value"]["kind"] == "money")
+    cites = [s["ref"] for s in segs if s["kind"] == "entity"]
+    # The magnitude is the worst likely low's own value, cited to that engine path.
+    path = cites[0].split("#")[1]
+    assert path.startswith("simulated.pay_cycles.")
+    assert path.endswith(".low.p50")
+    calc = p1.ctx.calculation(cites[0].split("#")[0])
+    assert calc is not None
+    lows = [c["low"]["p50"] for c in calc.result["simulated"]["pay_cycles"]]
+    assert shown["minor"] == -min(lows) > 0
+    index = int(path.split(".")[2])
+    assert lows[index] == min(lows)
+    payday = next(s["value"] for s in segs if s["kind"] == "value" and s["value"]["kind"] == "date")
+    assert payday["value"] == calc.result["simulated"]["pay_cycles"][index]["payday"]
+    step = next(s for s in p1.steps(out.run_id) if s.node == "compose")
+    assert any("contradicts the engine (goes_negative)" in i for i in step.output["issues"])
+
+
+def test_baseline_risk_check_names_the_buffer_breach(p1: AgentStore) -> None:
+    intent = _intent(intent="risk_check", standalone_question="Am I OK before payday?")
+    wrong = {"verdict": "You can comfortably afford anything.", "key_numbers": [],
+             "main_visual": "CashFlowForecastChart"}  # fmt: skip
+    out, _ = _ask_with(p1, _stand_ins(simulate=False), json_ok(intent), json_ok(wrong))
+    text = _verdict_text(_body(p1, out.response_id))
+    assert text.startswith("You'd stay above £0 but drop below your £500 buffer before ")
+
+
+def test_a_card_that_narrows_but_does_not_close_the_gap_says_so_and_signposts_help(
+    p1: AgentStore,
+) -> None:
+    def money(minor: int) -> dict[str, Any]:
+        return {"kind": "money", "minor": minor, "currency": "GBP",
+                "display": f"-£{abs(minor) // 100:,}" if minor < 0 else f"£{minor // 100:,}",
+                "precision": "rounded"}  # fmt: skip
+
+    def advise(state: ForesightState, ctx: RunContext) -> NodeOutput:
+        with ctx.lock:
+            rec = ctx.store.add_recommendation(
+                run_id=ctx.run_id, proposal_key="cap", status="approved",
+                proposal={"card": {
+                    "version_id": "v1", "title": "Cap food delivery until payday",
+                    "rationale_segments": [{"kind": "text", "text": "Keeps more money in hand."}],
+                    "actions": [{"type": "category_cap", "label": "Cap food delivery",
+                                 "detail": ""}],
+                    "impact": {
+                        "p_breach_before": {"kind": "percent", "value": 1.0, "display": "100%"},
+                        "p_breach_after": {"kind": "percent", "value": 1.0, "display": "100%"},
+                        "p_breach_window": {"from": "2026-10-28", "to": "2026-11-27"},
+                        "low_deltas": [{"cycle_label": "Before 28 Oct", "before": money(-34_600),
+                                        "after": money(-20_000)}],
+                    },
+                    "verification": {"verdict": "approved", "revisions": 1, "checks_passed": 9,
+                                     "checks_total": 9,
+                                     "verification_id": "ver_01JAAAAAAAAAAAAAAAAAAAAAAA"},
+                }},
+            )  # fmt: skip
+        return NodeOutput(update={"approved_recs": [rec.id]}, label="Drafting")
+
+    nodes = _with_spec(CAR_REPAIR, {
+        "advise": NodeSpec("advise", "advisor", "tool", advise, "Drafting"),
+    })  # fmt: skip
+    out, _ = _ask_with(
+        p1, nodes, json_ok(_intent(needs_advice=True)), spend_limit(), spend_limit(),
+        spend_limit(),
+    )  # fmt: skip
+    body = _body(p1, out.response_id)
+    card = next(b for b in body["blocks"] if b["type"] == "InterventionCard")
+    line = "".join(
+        s.get("text") or s.get("value", {}).get("display", "") for s in card["rationale_segments"]
+    )
+    assert "Reduces the shortfall by £146 before 28 Oct, but doesn't remove it." in line
+    note = next(
+        b for b in body["blocks"] if b["type"] == "Narrative" and b.get("title") == "What else"
+    )
+    assert note["placement"] == {"area": "tab", "tab": "recommendation"}
+    assert "moneyhelper.org.uk" in note["segments"][0]["text"]
+    assert check_skeleton(AgentResponse.model_validate(body).blocks) == []

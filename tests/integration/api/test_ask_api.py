@@ -321,6 +321,10 @@ def test_a_spend_refusal_mid_run_keeps_the_engine_numbers_without_model_text(
     assert last["event"] == "answer"
     body = last["data"]["snapshot"]
     assert body["status"] == "degraded"
-    assert body["blocks"][0]["segments"][0]["text"] == EXPLANATION_UNAVAILABLE
+    verdict = "".join(
+        s.get("text") or s.get("value", {}).get("display", "")
+        for s in body["blocks"][0]["segments"]
+    )
+    assert verdict.endswith(EXPLANATION_UNAVAILABLE)  # the engine's verdict, then the label
     assert "CashFlowForecastChart" in [b["type"] for b in body["blocks"]]
     assert api.get("/api/ai-status").json()["status"] == "unavailable"
