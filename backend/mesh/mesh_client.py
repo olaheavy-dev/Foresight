@@ -161,6 +161,30 @@ def _transport_redact(text: str) -> str:
     return text
 
 
+def _transport_redact_json(value: Any) -> Any:
+    if isinstance(value, str):
+        return _transport_redact(value)
+    if isinstance(value, list):
+        return [_transport_redact_json(v) for v in value]
+    if isinstance(value, dict):
+        return {k: _transport_redact_json(v) for k, v in value.items()}
+    return value  # numbers, booleans, null: amounts and counts, never identifiers
+
+
+def _transport_redact_content(text: str) -> str:
+    """Layer 2 on one message. A JSON message is walked so only its string values are masked:
+    running the patterns over raw JSON turned numbers into bare words (`{"a": 12345678}` →
+    `{"a": ACCOUNT}`), which broke the JSON. Unchanged text is returned byte for byte."""
+    if text.lstrip()[:1] in ("{", "["):
+        try:
+            data = json.loads(text)
+        except ValueError:
+            return _transport_redact(text)
+        masked = _transport_redact_json(data)
+        return text if masked == data else json.dumps(masked, ensure_ascii=False)
+    return _transport_redact(text)
+
+
 def redact_messages(
     messages: list[dict[str, str]], *, locale_pack: str = "uk"
 ) -> list[dict[str, str]]:
@@ -170,8 +194,49 @@ def redact_messages(
     sort codes, account numbers, references, phones, e-mail, UPI IDs, Indian identifiers and person
     names in transfer narrations. Layer 2 re-checks the final text for plain identifier shapes.
     """
-    payload = redaction.redact({"messages": messages}, locale_pack=locale_pack)
-    return [{**m, "content": _transport_redact(str(m["content"]))} for m in payload["messages"]]
+    protected: list[dict[str, str]] = []
+    stash: dict[str, str] = {}
+    for m in messages:
+        protected.append({**m, "content": _protect_refs(str(m["content"]), stash)})
+    payload = redaction.redact({"messages": protected}, locale_pack=locale_pack)
+    return [
+        {**m, "content": _restore_refs(_transport_redact_content(str(m["content"])), stash)}
+        for m in payload["messages"]
+    ]
+
+
+# Foresight's own reference ids (`calc_<hex>#path|fmt`, `fnd_<ulid>`, …) are not personal data, but
+# their random hex/ULID tails can look like account or card numbers to the masking patterns. They
+# are swapped for letter-only tokens before masking and restored after (flaky-test investigation,
+# 13 Oct 2026: a calc id ending in eight digits was masked as ACCOUNT, breaking the placeholder).
+_REF_PATTERN = re.compile(
+    r"\b(?:calc|fnd|fc|sim|scn|rec|ver|rsp|txn|run|step|wsp|imp|acct|acc|goal|aud|thr|msg|fmt|lay)"
+    r"_[0-9A-Za-z]{6,}(?:#[\w.\[\]-]+)?(?:\|[\w%.-]+)?"
+)
+
+
+def _token(index: int) -> str:
+    letters = ""
+    index += 1
+    while index:
+        index, rem = divmod(index - 1, 26)
+        letters = chr(ord("A") + rem) + letters
+    return f"QQREF{letters}QQ"
+
+
+def _protect_refs(text: str, stash: dict[str, str]) -> str:
+    def swap(match: re.Match[str]) -> str:
+        token = _token(len(stash))
+        stash[token] = match.group(0)
+        return token
+
+    return _REF_PATTERN.sub(swap, text)
+
+
+def _restore_refs(text: str, stash: dict[str, str]) -> str:
+    for token, original in stash.items():
+        text = text.replace(token, original)
+    return text
 
 
 _RETRY_BACKOFF_SECONDS = (1.0, 4.0)

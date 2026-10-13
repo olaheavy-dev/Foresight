@@ -101,3 +101,52 @@ def test_phone_and_grouped_account_never_reach_the_transport() -> None:
     assert "07700 900123" not in sent
     assert "4123 4567" not in sent
     assert "thanks" in sent
+
+
+def test_transport_layer_never_turns_json_numbers_into_words() -> None:
+    """Regression: layer 2 ran over raw JSON and produced `{"a": ACCOUNT}` (flaky analyst test)."""
+    import json
+
+    from backend.mesh.mesh_client import redact_messages
+
+    payload = {
+        "ts": 1760000000000,
+        "count": 12345678,
+        "ratio": 0.012345678,
+        "note": "card 4000 1234 5678 9011 and account 12345678",
+    }
+    out = redact_messages([{"role": "user", "content": json.dumps(payload)}])
+    data = json.loads(out[0]["content"])
+    assert data["ts"] == 1760000000000
+    assert data["count"] == 12345678
+    assert data["ratio"] == 0.012345678
+    assert "4111" not in data["note"]
+    assert "12345678" not in data["note"]
+
+
+def test_transport_layer_keeps_clean_json_byte_for_byte() -> None:
+    import json
+
+    from backend.mesh.mesh_client import redact_messages
+
+    text = json.dumps({"findings": [{"id": "fnd_x", "recent_minor": 12977, "z": 2.5}]})
+    assert redact_messages([{"role": "user", "content": text}])[0]["content"] == text
+
+
+def test_masking_never_alters_foresight_reference_ids() -> None:
+    """Regression: a calc id ending in eight digits was masked as ACCOUNT (flaky analyst test)."""
+    import json
+
+    from backend.mesh.mesh_client import redact_messages
+
+    calc = "calc_0a1b2c3d4e5f612345678"
+    placeholder = "{{" + calc + "#recent_minor|money}}"
+    payload = {"placeholders": {"a": placeholder}, "id": "fnd_01M4V6CCBJKVBGKE0TF75YXX68"}
+    payload["note"] = "paid from account 12345678, card 4000 1234 5678 9011"
+    data = json.loads(
+        redact_messages([{"role": "user", "content": json.dumps(payload)}])[0]["content"]
+    )
+    assert data["placeholders"]["a"] == placeholder
+    assert data["id"] == "fnd_01M4V6CCBJKVBGKE0TF75YXX68"
+    assert "12345678" not in data["note"]
+    assert "4111" not in data["note"]
