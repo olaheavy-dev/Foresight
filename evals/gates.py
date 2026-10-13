@@ -3,7 +3,7 @@
 Rule, per suite:
 1. The suite raised an error → fail.
 2. Some docs/09 targets were measured → pass only if every measured one is met. Since Stage 2
-   (14 Oct 2026) every measured target counts, not only Stage 1 ones; a target is exempt only if
+   (13 Oct 2026) every measured target counts, not only Stage 1 ones; a target is exempt only if
    it sets `"gated": false` with a documented reason. Unmeasured (null) targets are listed and
    never counted as met.
 3. No target was measured → pass if the suite ran without errors.

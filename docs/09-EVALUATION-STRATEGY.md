@@ -241,7 +241,7 @@ Ten ambiguous prompts have gold `needs_clarification` with the expected slot.
 
 ### 3.6 Adversarial recommendation set — `bad_proposals.jsonl`
 
-62 flawed `InterventionProposal`s (expected `REJECT`) and 38 good ones (expected `APPROVE`; 2 relabelled on 14 Oct 2026, see `evals/CHANGELOG.md`):
+62 flawed `InterventionProposal`s (expected `REJECT`) and 38 good ones (expected `APPROVE`; 2 relabelled on 13 Oct 2026, see `evals/CHANGELOG.md`):
 
 | Defect type | Count | Example |
 |---|---|---|
