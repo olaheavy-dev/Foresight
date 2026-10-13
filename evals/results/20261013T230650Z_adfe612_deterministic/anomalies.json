@@ -1,0 +1,116 @@
+{
+  "duration_s": 0.82,
+  "error": null,
+  "metrics": {
+    "by_dataset": {
+      "P1-base": {
+        "spikes": [
+          {
+            "change_pct": 57.3,
+            "count": 26,
+            "recent_minor": 38993,
+            "robust_z": 7.08,
+            "subject": "food.eating_out",
+            "usual_minor": 24782
+          },
+          {
+            "change_pct": 41.0,
+            "count": 23,
+            "recent_minor": 28640,
+            "robust_z": 12.77,
+            "subject": "food.delivery",
+            "usual_minor": 20310
+          }
+        ],
+        "truth": [
+          {
+            "expected_findings": [
+              "category_spike"
+            ],
+            "key": "food_delivery_spike",
+            "magnitude_pct": 41,
+            "subject": "food.delivery",
+            "type": "category_trend"
+          }
+        ]
+      },
+      "P1-clean": {
+        "spikes": [
+          {
+            "change_pct": 57.3,
+            "count": 26,
+            "recent_minor": 38995,
+            "robust_z": 7.08,
+            "subject": "food.eating_out",
+            "usual_minor": 24783
+          }
+        ]
+      },
+      "P2-base": {
+        "spikes": [],
+        "truth": []
+      },
+      "P2-clean": {
+        "spikes": [
+          {
+            "change_pct": 179.0,
+            "count": 9,
+            "recent_minor": 38948,
+            "robust_z": 13.84,
+            "subject": "shopping.general",
+            "usual_minor": 13959
+          }
+        ]
+      }
+    },
+    "fp_per_persona_month_clean": 1.0,
+    "magnitude_error_pp": 0.0,
+    "precision": 0.5,
+    "recall": 1.0,
+    "scope": "category_trend findings only"
+  },
+  "name": "anomalies",
+  "notes": [
+    "Trend part only: one 30-day window at as_of per persona, so one persona-month each.",
+    "A spike matches an injected anomaly when its category equals the anomaly subject."
+  ],
+  "suite": "E-ANOM",
+  "targets": [
+    {
+      "dataset": "P1-base, P2-base",
+      "id": "ANOM-recall",
+      "label": "Recall (category trends)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 0.85",
+      "value": 1.0
+    },
+    {
+      "dataset": "P1-base, P2-base",
+      "id": "ANOM-precision",
+      "label": "Precision (category trends)",
+      "met": false,
+      "stage1": true,
+      "target": ">= 0.75",
+      "value": 0.5
+    },
+    {
+      "dataset": "P1-clean, P2-clean",
+      "id": "ANOM-fp",
+      "label": "False positives per persona-month (clean)",
+      "met": false,
+      "stage1": true,
+      "target": "<= 0.5",
+      "value": 1.0
+    },
+    {
+      "dataset": "P1-base, P2-base",
+      "id": "ANOM-magnitude",
+      "label": "Surge magnitude error (pp)",
+      "met": true,
+      "stage1": true,
+      "target": "<= 5",
+      "value": 0.0
+    }
+  ]
+}

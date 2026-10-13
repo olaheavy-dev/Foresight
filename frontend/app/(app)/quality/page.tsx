@@ -16,7 +16,7 @@ export default async function QualityPage() {
         Each feature is switched on only when its evaluation passes. Full results are published in the repository’s
         README and evals/results.
       </p>
-      <CoreMetrics data={coreMetrics as CoreMetricsData} />
+      <CoreMetrics data={coreMetrics as unknown as CoreMetricsData} />
       <ShippingStatus features={features} />
     </main>
   );

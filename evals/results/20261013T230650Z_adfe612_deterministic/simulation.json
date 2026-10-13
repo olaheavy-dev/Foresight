@@ -1,0 +1,76 @@
+{
+  "duration_s": 15.95,
+  "error": null,
+  "metrics": {
+    "as_of": "2026-10-11",
+    "dataset": "P1-base",
+    "horizon_days": 90,
+    "n_paths": 200,
+    "not_run": [
+      "SIM-4",
+      "SIM-5",
+      "SIM-7",
+      "SIM-8",
+      "SIM-9",
+      "SIM-10",
+      "SIM-11",
+      "SIM-12",
+      "SIM-13"
+    ],
+    "pass_rate": 1.0,
+    "passed": 800,
+    "properties": {
+      "SIM-1": {
+        "cases": 200,
+        "failed": 0,
+        "first_failing_case": null,
+        "label": "Determinism",
+        "passed": 200,
+        "skipped": 0
+      },
+      "SIM-2": {
+        "cases": 200,
+        "failed": 0,
+        "first_failing_case": null,
+        "label": "Zero scenario = baseline",
+        "passed": 200,
+        "skipped": 0
+      },
+      "SIM-3": {
+        "cases": 200,
+        "failed": 0,
+        "first_failing_case": null,
+        "label": "One-off linearity",
+        "max_abs_deviation_minor": 0,
+        "passed": 200,
+        "skipped": 0
+      },
+      "SIM-6": {
+        "cases": 200,
+        "failed": 0,
+        "first_failing_case": null,
+        "label": "Income-delay conservation",
+        "passed": 200,
+        "skipped": 0
+      }
+    },
+    "total": 800
+  },
+  "name": "simulation",
+  "notes": [
+    "200 seeded cases per property; one-off amounts \u00a30.01\u2013\u00a33,000 on a random horizon day; income delays of 1\u201310 days on the first payday in the horizon.",
+    "SIM-6 checks that only a contiguous window starting at the payday changes, that it spans at least the delay, and that the end balance is unchanged when the pay lands in horizon."
+  ],
+  "suite": "E-SIM",
+  "targets": [
+    {
+      "dataset": "P1-base",
+      "id": "SIM",
+      "label": "Properties passed (SIM-1/2/3/6)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 1.0
+    }
+  ]
+}

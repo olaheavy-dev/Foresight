@@ -1,63 +1,136 @@
 {
-  "run_id": "evalrun_20261013T144947Z_fa7026d",
-  "gate": "not run",
+  "run_id": "evalrun_20261013T230650Z_adfe612",
+  "gate": "pass",
   "tiers": [
     {
       "tier": "fast",
-      "models": [],
-      "accuracy_gates": {},
+      "models": [
+        "gpt-6-luna",
+        "openai/gpt-6-luna"
+      ],
+      "accuracy_gates": {
+        "E-CTX": "fail",
+        "E-UI": "pass",
+        "E-SCN": "pass",
+        "E-CAT": "pass"
+      },
       "accuracy_pass": false,
-      "cost_per_answer_usd": null,
-      "call_latency_p50_s": null,
-      "call_latency_p95_s": null
+      "cost_per_answer_usd": 0.00041,
+      "call_latency_p50_s": 1.97,
+      "call_latency_p95_s": 4.53
     },
     {
       "tier": "reasoning",
-      "models": [],
-      "accuracy_gates": {},
-      "accuracy_pass": false,
-      "cost_per_answer_usd": null,
-      "call_latency_p50_s": null,
-      "call_latency_p95_s": null
+      "models": [
+        "anthropic/claude-sonnet-5.5"
+      ],
+      "accuracy_gates": {
+        "E-ORC": "pass",
+        "E-GRD": "pass"
+      },
+      "accuracy_pass": true,
+      "cost_per_answer_usd": 0.01044,
+      "call_latency_p50_s": 10.55,
+      "call_latency_p95_s": 12.06
     },
     {
       "tier": "verifier",
-      "models": [],
-      "accuracy_gates": {},
-      "accuracy_pass": false,
-      "cost_per_answer_usd": null,
-      "call_latency_p50_s": null,
-      "call_latency_p95_s": null
+      "models": [
+        "gpt-6.1-sol"
+      ],
+      "accuracy_gates": {
+        "E-VER": "pass"
+      },
+      "accuracy_pass": true,
+      "cost_per_answer_usd": 0.00029,
+      "call_latency_p50_s": 5.62,
+      "call_latency_p95_s": 7.58
     }
   ],
   "answers": [
     {
       "type": "simple",
       "label": "Simple answers",
-      "answers": null,
-      "cost_mean_usd": null,
-      "cost_p95_usd": null,
+      "count": 47,
+      "cost_mean_usd": 0.0006,
+      "cost_p95_usd": 0.00063,
       "latency_p50_s": null,
-      "latency_p95_s": null
+      "latency_p95_s": null,
+      "latency_estimated_p50_s": 4.5,
+      "latency_estimated_p95_s": 6.67
     },
     {
       "type": "advice",
       "label": "Advice answers",
-      "answers": null,
-      "cost_mean_usd": null,
-      "cost_p95_usd": null,
+      "count": 13,
+      "cost_mean_usd": 0.04919,
+      "cost_p95_usd": 0.06971,
       "latency_p50_s": null,
-      "latency_p95_s": null
+      "latency_p95_s": null,
+      "latency_estimated_p50_s": 28.28,
+      "latency_estimated_p95_s": 40.58
     },
     {
       "type": "all",
       "label": "All answers",
-      "answers": null,
-      "cost_mean_usd": null,
-      "cost_p95_usd": null,
+      "count": 60,
+      "cost_mean_usd": 0.01113,
+      "cost_p95_usd": 0.06889,
       "latency_p50_s": null,
-      "latency_p95_s": null
+      "latency_p95_s": null,
+      "latency_estimated_p50_s": 4.51,
+      "latency_estimated_p95_s": 38.59
     }
   ],
-  "targets": []
+  "targets": [
+    {
+      "id": "EFF-1",
+      "label": "Mean cost per answer (USD)",
+      "value": 0.01113,
+      "target": "<= 0.03",
+      "met": true
+    },
+    {
+      "id": "EFF-2",
+      "label": "Mean cost per advice answer (USD)",
+      "value": 0.04919,
+      "target": "<= 0.05",
+      "met": true
+    },
+    {
+      "id": "EFF-3",
+      "label": "p95 cost per answer (USD)",
+      "value": 0.06889,
+      "target": "<= 0.1",
+      "met": true
+    },
+    {
+      "id": "EFF-4",
+      "label": "Time to first progress step, p95 (s)",
+      "value": 0.02,
+      "target": "<= 2.0",
+      "met": true
+    },
+    {
+      "id": "EFF-5",
+      "label": "Simple answer latency p50 (s)",
+      "value": null,
+      "target": "<= 10.0",
+      "met": null
+    },
+    {
+      "id": "EFF-6",
+      "label": "Advice answer latency p50 (s)",
+      "value": null,
+      "target": "<= 35.0",
+      "met": null
+    },
+    {
+      "id": "EFF-7",
+      "label": "Advice answer latency p95 (s)",
+      "value": null,
+      "target": "<= 60.0",
+      "met": null
+    }
+  ]
 }
