@@ -1,4 +1,15 @@
-"""Behaviour trends: category spikes and long pay gaps (docs/07 §6.6)."""
+"""Behaviour trends: category spikes and long pay gaps (docs/07 §6.6).
+
+A category spike compares the last 30 days with the median of the three prior 30-day windows:
+robust z ≥ 2.0 and |change| ≥ max(£25, 15 % of the usual amount) (docs/00 §13). Only real
+behaviour is compared: spending, fees and betting, without one-offs and without the
+`uncategorised` bucket, which mixes unrelated merchants. A one-off is a row ≥ 3× its category's
+median over the four windows that is also rare there (at most two such rows, i.e. large amounts
+don't recur, docs/00 §13); in a category where large amounts are routine (restaurant meals among
+coffees) they are ordinary behaviour and stay in. A category with no spending in the prior
+windows has no baseline to compare against; a first purchase is a new-merchant finding, not a
+trend.
+"""
 
 from __future__ import annotations
 
@@ -15,6 +26,9 @@ MIN_DELTA_MINOR = 2500  # £25 in a two-decimal currency
 MIN_DELTA_SHARE = 0.15
 LONG_PAY_GAP_DAYS = 35
 _SPEND = {FlowKind.SPENDING, FlowKind.FEE, FlowKind.BETTING}
+ONE_OFF_MULTIPLE = 3
+ONE_OFF_MAX_ROWS = 2  # more large rows than this in the four windows ⇒ large amounts recur
+NOT_A_BEHAVIOUR = frozenset({"uncategorised"})
 
 
 @dataclass(frozen=True)
@@ -49,14 +63,20 @@ def category_trends(
     min_delta_minor: int = MIN_DELTA_MINOR,
 ) -> tuple[CategoryTrend, ...]:
     by_id = {c.transaction_id: c for c in cats}
+    first = as_of - timedelta(days=4 * WINDOW_DAYS - 1)
     per_category: dict[str, list[tuple[date, int]]] = {}
     for t in txns:
         c = by_id.get(t.id)
         if c is None or t.amount_minor >= 0 or c.flow_kind not in _SPEND:
             continue
+        if c.category_key in NOT_A_BEHAVIOUR or not first <= t.posted_on <= as_of:
+            continue
         per_category.setdefault(c.category_key, []).append((t.posted_on, -t.amount_minor))
     out = []
-    for category, rows in per_category.items():
+    for category, all_rows in per_category.items():
+        large = ONE_OFF_MULTIPLE * statistics.median(a for _d, a in all_rows)
+        rare = sum(1 for _d, a in all_rows if a >= large) <= ONE_OFF_MAX_ROWS
+        rows = [(d, a) for d, a in all_rows if not (rare and a >= large)]
         end = as_of
         start = end - timedelta(days=WINDOW_DAYS - 1)
         recent, count = _window_total(rows, start, end)
@@ -74,7 +94,11 @@ def category_trends(
         )
         delta = recent - usual
         share = delta / usual if usual else 0.0
-        spike = z >= Z_THRESHOLD and abs(delta) >= max(min_delta_minor, MIN_DELTA_SHARE * usual)
+        spike = (
+            usual > 0
+            and z >= Z_THRESHOLD
+            and abs(delta) >= max(min_delta_minor, MIN_DELTA_SHARE * usual)
+        )
         out.append(CategoryTrend(category, start, end, recent, usual, z, share, count, spike))
     return tuple(sorted(out, key=lambda t: -(t.recent_minor - t.usual_minor)))
 

@@ -7,7 +7,7 @@ from datetime import date
 import numpy as np
 
 from backend.finance_core.calc import content_hash
-from backend.finance_core.forecast._calendar import obligation_dates, paydays
+from backend.finance_core.calendar import obligation_dates, paydays_between
 from backend.finance_core.forecast.engine import balance_paths, build_forecast, prepare
 from backend.finance_core.types import ForecastInputs, PaydayRule
 from tests.unit.forecast.conftest import EW_HOLIDAYS, make_inputs
@@ -65,13 +65,13 @@ def test_discretionary_draws_come_from_history(inputs: ForecastInputs) -> None:
 
 def test_payday_on_saturday_moves_to_friday() -> None:
     rule = PaydayRule(kind="fixed_day", day_of_month=28)
-    days = paydays(rule, date(2026, 11, 1), date(2026, 11, 30), EW_HOLIDAYS)
+    days = paydays_between(rule, date(2026, 11, 1), date(2026, 11, 30), EW_HOLIDAYS)
     assert days == [date(2026, 11, 27)]  # 28 Nov 2026 is a Saturday
 
 
 def test_last_working_day_and_bank_holiday() -> None:
     rule = PaydayRule(kind="last_working_day")
-    days = paydays(rule, date(2027, 5, 1), date(2027, 5, 31), EW_HOLIDAYS)
+    days = paydays_between(rule, date(2027, 5, 1), date(2027, 5, 31), EW_HOLIDAYS)
     assert days == [date(2027, 5, 28)]  # 31 May 2027 is the Spring bank holiday
 
 

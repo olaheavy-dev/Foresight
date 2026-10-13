@@ -7,9 +7,8 @@ import statistics
 from datetime import date, timedelta
 from typing import Any
 
-from backend.finance_core.calendar import shift
+from backend.finance_core.calendar import obligation_dates, shift
 from backend.finance_core.detect.recurring import detect_recurring
-from backend.finance_core.forecast._calendar import obligation_dates
 from backend.finance_core.types import Cadence, FlowKind, RecurringObligation
 from evals.common import (
     Ledger,

@@ -96,6 +96,43 @@ def test_food_delivery_spike() -> None:
     assert round(food.change_share, 2) == 0.41
 
 
+def _windows(desc: str, totals: list[int], as_of: date, per_window: int = 10):  # type: ignore[no-untyped-def]
+    """`per_window` equal purchases in each 30-day window; totals[0] is the latest window."""
+    rows = []
+    for k, total in enumerate(totals):
+        end = as_of - timedelta(days=30 * k)
+        rows += [
+            txn(desc, -(total // per_window), on=end - timedelta(days=d)) for d in range(per_window)
+        ]
+    return rows
+
+
+def _spikes(rows, as_of):  # type: ignore[no-untyped-def]
+    cats = [categorise(r, PACK) for r in rows]
+    return {t.category_key for t in category_trends(rows, cats, as_of) if t.is_spike}
+
+
+def test_category_with_no_baseline_is_not_a_trend() -> None:
+    as_of = date(2026, 10, 11)
+    rows = [txn("DELIVEROO", -9000, on=as_of - timedelta(days=d)) for d in range(3)]
+    assert _spikes(rows, as_of) == set()  # a first purchase is a new-merchant finding
+
+
+def test_a_rare_large_purchase_is_a_one_off_not_a_trend() -> None:
+    as_of = date(2026, 10, 11)
+    rows = _windows("DELIVEROO", [20000, 20500, 20310, 20100], as_of)
+    rows.append(txn("DELIVEROO", -27000, on=as_of - timedelta(days=2)))  # one big party order
+    assert _spikes(rows, as_of) == set()
+
+
+def test_uncategorised_spend_is_never_a_trend() -> None:
+    as_of = date(2026, 10, 11)
+    rows = _windows("ZQX 4471 PAYMENT", [40000, 10000, 10500, 9800], as_of)
+    cats = [categorise(r, PACK) for r in rows]
+    assert {c.category_key for c in cats} == {"uncategorised"}
+    assert _spikes(rows, as_of) == set()
+
+
 def test_long_january() -> None:
     (gap,) = long_pay_gaps([date(2026, 11, 27), date(2026, 12, 18), date(2027, 1, 28)])
     assert gap.days == 41

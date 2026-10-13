@@ -5,7 +5,15 @@ from datetime import date, timedelta
 from backend.finance_core.calendar import holiday_set, payday_in_month
 from backend.finance_core.categorise.rules import categorise
 from backend.finance_core.detect.income import detect_income_streams, divergence_flags
-from backend.finance_core.types import Cadence, IncomeStream, PaydayRule, Provenance
+from backend.finance_core.types import (
+    Cadence,
+    Categorisation,
+    CategorisationMethod,
+    FlowKind,
+    IncomeStream,
+    PaydayRule,
+    Provenance,
+)
 from tests.unit.categorise.helpers import txn, uk_pack
 
 PACK = uk_pack()
@@ -66,15 +74,57 @@ def test_four_weekly_pay() -> None:
     assert stream.payday_rule.kind == "four_weekly"
 
 
-def test_irregular_freelance_income_becomes_a_distribution() -> None:
-    amounts = [90000, 650000, 210000, 120000, 480000, 95000]
+def test_irregular_income_is_one_total_per_covered_month_with_zero_months() -> None:
+    # credits in Jan, Feb, Apr and May; the ledger runs from 31 Dec to 30 Jun, so Jan–Jun are
+    # fully covered and March and June count as months with no irregular income
+    amounts = {1: 90000, 2: 650000, 4: 210000, 5: 480000}
     rows = [
-        txn("CLIENT CO LTD", a, on=date(2026, k + 1, 3 + 5 * k), bank_type="BACS")
-        for k, a in enumerate(amounts)
+        txn("CLIENT CO LTD", a, on=date(2026, m, 10), bank_type="BACS") for m, a in amounts.items()
     ]
+    rows += [
+        txn("TESCO STORES", -1000, on=date(2025, 12, 31)),
+        txn("TESCO STORES", -1000, on=date(2026, 6, 30)),
+    ]
+    (stream,) = [s for s in _detect(rows) if s.cadence == Cadence.IRREGULAR]
+    assert stream.irregular_amounts_minor == (90000, 650000, 0, 210000, 480000, 0)
+
+
+def test_split_salary_parts_on_the_same_day_are_summed() -> None:
+    rows = []
+    for row in _salary_rows(MONTHS, early_december=None):
+        rows.append(txn("ACME ANALYTICS LTD", 283500, on=row.posted_on, bank_type="BACS"))
+        rows.append(txn("ACME ANALYTICS LTD", 121500, on=row.posted_on, bank_type="BACS"))
     (stream,) = _detect(rows)
+    assert stream.cadence == Cadence.MONTHLY
+    assert stream.amount_minor == SALARY
+    assert len(stream.member_ids) == 2 * len(MONTHS)
+
+
+def test_arrears_paid_with_salary_do_not_break_the_stream() -> None:
+    rows = _salary_rows(MONTHS)
+    payday = rows[4].posted_on
+    rows.append(txn("ACME ANALYTICS LTD", 22000, on=payday, bank_type="BACS"))  # arrears
+    rows.append(txn("ACME ANALYTICS LTD", 150000, on=rows[7].posted_on, bank_type="BACS"))  # bonus
+    (stream,) = [s for s in _detect(rows) if s.cadence != Cadence.IRREGULAR]
+    assert stream.cadence == Cadence.MONTHLY
+    assert stream.amount_minor == SALARY
+    assert len(stream.member_ids) == len(MONTHS)
+
+
+def test_confirmed_payers_count_as_income() -> None:
+    amounts = [90000, 480000, 150000, 610000, 220000]  # a freelancer's client: varied invoices
+    rows = [txn("BRIGHTWATER MEDIA", a, on=date(2026, k + 1, 12)) for k, a in enumerate(amounts)]
+    cats = [
+        Categorisation(
+            r.id, "inflow_unconfirmed", FlowKind.INFLOW_UNCONFIRMED, CategorisationMethod.RULE, 0.9
+        )
+        for r in rows
+    ]
+    assert detect_income_streams(rows, cats, HOLIDAYS) == ()
+    source = rows[0].counterparty or rows[0].normalised
+    (stream,) = detect_income_streams(rows, cats, HOLIDAYS, confirmed_sources=[source])
     assert stream.cadence == Cadence.IRREGULAR
-    assert sorted(stream.irregular_amounts_minor) == sorted(amounts)
+    assert sum(stream.irregular_amounts_minor) > 0
 
 
 def test_declared_income_divergence_flag() -> None:

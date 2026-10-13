@@ -9,7 +9,6 @@ changes the seed and the hash.
 from __future__ import annotations
 
 import hashlib
-import statistics
 import time
 from collections import defaultdict
 from collections.abc import Sequence
@@ -20,6 +19,7 @@ from typing import Any
 from backend.finance_core.calc import Calculation as CalcRecord
 from backend.finance_core.calc import recompute, record
 from backend.finance_core.forecast import build_forecast
+from backend.finance_core.forecast.engine import LOOKBACK_DAYS, is_unscheduled_outflow
 from backend.finance_core.importers.anchors import balance_on
 from backend.finance_core.simulate import simulate
 from backend.finance_core.types import (
@@ -36,8 +36,9 @@ from backend.pipeline import ledger, packs
 from backend.storage import models as m
 from backend.storage.repositories import WorkspaceContext
 
-DISCRETIONARY = frozenset({FlowKind.SPENDING.value, FlowKind.FEE.value, FlowKind.BETTING.value})
-ONE_OFF_MULTIPLE = 3  # ≥3× the category median, with no recurrence (docs/07 §4.6)
+# The engine takes up to a year of discretionary history: it bootstraps everyday spend from the
+# last 90 days and estimates one-off expenses (≥3× the category median) over the whole span.
+HISTORY_DAYS = LOOKBACK_DAYS
 SCOPE = "all"
 
 
@@ -105,23 +106,14 @@ def _discretionary(
     window_days: int,
 ) -> tuple[tuple[date, str, int], ...]:
     start = as_of - timedelta(days=window_days)
-    pool = [
+    return tuple(
         (r.posted_on, latest[r.id].category_key, r.amount_minor)
         for r in rows
         if start < r.posted_on <= as_of
-        and r.amount_minor < 0
         and r.id in latest
-        and latest[r.id].flow_kind in DISCRETIONARY
-        and r.id not in recurring_ids
-    ]
-    by_category: dict[str, list[int]] = defaultdict(list)
-    for _, key, amount in pool:
-        by_category[key].append(-amount)
-    medians = {k: statistics.median(v) for k, v in by_category.items() if len(v) >= 3}
-    return tuple(
-        (on, key, amount)
-        for on, key, amount in pool
-        if key not in medians or -amount < ONE_OFF_MULTIPLE * medians[key]
+        and is_unscheduled_outflow(
+            r.amount_minor, FlowKind(latest[r.id].flow_kind), r.id in recurring_ids
+        )
     )
 
 
@@ -131,7 +123,7 @@ def forecast_inputs(
     as_of: date | None = None,
     horizon_days: int = 90,
     n_paths: int = 500,
-    window_days: int = 90,
+    window_days: int = HISTORY_DAYS,
     known_flows: Sequence[KnownFlow] = (),
 ) -> ForecastInputs:
     ws = ctx.workspace
@@ -222,7 +214,7 @@ def run_forecast(
     as_of: date | None = None,
     horizon_days: int = 90,
     n_paths: int = 500,
-    window_days: int = 90,
+    window_days: int = HISTORY_DAYS,
     known_flows: Sequence[KnownFlow] = (),
     actor: str = "system",
 ) -> StoredForecast:
@@ -256,7 +248,7 @@ def run_simulation(
     as_of: date | None = None,
     horizon_days: int = 90,
     n_paths: int = 500,
-    window_days: int = 90,
+    window_days: int = HISTORY_DAYS,
 ) -> StoredSimulation:
     """Baseline from stored data plus the scenario; the simulation reuses the baseline seed."""
     inputs = forecast_inputs(

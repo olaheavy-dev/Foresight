@@ -8,20 +8,25 @@ history), so nothing after the origin leaks in. The anchor is the truth balance 
 
 from __future__ import annotations
 
-import dataclasses
+from collections.abc import Sequence
 from datetime import date, timedelta
 from typing import Any
 
 from backend.finance_core.detect.income import detect_income_streams
 from backend.finance_core.detect.recurring import detect_recurring
 from backend.finance_core.forecast.backtest import BASELINES, backtest
-from backend.finance_core.forecast.engine import ENGINE_VERSION, HISTORY_WINDOW_DAYS
-from backend.finance_core.types import Cadence, FlowKind, ForecastInputs, IncomeStream
+from backend.finance_core.forecast.engine import (
+    ENGINE_VERSION,
+    LOOKBACK_DAYS,
+    is_unscheduled_outflow,
+)
+from backend.finance_core.types import Categorisation, FlowKind, ForecastInputs, Transaction
 from evals.common import (
     Dataset,
     Ledger,
     build_ledger,
     load_dataset,
+    majority,
     stable_seed,
     uk_categorisation_pack,
     uk_holidays,
@@ -36,19 +41,28 @@ HORIZONS = (7, 30, 60)
 WARMUP_DAYS = 90
 STEP_DAYS = 7
 N_PATHS = 500
-DISCRETIONARY = frozenset({FlowKind.SPENDING, FlowKind.FEE, FlowKind.BETTING})
+QUESTIONS = 3  # "Check what we found" asks about at most three unconfirmed payers
 
 
-def _irregular_arrivals(stream: IncomeStream, ledger: Ledger, origin: date) -> IncomeStream:
-    """The engine draws irregular income as single arrivals at rate len(amounts)/W; the detector
-    reports monthly totals over the whole history. Hand the engine what its contract asks for:
-    the individual credits of the stream inside the engine's W-day window."""
-    start = origin - timedelta(days=HISTORY_WINDOW_DAYS - 1)
-    members = set(stream.member_ids)
-    amounts = tuple(
-        t.amount_minor for t in ledger.txns if t.id in members and start <= t.posted_on <= origin
+def confirmed_income_sources(
+    txns: Sequence[Transaction], cats: Sequence[Categorisation], ledger: Ledger
+) -> frozenset[str]:
+    """Simulate the user's answers in "Check what we found" (docs/00 §6a): at most the top
+    QUESTIONS unconfirmed payers by total, as known at the origin, are asked about, and the user
+    answers "Salary/income" when the truth labels their credits as income."""
+    totals: dict[str, int] = {}
+    rows: dict[str, list[str]] = {}
+    for t, c in zip(txns, cats, strict=True):
+        if t.amount_minor > 0 and c.flow_kind is FlowKind.INFLOW_UNCONFIRMED:
+            source = t.counterparty or t.normalised
+            totals[source] = totals.get(source, 0) + t.amount_minor
+            rows.setdefault(source, []).append(t.id)
+    asked = sorted(totals, key=lambda s: (-totals[s], s))[:QUESTIONS]
+    return frozenset(
+        s
+        for s in asked
+        if majority(str(ledger.truth.get(i, {}).get("flow") or "") for i in rows[s]) == "income"
     )
-    return dataclasses.replace(stream, irregular_amounts_minor=amounts)
 
 
 def inputs_at(ds: Dataset, ledger: Ledger, account: str, origin: date) -> ForecastInputs:
@@ -58,21 +72,22 @@ def inputs_at(ds: Dataset, ledger: Ledger, account: str, origin: date) -> Foreca
     txns = [ledger.txns[i] for i in keep]
     cats = [ledger.cats[i] for i in keep]
     hol = uk_holidays(origin.year - 2, origin.year + 1)
-    streams = detect_income_streams(txns, cats, hol, pack.payday_shift, pack.one_off_multiple)
-    streams = tuple(
-        _irregular_arrivals(s, ledger, origin) if s.cadence is Cadence.IRREGULAR else s
-        for s in streams
+    streams = detect_income_streams(
+        txns,
+        cats,
+        hol,
+        pack.payday_shift,
+        pack.one_off_multiple,
+        confirmed_sources=confirmed_income_sources(txns, cats, ledger),
     )
     report = detect_recurring(txns, cats, pack)
     recurring_ids = {m for ob in report.obligations for m in ob.member_ids}
-    window_start = origin - timedelta(days=HISTORY_WINDOW_DAYS - 1)
+    window_start = origin - timedelta(days=LOOKBACK_DAYS - 1)
     history = tuple(
         (t.posted_on, c.category_key, t.amount_minor)
         for t, c in zip(txns, cats, strict=True)
-        if t.amount_minor < 0
-        and window_start <= t.posted_on <= origin
-        and c.flow_kind in DISCRETIONARY
-        and t.id not in recurring_ids
+        if window_start <= t.posted_on <= origin
+        and is_unscheduled_outflow(t.amount_minor, c.flow_kind, t.id in recurring_ids)
     )
     balance = ds.balances(account)[origin]
     return ForecastInputs(
@@ -233,8 +248,11 @@ def run(fast: bool = False) -> dict[str, Any]:
     notes = [
         "Inputs are built from detected data with finance_core only; truth is used for the "
         "anchor balance at each origin and for scoring.",
-        "Irregular income: the detector's monthly totals are replaced by the stream's individual "
-        "credits in the engine's 90-day window, which is what the engine's arrival model expects.",
+        "Discretionary history passed to the engine covers up to 365 days before each origin "
+        "and every unscheduled outflow (not only spending); the engine bootstraps everyday "
+        "outflows from the last 90 days and models one-offs over the span.",
+        "Check what we found is simulated: the top 3 unconfirmed payers at each origin are asked "
+        "about and answered from the truth labels, as a user would (docs/00 §6a).",
         "S4-shock coverage after the shift is expected to miss (docs/09 §7.4) and is not gated.",
         "Breach Brier and the long-January check are not computed yet.",
     ]

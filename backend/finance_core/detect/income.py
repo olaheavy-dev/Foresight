@@ -5,14 +5,21 @@ stable amounts (coefficient of variation ≤ 20 %, after dropping bonus/arrears 
 `one_off_multiple` × median). Two observations are only a candidate. Payday rules are inferred
 against the locale's working-day calendar; an early December credit is learned as an override.
 Credits from income-like payers that never form a regular stream become an IRREGULAR stream with
-their monthly totals as the distribution (freelance income).
+their monthly totals as the distribution (freelance income): one total per calendar month the
+ledger fully covers (up to the last 12), months with no such credit counting as zero, which is
+what the forecast engine draws from (docs/07 §4.5).
+
+Several credits from one payer on the same payday are one payday: when that happens on most
+paydays the parts are summed (a salary paid in two transfers); otherwise the credit nearest the
+usual amount is the pay and the others (arrears, a bonus) are one-offs that are not projected.
 """
 
 from __future__ import annotations
 
+import calendar
 import statistics
 from collections import Counter, defaultdict
-from collections.abc import Iterable, Sequence
+from collections.abc import Collection, Iterable, Sequence
 from dataclasses import dataclass
 from datetime import date
 
@@ -30,6 +37,8 @@ from backend.finance_core.types import (
 MIN_OCCURRENCES = 3
 MAX_CV = 0.20
 DIVERGENCE = 0.10
+IRREGULAR_MONTHS = 12
+SPLIT_SHARE = 0.75  # same-day parts on ≥ 75 % of paydays ⇒ the pay is split, so sum the parts
 
 
 @dataclass(frozen=True)
@@ -91,17 +100,45 @@ def infer_payday_rule(
 
 
 def _income_candidates(
-    txns: Iterable[Transaction], cats: dict[str, Categorisation]
+    txns: Iterable[Transaction],
+    cats: dict[str, Categorisation],
+    confirmed_sources: Collection[str] = (),
 ) -> dict[str, list[Transaction]]:
     groups: dict[str, list[Transaction]] = defaultdict(list)
+    confirmed = {s.upper() for s in confirmed_sources}
     for t in txns:
         c = cats.get(t.id)
-        if t.amount_minor <= 0 or c is None or c.flow_kind != FlowKind.INCOME:
+        if t.amount_minor <= 0 or c is None:
+            continue
+        user_confirmed = (
+            c.flow_kind == FlowKind.INFLOW_UNCONFIRMED
+            and (t.counterparty or t.normalised).upper() in confirmed
+        )
+        if c.flow_kind != FlowKind.INCOME and not user_confirmed:
             continue
         if c.category_key in ("income.interest",):
             continue
         groups[t.counterparty or t.normalised].append(t)
     return groups
+
+
+def _paydays(rows: Sequence[Transaction]) -> list[tuple[date, list[Transaction], int]]:
+    """Group a payer's credits by day and pick each day's pay: the sum of the parts when most
+    days have several parts (split pay), else the credit nearest the payer's median amount.
+    Returns (day, credits that make up the pay, pay amount) per day."""
+    by_day: dict[date, list[Transaction]] = defaultdict(list)
+    for t in rows:
+        by_day[t.posted_on].append(t)
+    days = sorted(by_day)
+    multi = sum(1 for d in days if len(by_day[d]) > 1)
+    if days and multi >= SPLIT_SHARE * len(days) and multi > 0:
+        return [(d, by_day[d], sum(t.amount_minor for t in by_day[d])) for d in days]
+    median = statistics.median(t.amount_minor for t in rows)
+    out = []
+    for d in days:
+        pay = min(by_day[d], key=lambda t: (abs(t.amount_minor - median), t.id))
+        out.append((d, [pay], pay.amount_minor))
+    return out
 
 
 def detect_income_streams(
@@ -110,19 +147,24 @@ def detect_income_streams(
     holidays: frozenset[date],
     shift_rule: str = "previous_working_day",
     one_off_multiple: float = 1.5,
+    confirmed_sources: Collection[str] = (),
 ) -> tuple[IncomeStream, ...]:
+    """Income streams in a ledger. `confirmed_sources` are counterparties the user has said pay
+    them income (docs/00 §6a "Check what we found"); their otherwise-unconfirmed credits count as
+    income from then on, so a freelancer's clients become an irregular stream."""
     by_id = {c.transaction_id: c for c in cats}
     streams: list[IncomeStream] = []
     irregular: list[Transaction] = []
-    for source, rows in _income_candidates(txns, by_id).items():
-        rows = sorted(rows, key=lambda t: t.posted_on)
-        amounts = [t.amount_minor for t in rows]
-        median = statistics.median(amounts)
-        regular_rows = [t for t in rows if t.amount_minor <= one_off_multiple * median]
-        if len(regular_rows) < MIN_OCCURRENCES:
+    for source, rows in _income_candidates(txns, by_id, confirmed_sources).items():
+        rows = sorted(rows, key=lambda t: (t.posted_on, t.id))
+        pays = _paydays(rows)
+        median = statistics.median(amount for _d, _parts, amount in pays)
+        regular = [p for p in pays if p[2] <= one_off_multiple * median]
+        if len(regular) < MIN_OCCURRENCES:
             irregular.extend(rows)
             continue
-        dates = [t.posted_on for t in regular_rows]
+        regular_rows = [t for _d, parts, _a in regular for t in parts]
+        dates = [d for d, _parts, _a in regular]
         gaps = [(b - a).days for a, b in zip(dates, dates[1:], strict=False)]
         non_dec_gaps = [
             g
@@ -130,7 +172,7 @@ def detect_income_streams(
             if a.month != 12 and b.month != 12
         ] or gaps
         cadence = _cadence(non_dec_gaps, [d.day for d in dates])
-        reg_amounts = [t.amount_minor for t in regular_rows]
+        reg_amounts = [a for _d, _parts, a in regular]
         if cadence is None or _cv(reg_amounts) > MAX_CV:
             irregular.extend(rows)
             continue
@@ -152,15 +194,35 @@ def detect_income_streams(
             )
         )
     if irregular:
-        streams.append(_irregular_stream(irregular))
+        first = min(t.posted_on for t in txns)
+        last = max(t.posted_on for t in txns)
+        streams.append(_irregular_stream(irregular, first, last))
     return tuple(streams)
 
 
-def _irregular_stream(rows: Sequence[Transaction]) -> IncomeStream:
+def _full_months(first: date, last: date) -> list[tuple[int, int]]:
+    """Calendar months the ledger covers completely (first day through last day)."""
+    y, m = (first.year, first.month) if first.day == 1 else _next_month(first.year, first.month)
+    out: list[tuple[int, int]] = []
+    while True:
+        month_end = date(y, m, calendar.monthrange(y, m)[1])
+        if month_end > last:
+            return out
+        out.append((y, m))
+        y, m = _next_month(y, m)
+
+
+def _next_month(y: int, m: int) -> tuple[int, int]:
+    return (y + 1, 1) if m == 12 else (y, m + 1)
+
+
+def _irregular_stream(rows: Sequence[Transaction], first: date, last: date) -> IncomeStream:
     monthly: Counter[tuple[int, int]] = Counter()
     for t in rows:
         monthly[(t.posted_on.year, t.posted_on.month)] += t.amount_minor
-    totals = tuple(monthly[k] for k in sorted(monthly))
+    months = _full_months(first, last)[-IRREGULAR_MONTHS:]
+    # zero months count: a month with no irregular credit is a real outcome, not missing data
+    totals = tuple(monthly[k] for k in months) or tuple(monthly[k] for k in sorted(monthly))
     return IncomeStream(
         key="inc_irregular",
         source="Irregular income",

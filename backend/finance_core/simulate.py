@@ -11,7 +11,7 @@ import dataclasses
 from datetime import date, timedelta
 
 from backend.finance_core.calc import content_hash
-from backend.finance_core.forecast._calendar import next_working_day
+from backend.finance_core.calendar import next_working_day
 from backend.finance_core.forecast.engine import (
     Flow,
     balance_paths,
