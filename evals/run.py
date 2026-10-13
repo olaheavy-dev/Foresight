@@ -29,6 +29,7 @@ from evals.generator import GENERATOR_VERSION, PRIMARY_SEED
 from evals.report import render_report
 from evals.suites import (
     anomalies,
+    audit,
     categorisation,
     conversation,
     forecast,
@@ -36,6 +37,7 @@ from evals.suites import (
     income,
     ingestion,
     locales,
+    orchestration,
     recurring,
     scenarios,
     security,
@@ -61,6 +63,8 @@ SUITES: tuple[ModuleType, ...] = (
     grounding,
     conversation,
     ui,
+    orchestration,
+    audit,
 )
 # Bulky per-row detail stays in the per-suite JSON; summary.json keeps the numbers.
 _DETAIL_KEYS = frozenset(

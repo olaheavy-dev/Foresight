@@ -27,6 +27,7 @@ from sqlalchemy.orm import sessionmaker
 from backend.agents.runner import run_workflow
 from backend.agents.runtime import NodeOutput, NodeSpec, RunContext
 from backend.agents.state import ForesightState
+from backend.pipeline.forecast import verify_simulation
 from backend.pipeline.seed_demo import seed_all
 from backend.storage import models as m
 from backend.storage.agent_repo import AgentStore
@@ -156,6 +157,16 @@ def test_orc4_bad_draft_rejected_then_revised_and_approved(p1: AgentStore) -> No
     assert "£" in card["title"]
     assert card["verification"]["revisions"] == 1
     assert card["impact"]["monthly_saving"]["minor"] > 0
+    # Audit chain (docs/06 §10.2, docs/09 §11): the impact is a stored simulation that rebuilds
+    # identically, and the approval is an audit event.
+    sims = [p1.ctx.calculation(c) for c in rec.impact_calc_refs]
+    sims = [c for c in sims if c is not None and c.kind == "simulation"]
+    assert len(sims) == 1
+    assert sims[0].params["purpose"] == "recommendation_impact"
+    assert verify_simulation(p1.ctx, sims[0].id) is True
+    actions = [e.action for e in p1.ctx.all(m.AuditEvent) if e.subject_id == rec.id]
+    assert "recommendation_approved" in actions
+    assert p1.ctx.audit_chain_valid()
 
 
 def test_orc5_permanently_bad_advisor_is_withdrawn_after_two_revisions(p1: AgentStore) -> None:

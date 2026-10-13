@@ -29,9 +29,16 @@ from backend.agents.forecaster import drivers, parse_scenario, to_engine_spec
 from backend.agents.runtime import NodeOutput, NodeSpec, RunContext
 from backend.agents.state import ForesightState
 from backend.finance_core.simulate import ScenarioError
-from backend.finance_core.types import ForecastInputs, ScenarioModifier
+from backend.finance_core.types import ForecastInputs, ScenarioModifier, ScenarioSpec
 from backend.pipeline import ledger, packs
-from backend.pipeline.forecast import NoLedgerData, forecast_inputs, run_forecast, run_simulation
+from backend.pipeline.forecast import (
+    HISTORY_DAYS,
+    NoLedgerData,
+    forecast_inputs,
+    run_forecast,
+    run_simulation,
+    store_impact_simulation,
+)
 from backend.storage import models as m
 
 MAX_REVISIONS = 2  # docs/06 W4: initial + 2 revisions (same cap as the graph)
@@ -384,6 +391,24 @@ def _impact_json(impact: Impact) -> dict[str, Any]:
     }
 
 
+def _store_impact(
+    ctx: RunContext, world: AdviceWorld, inputs: ForecastInputs | None, impact: Impact
+) -> list[str]:
+    """Persist the simulation the Verifier recomputed this proposal's impact with, so the audit
+    chain runs `rec_ → impact calc_ → sim_ (seed, spec, engine version)` (docs/06 §10.2).
+    Caller holds `ctx.lock`."""
+    if inputs is None or not impact.scenario:
+        return []
+    spec = ScenarioSpec(
+        "recommendation_impact", inputs.currency, (*world.pending_scenario, *impact.scenario)
+    )
+    try:
+        stored = store_impact_simulation(ctx.store.ctx, inputs, spec, window_days=HISTORY_DAYS)
+    except ScenarioError:
+        return []
+    return [stored.calculation.id]
+
+
 def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
     proposals = list(state.get("proposals") or [])
     if not proposals:
@@ -427,6 +452,7 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
             v.verdict, "withdrawn" if last_round else "in_review"
         )
         with ctx.lock:
+            impact_refs = [*world.forecast_ids, *_store_impact(ctx, world, inputs, outcome.impact)]
             rec_id = raw.get("rec_id")
             if rec_id is None:
                 rec = ctx.store.add_recommendation(
@@ -435,7 +461,7 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
                     status=status,
                     proposal=p.model_dump(),
                     trigger_refs=[r.model_dump() for r in p.trigger_refs],
-                    impact_calc_refs=[i for i in world.forecast_ids],
+                    impact_calc_refs=impact_refs,
                     revision_count=round_ - 1,
                 )
                 rec_id = rec.id
@@ -443,6 +469,7 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
                 rec = ctx.store.set_recommendation_status(rec_id, status)
                 rec.proposal = p.model_dump()
                 rec.revision_count = round_ - 1
+                rec.impact_calc_refs = impact_refs
             ver = ctx.store.add_verification(
                 run_id=ctx.run_id,
                 recommendation_id=rec_id,
@@ -454,6 +481,15 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
         verifications.append(ver.id)
         not_approved += v.verdict != "APPROVE"
         if v.verdict == "APPROVE":
+            with ctx.lock:
+                ctx.store.ctx.append_audit(
+                    "recommendation_approved",
+                    "recommendation",
+                    rec_id,
+                    actor="agent:verifier",
+                    after={"round": round_, "verification_id": ver.id},
+                    run_id=ctx.run_id,
+                )
             card = build_card(
                 p,
                 outcome.impact,

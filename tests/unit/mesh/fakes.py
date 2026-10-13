@@ -63,6 +63,11 @@ def status_error(
     return cls("mesh error", response=response, body=body)
 
 
+def service_unavailable() -> APIStatusError:
+    """A transient Mesh 503 (retried with backoff, docs/06 §10.1)."""
+    return status_error(APIStatusError, 503)
+
+
 def spend_limit() -> APIStatusError:
     body = {"error": {"code": "spend_limit_exceeded", "message": "Insufficient balance."}}
     return status_error(APIStatusError, 402, body)
