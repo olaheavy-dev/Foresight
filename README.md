@@ -83,6 +83,7 @@ Reproduce: `make eval` (every deterministic suite) or `make eval-fast` (< 60 s).
 |---|---|---|---|---|---|---|
 | Categorisation | Accuracy · macro-F1 (rules-only) | P1+P2 test split (n=498) | 0.861 · 0.765 | majority class 0.205 | hybrid ≥ 0.93 (Stage 2) | — |
 | Forecast | MAE @30 d | P1 | £552.54 | B0-flat £765.73 | skill vs repeat-30 ≥ 0.20 (got 0.559) | ✓ |
+| Forecast | MASE @30 d | P1 | — | best naive — | < 1 and below the best naive | — |
 | Forecast | P10–P90 coverage (all h) | P1, P2, S4 | 0.584 (P1) · 0.834 (P2) · 0.712 (S4) | — | 0.72–0.88 (P1, P2) | ✗ |
 | Reconciliation | Corrupted CSVs caught | CSV-CORRUPT | 20/20 | — | 20/20 | ✓ |
 | Verifier | Bad proposals caught | — | — | — | ≥ 0.95 | — |
@@ -93,7 +94,7 @@ Reproduce: `make eval` (every deterministic suite) or `make eval-fast` (< 60 s).
 |---|---|---|---|
 | E-ANOM | fail | category trends: recall 1.000, precision 0.200, false positives / persona-month 2.000 | ANOM-precision, ANOM-fp |
 | E-CAT | pass | flow-class accuracy 0.966; coverage@0.85 0.841 | — |
-| E-FC | fail | MAE @7/30/60 d (P1) £232.14 / £552.54 / £859.03; pay-cycle-low error £467.63; pinball (P1) £173.17 | FC-mape, FC-coverage-P1 |
+| E-FC | fail | MAE @7/30/60 d (P1) £232.14 / £552.54 / £859.03; MASE @30 d (P1) —; pay-cycle-low error £467.63; pinball (P1) £173.17 | FC-mape, FC-coverage-P1 |
 | E-INC | pass | salaried P/R 1.000/1.000; amount ±2% 1.000; payday rule 1.000 | — |
 | E-ING | pass | table locator P/R 1.000/1.000; built-in profile match 1.000; unseen C1–C4 heuristic-only 0.000 | — |
 | E-LOC | pass | currency detection 1.000; number / date format 1.000 / 1.000; minor units exact yes; H13 all clauses yes | — |

@@ -632,6 +632,21 @@ Seed: `seed = int(sha256(f"{workspace_id}|{data_version}|{scope}|{scope_account_
 4. No trend extrapolation in v1; backtests compare W = 60/90/120 (v1.1 sweep on dev origins: W ∈ {90, 120, 180, 365} × mean block {7, 14, 30} days changed P1 coverage by < 0.02, so the defaults stay).
 5. *Engine v1.1:* **parameter uncertainty** (posterior predictive, not plug-in). Each path first re-weights the history days with Dirichlet(1, …, 1) weights (Bayesian bootstrap) before drawing blocks, and the one-off process draws its rate per path from the Gamma(n + ½, days) posterior (Jeffreys prior) with Bayesian-bootstrap weights on the sizes. A short history therefore gives a wider band; with a year of data the effect is small.
 
+### 6.2b Irregular-expense prior (engine v1.3, `fc-1.3.0`)
+
+A short bank history may not yet show the lumpy purchases every household meets sooner or later, such as furniture, appliances, repairs and holidays. Before v1.3 a user with three months of data got a band built only from the one-offs seen so far, and the backtest showed it: P1 forecasts made in January missed below the band for most of the next two months, because the £410 insurance renewal and the £215 and £899 purchases in February and March were bigger than anything seen yet.
+
+The engine therefore blends the user's observed one-off process (§4.6) with a **population prior**, like a Bayesian posterior mean:
+
+`expected one-off cost per day = (1 − w) · observed rate + w · r · μ₀`, with `w = s / (d + s)`
+
+- `μ₀` is the average household's spending on irregular categories per day. Source: ONS, *Family spending workbook 1: detailed expenditure and trends*, financial year ending 2025, Table A1 (Living Costs and Food Survey, UK, all households), read 13 Oct 2026. Categories: maintenance and repair of dwelling (4.2) £11.90, furniture and furnishings (5.1) £21.70, household appliances (5.3) £4.00, tools and equipment (5.5) £2.80, spectacles (6.1.2) £2.30, private medical/optical/dental (6.2.1.2) £4.40, audio-visual and IT equipment (9.1) £3.90, package holidays (9.6) £35.40, holidays in the UK (11.2.1) £7.60 and abroad (11.2.2) £6.80. Together £100.80 a week. Direct-debit items (insurance, subscriptions) and vehicle purchases are excluded: they reach the forecast as scheduled obligations.
+- `r` scales the average household to this user: their everyday unscheduled spending per day divided by the survey's comparable spending (total expenditure £676.60 less housing, fuel and power £118.40, other non-consumption items £94.10 and the irregular categories themselves: £363.30 a week), clamped to 0.5–1.5.
+- `d` is the days of history behind the one-off estimate and `s` the prior's strength: it counts as `s` days of the user's own history, so it dominates for a new user and fades as data accumulates (`s = 180`: `w` is 0.67 at 90 days and 0.33 at a year).
+- The prior's share arrives as a compound process: on each day a lump arrives with probability 1/30, its size exponential with mean (prior cost per day × 30), so single lumps can be large.
+
+The values are pack data, `finance_core/locale_packs/uk_irregular_expenses.yaml`, selected by currency, and the engine parses the YAML text the application supplies. Currencies without a prior file get none. The 30-day interval and `s` are assumptions, not survey figures. They were chosen on dev origins only: `s ∈ {45, 90, 180}` with calibration on, by the pre-registered rule "smallest coverage gap outside 0.72–0.88 on the gated personas P1 and P2, then pinball" (gaps 0.027, 0.008, 0.006).
+
 ### 6.3 Known flows: calendar
 
 For each obligation/income occurrence in the horizon, dates from cadence + `anchor_day` + business-day rule (holiday calendar from the workspace’s locale pack; England & Wales for P1) + payday overrides; amounts fixed when MAD/median < 2%, else `median + MAD·ε`, `ε ~ t₅` clipped ±3; date jitter uniform in `[−j, +j]` (j ≤ 3) except rule-bound items.
@@ -648,6 +663,7 @@ Outputs (`Calculation.kind = forecast`):
 - Daily **P10 / P50 / P90** (`np.quantile`, linear). *Engine v1.1:* computed exactly in integers (same linear interpolation, halves rounded up to a whole minor unit), so adding a constant to every path moves every quantile by exactly that constant (SIM-3 holds to the penny).
 - `p_breach_buffer(window)` = fraction of paths whose minimum over the window < buffer. Windows: today → day before next payday; each subsequent pay cycle; whole horizon.
 - **Pre-salary lows** per pay cycle (P10/P50/P90 of the path minimum in the cycle, and its modal date) — the primary summary for salaried users.
+- *Engine v1.3 (`fc-1.3.0`):* the paths also carry the irregular-expense prior (§6.2b) and, when a calibration is supplied, the band calibration (§6.8a). `inputs_hash` covers the inputs alone when neither applies (unchanged from v1.2), otherwise the inputs together with the prior and the calibration.
 - `min_balance` = **the lowest of the pre-salary lows** (the cycle with the lowest P50 low, with that cycle's modal date), so the headline figure is always one of the lows shown per cycle. Without a complete pay cycle in the horizon it falls back to the P50 of the path-wise minimum over the whole horizon. *Engine v1.2.1 (`fc-1.2.1`):* previously the P50 of the path-wise minimum over the whole horizon even when cycles existed; each path then contributed its worst cycle, so the median sat below every cycle's own low while sharing its date (P1 live: £167 vs a 27 Oct low of £342). `month_end` quantiles, `drivers` (top contributors to the change from today to the low: recurring by obligation, discretionary by category, commitments separately), `assumptions`.
 - Relative mode: same series offset to 0; no breach probability.
 
@@ -702,7 +718,30 @@ Canonical P1 fixture: £1,200 on 6 Nov → P50 low **26 Nov −£148** (P10 −�
 
 ### 6.8 Backtesting hook
 
-`backtest(workspace, origins[], horizons)` truncates the ledger at each origin, rebuilds with the same engine version and compares to reconstructed actuals: MAE/MAPE at 7/30/60 days (90 days reported separately), pre-salary-low error, P10–P90 coverage (target ≈ 80%). Methodology in `09`.
+`backtest(workspace, origins[], horizons)` truncates the ledger at each origin, rebuilds with the same engine version and compares to reconstructed actuals: MAE, **MASE** and MAPE at 7/30/60 days (90 days reported separately), pre-salary-low error, P10–P90 coverage (target ≈ 80%) and pinball loss. MASE divides each absolute error by the in-sample mean absolute h-step change of the balance before the origin (Hyndman and Koehler, 2006), so it is comparable across users and below 1 means the forecast beats in-sample naive. MAPE is still reported but not targeted, because it divides by a balance that is near £0 at exactly the pre-payday lows that matter. With calibration on, each scored origin is calibrated from raw forecasts at earlier origins (§6.8a). Methodology in `09`.
+
+### 6.8a Band calibration (engine v1.3, `calibration.py`)
+
+Whether the P10–P90 band is honest is measured, not assumed. Before each forecast the engine's **own earlier raw forecasts for the same user** are scored against what actually happened, and the spread is widened about the daily median until the band would have covered 80% of the realised balances. This is split-conformal prediction with normalised scores, in the style of conformalised quantile regression (Romano, Patterson and Candès, NeurIPS 2019). It is the self-correction loop of `06` §10.4, made exact.
+
+- **Score** for a past forecast with median m, P10 q10, P90 q90 and the realised balance y: `(m − y)/(m − q10)` below the median, `(y − m)/(q90 − m)` above, 0 at the median. This is how far the band would have had to stretch to cover y.
+- **Scale** per horizon bucket (days 1–7, 8–14, 15–30, 31–60, 61–90) = the ⌈(n + 1)·0.8⌉-th smallest score, clamped to [1, 4] and rounded to 1/1000.
+- **Applied** to every path: `b' = m + s·(b − m)`, rounded half up in integers. The transform is monotone, so pay-cycle lows and breach chances computed afterwards are calibrated too. The median is unchanged, and SIM-3 (shift equivariance) still holds to the penny.
+- **No leakage:** only forecasts made in the last 91 days before the origin, scored on balances up to the origin. A bucket needs at least 4 such forecasts, otherwise the engine's own band, with the prior of §6.2b, stands.
+- **Where:** the E-FC backtest re-runs detection at every weekly origin from day 28. The product (`pipeline/forecast.py`) makes weekly raw forecasts over the last 91 days from the stored ledger, scores them on the ledger's balances, and stores the fitted calibration in the calculation's params, so `verify` rebuilds the identical result. Caveat: those past forecasts reuse today's detected income streams and obligations, so the product's calibration can be slightly optimistic for a brand-new stream.
+
+Choices, made on dev origins only (`09` §3.8), by the pre-registered rule above. Values are P1 · P2 · S4 on dev origins; every calibrated row uses the prior with s = 90 unless stated.
+
+| Variant | Coverage | Pinball |
+|---|---|---|
+| no prior, no calibration | 0.42 · 0.84 · 0.69 | £208 · £1,554 · £1,547 |
+| separate tail scales, origins from day 28, 182-day lookback | 0.55 · 0.82 · 0.70 | £198 · £2,018 · £1,825 |
+| one scale, may narrow (min 0.5), 91-day lookback | 0.70 · 0.82 · 0.79 | £173 · £1,760 · £1,701 |
+| one scale, **widen only**, 91-day lookback | 0.71 · 0.89 · 0.81 | £172 · £1,737 · £1,680 |
+| same, prior **s = 180 (chosen)** | 0.77 · 0.89 · 0.82 | £169 · £1,761 · £1,692 |
+| same, damped towards 1 with n₀ = 8 pseudo-windows | 0.63 · 0.87 · 0.79 | £176 · £1,634 · £1,599 |
+
+Separate tail scales chased a bias that changed sign over time and were worse on every persona. Allowing calibration to narrow the band cost P1 coverage. The trade-off is reported as measured: the chosen settings bring P1's coverage into range, but widen P2's and S4's band more than their pinball loss rewards. The P2 miss is in its median, not its band: see `09` §7.4.
 
 ### 6.9 Result schemas (abridged)
 

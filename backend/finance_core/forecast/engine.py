@@ -8,7 +8,14 @@ Sources of uncertainty, each estimated from the user's own history:
   whole lookback (up to 365 days), sizes drawn from the observed one-offs, so the forecast carries
   the chance of a large unplanned bill instead of assuming none (or one in every window);
 - irregular income (§4.5): each calendar month's total drawn from the observed monthly totals
-  (months with nothing count as zero) and landed on a uniformly random day of that month.
+  (months with nothing count as zero) and landed on a uniformly random day of that month;
+- irregular expenses not yet seen (§6.2b, engine v1.3): an optional population prior (national
+  household-spending statistics) blended with the observed one-off rate, weighted towards the
+  prior for short histories and towards the user's own data as it grows.
+
+Optionally (§6.8a, engine v1.3) the spread of the paths is rescaled about the daily median by a
+`Calibration` fitted from the engine's own earlier forecasts for this user, so the P10–P90 band
+covers what it claims to (forecast/calibration.py).
 
 All arithmetic is deterministic for a given ForecastInputs (including the seed): the same inputs
 always produce byte-identical results and the same inputs_hash. Amounts are integer minor units,
@@ -31,6 +38,21 @@ import numpy.typing as npt
 
 from backend.finance_core.calc import content_hash
 from backend.finance_core.calendar import obligation_dates, paydays_between
+from backend.finance_core.forecast.calibration import (
+    Calibration,
+    apply_calibration,
+)
+from backend.finance_core.forecast.calibration import (
+    to_jsonable as calibration_json,
+)
+from backend.finance_core.forecast.prior import (
+    IrregularPrior,
+    household_scale,
+    prior_weight,
+)
+from backend.finance_core.forecast.prior import (
+    to_jsonable as prior_json,
+)
 from backend.finance_core.types import (
     Cadence,
     FlowKind,
@@ -40,7 +62,7 @@ from backend.finance_core.types import (
     Quantiles,
 )
 
-ENGINE_VERSION = "fc-1.2.1"
+ENGINE_VERSION = "fc-1.3.0"
 HISTORY_WINDOW_DAYS = 90  # W in docs/07 §6.1: the everyday-spend bootstrap pool
 LOOKBACK_DAYS = 365  # one-off expense rate and sizes are estimated over up to a year
 MIN_LOOKBACK_DAYS = 90  # a short history still spreads its one-offs over at least 90 days
@@ -240,10 +262,15 @@ def _bootstrap(
 
 
 def _one_off_expenses(
-    history: SpendHistory, n_paths: int, horizon: int, rng: np.random.Generator
+    history: SpendHistory,
+    n_paths: int,
+    horizon: int,
+    rng: np.random.Generator,
+    rate_factor: float = 1.0,
 ) -> IntArray:
     """One-off expenses as a compound process: on each day a one-off arrives with probability
-    (one-offs seen) / (days of history), its size drawn from the one-offs seen."""
+    (one-offs seen) / (days of history), its size drawn from the one-offs seen. `rate_factor`
+    (1 − prior weight, §6.2b) leaves room for the population prior's share."""
     out = np.zeros((n_paths, horizon + 1), dtype=np.int64)
     amounts = history.one_off_amounts
     if not amounts or horizon == 0:
@@ -253,7 +280,9 @@ def _one_off_expenses(
         # Posterior predictive rather than plug-in: each path draws its own rate from the
         # Gamma(n + ½, days) posterior of a Poisson rate (Jeffreys prior) and re-weights the
         # observed sizes (Bayesian bootstrap), so few observed one-offs mean a wider spread.
-        rates = rng.gamma(len(amounts) + 0.5, 1.0 / history.lookback_days, size=n_paths)
+        rates = rate_factor * rng.gamma(
+            len(amounts) + 0.5, 1.0 / history.lookback_days, size=n_paths
+        )
         size_w = rng.gamma(1.0, size=(n_paths, len(amounts)))
         cum = np.cumsum(size_w, axis=1)
         u = rng.random((n_paths, horizon)) * cum[:, -1:]
@@ -262,10 +291,57 @@ def _one_off_expenses(
             len(amounts) - 1,
         )
     else:
-        rates = np.full(n_paths, len(amounts) / history.lookback_days)
+        rates = np.full(n_paths, rate_factor * len(amounts) / history.lookback_days)
         picks = rng.integers(0, len(amounts), size=(n_paths, horizon))
     arrivals = rng.random((n_paths, horizon)) < np.minimum(rates, 1.0)[:, None]
     out[:, 1:] = np.where(arrivals, values[picks], 0)
+    return out
+
+
+def everyday_daily_minor(history: SpendHistory, as_of: date) -> Fraction:
+    """Average everyday (non-one-off) unscheduled outflow per day over the bootstrap pool, ≥ 0."""
+    days = (as_of - history.window_start).days + 1
+    total = -sum(a for _d, _c, a in history.everyday)
+    return Fraction(max(0, total), max(1, days))
+
+
+@dataclass(frozen=True)
+class PriorTerms:
+    """How the irregular-expense prior enters one forecast (recorded for the evidence trail)."""
+
+    weight: Fraction  # w = strength / (history days + strength)
+    household_scale: Fraction  # r
+    daily_cost_minor: Fraction  # w · r · prior daily cost: the prior's share of one-off cost
+
+
+def prior_terms(
+    prior: IrregularPrior | None, history: SpendHistory, as_of: date
+) -> PriorTerms | None:
+    if prior is None:
+        return None
+    w = prior_weight(prior, history.lookback_days)
+    r = household_scale(prior, everyday_daily_minor(history, as_of))
+    return PriorTerms(w, r, w * r * prior.irregular_daily_minor)
+
+
+def _prior_irregular(
+    terms: PriorTerms | None,
+    prior: IrregularPrior | None,
+    n_paths: int,
+    horizon: int,
+    rng: np.random.Generator,
+) -> IntArray:
+    """The prior's share of irregular expenses as a compound process: a lump arrives on each day
+    with probability 1 / interval, its size exponential with mean (daily cost × interval), so the
+    expected cost per day is the prior's share and single lumps can be large."""
+    out = np.zeros((n_paths, horizon + 1), dtype=np.int64)
+    if terms is None or prior is None or horizon == 0 or terms.daily_cost_minor <= 0:
+        return out
+    interval = prior.event_interval_days
+    mean_size = float(terms.daily_cost_minor * interval)
+    arrivals = rng.random((n_paths, horizon)) < 1.0 / interval
+    sizes = np.rint(rng.exponential(mean_size, size=(n_paths, horizon))).astype(np.int64)
+    out[:, 1:] = np.where(arrivals, -sizes, 0)
     return out
 
 
@@ -295,19 +371,28 @@ def _irregular_income(
     return out
 
 
-def prepare(inputs: ForecastInputs) -> Prepared:
+def prepare(inputs: ForecastInputs, prior: IrregularPrior | None = None) -> Prepared:
     """Expand the calendar and draw all randomness for an input set (seeded)."""
     if inputs.n_paths < 1 or inputs.horizon_days < 1:
         raise ValueError("n_paths and horizon_days must be positive")
+    if prior is not None and prior.currency != inputs.currency:
+        raise ValueError(f"prior is for {prior.currency}, forecast is in {inputs.currency}")
     dates = _horizon_dates(inputs.as_of, inputs.horizon_days)
     flows, pays = _known_flows(inputs, dates)
     history = split_history(inputs)
-    seq = np.random.SeedSequence(inputs.seed)
-    disc_seed, income_seed, one_off_seed = seq.spawn(3)
+    terms = prior_terms(prior, history, inputs.as_of)
+    # Children are indexed, so adding the fourth stream leaves the first three draws unchanged.
+    disc_seed, income_seed, one_off_seed, prior_seed = np.random.SeedSequence(inputs.seed).spawn(4)
     discretionary = _bootstrap(inputs, history, dates, pays, np.random.default_rng(disc_seed))
     irregular = _irregular_income(inputs, dates, np.random.default_rng(income_seed))
     one_offs = _one_off_expenses(
-        history, inputs.n_paths, inputs.horizon_days, np.random.default_rng(one_off_seed)
+        history,
+        inputs.n_paths,
+        inputs.horizon_days,
+        np.random.default_rng(one_off_seed),
+        rate_factor=1.0 if terms is None else float(1 - terms.weight),
+    ) + _prior_irregular(
+        terms, prior, inputs.n_paths, inputs.horizon_days, np.random.default_rng(prior_seed)
     )
     return Prepared(
         inputs=inputs,
@@ -453,8 +538,40 @@ def summarise(
     )
 
 
-def build_forecast(inputs: ForecastInputs) -> ForecastResult:
-    """Forecast the daily balance distribution for the horizon (docs/07 §6.4)."""
-    prep = prepare(inputs)
-    balances = balance_paths(prep, prep.flows)
-    return summarise(prep, balances, content_hash(inputs))
+def calibrate_paths(balances: IntArray, calibration: Calibration | None) -> IntArray:
+    """Rescale the paths' spread about each day's exact median (forecast/calibration.py)."""
+    if calibration is None or not calibration.calibrated:
+        return balances
+    medians = quantile_minor(balances, QUANTILES["p50"])
+    return apply_calibration(balances, medians, calibration)
+
+
+def forecast_hash(
+    inputs: ForecastInputs,
+    prior: IrregularPrior | None = None,
+    calibration: Calibration | None = None,
+    extra: dict[str, object] | None = None,
+) -> str:
+    """inputs_hash: the inputs alone when nothing else shapes the result (unchanged from v1.2),
+    otherwise the inputs together with the prior, the calibration and any scenario."""
+    if prior is None and calibration is None and extra is None:
+        return content_hash(inputs)
+    parts: dict[str, object] = {"inputs": inputs, **(extra or {})}
+    if prior is not None:
+        parts["prior"] = prior_json(prior)
+    if calibration is not None:
+        parts["calibration"] = calibration_json(calibration)
+    return content_hash(parts)
+
+
+def build_forecast(
+    inputs: ForecastInputs,
+    *,
+    prior: IrregularPrior | None = None,
+    calibration: Calibration | None = None,
+) -> ForecastResult:
+    """Forecast the daily balance distribution for the horizon (docs/07 §6.4). `prior` adds the
+    population prior for irregular expenses (§6.2b); `calibration` rescales the band (§6.8a)."""
+    prep = prepare(inputs, prior)
+    balances = calibrate_paths(balance_paths(prep, prep.flows), calibration)
+    return summarise(prep, balances, forecast_hash(inputs, prior, calibration))

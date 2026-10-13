@@ -29,6 +29,9 @@ def target(
     elif op == "<=":
         assert isinstance(threshold, int | float)
         met = value <= threshold
+    elif op == "<":
+        assert isinstance(threshold, int | float)
+        met = value < threshold
     elif op == "==":
         met = value == threshold
     elif op == "range":

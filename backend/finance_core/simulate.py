@@ -10,15 +10,18 @@ from __future__ import annotations
 import dataclasses
 from datetime import date, timedelta
 
-from backend.finance_core.calc import content_hash
 from backend.finance_core.calendar import next_working_day
+from backend.finance_core.forecast.calibration import Calibration
 from backend.finance_core.forecast.engine import (
     Flow,
     balance_paths,
+    calibrate_paths,
+    forecast_hash,
     pay_cycle_lows,
     prepare,
     summarise,
 )
+from backend.finance_core.forecast.prior import IrregularPrior
 from backend.finance_core.types import (
     ForecastInputs,
     ScenarioModifier,
@@ -68,7 +71,15 @@ def _apply(
     raise ScenarioError(f"unsupported modifier {mod.type!r}; v1 supports {sorted(SUPPORTED)}")
 
 
-def simulate(baseline_inputs: ForecastInputs, spec: ScenarioSpec) -> SimulationResult:
+def simulate(
+    baseline_inputs: ForecastInputs,
+    spec: ScenarioSpec,
+    *,
+    prior: IrregularPrior | None = None,
+    calibration: Calibration | None = None,
+) -> SimulationResult:
+    """Baseline and scenario on the same draws. `prior` and `calibration` must be the ones the
+    baseline forecast used, so the comparison stays like for like (docs/07 §6.2b, §6.8a)."""
     if spec.currency != baseline_inputs.currency:
         raise ScenarioError(
             f"scenario currency {spec.currency} differs from the forecast currency "
@@ -77,21 +88,21 @@ def simulate(baseline_inputs: ForecastInputs, spec: ScenarioSpec) -> SimulationR
     inputs = baseline_inputs
     if spec.horizon_days is not None and spec.horizon_days != inputs.horizon_days:
         inputs = dataclasses.replace(inputs, horizon_days=spec.horizon_days)
-    prep = prepare(inputs)
+    prep = prepare(inputs, prior)
     index = {d: i for i, d in enumerate(prep.dates)}
     flows = list(prep.flows)
     for mod in spec.modifiers:
         flows = _apply(flows, mod, inputs, index)
 
-    base_balances = balance_paths(prep, prep.flows)
-    sim_balances = balance_paths(prep, flows)
+    base_balances = calibrate_paths(balance_paths(prep, prep.flows), calibration)
+    sim_balances = calibrate_paths(balance_paths(prep, flows), calibration)
     sim_paydays = sorted({prep.dates[f.day] for f in flows if f.income_key is not None})
 
-    baseline = summarise(prep, base_balances, content_hash(inputs))
+    baseline = summarise(prep, base_balances, forecast_hash(inputs, prior, calibration))
     simulated = summarise(
         prep,
         sim_balances,
-        content_hash({"inputs": inputs, "scenario": spec}),
+        forecast_hash(inputs, prior, calibration, extra={"scenario": spec}),
         cycle_paydays=sim_paydays,
     )
     # Compare like with like: both lows measured over the baseline's pay-cycle windows.

@@ -78,6 +78,9 @@ def render(summary: dict[str, Any]) -> str:
         f"{_baseline(h['forecast.best_baseline_30'])} {_gbp(h['forecast.best_baseline_mae30_gbp'])}"
         f" | skill vs repeat-30 ≥ 0.20 (got {_f(h['forecast.skill_vs_B1_30'])}) | "
         f"{_met(summary, 'E-FC', 'FC-skill-B1')} |",
+        f"| Forecast | MASE @30 d | P1 | {_f(dig(s, 'forecast', 'by_horizon', '30', 'mase'))} | "
+        f"best naive {_f(dig(s, 'forecast', 'by_horizon', '30', 'best_baseline_mase'))} | < 1 "
+        f"and below the best naive | {_met(summary, 'E-FC', 'FC-mase', 'FC-mase-vs-best')} |",
         f"| Forecast | P10–P90 coverage (all h) | P1, P2, S4 | {cov_text} | — | 0.72–0.88 "
         f"(P1, P2) | {_met(summary, 'E-FC', 'FC-coverage-P1', 'FC-coverage-P2')} |",
         f"| Reconciliation | Corrupted CSVs caught | CSV-CORRUPT | "
@@ -128,7 +131,8 @@ def render(summary: dict[str, Any]) -> str:
         "E-FC": (
             f"MAE @7/30/60 d (P1) {_gbp(dig(s, 'forecast', 'by_horizon', '7', 'mae_gbp'))} / "
             f"{_gbp(dig(s, 'forecast', 'by_horizon', '30', 'mae_gbp'))} / "
-            f"{_gbp(dig(s, 'forecast', 'by_horizon', '60', 'mae_gbp'))}; pay-cycle-low error "
+            f"{_gbp(dig(s, 'forecast', 'by_horizon', '60', 'mae_gbp'))}; MASE @30 d (P1) "
+            f"{_f(dig(s, 'forecast', 'by_horizon', '30', 'mase'))}; pay-cycle-low error "
             f"{_gbp(dig(s, 'forecast', 'pay_cycle_low_mae_gbp'))}; pinball (P1) "
             f"{_gbp(dig(s, 'forecast', 'pinball_gbp_by_dataset', 'P1-base'))}"
         ),
@@ -196,6 +200,7 @@ def _forecast_arms(s: dict[str, Any]) -> list[str]:
         + " | — |"
     )
     out.append("")
+    out += _forecast_splits(s)
     head_mae = arms[headline_arm].get("mae30_gbp_by_dataset") or {}
     base_mae = dig(s, "forecast", "best_baseline_mae30_gbp_by_dataset") or {}
     worse = [d for d, v in head_mae.items() if d in base_mae and v > base_mae[d]]
@@ -208,6 +213,29 @@ def _forecast_arms(s: dict[str, Any]) -> list[str]:
         )
         out.append("")
     return out
+
+
+def _forecast_splits(s: dict[str, Any]) -> list[str]:
+    """Dev and test origins reported apart (docs/09 §3.8): engine choices were made on dev."""
+    splits = dig(s, "forecast", "by_split") or {}
+    if not splits:
+        return []
+    out = [
+        "**Forecast by split** (engine choices were made on dev origins only; test origins were "
+        "scored once):",
+        "",
+        "| Dataset | Split | Origins | Coverage | MASE @30 d | MAE @30 d | Pinball |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for name, by in splits.items():
+        for split in ("dev", "test"):
+            v = by.get(split) or {}
+            out.append(
+                f"| {name} | {split} | {_f(v.get('n_origins'))} | "
+                f"{_f(v.get('coverage_p10_p90'))} | {_f(v.get('mase30'))} | "
+                f"{_gbp(v.get('mae30_gbp'))} | {_gbp(v.get('pinball_gbp'))} |"
+            )
+    return [*out, ""]
 
 
 def update(readme: str, block: str) -> str:
