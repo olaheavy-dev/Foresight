@@ -25,7 +25,7 @@ features:
   forecast:
     stage: 1
     title: 90-day cash-flow forecast with uncertainty band
-    enabled: false
+    enabled: true
     suites: [E-FC]
   simulation:
     stage: 1
