@@ -25,6 +25,9 @@ BUILTIN_PROFILES: tuple[FormatProfile, ...] = (
             "description": ("name", "description"),
             "bank_category": ("category",),
             "amount": ("amount",),
+            # Monzo also writes each amount into Money Out / Money In: a cross-check only.
+            "money_out": ("money out",),
+            "money_in": ("money in",),
             "currency": ("currency",),
         },
         date_format=DateFormat(order="DMY"),

@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from datetime import date
 
 from backend.finance_core.categorise.normalise import parse_narration
-from backend.finance_core.categorise.pack import CategorisationPack
+from backend.finance_core.categorise.pack import CategorisationPack, bank_category_key
 from backend.finance_core.categorise.rules import (
     CategoriseContext,
     MemoryEntry,
@@ -91,7 +91,8 @@ def _bank_hint(table: TableImport, pack: CategorisationPack) -> str | None:
     if table.profile is None:
         return None
     first = table.profile.label.split()[0].lower() if table.profile.label else ""
-    return first if first in pack.bank_category_priors else None
+    key = bank_category_key(first)
+    return key if key in pack.bank_category_priors else None
 
 
 def _batch(

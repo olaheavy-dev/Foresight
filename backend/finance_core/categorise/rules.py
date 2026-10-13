@@ -16,7 +16,12 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 
 from backend.finance_core.categorise.normalise import parse_narration
-from backend.finance_core.categorise.pack import CategorisationPack, Rule, contains_phrase
+from backend.finance_core.categorise.pack import (
+    CategorisationPack,
+    Rule,
+    bank_category_key,
+    contains_phrase,
+)
 from backend.finance_core.types import (
     Categorisation,
     CategorisationMethod,
@@ -251,7 +256,9 @@ def categorise(
     if ruled is not None:
         return ruled
     if txn.bank_category and ctx.bank:
-        prior = pack.bank_category_priors.get(ctx.bank, {}).get(txn.bank_category.lower())
+        prior = pack.bank_category_priors.get(bank_category_key(ctx.bank), {}).get(
+            bank_category_key(txn.bank_category)
+        )
         if prior and prior != "other":
             return _result(
                 txn,

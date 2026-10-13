@@ -18,8 +18,6 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-import yaml
-
 from backend.finance_core.calendar import holiday_set
 from backend.finance_core.categorise.normalise import parse_narration
 from backend.finance_core.categorise.pack import CategorisationPack, load_pack
@@ -45,26 +43,7 @@ def uk_categorisation_pack() -> CategorisationPack:
 
 @lru_cache
 def uk_locale_pack() -> LocalePack:
-    """The uk pack's identity fields in the shape `locale.load_locale_pack` validates."""
-    data = yaml.safe_load(UK_PACK_PATH.read_text(encoding="utf-8"))
-    formats = data.get("formats") or {}
-    hol = data.get("holidays") or {}
-    return load_locale_pack(
-        yaml.safe_dump(
-            {
-                "key": data["id"],
-                "country": data["country"],
-                "subdivision": hol.get("subdiv"),
-                "default_currency": data["currency"],
-                "locale": data["locale"],
-                "date_order": (formats.get("date_orders") or ["DMY"])[0],
-                "numbers": {
-                    "decimal_sep": formats.get("decimal_separator", "."),
-                    "group_sep": formats.get("grouping_separator", ","),
-                },
-            }
-        )
-    )
+    return load_locale_pack(UK_PACK_PATH.read_text(encoding="utf-8"))
 
 
 @lru_cache

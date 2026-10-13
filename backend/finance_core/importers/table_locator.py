@@ -3,6 +3,13 @@
 Real exports put summaries above the table, split one file into several tables (one per currency
 pocket), and end tables with `Total` or `---------` rows. The locator scans for header-like rows
 and returns each table with its title (the nearest label row above it) and body rows.
+
+A header is recognised in one of two ways, tried in this order:
+1. **By its words**: it names a date, an amount and a description column (common English headers).
+2. **By the shape of the rows under it**: a row of text labels followed by at least
+   `MIN_DATA_ROWS` rows of the same width that each hold a date and an amount. This needs no header
+   vocabulary, so it also finds tables whose column names we have never seen. Such a table ends at
+   the first row that is not a transaction row (a totals block, a blank line, a separator).
 """
 
 from __future__ import annotations
@@ -22,6 +29,16 @@ TEXT_WORDS = (
     "particulars", "transaction",
 )  # fmt: skip
 _SEPARATOR = re.compile(r"^[-=_*\s]{3,}$")
+MIN_DATA_ROWS = 2
+_DATE_CELL = re.compile(
+    r"^(\d{1,4}[/\-.]\d{1,2}[/\-.]\d{2,4}"  # 07/10/26, 2026-10-07, 07.10.2026
+    r"|\d{1,2}[\s\-]?[A-Za-z]{3,9}\.?[\s\-,]*\d{2,4})"  # 7 Oct 2026, 07-Oct-26
+    r"(?:[ T]\d{1,2}:\d{2}(?::\d{2})?)?$"
+)
+_AMOUNT_CELL = re.compile(
+    r"^[(+\-−]?\s*[£€$₹¥]?\s*[(+\-−]?\d{1,3}(?:[.,\s'’]?\d{3})*(?:[.,]\d{1,3})?\)?"
+    r"\s*(?:CR|DR|Cr|Dr|cr|dr)?$"
+)
 _NUMERICISH = re.compile(r"^[\s£€$₹¥(+\-−]*[\d.,\s]+[)A-Za-z\s]*$")
 
 
@@ -69,6 +86,52 @@ def is_header_like(row: list[str]) -> bool:
     return has_date and has_amount and has_text
 
 
+def _width(row: list[str]) -> int:
+    cells = _cells(row)
+    for i in range(len(cells), 0, -1):
+        if cells[i - 1]:
+            return i
+    return 0
+
+
+def is_date_cell(text: str) -> bool:
+    return bool(_DATE_CELL.match(text.strip()))
+
+
+def is_amount_cell(text: str) -> bool:
+    text = text.strip()
+    return bool(text) and not is_date_cell(text) and bool(_AMOUNT_CELL.match(text))
+
+
+def is_transaction_row(row: list[str]) -> bool:
+    """At least three filled cells, one of them a date and another an amount."""
+    cells = [c for c in _cells(row) if c]
+    if len(cells) < 3:
+        return False
+    return any(is_date_cell(c) for c in cells) and any(is_amount_cell(c) for c in cells)
+
+
+def _is_label_row(row: list[str]) -> bool:
+    cells = [c for c in _cells(row) if c]
+    return (
+        len(cells) >= 3
+        and len(set(cells)) == len(cells)
+        and not any(is_date_cell(c) or is_amount_cell(c) for c in cells)
+        and not any(_SEPARATOR.match(c) for c in cells)
+    )
+
+
+def is_header_by_shape(rows: list[list[str]], i: int) -> bool:
+    """A label row whose next MIN_DATA_ROWS rows are transaction rows no wider than it."""
+    if not _is_label_row(rows[i]):
+        return False
+    width = _width(rows[i])
+    below = rows[i + 1 : i + 1 + MIN_DATA_ROWS]
+    return len(below) == MIN_DATA_ROWS and all(
+        is_transaction_row(r) and 3 <= _width(r) <= width for r in below
+    )
+
+
 def _ends_table(row: list[str]) -> bool:
     cells = _cells(row)
     non_empty = [c for c in cells if c]
@@ -100,7 +163,8 @@ def locate_tables(text: str) -> list[Table]:
     tables: list[Table] = []
     i = 0
     while i < len(rows):
-        if not is_header_like(rows[i]):
+        by_words = is_header_like(rows[i])
+        if not by_words and not is_header_by_shape(rows, i):
             i += 1
             continue
         header_row = i
@@ -108,6 +172,8 @@ def locate_tables(text: str) -> list[Table]:
         body: list[tuple[int, tuple[str, ...]]] = []
         i += 1
         while i < len(rows) and not _ends_table(rows[i]) and not is_header_like(rows[i]):
+            if not by_words and not is_transaction_row(rows[i]):
+                break
             cells = _cells(rows[i])
             body.append((i, tuple(cells + [""] * (len(headers) - len(cells)))))
             i += 1

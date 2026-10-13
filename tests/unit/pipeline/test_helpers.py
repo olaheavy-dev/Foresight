@@ -32,6 +32,18 @@ def test_uk_pack_loads_for_gb_workspaces() -> None:
     assert date(2027, 3, 26) in holidays  # Good Friday 2027
 
 
+def test_one_pack_file_serves_both_loaders() -> None:
+    """The locale loader and the categorisation loader read the same identity keys."""
+    locale, cat = packs.locale_pack("GB"), packs.categorisation_pack("GB")
+    assert (cat.pack_id, cat.country, cat.currency) == (
+        locale.key,
+        locale.country,
+        locale.default_currency,
+    )
+    assert (cat.holiday_country, cat.holiday_subdiv) == (locale.country, locale.subdivision)
+    assert (locale.decimal_sep, locale.group_sep, locale.grouping) == (".", ",", "thousands")
+
+
 def test_format_profiles_round_trip_through_json() -> None:
     for profile in BUILTIN_PROFILES:
         assert ledger.profile(ledger.profile_json(profile)) == profile

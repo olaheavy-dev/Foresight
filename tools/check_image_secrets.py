@@ -36,6 +36,9 @@ FORBIDDEN_FILE = re.compile(
     re.IGNORECASE,
 )
 ALLOWED_FILES = re.compile(r"(^|/)\.env\.example$")
+# The synthetic demo personas the backend seeds on start (DEMO-01). Generated, fictional and
+# registered in evals/datasets/MANIFEST.json; nothing else under srv/ may be a statement file.
+DEMO_DATA = re.compile(r"^srv/demo-data/P[0-9]+-base/exports/[^/]+\.csv$")
 
 
 def env_findings(env: Iterable[str]) -> list[str]:
@@ -57,7 +60,8 @@ def path_findings(paths: Iterable[str]) -> list[str]:
         in_app = path.startswith(APP_ROOTS) and not any(part in path for part in SKIP_PARTS)
         if not (at_root or in_app):
             continue
-        if FORBIDDEN_FILE.search(path) and not ALLOWED_FILES.search(path):
+        allowed = ALLOWED_FILES.search(path) or DEMO_DATA.match(path)
+        if FORBIDDEN_FILE.search(path) and not allowed:
             findings.append(f"file {path} must not be in an image")
     return findings
 

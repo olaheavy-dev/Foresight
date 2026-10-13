@@ -4,6 +4,7 @@ from datetime import date
 
 import pytest
 
+from backend.finance_core.categorise.pack import bank_category_key
 from backend.finance_core.categorise.rules import (
     CategoriseContext,
     MemoryEntry,
@@ -50,6 +51,25 @@ def test_unknown_outflow_goes_to_review() -> None:
     result = categorise(txn("ZZQX TRADING", -500), uk_pack())
     assert result.category_key == "uncategorised"
     assert needs_review(result)
+
+
+@pytest.mark.parametrize(
+    ("bank", "bank_category"),
+    [("monzo", "Eating out"), ("Monzo", "eating_out"), ("MONZO", "Eating-Out ")],
+)
+def test_bank_category_names_match_however_the_bank_writes_them(
+    bank: str, bank_category: str
+) -> None:
+    row = txn("ZZQX BISTRO", -1800, bank_category=bank_category)
+    result = categorise(row, uk_pack(), CategoriseContext(bank=bank))
+    assert result.category_key == "food.eating_out"
+
+
+def test_bank_category_key_is_canonical() -> None:
+    assert bank_category_key("Eating out") == "eating_out"
+    assert bank_category_key(" Personal care ") == "personal_care"
+    assert bank_category_key("Bills & utilities") == "bills_utilities"
+    assert set(uk_pack().bank_category_priors["revolut"]) >= {"restaurants", "groceries"}
 
 
 def test_bank_category_is_only_a_weak_prior() -> None:

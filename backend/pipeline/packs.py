@@ -7,8 +7,6 @@ from datetime import date
 from functools import lru_cache
 from pathlib import Path
 
-import yaml
-
 from backend.finance_core.categorise.pack import CategorisationPack, load_pack
 from backend.finance_core.locale import LocalePack, holiday_dates, load_locale_pack
 
@@ -35,24 +33,7 @@ def categorisation_pack(country: str) -> CategorisationPack:
 
 @lru_cache
 def locale_pack(country: str) -> LocalePack:
-    """The pack file uses the categorisation schema (id, currency, formats.date_orders, holidays);
-    map its identity fields onto the keys the locale loader validates."""
-    data = yaml.safe_load(_pack_text(country)) or {}
-    cpack = categorisation_pack(country)
-    formats = data.get("formats") or {}
-    identity = {
-        "key": data.get("key", cpack.pack_id),
-        "country": cpack.holiday_country,
-        "subdivision": cpack.holiday_subdiv,
-        "default_currency": data.get("default_currency", cpack.currency),
-        "locale": data["locale"],
-        "date_order": data.get("date_order") or (formats.get("date_orders") or ["DMY"])[0],
-        "numbers": {
-            "decimal_sep": formats.get("decimal_separator", "."),
-            "group_sep": formats.get("grouping_separator", ","),
-        },
-    }
-    return load_locale_pack(yaml.safe_dump(identity))
+    return load_locale_pack(_pack_text(country))
 
 
 def holidays(country: str, days: Iterable[date]) -> frozenset[date]:

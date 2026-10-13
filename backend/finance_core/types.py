@@ -133,9 +133,12 @@ class ImportResult:
     format_profile_id: str | None  # built-in / saved / proposed profile used
     detected_currency: str | None
     currency_provenance: str  # "column" | "symbol" | "profile" | "home_default" | "user_confirmed"
-    date_format: str | None  # strptime pattern
+    date_format: str | None  # DateFormat.describe(), e.g. "DMY" or "DMY-name"
     reconciliation: ReconciliationResult
-    questions: tuple[Question, ...] = ()  # non-empty ⇒ the batch is not committed yet
+    # Questions of a blocking kind (currency, date_order, decimal_separator, columns) keep the
+    # batch uncommitted until answered. "balance_today" never blocks: without a balance the
+    # forecast runs in relative mode until the user gives one (csv_statement.BLOCKING_KINDS).
+    questions: tuple[Question, ...] = ()
     warnings: tuple[str, ...] = ()
     file_sha256: str = ""
 

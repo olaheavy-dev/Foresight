@@ -1,11 +1,14 @@
 # Foresight locale pack: United Kingdom (`uk`). DATA ONLY — no engine code may hard-code any of it.
 #
-# Schema (v1). Consumers: backend/finance_core/locale.py (general loader, fork B) and
+# Schema (v2: one identity schema shared by both loaders). Consumers: backend/finance_core/locale.py (general loader, fork B) and
 # backend/finance_core/categorise/pack.py (categorisation/detection subset). Unknown keys are ignored.
 #
-#   id, country, currency, locale       identity
-#   formats                             date_orders (preferred first), decimal/grouping separators
-#   holidays                            {source, country, subdiv} for python-holidays
+#   key, country, subdivision           identity; country (ISO 3166-1) and subdivision also select
+#                                       the python-holidays calendar
+#   default_currency, locale            ISO 4217 home currency, BCP 47 locale
+#   date_order                          preferred order when a file's dates are ambiguous (DMY|MDY|YMD)
+#   numbers                             {decimal_sep, group_sep, grouping: thousands|lakh}
+#   month_names                         optional extra month spellings {name: month number}
 #   payday                              weekend/holiday shift for pay, December early-pay handling
 #   debit_posting                       weekend/holiday shift for DD/SO posting
 #   channels                            [{channel, bank_types: [exact bank "Type" strings],
@@ -17,25 +20,23 @@
 #   categories                          [{key, nature, default_flow_kind}]  (docs/07 §3.3 taxonomy)
 #   rules                               [{category, flow_kind?, direction: out|in|any,
 #                                         merchants: [tokens], patterns: [regex]}]
-#   bank_category_priors                {bank: {bank_category: category_key}}  (weak prior only)
+#   bank_category_priors                {bank: {bank_category: category_key}}  (weak prior only; bank and
+#                                       category names are matched by bank_category_key())
 #   protected_categories                never targeted by cut/cap/cancel advice
 #   seasonal_defaults                   {category_key: [active months]} when history < 12 months
 #   wording                             regulator + tone notes
 
-id: uk
+key: uk
 country: GB
-currency: GBP
+subdivision: ENG
+default_currency: GBP
 locale: en-GB
+date_order: DMY
 
-formats:
-  date_orders: [DMY, YMD]
-  decimal_separator: "."
-  grouping_separator: ","
-
-holidays:
-  source: python-holidays
-  country: GB
-  subdiv: ENG
+numbers:
+  decimal_sep: "."
+  group_sep: ","
+  grouping: thousands
 
 payday:
   weekend_shift: previous_working_day

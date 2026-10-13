@@ -43,6 +43,10 @@ def test_secret_environment_is_blocked(entry: str) -> None:
         "app/certs/server.pem",
         "srv/statement.pdf",
         "srv/exports/monzo.csv",
+        "srv/demo-data/P1-base/monzo.csv",
+        "srv/demo-data/P1-base/exports/nested/monzo.csv",
+        "srv/demo-data/private/exports/monzo.csv",
+        "srv/demo-data/P1-base/exports/statement.pdf",
         ".env",
     ],
 )
@@ -59,6 +63,8 @@ def test_secret_and_statement_files_are_blocked(path: str) -> None:
         "usr/local/lib/python3.12/site-packages/pkg/data.csv",
         "srv/.env.example",
         "etc/ssl/certs/ca.pem",
+        "srv/demo-data/P1-base/exports/monzo.csv",
+        "srv/demo-data/P2-base/exports/statement.csv",
     ],
 )
 def test_normal_and_dependency_files_pass(path: str) -> None:

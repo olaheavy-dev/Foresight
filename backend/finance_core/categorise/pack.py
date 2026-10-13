@@ -75,6 +75,12 @@ class CategorisationPack:
         return info.default_flow_kind if info else FlowKind.SPENDING
 
 
+def bank_category_key(name: str) -> str:
+    """Canonical key for a bank or bank-category name: "Eating out" / "eating_out" / "Eating-Out"
+    all become "eating_out". Applied to the pack's keys and to every lookup."""
+    return re.sub(r"[^a-z0-9]+", "_", name.strip().lower()).strip("_")
+
+
 def _strs(value: Any) -> tuple[str, ...]:
     return tuple(str(v).upper() for v in (value or ()))
 
@@ -103,14 +109,14 @@ def load_pack(yaml_text: str) -> CategorisationPack:
                 patterns=tuple(re.compile(str(p)) for p in r.get("patterns") or ()),
             )
         )
-    holidays = data.get("holidays") or {}
     payday = data.get("payday") or {}
+    country = str(data.get("country", ""))
     return CategorisationPack(
-        pack_id=str(data.get("id", "")),
-        country=str(data.get("country", "")),
-        currency=str(data.get("currency", "")),
-        holiday_country=str(holidays.get("country", "")),
-        holiday_subdiv=str(holidays["subdiv"]) if holidays.get("subdiv") else None,
+        pack_id=str(data.get("key", "")),
+        country=country,
+        currency=str(data.get("default_currency", "")).upper(),
+        holiday_country=country,
+        holiday_subdiv=str(data["subdivision"]) if data.get("subdivision") else None,
         payday_shift=str(payday.get("weekend_shift", "previous_working_day")),
         debit_shift=str((data.get("debit_posting") or {}).get("weekend_shift", "next_working_day")),
         one_off_multiple=float(payday.get("one_off_multiple", 1.5)),
@@ -138,7 +144,9 @@ def load_pack(yaml_text: str) -> CategorisationPack:
         categories=categories,
         rules=tuple(rules),
         bank_category_priors={
-            str(bank): {str(k).lower(): str(v) for k, v in (mapping or {}).items()}
+            bank_category_key(str(bank)): {
+                bank_category_key(str(k)): str(v) for k, v in (mapping or {}).items()
+            }
             for bank, mapping in (data.get("bank_category_priors") or {}).items()
         },
         protected_categories=frozenset(str(c) for c in data.get("protected_categories") or ()),

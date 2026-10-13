@@ -97,9 +97,8 @@ def heuristic_profile(headers: Sequence[str]) -> tuple[FormatProfile | None, Que
             prompt=f"Please confirm the columns in this file (proposed: {proposal}).",
             options=tuple(normalise_header(h) for h in headers),
         )
-    convention = "signed" if "amount" in columns else "in_out"
-    if convention == "in_out":
-        columns.pop("amount", None)
+    # Split in/out columns win; a signed amount column alongside them is kept as a cross-check.
+    convention = "in_out" if "money_in" in columns and "money_out" in columns else "signed"
     return (
         FormatProfile(
             profile_id="heuristic." + hashlib.sha256("|".join(norm).encode()).hexdigest()[:12],
@@ -207,16 +206,22 @@ def import_table(
 
     rows: list[ParsedRow] = []
     errors: list[str] = []
+    disagreements: list[str] = []
     skipped_zero = 0
     for file_row, cells in table.rows:
         try:
             row = _parse_row(table.headers, cells, file_row, resolved, currency, number_format,
                              date_format, pack)  # fmt: skip
+            mismatch = _redundant_amounts_disagree(
+                table.headers, cells, resolved, currency, number_format
+            )
         except (MoneyError, ValueError) as exc:
             errors.append(f"row {file_row}: {exc}")
             continue
         if row is None:
             continue
+        if mismatch:
+            disagreements.append(f"row {file_row}: {mismatch}")
         if row.amount_minor == 0 and resolved.skip_zero_amount:
             skipped_zero += 1
             continue
@@ -231,6 +236,13 @@ def import_table(
                                                           date_format, rec, (), warnings,
                                                           file_sha256))  # fmt: skip
     rec = reconcile(rows, resolved.has_balance)
+    if disagreements:
+        # The file states each amount twice and the two disagree (e.g. the sign convention is
+        # inverted): we can't know which is right, so nothing from this table is committed.
+        failures = tuple(disagreements) + rec.failures
+        rec = ReconciliationResult(
+            ReconciliationStatus.FAILED, rec.rows_checked, len(failures), failures
+        )
     out_rows: tuple[ParsedRow, ...] = (
         tuple(rows) if rec.status != ReconciliationStatus.FAILED else ()
     )
@@ -300,6 +312,35 @@ def _parse_row(
         bank_category=_cell(headers, cells, cols.get("bank_category", ())) or None,
         bank_type=_cell(headers, cells, cols.get("bank_type", ())) or None,
         posted_time=_parse_time(_cell(headers, cells, cols.get("time", ()))),
+    )
+
+
+def _redundant_amounts_disagree(
+    headers: Sequence[str],
+    cells: Sequence[str],
+    profile: FormatProfile,
+    currency: str,
+    nf: NumberFormat,
+) -> str | None:
+    """Some exports state each amount twice: a signed amount and split money in / money out
+    columns. When both are filled for a row they must give the same signed value; a mismatch means
+    the columns or the sign convention aren't what the profile says."""
+    cols = profile.columns
+    names = (cols.get("amount", ()), cols.get("money_in", ()), cols.get("money_out", ()))
+    if not all(names):
+        return None
+    texts = [_cell(headers, cells, n) for n in names]
+    if not texts[0] or not (texts[1] or texts[2]):
+        return None
+    signed, money_in, money_out = (
+        parse_amount(t, currency, nf.decimal_sep, nf.group_sep) if t else 0 for t in texts
+    )
+    split = abs(money_in) - abs(money_out)
+    if signed == split:
+        return None
+    return (
+        f"amount {texts[0]} disagrees with money in/out ({texts[1] or '-'} / {texts[2] or '-'}); "
+        "the sign convention or columns don't match this format"
     )
 
 
