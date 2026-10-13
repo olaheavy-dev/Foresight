@@ -354,6 +354,8 @@ Rule versions are stored with each `RuleResult` (`rule_id@version`) so the audit
 | `explain_recommendation` | none (reads `rec_…` + `ver_…`) | EvidencePanel, AgentExecutionTimeline |
 | `smalltalk_or_out_of_scope` | none | Narrative (polite scope statement) |
 
+**Affordability with no date (owner decision, 13 Oct 2026):** an `affordability` question with an amount but no date is answered straight away as a payment made today, the most cautious choice. It is simulated as a one-off outflow on the forecast's first day (the earliest a payment can land after the latest known balance, as_of + 1). The answer says "Assuming you pay today", offers a "Change date" follow-up (paying on the next payday instead, a date from the forecast's own pay cycles), and the assumption is stored in the run's scenario spec (`assumptions`) and in the simulation's stored parameters (the evidence). A missing **amount** still gets a clarifying question. Any wording about one purchase or payment ("can I afford…", "is £800 ok?", "what happens if I pay £1,200 for…") is `affordability`.
+
 Rules: if intent confidence is below 0.6, return a clarifying-question block with 2–4 options and no routing. When findings or the forecast for the current `data_version` already exist, **reuse** them (cache hit recorded in the AgentStep as `cached=true`; forecast reuse also requires matching prefs_version, currency, scope/account, as_of, horizon and engine version) instead of recomputing. Every route ends in `compose`. A whole answer is reused through the exact answer cache (`05` §4.2 stage 3) when intent, slots and every version in its key match.
 
 ---
@@ -588,7 +590,7 @@ Content selection is deterministic: highest-severity active risk, else highest-s
 | H2 Low-confidence categorisation review | After W1 | Review queue, sorted by amount × (1 − confidence) | No: forecast runs; corrections trigger W2 |
 | H3 Transfer/duplicate confirmation | After W1 | Inline "these look like the same / a transfer" prompts | No |
 | H4 Scenario spec confirmation | W3 | `interrupt()` after parse; user edits typed chips | Yes |
-| H5 Clarifying question | W3/W5 | Response = options block | Yes |
+| H5 Clarifying question | W3/W5 | Response = options block. Not for an affordability question that has an amount but no date: that assumes payment today (§6.2, owner decision 13 Oct 2026) | Yes |
 | H6 Recommendation accept/dismiss/snooze | After W4 | InterventionCard actions → AuditEvent; dismissal reason feeds Advisor context (no repeat for 30 days) | No |
 | H7 Balance anchor when missing/stale | Anytime | "Add today's balance" prompt | No: relative mode until then |
 | H8 Confirm detected money map | After W1 | "Confirm, don't type" cards: detected income streams (amount, payday rule, account), recurring bills, own-account and card-settlement transfers, likely partner contributions and reimbursements. Confirm/correct/skip; provenance becomes `confirmed` | No: forecast uses detected values (badged "detected") until confirmed |

@@ -244,6 +244,34 @@ def test_record_then_replay_without_key_or_network(tmp_path: Path) -> None:
     assert replayed.result.response_id == live.result.response_id
 
 
+def test_record_mode_takes_the_path_replay_takes(tmp_path: Path) -> None:
+    """A request recorded under a later strategy (the first was rejected live) is answered from
+    that recording in record mode too, exactly as replay answers it; nothing goes live."""
+    import json as _json
+
+    first = ScriptedCompletions(
+        bad_request(),  # json_schema rejected live
+        ok(None, tool_arguments=_json.dumps({"category": "groceries", "confidence": 0.9})),
+    )
+    rec1 = client(first, settings=settings(mesh_cassette_mode="record"),
+                  cassettes=CassetteStore(tmp_path, live_run_sha="abc1234"))  # fmt: skip
+    one = rec1.structured(tier=ModelTier.FAST, messages=MSG, output=Category, name="cat")
+    assert one.strategy == "tools"
+
+    # A later recording session where json_schema would now answer differently.
+    second = ScriptedCompletions(json_ok({"category": "other", "confidence": 0.5}))
+    rec2 = client(second, settings=settings(mesh_cassette_mode="record"),
+                  cassettes=CassetteStore(tmp_path, live_run_sha="abc1234"))  # fmt: skip
+    two = rec2.structured(tier=ModelTier.FAST, messages=MSG, output=Category, name="cat")
+    assert two.value == one.value
+    assert second.calls == []  # no live call
+
+    player = MeshClient(settings=settings(mesh_cassette_mode="replay", mesh_api_key=""),
+                        cassettes=CassetteStore(tmp_path))  # fmt: skip
+    three = player.structured(tier=ModelTier.FAST, messages=MSG, output=Category, name="cat")
+    assert three.value == one.value
+
+
 def test_replay_of_changed_request_is_a_cassette_miss(tmp_path: Path) -> None:
     player = MeshClient(
         settings=settings(mesh_cassette_mode="replay", mesh_api_key=""),

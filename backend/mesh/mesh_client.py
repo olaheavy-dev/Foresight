@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import json
 import re
+import threading
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -367,6 +368,7 @@ class MeshClient:
     ) -> None:
         self._settings = settings or get_settings()
         self._mode = self._settings.mesh_cassette_mode
+        self._local = threading.local()  # per-thread replay pass in record mode
         if self._mode not in {"live", "record", "replay"}:
             raise MeshConfigError(f"unknown MESH_CASSETTE_MODE '{self._mode}'")
         if client is None and self._mode != "replay":
@@ -475,6 +477,14 @@ class MeshClient:
         primary, _ = self.models_for(tier)
         preferred = capabilities_for(primary).structured_mode
         order = [preferred, *(s for s in ("json_schema", "tools") if s != preferred), "json_object"]
+        if self._mode == "record":
+            # Record mode takes the path replay will take: if this request is already recorded
+            # under any strategy, use that answer (replay falls through to it); only a request
+            # recorded under none goes live. Otherwise record and replay diverge.
+            recorded = self._replay_pass(order, name, schema, tier, safe, output, max_tokens,
+                                         temperature)  # fmt: skip
+            if recorded is not None:
+                return recorded
         last_unsupported: Exception | None = None
         first_miss: CassetteMiss | None = None
         for strategy in order:
@@ -502,6 +512,32 @@ class MeshClient:
         raise MeshCallError(
             f"no structured-output strategy was accepted for tier '{tier.value}'"
         ) from last_unsupported
+
+    def _replay_pass(
+        self,
+        order: list[str],
+        name: str,
+        schema: dict[str, Any],
+        tier: ModelTier,
+        safe: list[dict[str, str]],
+        output: type[T],
+        max_tokens: int,
+        temperature: float,
+    ) -> StructuredResult[T] | None:
+        """The answer replay would give (first recorded strategy in order), or None."""
+        self._local.replay_only = True
+        try:
+            for strategy in order:
+                try:
+                    return self._structured_with(
+                        _Structured(name=name, schema=schema, strategy=strategy),
+                        tier, safe, output, max_tokens, temperature,
+                    )  # fmt: skip
+                except (CassetteMiss, _UnsupportedRequest):
+                    continue
+            return None
+        finally:
+            self._local.replay_only = False
 
     def check(self) -> bool:
         """Metadata call that spends no credits: confirms the key and base URL work."""
@@ -592,9 +628,14 @@ class MeshClient:
         key = request_hash(request)
         started = time.monotonic()
 
-        replayable = self._mode == "replay" or (
-            self._mode == "record" and self._cassettes is not None and self._cassettes.has(request)
-        )
+        if getattr(self._local, "replay_only", False):
+            replayable = True  # record mode's replay pass (per thread): never call live here
+        else:
+            replayable = self._mode == "replay" or (
+                self._mode == "record"
+                and self._cassettes is not None
+                and self._cassettes.has(request)
+            )
         if replayable:
             # Record mode re-uses what is already recorded, so re-running a recording session
             # only pays for requests that are new or changed.
