@@ -700,10 +700,18 @@ Test: freeze the same accepted ledger interpretations, forecast inputs and typed
 | Coordinator Understand (standalone rewrite + intent) and block plan | fast | Short classification, high volume; one call does both rewrite and intent | 0 |
 | Ledger categorisation | fast | Batched, constrained taxonomy; quality measured in evals | 0 |
 | Ledger format/layout profile proposal (CSV and PDF) | fast → reasoning on second attempt | Rare (new bank formats only); output checked by reconciliation and/or user preview | 0 |
-| Analyst ranking & wording | reasoning | Judgement about salience; one call per refresh | 0.2 |
+| Analyst ranking & wording | reasoning | Judgement about salience; one call per refresh | model default* |
 | Forecaster scenario parse | fast → reasoning if multi-modifier or low confidence | Most scenarios are simple | 0 |
-| Advisor | reasoning | Hardest judgement task | 0.3 |
-| Verifier judge | reasoning, preferably a different model from Advisor | Independence | 0 |
+| Advisor | reasoning | Hardest judgement task | model default* |
+| Verifier judge | verifier tier: a different provider from the Advisor | Independence | 0 |
 | Digest headline | fast | ≤ 20 words | 0.3 |
 
-Model IDs are configuration (`MODEL_TIERS` in settings), chosen from Mesh's catalogue (OPEN #1). The eval suite records which models produced each result, so swapping a model shows up as a measurable change.
+Model IDs are configuration (settings `MESH_MODEL_<TIER>` and `MESH_MODEL_<TIER>_FALLBACK`), chosen from Mesh's catalogue and confirmed by a live probe on 13 Oct 2026:
+
+| Tier | Primary | Fallback |
+|---|---|---|
+| fast | `openai/gpt-6-luna` | `anthropic/claude-haiku-5.5` |
+| reasoning | `anthropic/claude-sonnet-5.5` | `google/gemini-3.1-pro` |
+| verifier | `openai/gpt-6.1-sol` | `google/gemini-3.1-pro` |
+
+\* **Anthropic-tier temperatures are the model default.** Through Mesh, Anthropic models reject a `temperature` parameter and a forced `tool_choice`, so the client never sends either to them (`backend/mesh/capabilities.py`); their structured output uses `json_schema`, or tool calls with `tool_choice: "auto"`. `google/gemini-3.1-pro` uses the tool-call path because its `json_schema` output didn't parse. Each `AgentStep` records the temperature actually sent, with `null` meaning "model default". The eval suite records which models produced each result, so swapping a model shows up as a measurable change.

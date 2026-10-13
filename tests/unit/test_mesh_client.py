@@ -43,7 +43,7 @@ def _client(completions: StubCompletions, **overrides: str) -> MeshClient:
         mesh_model_reasoning=overrides.get("reasoning", "reason-primary"),
     )
     stub = SimpleNamespace(chat=SimpleNamespace(completions=completions))
-    return MeshClient(settings=settings, client=stub)  # type: ignore[arg-type]
+    return MeshClient(settings=settings, client=stub, sleep=lambda _: None)  # type: ignore[arg-type]
 
 
 def _ask(client: MeshClient, content: str = "hello") -> Any:
@@ -74,7 +74,8 @@ def test_falls_back_when_primary_fails() -> None:
     result = _ask(_client(completions))
     assert result.model == "fast-backup"
     assert result.used_fallback is True
-    assert [c["model"] for c in completions.calls] == ["fast-primary", "fast-backup"]
+    # The primary is retried twice (docs/06 §10.1) before one attempt on the fallback.
+    assert [c["model"] for c in completions.calls] == ["fast-primary"] * 3 + ["fast-backup"]
 
 
 def test_raises_when_all_models_fail() -> None:

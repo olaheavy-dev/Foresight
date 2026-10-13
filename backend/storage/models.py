@@ -340,3 +340,218 @@ class AuditEvent(Base):
     occurred_at: Mapped[str] = mapped_column(String(40))  # ISO 8601 UTC; part of the hash
     prev_hash: Mapped[str] = mapped_column(String(64))
     hash: Mapped[str] = mapped_column(String(64))
+
+
+# ----------------------------------------------------------------------------- agent runtime
+# Migration 0004 (docs/06 §7, §10.2, §11; docs/05 §4.2). Runs, steps, verification results and
+# answer snapshots are the audit trail; steps, verification results and snapshots are append-only.
+
+
+class Thread(Base):
+    """A conversation in the AI Workspace."""
+
+    __tablename__ = "thread"
+    __table_args__ = (UniqueConstraint("workspace_id", "id", name="uq_thread_workspace_id"),)
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)  # thr_
+    workspace_id: Mapped[str] = _workspace_fk()
+    title: Mapped[str] = mapped_column(String(200), server_default="")
+    created_at: Mapped[datetime] = _created_at()
+
+
+class AgentRun(Base):
+    """One workflow execution (docs/05 §8): the trace that its AgentSteps are the spans of."""
+
+    __tablename__ = "agent_run"
+    __table_args__ = (
+        UniqueConstraint("workspace_id", "id", name="uq_agent_run_workspace_id"),
+        ForeignKeyConstraint(["workspace_id", "thread_id"], ["thread.workspace_id", "thread.id"]),
+        Index("ix_agent_run_started", "workspace_id", "started_at"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)  # run_
+    workspace_id: Mapped[str] = _workspace_fk()
+    workflow: Mapped[str] = mapped_column(String(24))  # ingestion | risk_detection | … (06 §7)
+    trigger: Mapped[str] = mapped_column(String(12))  # user | event | cron | eval
+    status: Mapped[str] = mapped_column(String(12), server_default="running")
+    partial: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    thread_id: Mapped[str | None] = mapped_column(String(32))
+    data_version: Mapped[int] = mapped_column(Integer)
+    prefs_version: Mapped[int] = mapped_column(Integer, server_default="0")
+    deadline_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    llm_calls: Mapped[int] = mapped_column(Integer, server_default="0")
+    tokens_in: Mapped[int] = mapped_column(Integer, server_default="0")
+    tokens_out: Mapped[int] = mapped_column(Integer, server_default="0")
+    # Run-level aggregate behind the timeline's cost {model_calls, tokens, usd_estimate, cached}
+    # (docs/08 §5.10): sums of its steps, from Mesh `usage` × the price table, never model text.
+    cost_estimate_usd: Mapped[float | None] = mapped_column(Float)
+    cached_steps: Mapped[int] = mapped_column(Integer, server_default="0")
+    revision_count: Mapped[int] = mapped_column(Integer, server_default="0")
+    error: Mapped[str | None] = mapped_column(Text)
+    started_at: Mapped[datetime] = _created_at()
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class AgentStep(Base):
+    """One node execution (docs/06 §11). Written once; never updated."""
+
+    __tablename__ = "agent_step"
+    __table_args__ = (
+        UniqueConstraint("workspace_id", "id", name="uq_agent_step_workspace_id"),
+        UniqueConstraint("run_id", "seq", name="uq_agent_step_seq"),
+        ForeignKeyConstraint(
+            ["workspace_id", "run_id"], ["agent_run.workspace_id", "agent_run.id"]
+        ),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)  # step_
+    workspace_id: Mapped[str] = _workspace_fk()
+    run_id: Mapped[str] = mapped_column(String(32), index=True)
+    seq: Mapped[int] = mapped_column(Integer)  # 1, 2, … within the run (SSE event id)
+    node: Mapped[str] = mapped_column(String(64))
+    agent: Mapped[str] = mapped_column(String(16))  # coordinator|ledger|…|verifier|system
+    kind: Mapped[str] = mapped_column(String(8))  # llm | tool | control
+    provider: Mapped[str | None] = mapped_column(String(8))  # mesh, LLM steps only
+    model: Mapped[str | None] = mapped_column(String(80))
+    tier: Mapped[str | None] = mapped_column(String(12))
+    prompt_version: Mapped[str | None] = mapped_column(String(24))
+    # The temperature sent, or None when the model rejects one ("model default", docs/06 §13).
+    temperature: Mapped[float | None] = mapped_column(Float)
+    input_hash: Mapped[str] = mapped_column(String(64))
+    output: Mapped[Json] = mapped_column(JSONB)
+    tool_calls: Mapped[list[Any]] = mapped_column(JSONB, server_default="[]")
+    tokens_in: Mapped[int] = mapped_column(Integer, server_default="0")
+    tokens_out: Mapped[int] = mapped_column(Integer, server_default="0")
+    cost_estimate_usd: Mapped[float | None] = mapped_column(Float)  # usage × catalogue price
+    llm_calls: Mapped[int] = mapped_column(Integer, server_default="0")
+    latency_ms: Mapped[int] = mapped_column(Integer, server_default="0")
+    attempt: Mapped[int] = mapped_column(Integer, server_default="1")
+    cached: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    status: Mapped[str] = mapped_column(String(12))  # ok | retried | failed | skipped
+    label: Mapped[str | None] = mapped_column(String(200))  # templated, never model text
+    error: Mapped[str | None] = mapped_column(Text)
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    finished_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class Recommendation(Base):
+    """A proposed intervention and its final status (docs/06 W4, docs/07)."""
+
+    __tablename__ = "recommendation"
+    __table_args__ = (
+        UniqueConstraint("workspace_id", "id", name="uq_recommendation_workspace_id"),
+        ForeignKeyConstraint(
+            ["workspace_id", "run_id"], ["agent_run.workspace_id", "agent_run.id"]
+        ),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)  # rec_
+    workspace_id: Mapped[str] = _workspace_fk()
+    run_id: Mapped[str] = mapped_column(String(32), index=True)
+    proposal_key: Mapped[str] = mapped_column(String(64))  # stable across revision rounds
+    status: Mapped[str] = mapped_column(String(12))  # approved|withdrawn|accepted|dismissed|snoozed
+    proposal: Mapped[Json] = mapped_column(JSONB)  # the last InterventionProposal
+    trigger_refs: Mapped[list[Any]] = mapped_column(JSONB, server_default="[]")
+    impact_calc_refs: Mapped[list[Any]] = mapped_column(JSONB, server_default="[]")
+    revision_count: Mapped[int] = mapped_column(Integer, server_default="0")
+    created_at: Mapped[datetime] = _created_at()
+    updated_at: Mapped[datetime] = _created_at()
+
+
+class VerificationResult(Base):
+    """One Verifier pass over one proposal (docs/06 §4.5, §5). Append-only."""
+
+    __tablename__ = "verification_result"
+    __table_args__ = (
+        UniqueConstraint("workspace_id", "id", name="uq_verification_result_workspace_id"),
+        UniqueConstraint("recommendation_id", "round", name="uq_verification_round"),
+        ForeignKeyConstraint(
+            ["workspace_id", "recommendation_id"],
+            ["recommendation.workspace_id", "recommendation.id"],
+        ),
+        ForeignKeyConstraint(
+            ["workspace_id", "run_id"], ["agent_run.workspace_id", "agent_run.id"]
+        ),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)  # ver_
+    workspace_id: Mapped[str] = _workspace_fk()
+    run_id: Mapped[str] = mapped_column(String(32), index=True)
+    recommendation_id: Mapped[str] = mapped_column(String(32), index=True)
+    round: Mapped[int] = mapped_column(Integer)  # 1..3
+    verdict: Mapped[str] = mapped_column(String(8))  # APPROVE | REJECT
+    rule_results: Mapped[list[Any]] = mapped_column(JSONB)  # [{rule, passed, reason, refs}]
+    critique: Mapped[str | None] = mapped_column(Text)
+    judge_step_id: Mapped[str | None] = mapped_column(String(32))
+    created_at: Mapped[datetime] = _created_at()
+
+
+class AgentResponse(Base):
+    """An immutable, hydrated answer snapshot (docs/08, docs/00 §13). Reload never recomputes."""
+
+    __tablename__ = "agent_response"
+    __table_args__ = (
+        UniqueConstraint("workspace_id", "id", name="uq_agent_response_workspace_id"),
+        ForeignKeyConstraint(
+            ["workspace_id", "run_id"], ["agent_run.workspace_id", "agent_run.id"]
+        ),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)  # rsp_
+    workspace_id: Mapped[str] = _workspace_fk()
+    run_id: Mapped[str] = mapped_column(String(32), index=True)
+    surface: Mapped[str] = mapped_column(String(16))  # workspace | home | lab | digest
+    intent: Mapped[str | None] = mapped_column(String(40))
+    body: Mapped[Json] = mapped_column(JSONB)  # validated, hydrated AgentResponse contract
+    data_version: Mapped[int] = mapped_column(Integer)
+    prefs_version: Mapped[int] = mapped_column(Integer, server_default="0")
+    engine_version: Mapped[str] = mapped_column(String(32))
+    partial: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    created_at: Mapped[datetime] = _created_at()
+
+
+class Message(Base):
+    """One turn in a thread. The user's question is stored with its standalone rewrite."""
+
+    __tablename__ = "message"
+    __table_args__ = (
+        UniqueConstraint("workspace_id", "id", name="uq_message_workspace_id"),
+        UniqueConstraint("thread_id", "seq", name="uq_message_seq"),
+        # A retried POST with the same client_msg_id returns the existing run (docs/05 §6.4).
+        UniqueConstraint("thread_id", "client_msg_id", name="uq_message_client_msg_id"),
+        ForeignKeyConstraint(["workspace_id", "thread_id"], ["thread.workspace_id", "thread.id"]),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)  # msg_
+    workspace_id: Mapped[str] = _workspace_fk()
+    thread_id: Mapped[str] = mapped_column(String(32), index=True)
+    seq: Mapped[int] = mapped_column(Integer)
+    role: Mapped[str] = mapped_column(String(10))  # user | assistant
+    text: Mapped[str] = mapped_column(Text, server_default="")
+    action: Mapped[Json | None] = mapped_column(JSONB)  # structured follow-up {action, refs}
+    standalone_question: Mapped[str | None] = mapped_column(Text)
+    client_msg_id: Mapped[str | None] = mapped_column(String(64))
+    run_id: Mapped[str | None] = mapped_column(String(32))
+    response_id: Mapped[str | None] = mapped_column(String(32))
+    created_at: Mapped[datetime] = _created_at()
+
+
+class AnswerCacheEntry(Base):
+    """Exact answer cache (docs/05 §4.2 stage 3): key → stored snapshot. No embeddings."""
+
+    __tablename__ = "answer_cache"
+    __table_args__ = (
+        UniqueConstraint("workspace_id", "cache_key", name="uq_answer_cache_key"),
+        ForeignKeyConstraint(
+            ["workspace_id", "response_id"], ["agent_response.workspace_id", "agent_response.id"]
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    workspace_id: Mapped[str] = _workspace_fk()
+    cache_key: Mapped[str] = mapped_column(String(64))
+    response_id: Mapped[str] = mapped_column(String(32))
+    intent: Mapped[str] = mapped_column(String(40))
+    hits: Mapped[int] = mapped_column(Integer, server_default="0")
+    created_at: Mapped[datetime] = _created_at()
+    last_hit_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
