@@ -87,6 +87,8 @@ def core_metrics(summary: dict[str, Any]) -> dict[str, Any]:
             "cost_p95_usd": g.get("cost_p95_usd"),
             "latency_p50_s": g.get("latency_p50_s"),
             "latency_p95_s": g.get("latency_p95_s"),
+            "latency_estimated_p50_s": g.get("latency_estimated_p50_s"),
+            "latency_estimated_p95_s": g.get("latency_estimated_p95_s"),
         })  # fmt: skip
     return {
         "run_id": summary.get("run_id"),
@@ -122,16 +124,27 @@ def _core_table(core: dict[str, Any]) -> list[str]:
         "|---|---|---|---|",
     ]
     for a in core["answers"]:
+        latency = f"{_sec(a['latency_p50_s'])} · {_sec(a['latency_p95_s'])}"
+        if a["latency_p50_s"] is None and a.get("latency_estimated_p50_s") is not None:
+            latency += (
+                f" (estimate {_sec(a['latency_estimated_p50_s'])} · "
+                f"{_sec(a.get('latency_estimated_p95_s'))})"
+            )
         lines.append(
             f"| {a['label']} | {_f(a['answers'])} | {_usd(a['cost_mean_usd'])} · "
-            f"{_usd(a['cost_p95_usd'])} | {_sec(a['latency_p50_s'])} · "
-            f"{_sec(a['latency_p95_s'])} |"
+            f"{_usd(a['cost_p95_usd'])} | {latency} |"
         )
     met = " · ".join(
         f"{t['id']} {t['target']} {'✓' if t['met'] else '✗' if t['met'] is False else '—'}"
         for t in core["targets"]
     )
-    return [*lines, "", f"Targets: {met or '—'}.", ""]
+    return [
+        *lines,
+        "",
+        f"Targets: {met or '—'}. An estimate counts calls recorded before latency was kept at "
+        "their tier's measured median; it decides no target.",
+        "",
+    ]
 
 
 def _baseline(name: Any) -> str:

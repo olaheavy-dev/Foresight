@@ -20,6 +20,7 @@ from typing import Any
 
 from evals.assistant import eval_mesh, eval_mode
 from evals.common import read_jsonl
+from evals.efficiency import estimate_e2e
 from evals.suites import Target, target, ui
 
 SUITE_ID = "E-EFF"
@@ -54,11 +55,12 @@ def _usd(x: float | None) -> float | None:
     return None if x is None else round(x, 5)
 
 
-def _group(every: list[dict[str, Any]]) -> dict[str, Any]:
+def _group(every: list[dict[str, Any]], tier_p50_ms: dict[str, float]) -> dict[str, Any]:
     answers = [a for a in every if not a["degraded"]]
     costs = [a["cost_usd"] for a in answers if a["cost_usd"] is not None]
     e2e = [a["e2e_ms"] for a in answers if a["e2e_ms"] is not None]
     first = [a["first_step_ms"] for a in answers if a["first_step_ms"] is not None]
+    est = [e for a in answers if (e := estimate_e2e(a, tier_p50_ms)) is not None]
     return {
         "answers": len(answers),
         "degraded_left_out": len(every) - len(answers),
@@ -68,6 +70,9 @@ def _group(every: list[dict[str, Any]]) -> dict[str, Any]:
         "latency_p50_s": _s(percentile(e2e, 50)) if len(e2e) == len(answers) else None,
         "latency_p95_s": _s(percentile(e2e, 95)) if len(e2e) == len(answers) else None,
         "latency_p50_s_measured_only": _s(percentile(e2e, 50)),
+        # Not gated: unmeasured calls counted at their tier's measured median (docs/09 §10f).
+        "latency_estimated_p50_s": _s(percentile(est, 50)) if len(est) == len(answers) else None,
+        "latency_estimated_p95_s": _s(percentile(est, 95)) if len(est) == len(answers) else None,
         "first_step_p95_s": _s(percentile(first, 95)) if len(first) == len(answers) else None,
     }
 
@@ -105,15 +110,18 @@ def run(fast: bool = False, cases: Any = None) -> dict[str, Any]:
         }
     answers = composed["answers"]
     clean = [a for a in answers if not a["degraded"]]
+    tiers = _tiers(clean)
+    p50 = {t: v["call_latency_p50_s"] * 1000 for t, v in tiers.items()
+           if v["call_latency_p50_s"] is not None}  # fmt: skip
     groups = {
-        "all": _group(answers),
-        "simple": _group([a for a in answers if a["kind"] == "simple"]),
-        "advice": _group([a for a in answers if a["kind"] == "advice"]),
+        "all": _group(answers, p50),
+        "simple": _group([a for a in answers if a["kind"] == "simple"], p50),
+        "advice": _group([a for a in answers if a["kind"] == "advice"], p50),
     }
     metrics: dict[str, Any] = {
         "mode": eval_mode(),
         "by_answer_type": groups,
-        "by_tier": _tiers(clean),
+        "by_tier": tiers,
         "answers": answers,
     }
     a, s, adv = groups["all"], groups["simple"], groups["advice"]
@@ -140,6 +148,8 @@ def run(fast: bool = False, cases: Any = None) -> dict[str, Any]:
         f"latency not measured. Latency measured on {a['latency_measured']} of {a['answers']} "
         f"answers. {len(answers) - len(clean)} answers with a failed or unrecorded model step "
         "are left out of every statistic.",
+        "Where latency is not measured, `latency_estimated_*` counts each unmeasured call at its "
+        "tier's measured median call latency; it is an estimate and decides no target.",
         "End-to-end = local time in replay + each step's model wait (concurrent judge calls "
         "overlap) − the Understand/prefetch overlap. Network and server time outside Mesh calls "
         "are not included.",

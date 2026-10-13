@@ -92,6 +92,13 @@ def answer_profile(
         ],
         "cost_usd": None if any(c is None for c in costs) else round(sum(costs), 6),  # type: ignore[arg-type]
         "e2e_ms": e2e,
+        # For the estimate when some calls have no recorded latency (see `estimate_e2e`).
+        "wall_ms": wall_ms if replayed else None,
+        "overlap_ms": overlap,
+        "steps": [
+            {"node": s.node, "tier": s.tier, "llm_calls": s.llm_calls, "model_ms": s.model_ms}
+            for s in model_steps
+        ],
         "first_step_ms": ttfs,
         "model_calls": len(calls),
         "calls": [
@@ -104,3 +111,22 @@ def answer_profile(
             for c in calls
         ],
     }
+
+
+def estimate_e2e(answer: dict[str, Any], tier_p50_ms: dict[str, float]) -> int | None:
+    """End-to-end estimate for an answer whose steps include calls recorded before latency was
+    kept: each such step counts its calls at its tier's measured median. Reported as an estimate,
+    never gated; None when a needed median is missing."""
+    if answer.get("e2e_ms") is not None:
+        return int(answer["e2e_ms"])
+    if answer.get("wall_ms") is None:
+        return None
+    total = answer["wall_ms"] - answer.get("overlap_ms", 0)
+    for step in answer.get("steps") or []:
+        if step["model_ms"] is not None:
+            total += step["model_ms"]
+        elif step["tier"] in tier_p50_ms:
+            total += step["llm_calls"] * tier_p50_ms[step["tier"]]
+        else:
+            return None
+    return int(total)

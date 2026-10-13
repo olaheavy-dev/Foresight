@@ -1051,7 +1051,12 @@ class Composer:
                 blocks.append(card.model_copy(update={"placement": _place_overview("main_visual")}))
             used.add("InterventionCard")
         elif main_type == "FinancialMetricGroup" and metrics is not None:
-            pass  # the goal outlook: the key numbers carry it (docs/08 §7a goal_status row)
+            # The goal outlook (docs/08 §7a goal_status row, no goal set): the key numbers are
+            # the main visual, so the Overview still has exactly one.
+            blocks[blocks.index(metrics)] = metrics.model_copy(
+                update={"placement": _place_overview("main_visual")}
+            )
+            used.add("FinancialMetricGroup")
         elif main_type in visuals:
             block = visuals[main_type]()
             if block is not None:

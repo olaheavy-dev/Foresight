@@ -25,6 +25,7 @@ from backend.agents.advice.impact import Impact
 from backend.agents.advice.models import InterventionProposal
 from backend.agents.advice.verifier import verification_record, verify
 from backend.agents.advice.world import AdviceWorld, Finding, SpendRow
+from backend.agents.budget import BudgetExceeded
 from backend.agents.contracts import PAY_TODAY
 from backend.agents.forecaster import drivers, parse_scenario, to_engine_spec
 from backend.agents.runtime import NodeOutput, NodeSpec, RunContext, concurrent_ms
@@ -251,6 +252,19 @@ def forecaster_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
         before_llm=ctx.before_llm,
     )
     ctx.charge(parsed.llm)
+    dated = _dated_purchase_spec(intent, inputs)
+    if (parsed.parse.status == "needs_clarification" or parsed.parse.spec is None) and dated:
+        # The parse asked for something Understand already has (one purchase, its amount and
+        # date): never ask again what the question answered; simulate that one payment.
+        try:
+            with ctx.lock:
+                sim = run_simulation(ctx.store.ctx, dated)
+        except ScenarioError:
+            pass
+        else:
+            return _simulated(
+                state, update, forecast_id, dated, sim, [], parsed.llm, parsed.prompt_version
+            )
     if parsed.parse.status == "needs_clarification" or parsed.parse.spec is None:
         clar = parsed.parse.clarification
         return NodeOutput(
@@ -340,6 +354,25 @@ def _pay_today_spec(intent: dict[str, Any], inputs: ForecastInputs) -> ScenarioS
         type="one_off_outflow", date=first_day, amount_minor=amount, label=label
     )
     return ScenarioSpec(f"{label} today", inputs.currency, (payment,))
+
+
+def _dated_purchase_spec(intent: dict[str, Any], inputs: ForecastInputs) -> ScenarioSpec | None:
+    """An affordability question whose Understand slots give an amount and a date: one payment
+    on that date (never before the forecast's first day)."""
+    slots = intent.get("slots") or {}
+    if intent.get("intent") != "affordability" or not slots.get("date"):
+        return None
+    try:
+        amount = int(slots.get("amount_minor") or 0)
+        on = date.fromisoformat(str(slots["date"]))
+    except (TypeError, ValueError):
+        return None
+    if amount <= 0:
+        return None
+    label = str(slots.get("purpose") or "Payment").replace("_", " ").capitalize()
+    on = max(on, inputs.as_of + timedelta(days=1))
+    payment = ScenarioModifier(type="one_off_outflow", date=on, amount_minor=amount, label=label)
+    return ScenarioSpec(label, inputs.currency, (payment,))
 
 
 def risk_check_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
@@ -496,18 +529,41 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
     with ctx.lock:
         locale = ctx.store.ctx.workspace.locale
 
-    def guarded() -> None:
-        with ctx.lock:
-            ctx.before_llm()
+    # The round's judge calls run concurrently, so the budget is shared out before they start, in
+    # proposal order: the i-th proposal may call the judge only if i calls are still allowed. A
+    # check made inside each thread would let every concurrent call through (docs/09 ORC-10).
+    with ctx.lock:
+        free = ctx.budget.calls_left()
 
-    def check(raw: dict[str, Any]) -> tuple[dict[str, Any], InterventionProposal, Any]:
+    def check(item: tuple[int, dict[str, Any]]) -> tuple[dict[str, Any], InterventionProposal, Any]:
+        index, raw = item
+
+        def guarded() -> None:
+            with ctx.lock:
+                if index >= free:
+                    raise BudgetExceeded("run budget used: no call left for this judge")
+                ctx.before_llm()
+
         p = InterventionProposal.model_validate(
             {k: v for k, v in raw.items() if k in InterventionProposal.model_fields}
         )
-        return raw, p, verify(p, world, round=round_, mesh=mesh, before_llm=guarded)
+        try:
+            return raw, p, verify(p, world, round=round_, mesh=mesh, before_llm=guarded)
+        except BudgetExceeded as exc:
+            return raw, p, exc
 
     with ThreadPoolExecutor(max_workers=JUDGE_POOL) as pool:
-        checked = list(pool.map(check, normalised))
+        checked = list(pool.map(check, enumerate(normalised)))
+    refused = [o for _, _, o in checked if isinstance(o, BudgetExceeded)]
+    if refused:
+        # The judge calls that did run were paid for: charge them, then stop like any node
+        # whose budget ran out (the instrument records a skipped step with these calls).
+        with ctx.lock:
+            for _, _, o in checked:
+                if not isinstance(o, BudgetExceeded):
+                    ctx.charge(o.llm)
+            ctx.budget.exceeded = True
+        raise refused[0]
     not_approved = 0
     for raw, p, outcome in checked:
         with ctx.lock:

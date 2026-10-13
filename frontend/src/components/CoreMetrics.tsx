@@ -22,6 +22,8 @@ export type CoreMetricsData = {
     cost_p95_usd: number | null;
     latency_p50_s: number | null;
     latency_p95_s: number | null;
+    latency_estimated_p50_s?: number | null;
+    latency_estimated_p95_s?: number | null;
   }[];
   targets: { id: string; label: string; value: number | null; target: string; met: boolean | null }[];
 };
@@ -89,6 +91,9 @@ export function CoreMetrics({ data }: { data: CoreMetricsData }) {
               </td>
               <td data-label="Latency p50 · p95">
                 {sec(a.latency_p50_s)} · {sec(a.latency_p95_s)}
+                {a.latency_p50_s === null && a.latency_estimated_p50_s != null
+                  ? ` (estimate ${sec(a.latency_estimated_p50_s)} · ${sec(a.latency_estimated_p95_s ?? null)})`
+                  : ""}
               </td>
             </tr>
           ))}

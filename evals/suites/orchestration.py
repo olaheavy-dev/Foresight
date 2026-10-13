@@ -616,9 +616,25 @@ def run(fast: bool = False) -> dict[str, Any]:
     # A case not recorded or not built is not a pass: the rate over all cases counts them as
     # unmet, so the gate cannot pass while any applicable case is missing.
     all_rate = r4(sum(r.status == "pass" for r in results) / len(results)) if results else None
+    # The gate: every case whose feature is built must pass, and one that was not recorded is
+    # unmet. Cases for features not built yet (later stages) are reported in ORC-pass, which is
+    # shown but not gated until those features ship (docs/09 §10, owner decision 13 Oct 2026).
+    built = [r for r in results if r.status != "not_measured"]
+    built_rate = r4(sum(r.status == "pass" for r in built) / len(built)) if built else None
+    all_target = target(
+        "ORC-pass",
+        "Case pass rate (all 30; not recorded or not built count as " "unmet)",
+        all_rate,
+        ">=",
+        1.0,
+        f"{len(results)} cases",
+    )
+    all_target["gated"] = False
+    all_target["not_gated_because"] = "includes cases for features of later stages not built yet"
     targets: list[Target] = [
-        target("ORC-pass", "Case pass rate (all 30; not recorded or not built count as unmet)",
-               all_rate, ">=", 1.0, f"{len(results)} cases"),
+        all_target,
+        target("ORC-pass-built", "Case pass rate (cases whose feature is built; not recorded "
+               "counts as unmet)", built_rate, ">=", 1.0, f"{len(built)} cases"),
         target("ORC-pass-measured", "Case pass rate (cases that ran)", pass_rate, ">=", 1.0,
                f"{len(measured)} cases"),
         target("ORC-2", "All six node types reached", None if reached is None else int(reached),

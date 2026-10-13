@@ -29,6 +29,12 @@ class Budget:
                 f"{self.tokens}/{self.max_tokens} tokens"
             )
 
+    def calls_left(self) -> int:
+        """Model calls still allowed (0 once the token limit is reached)."""
+        if self.exceeded or self.tokens >= self.max_tokens:
+            return 0
+        return max(0, self.max_calls - self.calls)
+
     def charge(self, calls: int, tokens: int) -> None:
         self.calls += calls
         self.tokens += tokens

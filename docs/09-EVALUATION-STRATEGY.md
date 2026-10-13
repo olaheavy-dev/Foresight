@@ -643,7 +643,7 @@ Uses the real LangGraph graph (live or replay). Assertions read the persisted `A
 | ORC-14 | PDF LayoutProfile path | an `L5` PDF → Ledger Agent `propose_layout_profile` step → reconciliation gate → first-use H11 confirmation (simulated) → accepted, with the LayoutProfile saved. A second `L5` file → 0 layout-proposal LLM steps |
 | ORC-15 | CSV FormatProfile path | a `C1` CSV → no built-in match → Ledger Agent `propose_format_profile` step → user confirmation (simulated) → parse with P/R 1.000 → profile saved. A second `C1` file → 0 format-proposal LLM steps |
 
-Metric: **case pass rate** (TARGET 100%) plus the agent coverage table.
+Metric: **case pass rate** (TARGET 100%) plus the agent coverage table. The gate is `ORC-pass-built`: every case whose feature is built must pass, and a case that was not recorded counts as unmet. `ORC-pass`, over all 30 cases, is always reported; cases for features of later stages (the scheduled digest, the PDF importer) count as unmet there, so it is not gated until those features ship (owner decision, 13 Oct 2026).
 
 ---
 
