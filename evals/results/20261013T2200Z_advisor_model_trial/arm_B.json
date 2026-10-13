@@ -1,0 +1,851 @@
+{
+ "arm": "B",
+ "models": {
+  "reasoning": "google/gemini-3.8-flash",
+  "verifier": "openai/gpt-6.1-sol"
+ },
+ "mode": "record",
+ "results": [
+  {
+   "case_id": "TR-G1",
+   "expected": "APPROVE",
+   "defect": null,
+   "rounds": [
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_g1",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.delivery",
+     "monthly_cap_minor": 14000
+    },
+    "title": "Hold delivery at {{cap}} a month until the next payday",
+    "rationale": "Your delivery spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.delivery",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 14640,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-G2",
+   "expected": "APPROVE",
+   "defect": null,
+   "rounds": [
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_g2",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.delivery",
+     "monthly_cap_minor": 16500
+    },
+    "title": "Hold delivery at {{cap}} a month until the next payday",
+    "rationale": "Your delivery spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.delivery",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 12140,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-G3",
+   "expected": "APPROVE",
+   "defect": null,
+   "rounds": [
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_g3",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.delivery",
+     "monthly_cap_minor": 18000
+    },
+    "title": "Hold delivery at {{cap}} a month until the next payday",
+    "rationale": "Your delivery spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.delivery",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 10640,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-G4",
+   "expected": "APPROVE",
+   "defect": null,
+   "rounds": [
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_g4",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.eating_out",
+     "monthly_cap_minor": 18000
+    },
+    "title": "Hold eating out at {{cap}} a month until the next payday",
+    "rationale": "Your eating out spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.eating_out",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 20993,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-G5",
+   "expected": "APPROVE",
+   "defect": null,
+   "rounds": [
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_g5",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.eating_out",
+     "monthly_cap_minor": 21000
+    },
+    "title": "Hold eating out at {{cap}} a month until the next payday",
+    "rationale": "Your eating out spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.eating_out",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 17993,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-G6",
+   "expected": "APPROVE",
+   "defect": null,
+   "rounds": [
+    "APPROVE"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_g6",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {
+     "category_key": "food.eating_out",
+     "monthly_cap_minor": 24000
+    },
+    "title": "Hold eating out at {{cap}} a month until the next payday",
+    "rationale": "Your eating out spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.eating_out",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 14993,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "APPROVE",
+   "withdrawn": false,
+   "error": null
+  },
+  {
+   "case_id": "TR-B1",
+   "expected": "REJECT",
+   "defect": "impact_mismatch",
+   "rounds": [
+    "REJECT",
+    "REJECT"
+   ],
+   "final": null,
+   "final_verdict": null,
+   "withdrawn": false,
+   "error": "MeshSchemaError"
+  },
+  {
+   "case_id": "TR-B2",
+   "expected": "REJECT",
+   "defect": "impact_mismatch",
+   "rounds": [
+    "REJECT",
+    "REJECT"
+   ],
+   "final": null,
+   "final_verdict": null,
+   "withdrawn": false,
+   "error": "MeshSchemaError"
+  },
+  {
+   "case_id": "TR-B3",
+   "expected": "REJECT",
+   "defect": "infeasible_cut",
+   "rounds": [
+    "REJECT",
+    "REJECT"
+   ],
+   "final": null,
+   "final_verdict": null,
+   "withdrawn": false,
+   "error": "MeshSchemaError"
+  },
+  {
+   "case_id": "TR-B4",
+   "expected": "REJECT",
+   "defect": "infeasible_cut",
+   "rounds": [
+    "REJECT",
+    "REJECT",
+    "REJECT"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_b4",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {},
+    "title": "Cap eating out spend at {{cap}} a month",
+    "rationale": "Spending on eating out was higher than usual over the last month. Capping it at {{cap}} eases pressure on your cash balance before payday.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.eating_out",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 12858,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "REJECT",
+   "withdrawn": true,
+   "error": null
+  },
+  {
+   "case_id": "TR-B5",
+   "expected": "REJECT",
+   "defect": "dangling_evidence",
+   "rounds": [
+    "REJECT"
+   ],
+   "final": null,
+   "final_verdict": null,
+   "withdrawn": false,
+   "error": "MeshSchemaError"
+  },
+  {
+   "case_id": "TR-B6",
+   "expected": "REJECT",
+   "defect": "dangling_evidence",
+   "rounds": [
+    "REJECT",
+    "REJECT"
+   ],
+   "final": null,
+   "final_verdict": null,
+   "withdrawn": false,
+   "error": "MeshSchemaError"
+  },
+  {
+   "case_id": "TR-B7",
+   "expected": "REJECT",
+   "defect": "generic_advice",
+   "rounds": [
+    "REJECT",
+    "REJECT"
+   ],
+   "final": null,
+   "final_verdict": null,
+   "withdrawn": false,
+   "error": "MeshSchemaError"
+  },
+  {
+   "case_id": "TR-B8",
+   "expected": "REJECT",
+   "defect": "generic_advice",
+   "rounds": [
+    "REJECT",
+    "REJECT"
+   ],
+   "final": null,
+   "final_verdict": null,
+   "withdrawn": false,
+   "error": "MeshSchemaError"
+  },
+  {
+   "case_id": "TR-B9",
+   "expected": "REJECT",
+   "defect": "wrong_evidence",
+   "rounds": [
+    "REJECT",
+    "REJECT"
+   ],
+   "final": null,
+   "final_verdict": null,
+   "withdrawn": false,
+   "error": "MeshSchemaError"
+  },
+  {
+   "case_id": "TR-B10",
+   "expected": "REJECT",
+   "defect": "wrong_evidence",
+   "rounds": [
+    "REJECT",
+    "REJECT",
+    "REJECT"
+   ],
+   "final": {
+    "proposal_id": "prp_tr_b10",
+    "action": "cap_category",
+    "currency": "GBP",
+    "params": {},
+    "title": "Hold eating out at {{cap}} a month until the next payday",
+    "rationale": "Your eating out spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday and saves {{saving}}.",
+    "trigger_refs": [
+     {
+      "kind": "finding",
+      "id": "fnd:category_spike:food.eating_out",
+      "role": "trigger"
+     },
+     {
+      "kind": "forecast",
+      "id": "fc:baseline",
+      "role": "trigger"
+     }
+    ],
+    "expected_direction": "improves_buffer",
+    "claimed_monthly_impact_minor": 12858,
+    "claimed_impact_text": null
+   },
+   "final_verdict": "REJECT",
+   "withdrawn": true,
+   "error": null
+  },
+  {
+   "case_id": "TR-U1",
+   "expected": "REJECT",
+   "defect": "cut_commitment",
+   "rounds": [
+    "REJECT"
+   ],
+   "final": null,
+   "final_verdict": null,
+   "withdrawn": false,
+   "error": "MeshSchemaError"
+  },
+  {
+   "case_id": "TR-U2",
+   "expected": "REJECT",
+   "defect": "cut_commitment",
+   "rounds": [
+    "REJECT"
+   ],
+   "final": null,
+   "final_verdict": null,
+   "withdrawn": false,
+   "error": "MeshSchemaError"
+  }
+ ],
+ "calls": [
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 0.013560791005147621,
+   "tokens_in": 979,
+   "tokens_out": 140,
+   "cost": 0.003358,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 0.0021775839995825663,
+   "tokens_in": 979,
+   "tokens_out": 137,
+   "cost": 0.003328,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 0.002260083012515679,
+   "tokens_in": 979,
+   "tokens_out": 144,
+   "cost": 0.003398,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 0.0019637499935925007,
+   "tokens_in": 991,
+   "tokens_out": 139,
+   "cost": 0.003372,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 0.0019849999953294173,
+   "tokens_in": 991,
+   "tokens_out": 142,
+   "cost": 0.003402,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 0.001986624993151054,
+   "tokens_in": 991,
+   "tokens_out": 135,
+   "cost": 0.003332,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 6.814284959007637,
+   "tokens_in": 3158,
+   "tokens_out": 422,
+   "cost": 0.003951,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "?",
+   "latency_s": 28.779481916004443,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost": 0.0,
+   "repaired": true,
+   "failed": true,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 10.459464125000522,
+   "tokens_in": 3164,
+   "tokens_out": 1165,
+   "cost": 0.00674175,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "?",
+   "latency_s": 29.83029041600821,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost": 0.0,
+   "repaired": true,
+   "failed": true,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 23.779138291996787,
+   "tokens_in": 3168,
+   "tokens_out": 1586,
+   "cost": 0.0083235,
+   "repaired": true,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 23.779138291996787,
+   "tokens_in": 3284,
+   "tokens_out": 1338,
+   "cost": 0.0074805,
+   "repaired": true,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "?",
+   "latency_s": 26.410569250001572,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost": 0.0,
+   "repaired": true,
+   "failed": true,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 25.530204666996724,
+   "tokens_in": 3175,
+   "tokens_out": 1586,
+   "cost": 0.00832875,
+   "repaired": true,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 25.530204666996724,
+   "tokens_in": 3291,
+   "tokens_out": 1553,
+   "cost": 0.008292,
+   "repaired": true,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 24.606413166009588,
+   "tokens_in": 3196,
+   "tokens_out": 1586,
+   "cost": 0.0083445,
+   "repaired": true,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 24.606413166009588,
+   "tokens_in": 3316,
+   "tokens_out": 1279,
+   "cost": 0.00728325,
+   "repaired": true,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "?",
+   "latency_s": 27.37566695800342,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost": 0.0,
+   "repaired": true,
+   "failed": true,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 25.592420000000857,
+   "tokens_in": 3161,
+   "tokens_out": 1585,
+   "cost": 0.0083145,
+   "repaired": true,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 25.592420000000857,
+   "tokens_in": 3277,
+   "tokens_out": 1468,
+   "cost": 0.00796275,
+   "repaired": true,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "?",
+   "latency_s": 26.756774624998798,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost": 0.0,
+   "repaired": true,
+   "failed": true,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 32.887000540999,
+   "tokens_in": 3137,
+   "tokens_out": 1586,
+   "cost": 0.00830025,
+   "repaired": true,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 32.887000540999,
+   "tokens_in": 3257,
+   "tokens_out": 1050,
+   "cost": 0.00638025,
+   "repaired": true,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "?",
+   "latency_s": 25.045162207999965,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost": 0.0,
+   "repaired": true,
+   "failed": true,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 25.288496833993122,
+   "tokens_in": 3140,
+   "tokens_out": 1586,
+   "cost": 0.0083025,
+   "repaired": true,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 25.288496833993122,
+   "tokens_in": 3256,
+   "tokens_out": 1535,
+   "cost": 0.00819825,
+   "repaired": true,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "?",
+   "latency_s": 26.323969999997644,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost": 0.0,
+   "repaired": true,
+   "failed": true,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 0.0021196250017965212,
+   "tokens_in": 966,
+   "tokens_out": 138,
+   "cost": 0.003312,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 22.238920458999928,
+   "tokens_in": 3164,
+   "tokens_out": 1586,
+   "cost": 0.0083205,
+   "repaired": true,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 22.238920458999928,
+   "tokens_in": 3284,
+   "tokens_out": 1264,
+   "cost": 0.007203,
+   "repaired": true,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "?",
+   "latency_s": 23.15962729199964,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost": 0.0,
+   "repaired": true,
+   "failed": true,
+   "fallback": false
+  },
+  {
+   "tier": "verifier",
+   "model": "gpt-6.1-sol",
+   "latency_s": 0.0024280409998027608,
+   "tokens_in": 987,
+   "tokens_out": 137,
+   "cost": 0.003344,
+   "repaired": false,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 20.41225958299765,
+   "tokens_in": 3174,
+   "tokens_out": 1585,
+   "cost": 0.00832425,
+   "repaired": true,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 20.41225958299765,
+   "tokens_in": 3286,
+   "tokens_out": 837,
+   "cost": 0.00560325,
+   "repaired": true,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 25.512364333000733,
+   "tokens_in": 3197,
+   "tokens_out": 1586,
+   "cost": 0.00834525,
+   "repaired": true,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "gemini-3.8-flash",
+   "latency_s": 25.512364333000733,
+   "tokens_in": 3315,
+   "tokens_out": 1562,
+   "cost": 0.00834375,
+   "repaired": true,
+   "failed": false,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "?",
+   "latency_s": 25.072568875009893,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost": 0.0,
+   "repaired": true,
+   "failed": true,
+   "fallback": false
+  },
+  {
+   "tier": "reasoning",
+   "model": "?",
+   "latency_s": 24.472845334006706,
+   "tokens_in": 0,
+   "tokens_out": 0,
+   "cost": 0.0,
+   "repaired": true,
+   "failed": true,
+   "fallback": false
+  }
+ ]
+}

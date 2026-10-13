@@ -702,18 +702,18 @@ Test: freeze the same accepted ledger interpretations, forecast inputs and typed
 | Coordinator Understand (standalone rewrite + intent) and block plan | fast | Short classification, high volume; one call does both rewrite and intent | 0 |
 | Ledger categorisation | fast | Batched, constrained taxonomy; quality measured in evals | 0 |
 | Ledger format/layout profile proposal (CSV and PDF) | fast → reasoning on second attempt | Rare (new bank formats only); output checked by reconciliation and/or user preview | 0 |
-| Analyst ranking & wording | reasoning | Judgement about salience; one call per refresh | model default* |
+| Analyst ranking & wording | reasoning | Judgement about salience; one call per refresh | 0 |
 | Forecaster scenario parse | fast → reasoning if multi-modifier or low confidence | Most scenarios are simple | 0 |
-| Advisor | reasoning | Hardest judgement task | model default* |
-| Verifier judge | verifier tier: a different provider from the Advisor | Independence | 0 |
+| Advisor | reasoning | Hardest judgement task | 0 |
+| Verifier judge | verifier tier: a different provider from the Advisor | Independence | model default* |
 | Digest headline | fast | ≤ 20 words | 0.3 |
 
-Model IDs are configuration (settings `MESH_MODEL_<TIER>` and `MESH_MODEL_<TIER>_FALLBACK`), chosen from Mesh's catalogue and confirmed by a live probe on 13 Oct 2026:
+Model IDs are configuration (settings `MESH_MODEL_<TIER>` and `MESH_MODEL_<TIER>_FALLBACK`); each model's capabilities and price are data in `backend/mesh/models.yaml` (or the file named by `MESH_MODELS_FILE`), so switching a model needs no code change. Chosen from Mesh's catalogue, probed live on 13 Oct 2026; the reasoning and verifier tiers follow the owner's decision after the Advisor model trial (13 Oct 2026, `evals/results/20261013T2200Z_advisor_model_trial/`: GPT-5.6 Luna Pro matched Sonnet on revision success and grounding on 18 dev cases at about 37% lower cost per case; Gemini 3.8 Flash failed the schema). The reasoning tier also serves the Analyst's ranking and the Forecaster's multi-modifier parse:
 
 | Tier | Primary | Fallback |
 |---|---|---|
 | fast | `openai/gpt-6-luna` | `anthropic/claude-haiku-5.5` |
-| reasoning | `anthropic/claude-sonnet-5.5` | `google/gemini-3.1-pro` |
-| verifier | `openai/gpt-6.1-sol` | `google/gemini-3.1-pro` |
+| reasoning | `openai/gpt-5.6-luna-pro` | `google/gemini-3.1-pro` |
+| verifier | `anthropic/claude-sonnet-5.5` | `google/gemini-3.1-pro` |
 
-\* **Anthropic-tier temperatures are the model default.** Through Mesh, Anthropic models reject a `temperature` parameter and a forced `tool_choice`, so the client never sends either to them (`backend/mesh/capabilities.py`); their structured output uses `json_schema`, or tool calls with `tool_choice: "auto"`. `google/gemini-3.1-pro` uses the tool-call path because its `json_schema` output didn't parse. Each `AgentStep` records the temperature actually sent, with `null` meaning "model default". The eval suite records which models produced each result, so swapping a model shows up as a measurable change.
+\* **Anthropic-tier temperatures are the model default.** Through Mesh, Anthropic models reject a `temperature` parameter and a forced `tool_choice`, so the client never sends either to them (`backend/mesh/models.yaml`); their structured output uses `json_schema`, or tool calls with `tool_choice: "auto"`. `google/gemini-3.1-pro` uses the tool-call path because its `json_schema` output didn't parse. Each `AgentStep` records the temperature actually sent, with `null` meaning "model default". The eval suite records which models produced each result, so swapping a model shows up as a measurable change.

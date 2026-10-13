@@ -1,0 +1,32 @@
+{
+ "arm": "B",
+ "advisor": "google/gemini-3.8-flash",
+ "judge": "openai/gpt-6.1-sol",
+ "revisable_rejected_r1": 10,
+ "revision_success": 0.0,
+ "withdraw_correctness": 1.0,
+ "good_approved_r1": 6,
+ "good_total": 6,
+ "approved_final": 6,
+ "grounding_rate": 1.0,
+ "grounding_violations": [],
+ "advisor_calls": 30,
+ "fallback_calls": 0,
+ "repair_or_failure_rate": 0.7368,
+ "advisor_latency_p50_s": 25.29,
+ "advisor_cost_usd": 0.1523,
+ "total_cost_usd": 0.1792,
+ "cost_per_case_usd": 0.01,
+ "errors": [
+  "TR-B1: MeshSchemaError",
+  "TR-B2: MeshSchemaError",
+  "TR-B3: MeshSchemaError",
+  "TR-B5: MeshSchemaError",
+  "TR-B6: MeshSchemaError",
+  "TR-B7: MeshSchemaError",
+  "TR-B8: MeshSchemaError",
+  "TR-B9: MeshSchemaError",
+  "TR-U1: MeshSchemaError",
+  "TR-U2: MeshSchemaError"
+ ]
+}
