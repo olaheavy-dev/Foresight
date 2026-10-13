@@ -58,7 +58,7 @@ features:
     stage: 2
     title: AI Workspace — conversational analysis with generated answers
     enabled: false
-    suites: [E-ORC, E-SCN, E-UI]
+    suites: [E-ORC, E-SCN, E-UI, E-SEC]
 
   # Stage 3 — experiences, proactive delivery, goals
   briefing:
@@ -86,6 +86,11 @@ features:
     title: Goal tracking with adaptive advice
     enabled: false
     suites: [E-SIM, E-VER]
+  answer_cache:
+    stage: 3
+    title: Instant answers to repeated questions on unchanged data
+    enabled: false
+    suites: [E-CTX]
   intervention_outcome:
     stage: 3
     title: Checking whether accepted advice worked

@@ -2,18 +2,18 @@
 
 Phase: product definition, UX/UI, architecture and planning. **No production code exists yet.**
 Track: Agent Arena 2026 · FinPilot · submission deadline 20 Oct 2026 23:00 IST (registration closes 17 Oct).
-Markets: **UK (primary demo, GBP) and India (second locale, INR, synthetic-validated only)**; a **currency-agnostic engine** tested on GBP, EUR, JPY and INR (plus KWD unit tests), forecast per currency with no FX conversion. Each user's financial space is called a **Profile** in the UI (the data model keeps `workspace`/`wsp_`). Stance: **single-account first**. One account with everything flowing through it is the default and the judge's path; multi-account and joint features appear only when the data has them. Register revision: 6. Visual direction: **"Atelier light"** (owner-approved, 12 Oct 2026).
+Markets: **UK (primary demo, GBP) and India (second locale, INR, synthetic-validated only)**; a **currency-agnostic engine** tested on GBP, EUR, JPY and INR (plus KWD unit tests), forecast per currency with no FX conversion. Each user's financial space is called a **Profile** in the UI (the data model keeps `workspace`/`wsp_`). Stance: **single-account first**. One account with everything flowing through it is the default and the judge's path; multi-account and joint features appear only when the data has them. Register revision: 7 (the Ask pipeline and its safeguards, 13 Oct 2026). Visual direction: **"Atelier light"** (owner-approved, 12 Oct 2026).
 
 ## Reading order
 
 | # | Document | What it answers |
 |---|---|---|
 | 00 | [Decision Register](00-DECISION-REGISTER.md) | **Canonical** decisions, personas P1–P4, importers (§6b), multi-account rules (§6a), workspaces / any currency / locale packs (§6c), visual tokens, demo figures (§10a), 3-step onboarding (§10b). Every other doc conforms to it. |
-| 01 | [Product Requirements](01-PRODUCT-REQUIREMENTS.md) | Vision, personas (incl. P4 India), features F-01–F-74 (+ future F-90–F-97), FR-01–FR-87 (incl. workspaces, currency-agnostic engine, locale packs, XLS), NFRs, privacy, risks, MVP success, non-goals, prioritisation matrix |
+| 01 | [Product Requirements](01-PRODUCT-REQUIREMENTS.md) | Vision, personas (incl. P4 India), features F-01–F-74 (+ future F-90–F-97), FR-01–FR-91 (incl. workspaces, currency-agnostic engine, locale packs, XLS), NFRs, privacy, risks, MVP success, non-goals, prioritisation matrix |
 | 02 | [Hackathon Requirements Matrix](02-HACKATHON-REQUIREMENTS-MATRIX.md) | Traceability: features/FRs → requirements A–H, bonuses, 8 judging criteria (currency/locale generality under #5 and #6), CI checks, "how a judge sees it" |
 | 03 | [User Journeys](03-USER-JOURNEYS.md) | J1–J16 (single-account first; J2 is the primary journey) + P3 multi-account variants, Mermaid diagrams |
 | 04 | [UX/UI Design](04-UX-UI-DESIGN.md) | Surfaces (Landing, Home, AI Workspace, Decision Lab, Transactions, Activity, Insight detail, Settings, `/quality`), states, Evidence drawer, data grammar; defers visuals to `design/hifi` and tokens |
-| 05 | [System Architecture](05-SYSTEM-ARCHITECTURE.md) | Components, trade-offs, security, cost, deployment, testing, observability |
+| 05 | [System Architecture](05-SYSTEM-ARCHITECTURE.md) | Components, the Ask pipeline (§4.2), resilience, trade-offs, security incl. prompt-injection defence (§7.4a), cost, deployment, testing, observability |
 | 06 | [Agent Orchestration](06-AGENT-ORCHESTRATION.md) | Coordinator + 5 agents, contracts, LangGraph workflows, Verifier rules V-01…V-20, human review points H1–H13 |
 | 07 | [Data Model](07-DATA-MODEL.md) | Entities, ER diagram, edge-case handling, forecast/simulation maths |
 | 08 | [Generative UI Contracts](08-GENERATIVE-UI-CONTRACTS.md) | AgentResponse envelope, 10 components + Narrative, the answer skeleton (§7a), hydration, snapshots |

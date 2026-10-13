@@ -35,6 +35,7 @@ Features ship behind flags ([`features.yaml`](features.yaml)). A feature is list
 - Stage 3: Transactions, imports and categorisation review
 - Stage 3: Scheduled Telegram digest
 - Stage 3: Goal tracking with adaptive advice
+- Stage 3: Instant answers to repeated questions on unchanged data
 - Stage 3: Checking whether accepted advice worked
 - Stage 4: Multi-account and joint household layer
 - Stage 4: Generic PDF statement import
