@@ -462,7 +462,7 @@ On P1, P2, P3, S8, S9, S10 and S11.
 |---|---|---|
 | INC-1 | Income-stream detection P/R vs truth (same source + account) | ≥ 0.95 / ≥ 0.95 (salaried) |
 | INC-2 | **Amount within ±2%** of truth net amount (robust median); P1 = £4,050 | 100% of matched salaried streams |
-| INC-3 | **Payday rule correct**: P1 `28th, previous working day at weekends/bank holidays`, weekend moves (Fri 27 Nov, Fri 26 Feb, Fri 26 Mar) and the December override (Fri 18 Dec) learned from history; next-payday prediction exact, including the long-January gap (18 Dec → 28 Jan = 41 days) | 100% on P1, P3 |
+| INC-3 | **Payday rule correct**: P1 `28th, previous working day at weekends/bank holidays`, weekend and bank-holiday moves (Fri 27 Nov, Fri 26 Feb, Thu 25 Mar: Fri 26 Mar 2027 is Good Friday) and the December override (Fri 18 Dec) learned from history; next-payday prediction exact, including the long-January gap (18 Dec → 28 Jan = 41 days) | 100% on P1, P3 |
 | INC-4 | Four-weekly pay (S11) detected as a 28-day cadence, not monthly | exact |
 | INC-5 | **Not income**: rate of truth `partner_contribution`, `reimbursement`, `split_settlement`, `refund`, `betting_return` credits counted as income, per class | 0.00 for partner contributions and betting returns; 0.00 for reimbursements/settlements both before confirmation (inflow_unconfirmed) and after |
 | INC-6 | Bonus/arrears (S8) treated as one-offs, excluded from the baseline | 100% |
