@@ -17,3 +17,15 @@
 **Result under the rule:** C wins (equal quality, about 37% cheaper per case). B fails.
 **Caveats:** small sample (A and C both perfect on 18 cases: shows C is no worse here, not better); C is slower (19 s vs 11 s per Advisor call), which leaves less room for revision rounds inside the 60 s question deadline; C uses ~2.7× the input tokens and moves the judge to Sonnet, so the saving is ~37% per case, not the ~8× the list prices suggest. Switching requires re-recording all Advisor and judge cassettes.
 **Spend:** $0.8761 (balance $12.9953 → $12.1193; an upper bound, another workstream shared the account).
+
+## Judge follow-up (owner request, 13 Oct 2026): Haiku 5.5 as the Verifier judge
+
+Arm D = Advisor GPT-5.6 Luna Pro (replayed from arm C's recordings where identical) with `anthropic/claude-haiku-5.5` as judge, same 18 dev cases.
+
+| Judge | Flawed caught (r1) | Revision success | Repair / failure rate (judge) | Judge p50 | Judge cost |
+|---|---|---|---|---|---|
+| Sonnet 5.5 (arm C) | 12/12 | 10/10 | 0% | 4.8 s | $0.128 |
+| Haiku 5.5, json_schema (`metrics_D_jsonschema.json`) | 12/12 | 10/10 | 52% (first answer `{}`) | 9.6 s | $0.013 |
+| Haiku 5.5, tool calls (`metrics_D.json`) | 12/12 | 9/10 (TR-B3 wrongly withdrawn) | 23% + 1 failure | 5.0 s | $0.010 |
+
+**Decision under the core-metrics rule (accuracy first):** Haiku fails as judge in both modes (repair rate above 5%; one correct fix withdrawn). The judge stays `anthropic/claude-sonnet-5.5`. Haiku's capability entry moves to tool calls, which helps it as the fast-tier fallback. Follow-up spend: $0.0431.

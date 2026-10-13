@@ -38,7 +38,11 @@ MODEL_CAPABILITIES: dict[str, ModelCapabilities] = {
     "openai/gpt-6-luna": _OPENAI,
     "openai/gpt-6.1-sol": _OPENAI,
     "anthropic/claude-sonnet-5.5": _ANTHROPIC,
-    "anthropic/claude-haiku-5.5": _ANTHROPIC,
+    # Judge trial 13 Oct 2026: under json_schema Haiku returned `{}` on ~half of first attempts
+    # (needing a repair call); tool calls with tool_choice "auto" are tried instead.
+    "anthropic/claude-haiku-5.5": ModelCapabilities(
+        supports_temperature=False, supports_forced_tool_choice=False, structured_mode="tools"
+    ),
     "google/gemini-3.1-pro": ModelCapabilities(
         supports_temperature=True, supports_forced_tool_choice=True, structured_mode="tools"
     ),
