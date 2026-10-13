@@ -113,7 +113,7 @@ def test_transport_layer_never_turns_json_numbers_into_words() -> None:
         "ts": 1760000000000,
         "count": 12345678,
         "ratio": 0.012345678,
-        "note": "card 4111 1111 1111 1111 and account 12345678",
+        "note": "card 4000 1234 5678 9011 and account 12345678",
     }
     out = redact_messages([{"role": "user", "content": json.dumps(payload)}])
     data = json.loads(out[0]["content"])
@@ -142,7 +142,7 @@ def test_masking_never_alters_foresight_reference_ids() -> None:
     calc = "calc_0a1b2c3d4e5f612345678"
     placeholder = "{{" + calc + "#recent_minor|money}}"
     payload = {"placeholders": {"a": placeholder}, "id": "fnd_01M4V6CCBJKVBGKE0TF75YXX68"}
-    payload["note"] = "paid from account 12345678, card 4111 1111 1111 1111"
+    payload["note"] = "paid from account 12345678, card 4000 1234 5678 9011"
     data = json.loads(
         redact_messages([{"role": "user", "content": json.dumps(payload)}])[0]["content"]
     )
