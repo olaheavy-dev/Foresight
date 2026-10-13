@@ -37,15 +37,23 @@ its `intent` and `slots`. `today` is the date the question is asked. Then:
      `next_30d`, or a month as YYYY-MM.
    - `window`: `to_next_payday` when the question is about the time until the next payday.
    - `purpose`: a short lowercase noun for what money is for (`holiday`, `car_repair`, `laptop`).
-   - `category_key`: a spending category key, lowercase with dots or underscores (`groceries`,
-     `food.delivery`, `transport`).
+   - `category_key`: one of the keys in `categories` (the profile's own categories): the closest
+     one to what the user named ("takeaways" → `food.delivery`, "taxis" → `transport.taxi`). Give
+     it only when the question is about spending in a category (a breakdown, a trend, a lookup,
+     a cut or a cap), never for one purchase in an affordability question or for income. Leave it
+     out if none fits.
    - `merchant`: a merchant as written, in title case (`Deliveroo`).
    - `modifier`: for a what-if, one of `one_off_outflow`, `one_off_inflow`, `income_delay`,
      `income_change_pct`, `recurring_add`, `recurring_change`, `recurring_cancel`,
      `category_cut_pct`, `category_cap`, `split_outflow`.
    - `days`, `months`, `instalments`: whole numbers; `pct`: a signed whole-number percentage.
    - `min_amount_minor`, `threshold_minor`: amounts in minor units.
-   - `goal`, `subject`, `focus`, `group_by`, `recurring_id`: short lowercase keys.
+   - `subject` (for `explain_recommendation`): `recommendation` (why it was suggested),
+     `verification` (how it was checked), `risk` (why there is a risk) or `number` (where a figure
+     comes from).
+   - `focus` (for `subscription_review`): `overlap` (services that duplicate each other) or
+     `price_change` (a payment that went up); leave it out for a plain list.
+   - `goal`, `group_by`, `recurring_id`: short lowercase keys.
 4. Set `needs_forecast` if answering needs a projection of future balances, and `needs_advice` if
    the user asks what to do.
 5. Set `out_of_scope` for anything that isn't about the user's own money in Foresight: picking
