@@ -1,0 +1,96 @@
+name: Security
+
+# Zero-issue policy: every job fails on ANY finding, whatever its severity.
+# Runs on every PR and push to main, and daily so newly published advisories
+# against unchanged dependencies are caught too. Branch protection requires
+# the "security" job, which passes only if every scan below passed.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  codeql:
+    name: codeql (${{ matrix.language }})
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [python, javascript-typescript, actions]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+          queries: security-extended
+      - uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:${{ matrix.language }}
+          output: sarif-results
+      - name: Fail on any finding
+        run: |
+          count=$(jq '[.runs[].results[]?] | length' sarif-results/*.sarif | awk '{s+=$1} END {print s+0}')
+          if [ "$count" -ne 0 ]; then
+            jq -r '.runs[].results[]? | "\(.ruleId): \(.locations[0].physicalLocation.artifactLocation.uri):\(.locations[0].physicalLocation.region.startLine) \(.message.text)"' sarif-results/*.sarif
+            echo "::error::CodeQL reported $count finding(s); the policy is zero."
+            exit 1
+          fi
+          echo "CodeQL: 0 findings"
+
+  dependency-review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: low
+          comment-summary-in-pr: on-failure
+
+  python-deps:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install pip-audit==2.10.1
+      - name: Audit every Python requirement (runtime and dev)
+        run: pip-audit --strict -r requirements.txt -r requirements-dev.txt
+
+  npm-deps:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - name: Audit every npm dependency (runtime and dev)
+        run: npm audit --audit-level=low
+
+  security:
+    if: always()
+    needs: [codeql, dependency-review, python-deps, npm-deps]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: All security scans passed
+        run: |
+          echo '${{ toJSON(needs) }}' | jq -e 'to_entries | all(.value.result == "success" or .value.result == "skipped")'

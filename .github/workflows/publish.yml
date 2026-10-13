@@ -27,17 +27,26 @@ jobs:
             context: frontend
             dockerfile: frontend/Dockerfile
     steps:
+      # Check out main itself, never a ref taken from the triggering run, then refuse to
+      # publish unless main still points at the commit CI just checked. If main has moved on,
+      # the newer commit's own CI run publishes it.
       - uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
+      - name: Main still points at the CI-checked commit
+        env:
+          CHECKED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          if [ "$(git rev-parse HEAD)" != "$CHECKED_SHA" ]; then
+            echo "::error::main moved on since CI checked $CHECKED_SHA; the newer commit's CI run will publish."
+            exit 1
+          fi
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build (not pushed yet)
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           context: ${{ matrix.context }}
           file: ${{ matrix.dockerfile }}
