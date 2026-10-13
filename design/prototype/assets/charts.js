@@ -105,6 +105,9 @@
     rent: { label: "Rent +£100 from Jan", cls: "l-sim", delta: (t) => (t >= d("2027-01-01") ? -100 : 0) }
   };
 
+  // Escape text from the page's data-chart attribute before it is placed in SVG markup.
+  const esc = (v) => String(v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+
   function render(el) {
     const cfg = JSON.parse(el.dataset.chart || "{}");
     const F = FIXTURES[cfg.fixture || "p1"];
@@ -163,13 +166,13 @@
     if (showHistory) {
       s += `<line class="today" x1="${tx}" x2="${tx}" y1="${m.t - 14}" y2="${H - m.b}"/>`;
       s += `<text class="today-label" x="${tx + 6}" y="${m.t - 4}">Today · 12 Oct</text>`;
-      s += `<text class="region-label" x="${tx - 6}" y="${m.t - 4}" text-anchor="end">${compact ? "History" : (cfg.historyLabel || "History · 30 days")}</text>`;
+      s += `<text class="region-label" x="${tx - 6}" y="${m.t - 4}" text-anchor="end">${compact ? "History" : esc(cfg.historyLabel || "History · 30 days")}</text>`;
     }
     // bracket: [start, end, label] drawn along the top, e.g. the 41-day January
     if (cfg.bracket) {
       const [b0, b1, bl] = cfg.bracket, bx0 = x(d(b0)), bx1 = x(d(b1)), by = m.t + 6;
       s += `<path d="M${bx0},${by + 6}V${by}H${bx1}V${by + 6}" fill="none" stroke="var(--ink-2)" stroke-width="1"/>`;
-      s += `<text class="annot-sub" x="${(bx0 + bx1) / 2}" y="${by - 4}" text-anchor="middle">${bl}</text>`;
+      s += `<text class="annot-sub" x="${(bx0 + bx1) / 2}" y="${by - 4}" text-anchor="middle">${esc(bl)}</text>`;
     }
     // events
     (cfg.events || []).forEach((e) => {
@@ -193,8 +196,8 @@
       const dy1 = above ? -50 : 18, dy2 = above ? -36 : 33;
       s += `<circle class="annot-dot" cx="${ax}" cy="${ay}" r="4.5" fill="${col}"/>`;
       if (!compact || cfg.annotateCompact) {
-        s += `<text class="annot" x="${ax + (left ? -12 : 14)}" y="${ay + dy1}" text-anchor="${left ? "end" : "start"}">${label}</text>`;
-        if (sub) s += `<text class="annot-sub" x="${ax + (left ? -12 : 14)}" y="${ay + dy2}" text-anchor="${left ? "end" : "start"}">${sub}</text>`;
+        s += `<text class="annot" x="${ax + (left ? -12 : 14)}" y="${ay + dy1}" text-anchor="${left ? "end" : "start"}">${esc(label)}</text>`;
+        if (sub) s += `<text class="annot-sub" x="${ax + (left ? -12 : 14)}" y="${ay + dy2}" text-anchor="${left ? "end" : "start"}">${esc(sub)}</text>`;
       }
     });
 
