@@ -85,6 +85,11 @@ def answer_profile(
         # A model step failed (or its call was not recorded): its time and cost are not the
         # answer's real ones, so the answer is reported but left out of the statistics.
         "degraded": any(s.kind == "llm" and s.status == "failed" for s in steps),
+        "failed_steps": [
+            f"{s.node}: {(s.error or '')[:80]}"
+            for s in steps
+            if s.kind == "llm" and s.status == "failed"
+        ],
         "cost_usd": None if any(c is None for c in costs) else round(sum(costs), 6),  # type: ignore[arg-type]
         "e2e_ms": e2e,
         "first_step_ms": ttfs,
