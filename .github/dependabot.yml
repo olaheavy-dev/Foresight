@@ -1,0 +1,21 @@
+# Security updates only. `open-pull-requests-limit: 0` turns off routine version-bump
+# PRs while keeping Dependabot security-update PRs (enabled in repo settings), so a
+# published advisory produces a fix PR without daily churn during the hackathon.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /
+    schedule: { interval: daily }
+    open-pull-requests-limit: 0
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule: { interval: daily }
+    open-pull-requests-limit: 0
+  - package-ecosystem: docker
+    directories: [/backend, /frontend]
+    schedule: { interval: daily }
+    open-pull-requests-limit: 0
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: daily }
+    open-pull-requests-limit: 0
