@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from evals.gates import is_gated
 from evals.headline import headline
 
 
@@ -85,7 +86,7 @@ def render_report(summary: dict[str, Any], results: dict[str, dict[str, Any]]) -
                 "|---|---|---|---|---|---|---|",
             ]
             for t in r["targets"]:
-                gated = "yes" if t["stage1"] else "no (later stage)"
+                gated = "yes" if is_gated(t) else "no (opted out)"
                 lines.append(
                     f"| {t['id']} | {t['label']} | {t['dataset']} | {fmt(t['value'])} | "
                     f"{t['target']} | {mark(t['met'])} | {gated} |"

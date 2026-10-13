@@ -76,7 +76,13 @@ def test_gate_rules() -> None:
         "failed": [],
         "unmeasured": ["t1"],
     }
-    assert gate(later_stage)["status"] == "pass"
+    # Since Stage 2 every measured target gates, whatever stage it was written for.
+    assert gate(later_stage)["status"] == "fail"
+    opted_out = {
+        "targets": [{**target("t1", "t", 0.1, ">=", 0.9, "d"), "gated": False}],
+        "error": None,
+    }
+    assert gate(opted_out)["status"] == "pass"
     assert gate({"targets": [], "error": "boom"})["status"] == "fail"
     assert gate(None)["status"] == "fail"
 
