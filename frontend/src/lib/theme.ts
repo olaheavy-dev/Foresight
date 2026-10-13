@@ -34,5 +34,7 @@ export function saveTheme(choice: ThemeChoice) {
   }
 }
 
+// The key is written literally (it must stay equal to THEME_KEY; a test checks it) so no value
+// is interpolated into script source.
 /** Runs in <head> before paint. `?theme=dark|light|system` overrides and is remembered. */
-export const THEME_INIT_SCRIPT = `(function(){try{var k=${JSON.stringify(THEME_KEY)},c=["light","dark","system"],u=new URLSearchParams(location.search).get("theme"),s=null;try{s=localStorage.getItem(k)}catch(e){}var v=c.indexOf(u)>=0?u:s;if(c.indexOf(v)<0)v="system";if(u&&c.indexOf(u)>=0){try{localStorage.setItem(k,u)}catch(e){}}var r=document.documentElement;if(v==="system")r.removeAttribute("data-theme");else r.setAttribute("data-theme",v);r.dataset.themeChoice=v}catch(e){}})();`;
+export const THEME_INIT_SCRIPT = `(function(){try{var k="foresight-theme",c=["light","dark","system"],u=new URLSearchParams(location.search).get("theme"),s=null;try{s=localStorage.getItem(k)}catch(e){}var v=c.indexOf(u)>=0?u:s;if(c.indexOf(v)<0)v="system";if(u&&c.indexOf(u)>=0){try{localStorage.setItem(k,u)}catch(e){}}var r=document.documentElement;if(v==="system")r.removeAttribute("data-theme");else r.setAttribute("data-theme",v);r.dataset.themeChoice=v}catch(e){}})();`;

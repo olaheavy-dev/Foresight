@@ -11,6 +11,7 @@ import json
 from collections.abc import Iterator
 from datetime import date
 from typing import Any
+from urllib.parse import urlsplit
 
 import pytest
 from sqlalchemy import Engine
@@ -490,5 +491,8 @@ def test_a_card_that_narrows_but_does_not_close_the_gap_says_so_and_signposts_he
         b for b in body["blocks"] if b["type"] == "Narrative" and b.get("title") == "What else"
     )
     assert note["placement"] == {"area": "tab", "tab": "recommendation"}
-    assert "moneyhelper.org.uk" in note["segments"][0]["text"]
+    text = note["segments"][0]["text"]
+    tokens = [t.strip(".,;:()") for t in text.split()]
+    hosts = {urlsplit(t if "://" in t else f"https://{t}").hostname for t in tokens if "." in t}
+    assert "moneyhelper.org.uk" in hosts or "www.moneyhelper.org.uk" in hosts, text
     assert check_skeleton(AgentResponse.model_validate(body).blocks) == []

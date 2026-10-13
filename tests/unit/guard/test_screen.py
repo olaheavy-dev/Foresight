@@ -23,7 +23,7 @@ def test_rule_pack_loads_with_unique_ids_and_a_content_hash() -> None:
     assert pack.tag.startswith(pack.version + "+")
     ids = [r.id for r in pack.rules]
     assert len(ids) == len(set(ids))
-    assert "moneyhelper.org.uk" in pack.url_allow_list
+    assert any(host == "moneyhelper.org.uk" for host in pack.url_allow_list)
     assert {"uk", "in"} <= set(pack.product_advice)
 
 
