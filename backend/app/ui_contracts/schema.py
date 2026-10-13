@@ -10,11 +10,14 @@ from pydantic.json_schema import models_json_schema
 from backend.app.ui_contracts.plan import ResponsePlan
 from backend.app.ui_contracts.response import (
     AgentResponse,
+    CalculationView,
     FeaturesPayload,
     ForecastView,
     Healthz,
     ImportSummary,
+    ProfileView,
     SimulationView,
+    TransactionPage,
 )
 
 # Top-level documents, in a stable order. Each gets a generated TS type and guard.
@@ -26,6 +29,9 @@ ROOTS: tuple[type[BaseModel], ...] = (
     ImportSummary,
     ForecastView,
     SimulationView,
+    ProfileView,
+    TransactionPage,
+    CalculationView,
 )
 
 

@@ -2,25 +2,38 @@
  * Typed client for the Foresight API. Every payload is checked against the generated contract
  * guards (docs/08 §6 Step 3) before the UI sees it; anything malformed, late or failed is `null`,
  * so the UI shows an error state and never a number it could not verify.
+ *
+ * Session: the API identifies the profile by an HttpOnly cookie (`foresight_profile`), set by
+ * `startDemo()` / `startNewProfile()`. In the browser, calls go to this origin's `/api/*` (proxied
+ * to the backend by next.config.ts) with `credentials: "include"`, so the cookie travels and the
+ * browser stores the one the backend sets. On the server (React Server Components, route
+ * handlers) there is no cookie jar: pass the incoming request's cookie header as `cookie`. Only
+ * browser calls can *choose* a profile, because only the browser can store the new cookie.
  */
 import {
+  isCalculationView,
   isFeaturesPayload,
   isForecastView,
   isHealthz,
   isImportSummary,
+  isProfileView,
   isSimulationView,
+  isTransactionPage,
 } from "@/ui-contracts/guards";
 import type {
   AgentResponse,
   Block,
+  CalculationView,
   Feature,
   FollowUpAction,
   ForecastView,
   Healthz,
   ImportSummary,
   Placement,
+  ProfileView,
   ScenarioSpecPayload,
   SimulationView,
+  TransactionPage,
 } from "@/ui-contracts/types";
 import {
   type SchemaError,
@@ -30,7 +43,9 @@ import {
   validatePlacement,
 } from "@/ui-contracts/validate";
 
-const DEFAULT_BASE_URL = process.env.API_BASE_URL ?? "http://backend:8000";
+// Browser: same origin (the Next proxy). Server: straight to the private backend container.
+const DEFAULT_BASE_URL =
+  typeof window === "undefined" ? (process.env.API_BASE_URL ?? "http://backend:8000") : "";
 export const TIMEOUTS = { read: 3000, simulate: 10000, import: 30000 } as const;
 const RESPONSE_ID = /^rsp_[0-9A-HJKMNP-TV-Z]{26}$/;
 
@@ -38,18 +53,26 @@ export type ApiOptions = {
   fetchImpl?: typeof fetch;
   timeoutMs?: number;
   baseUrl?: string;
+  /** Server-side only: the incoming request's `cookie` header, forwarded to the API. */
+  cookie?: string;
 };
+
+export type Scope = "mine" | "household" | `account:${string}`;
 
 async function request<T>(
   path: string,
   accept: (body: unknown, status: number) => T | null,
-  { fetchImpl = fetch, timeoutMs = TIMEOUTS.read, baseUrl = DEFAULT_BASE_URL }: ApiOptions,
+  { fetchImpl = fetch, timeoutMs = TIMEOUTS.read, baseUrl = DEFAULT_BASE_URL, cookie }: ApiOptions,
   init: RequestInit = {},
 ): Promise<T | null> {
   try {
+    const headers = new Headers(init.headers);
+    if (cookie) headers.set("cookie", cookie);
     const response = await fetchImpl(`${baseUrl}${path}`, {
       cache: "no-store",
+      credentials: "include",
       ...init,
+      headers,
       signal: AbortSignal.timeout(timeoutMs),
     });
     return accept(await response.json(), response.ok ? 200 : response.status);
@@ -96,9 +119,77 @@ export function importStatements(
   );
 }
 
+/** Choose the seeded demo profile (browser only: stores the session cookie). */
+export function startDemo(
+  persona: "P1" | "P2" = "P1",
+  options: ApiOptions = {},
+): Promise<ProfileView | null> {
+  const query = new URLSearchParams({ persona });
+  return request(`/api/session/demo?${query}`, okAnd(isProfileView), options, {
+    method: "POST",
+  });
+}
+
+/** Create a new, empty profile to import statements into (browser only). */
+export function startNewProfile(options: ApiOptions = {}): Promise<ProfileView | null> {
+  return request("/api/session/new", okAnd(isProfileView), options, {
+    method: "POST",
+  });
+}
+
+/** The profile the session cookie points at; null when no profile is chosen yet. */
+export function fetchProfile(options: ApiOptions = {}): Promise<ProfileView | null> {
+  return request("/api/session", okAnd(isProfileView), options);
+}
+
+export type TransactionFilters = {
+  dateFrom?: string;
+  dateTo?: string;
+  category?: string;
+  flowKind?: string;
+  accountId?: string;
+  limit?: number;
+  offset?: number;
+};
+
+/** One page of the ledger, newest first. */
+export function fetchTransactions(
+  filters: TransactionFilters = {},
+  options: ApiOptions = {},
+): Promise<TransactionPage | null> {
+  const names: Record<keyof TransactionFilters, string> = {
+    dateFrom: "date_from",
+    dateTo: "date_to",
+    category: "category",
+    flowKind: "flow_kind",
+    accountId: "account_id",
+    limit: "limit",
+    offset: "offset",
+  };
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(filters)) {
+    if (value !== undefined) query.set(names[key as keyof TransactionFilters], String(value));
+  }
+  const suffix = query.size > 0 ? `?${query}` : "";
+  return request(`/api/transactions${suffix}`, okAnd(isTransactionPage), options);
+}
+
+/** A stored calculation for the Evidence drawer. */
+export function fetchCalculation(
+  calcId: string,
+  options: ApiOptions = {},
+): Promise<CalculationView | null> {
+  if (!/^calc_[0-9A-Za-z]+$/.test(calcId)) return Promise.resolve(null);
+  return request(
+    `/api/calculations/${encodeURIComponent(calcId)}`,
+    okAnd(isCalculationView),
+    options,
+  );
+}
+
 /** The current baseline forecast for a scope. */
 export function fetchForecast(
-  scope: "mine" | "household" | "account" = "mine",
+  scope: Scope = "mine",
   options: ApiOptions = {},
 ): Promise<ForecastView | null> {
   const query = new URLSearchParams({ scope });
@@ -149,9 +240,10 @@ export function parseAgentResponse(body: unknown): ParsedResponse | null {
   if (typeof body !== "object" || body === null) return null;
   const raw = body as Record<string, unknown>;
   if (!Array.isArray(raw.blocks) || raw.blocks.length === 0) return null;
-  const envelopeErrors = validate("AgentResponse", { ...raw, follow_ups: [] }).filter(
-    (e) => e.path !== "blocks" && !e.path.startsWith("blocks."),
-  );
+  const envelopeErrors = validate("AgentResponse", {
+    ...raw,
+    follow_ups: [],
+  }).filter((e) => e.path !== "blocks" && !e.path.startsWith("blocks."));
   if (envelopeErrors.length > 0) return null;
 
   const blocks = raw.blocks.map((block): BlockResult => {

@@ -1,11 +1,16 @@
 import {
+  fetchCalculation,
   fetchFeatures,
   fetchForecast,
   fetchHealthz,
+  fetchProfile,
   fetchResponse,
+  fetchTransactions,
   importStatements,
   parseAgentResponse,
   simulate,
+  startDemo,
+  startNewProfile,
 } from "./api";
 import type { ScenarioSpecPayload } from "@/ui-contracts/types";
 
@@ -54,7 +59,10 @@ const chart = {
   summary: {
     min_balance: money(900),
     min_date: { kind: "date", value: "2026-10-14", display: "14 Oct" },
-    starting_balance: { money: { ...money(1000), precision: "exact" }, provenance: "declared" },
+    starting_balance: {
+      money: { ...money(1000), precision: "exact" },
+      provenance: "declared",
+    },
   },
 };
 const forecastView = {
@@ -93,7 +101,14 @@ const spec: ScenarioSpecPayload = {
   name: "Trip",
   scope: "mine",
   currency: "GBP",
-  modifiers: [{ type: "one_off_outflow", date: "2026-11-06", amount_minor: 1000, label: "Trip" }],
+  modifiers: [
+    {
+      type: "one_off_outflow",
+      date: "2026-11-06",
+      amount_minor: 1000,
+      label: "Trip",
+    },
+  ],
 };
 const narrative = {
   type: "Narrative",
@@ -134,11 +149,17 @@ describe("read endpoints", () => {
     const features = {
       features: [{ key: "forecast", stage: 1, title: "Forecast", enabled: true }],
     };
-    expect(await fetchFeatures({ ...base, fetchImpl: respond(features, 200, calls) })).toEqual(
-      features.features,
-    );
     expect(
-      await fetchForecast("mine", { ...base, fetchImpl: respond(forecastView, 200, calls) }),
+      await fetchFeatures({
+        ...base,
+        fetchImpl: respond(features, 200, calls),
+      }),
+    ).toEqual(features.features);
+    expect(
+      await fetchForecast("mine", {
+        ...base,
+        fetchImpl: respond(forecastView, 200, calls),
+      }),
     ).toEqual(forecastView);
     expect(calls.map((c) => c.url)).toEqual([
       "http://api.test/api/features",
@@ -162,7 +183,13 @@ describe("read endpoints", () => {
   });
 
   it("gives up after the timeout", async () => {
-    expect(await fetchForecast("mine", { ...base, fetchImpl: hanging, timeoutMs: 20 })).toBeNull();
+    expect(
+      await fetchForecast("mine", {
+        ...base,
+        fetchImpl: hanging,
+        timeoutMs: 20,
+      }),
+    ).toBeNull();
   });
 });
 
@@ -186,7 +213,10 @@ describe("write endpoints", () => {
     };
     const file = new Blob(["Date,Amount\n"], { type: "text/csv" });
     expect(
-      await importStatements([file], { ...base, fetchImpl: respond(summary, 200, calls) }),
+      await importStatements([file], {
+        ...base,
+        fetchImpl: respond(summary, 200, calls),
+      }),
     ).toEqual(summary);
     expect(calls[0].url).toBe("http://api.test/api/imports");
     expect(calls[0].init?.method).toBe("POST");
@@ -197,7 +227,10 @@ describe("write endpoints", () => {
   it("posts a scenario spec and validates the comparison", async () => {
     const calls: Call[] = [];
     expect(
-      await simulate(spec, { ...base, fetchImpl: respond(simulationView, 200, calls) }),
+      await simulate(spec, {
+        ...base,
+        fetchImpl: respond(simulationView, 200, calls),
+      }),
     ).toEqual(simulationView);
     expect(JSON.parse(String(calls[0].init?.body))).toEqual(spec);
     const tooMany = {
@@ -223,14 +256,22 @@ describe("responses", () => {
     expect(parsed?.blocks).toEqual([{ ok: true, block: narrative }]);
     expect(calls[0].url).toBe(`http://api.test/api/responses/rsp_${U}`);
     expect(
-      await fetchResponse("../admin", { ...base, fetchImpl: respond(agentResponse, 200, calls) }),
+      await fetchResponse("../admin", {
+        ...base,
+        fetchImpl: respond(agentResponse, 200, calls),
+      }),
     ).toBeNull();
     expect(calls).toHaveLength(1);
   });
 
   it("isolates an invalid block and drops an invalid follow-up", () => {
     const broken = { ...narrative, block_id: "b2", type: "PieChart" };
-    const badFollowUp = { action_id: "fu_2", label: "Go", kind: "open_tab", payload: {} };
+    const badFollowUp = {
+      action_id: "fu_2",
+      label: "Go",
+      kind: "open_tab",
+      payload: {},
+    };
     const parsed = parseAgentResponse({
       ...agentResponse,
       blocks: [narrative, broken],
@@ -253,5 +294,87 @@ describe("responses", () => {
     ["a wrong schema version", { ...agentResponse, schema_version: "agent_response/2" }],
   ])("rejects %s", (_label, body) => {
     expect(parseAgentResponse(body)).toBeNull();
+  });
+});
+
+describe("session and ledger", () => {
+  const profile = {
+    workspace_id: `wsp_${U}`,
+    name: "Demo",
+    kind: "demo",
+    persona: "P1",
+    country: "GB",
+    home_currency: "GBP",
+    locale: "en-GB",
+    timezone: "Europe/London",
+    data_version: 1,
+    read_only: true,
+  };
+
+  it("sends credentials so the session cookie travels, and forwards a server-side cookie", async () => {
+    const calls: Call[] = [];
+    expect(
+      await startDemo("P1", {
+        ...base,
+        fetchImpl: respond(profile, 200, calls),
+      }),
+    ).toEqual(profile);
+    expect(calls[0].url).toBe("http://api.test/api/session/demo?persona=P1");
+    expect(calls[0].init?.method).toBe("POST");
+    expect(calls[0].init?.credentials).toBe("include");
+
+    await fetchProfile({
+      ...base,
+      cookie: "foresight_profile=abc",
+      fetchImpl: respond(profile, 200, calls),
+    });
+    expect(new Headers(calls[1].init?.headers).get("cookie")).toBe("foresight_profile=abc");
+  });
+
+  it("creates a new profile and refuses an error response", async () => {
+    const user = { ...profile, kind: "user", persona: null, read_only: false };
+    expect(await startNewProfile({ ...base, fetchImpl: respond(user, 201) })).toEqual(user);
+    expect(await startNewProfile({ ...base, fetchImpl: respond(user, 500) })).toBeNull();
+  });
+
+  it("builds ledger queries and validates the page", async () => {
+    const calls: Call[] = [];
+    const page = {
+      workspace_id: `wsp_${U}`,
+      total: 1,
+      limit: 50,
+      offset: 0,
+      items: [
+        {
+          transaction_id: `txn_${U}`,
+          account_id: `acct_${U}`,
+          posted_on: "2026-10-12",
+          narration: "Coffee",
+          channel: "card",
+          amount: { ...money(-350), precision: "exact" },
+        },
+      ],
+    };
+    expect(
+      await fetchTransactions(
+        { category: "food.coffee", limit: 50 },
+        { ...base, fetchImpl: respond(page, 200, calls) },
+      ),
+    ).toEqual(page);
+    expect(calls[0].url).toBe("http://api.test/api/transactions?category=food.coffee&limit=50");
+    expect(
+      await fetchTransactions({}, { ...base, fetchImpl: respond({ ...page, total: -1 }) }),
+    ).toBeNull();
+  });
+
+  it("rejects a malformed calculation id without calling the API", async () => {
+    const calls: Call[] = [];
+    expect(
+      await fetchCalculation("../x", {
+        ...base,
+        fetchImpl: respond({}, 200, calls),
+      }),
+    ).toBeNull();
+    expect(calls).toHaveLength(0);
   });
 });

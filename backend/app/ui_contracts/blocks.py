@@ -208,6 +208,9 @@ class PayCycleLow(Contract):
     low: MoneyValue
     low_date: dt.date
     below_buffer: bool
+    # Share of simulated paths whose low in this cycle is under the buffer; null in relative
+    # mode or without a same-currency buffer.
+    chance_below_buffer: PercentValue | None = None
 
 
 class StartingBalance(Contract):

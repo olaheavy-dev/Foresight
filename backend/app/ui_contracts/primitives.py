@@ -22,14 +22,23 @@ ENTITY_PREFIXES = (
     "calc", "fnd", "fc", "scn", "sim", "rec", "ver", "goal", "rob", "txn", "run", "imp", "acct",
     "bal", "inc", "dob", "cpty", "fmt", "lay", "rcn",
 )  # fmt: skip
+# Engine records are content-addressed: the same question on the same data always maps to the
+# same id (finance_core.calc.record), written as 24 lowercase hex digits instead of a ULID.
+CONTENT_HASH = r"[0-9a-f]{24}"
+CONTENT_PREFIXES = ("calc", "fc", "scn", "sim")
+CALC_BODY = rf"({ULID}|{CONTENT_HASH})"
 CALC_PATH = r"[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)*"
-CALC_REF_PATTERN = rf"^calc_{ULID}#{CALC_PATH}$"
-ENTITY_REF_PATTERN = rf"^({'|'.join(ENTITY_PREFIXES)})_{ULID}$"
-REF_PATTERN = rf"^(calc_{ULID}#{CALC_PATH}|({'|'.join(ENTITY_PREFIXES)})_{ULID})$"
+CALC_REF_PATTERN = rf"^calc_{CALC_BODY}#{CALC_PATH}$"
+ENTITY_REF_BODY = (
+    rf"({'|'.join(CONTENT_PREFIXES)})_({ULID}|{CONTENT_HASH})|({'|'.join(ENTITY_PREFIXES)})_{ULID}"
+)
+ENTITY_REF_PATTERN = rf"^({ENTITY_REF_BODY})$"
+REF_PATTERN = rf"^(calc_{CALC_BODY}#{CALC_PATH}|{ENTITY_REF_BODY})$"
 
 
 def _id(prefix: str) -> StringConstraints:
-    return StringConstraints(pattern=rf"^{prefix}_{ULID}$")
+    body = rf"({ULID}|{CONTENT_HASH})" if prefix in CONTENT_PREFIXES else ULID
+    return StringConstraints(pattern=rf"^{prefix}_{body}$")
 
 
 CalcRef = Annotated[str, StringConstraints(pattern=CALC_REF_PATTERN)]

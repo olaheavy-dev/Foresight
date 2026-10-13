@@ -96,6 +96,9 @@ export interface UiContracts {
   ImportSummary?: ImportSummary;
   ForecastView?: ForecastView;
   SimulationView?: SimulationView;
+  ProfileView?: ProfileView;
+  TransactionPage?: TransactionPage;
+  CalculationView?: CalculationView;
 }
 /**
  * This interface was referenced by `UiContracts`'s JSON-Schema
@@ -769,6 +772,7 @@ export interface BalanceHistory {
  */
 export interface PayCycleLow {
   below_buffer: boolean;
+  chance_below_buffer?: PercentValue | null;
   low: MoneyValue;
   low_date: string;
   payday: string;
@@ -918,16 +922,16 @@ export interface TransactionTable {
   /**
    * @maxItems 50
    */
-  rows: TransactionRow[];
+  rows: Backend_App_UiContracts_Blocks__TransactionRow[];
   title?: string | null;
   total: MoneyValue;
   type: "TransactionTable";
 }
 /**
  * This interface was referenced by `UiContracts`'s JSON-Schema
- * via the `definition` "TransactionRow".
+ * via the `definition` "backend__app__ui_contracts__blocks__TransactionRow".
  */
-export interface TransactionRow {
+export interface Backend_App_UiContracts_Blocks__TransactionRow {
   amount: MoneyValue;
   category: CategoryLabel;
   counterparty?: string | null;
@@ -1691,7 +1695,7 @@ export interface ImportSummary {
    * @minItems 1
    */
   files: ImportedFile[];
-  import_id: string;
+  import_id: string | null;
   workspace_id: string;
 }
 /**
@@ -1699,15 +1703,32 @@ export interface ImportSummary {
  * via the `definition` "ImportedFile".
  */
 export interface ImportedFile {
+  already_imported?: boolean;
   currency?: string | null;
+  duplicates?: number;
   filename: string;
+  import_ids?: string[];
+  matched_profile?: string | null;
   messages?: string[];
+  period?: DateRange | null;
+  questions?: ImportQuestion[];
   reconciliation?: ImportReconciliation | null;
+  rejections?: string[];
   rows_imported: number;
   rows_read: number;
   rows_rejected: number;
   source_type: "csv" | "xlsx" | "xls" | "pdf";
   status: "imported" | "needs_mapping" | "rejected";
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "ImportQuestion".
+ */
+export interface ImportQuestion {
+  kind: string;
+  options?: string[];
+  preselected?: string | null;
+  prompt: string;
 }
 /**
  * This interface was referenced by `UiContracts`'s JSON-Schema
@@ -1775,4 +1796,67 @@ export interface ScenarioComparisonData {
   scenarios: ScenarioLine[];
   scope: Scope;
   verdict?: ScenarioVerdict | null;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "ProfileView".
+ */
+export interface ProfileView {
+  country: string;
+  data_version: number;
+  home_currency: string;
+  kind: "demo" | "user";
+  locale: string;
+  name: string;
+  persona?: string | null;
+  read_only: boolean;
+  timezone: string;
+  workspace_id: string;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "TransactionPage".
+ */
+export interface TransactionPage {
+  items: Backend_App_UiContracts_Response__TransactionRow[];
+  limit: number;
+  offset: number;
+  total: number;
+  workspace_id: string;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "backend__app__ui_contracts__response__TransactionRow".
+ */
+export interface Backend_App_UiContracts_Response__TransactionRow {
+  account_id: string;
+  amount: MoneyValue;
+  categorised_by?: ("rule" | "memory" | "llm" | "user") | null;
+  category_key?: string | null;
+  channel: string;
+  confidence?: number | null;
+  counterparty?: string | null;
+  flow_kind?: string | null;
+  import_id?: string | null;
+  narration: string;
+  posted_on: string;
+  transaction_id: string;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "CalculationView".
+ */
+export interface CalculationView {
+  calc_id: string;
+  created_at: string;
+  currency?: string | null;
+  data_version: number;
+  duration_ms: number;
+  engine_version: string;
+  inputs_hash: string;
+  kind: string;
+  params: {};
+  result: {};
+  result_hash: string;
+  workspace_id: string;
 }

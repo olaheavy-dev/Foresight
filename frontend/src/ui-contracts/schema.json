@@ -122,7 +122,7 @@
           "type": "integer"
         },
         "scenario_id": {
-          "pattern": "^scn_[0-9A-HJKMNP-TV-Z]{26}$",
+          "pattern": "^scn_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})$",
           "title": "Scenario Id",
           "type": "string"
         },
@@ -284,7 +284,7 @@
         "evidence": {
           "default": [],
           "items": {
-            "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+            "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
             "type": "string"
           },
           "title": "Evidence",
@@ -597,7 +597,7 @@
         "forecast_id": {
           "anyOf": [
             {
-              "pattern": "^fc_[0-9A-HJKMNP-TV-Z]{26}$",
+              "pattern": "^fc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})$",
               "type": "string"
             },
             {
@@ -795,7 +795,7 @@
         "outputs": {
           "default": [],
           "items": {
-            "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+            "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
             "type": "string"
           },
           "title": "Outputs",
@@ -890,7 +890,7 @@
         "context_refs": {
           "default": [],
           "items": {
-            "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+            "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
             "type": "string"
           },
           "title": "Context Refs",
@@ -1007,6 +1007,93 @@
         "series"
       ],
       "title": "BaselineLine",
+      "type": "object"
+    },
+    "CalculationView": {
+      "additionalProperties": false,
+      "description": "A stored engine calculation, for the Evidence drawer (docs/07 §6, docs/08 §8).",
+      "properties": {
+        "calc_id": {
+          "pattern": "^calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})$",
+          "title": "Calc Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "data_version": {
+          "minimum": 0,
+          "title": "Data Version",
+          "type": "integer"
+        },
+        "duration_ms": {
+          "minimum": 0,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "engine_version": {
+          "minLength": 1,
+          "title": "Engine Version",
+          "type": "string"
+        },
+        "inputs_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Inputs Hash",
+          "type": "string"
+        },
+        "kind": {
+          "minLength": 1,
+          "title": "Kind",
+          "type": "string"
+        },
+        "params": {
+          "title": "Params",
+          "type": "object"
+        },
+        "result": {
+          "title": "Result",
+          "type": "object"
+        },
+        "result_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Result Hash",
+          "type": "string"
+        },
+        "workspace_id": {
+          "pattern": "^wsp_[0-9A-HJKMNP-TV-Z]{26}$",
+          "title": "Workspace Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "calc_id",
+        "kind",
+        "workspace_id",
+        "inputs_hash",
+        "result_hash",
+        "engine_version",
+        "data_version",
+        "duration_ms",
+        "created_at",
+        "params",
+        "result"
+      ],
+      "title": "CalculationView",
       "type": "object"
     },
     "CashFlowForecastChart": {
@@ -1138,7 +1225,7 @@
         "evidence": {
           "default": [],
           "items": {
-            "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+            "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
             "type": "string"
           },
           "title": "Evidence",
@@ -1250,7 +1337,7 @@
                 "type": "string"
               },
               {
-                "pattern": "^scn_[0-9A-HJKMNP-TV-Z]{26}$",
+                "pattern": "^scn_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})$",
                 "type": "string"
               }
             ]
@@ -1260,7 +1347,7 @@
           "type": "array"
         },
         "forecast_ref": {
-          "pattern": "^fc_[0-9A-HJKMNP-TV-Z]{26}$",
+          "pattern": "^fc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})$",
           "title": "Forecast Ref",
           "type": "string"
         },
@@ -1651,7 +1738,7 @@
         "evidence": {
           "default": [],
           "items": {
-            "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+            "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
             "type": "string"
           },
           "title": "Evidence",
@@ -1922,7 +2009,7 @@
         "ref": {
           "anyOf": [
             {
-              "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+              "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
               "type": "string"
             },
             {
@@ -1983,7 +2070,7 @@
         "ref": {
           "anyOf": [
             {
-              "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+              "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
               "type": "string"
             },
             {
@@ -2023,7 +2110,7 @@
         "ref": {
           "anyOf": [
             {
-              "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+              "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
               "type": "string"
             },
             {
@@ -2123,7 +2210,7 @@
           "type": "string"
         },
         "ref": {
-          "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+          "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
           "title": "Ref",
           "type": "string"
         }
@@ -2264,7 +2351,7 @@
           "type": "string"
         },
         "ref": {
-          "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+          "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
           "title": "Ref",
           "type": "string"
         },
@@ -2449,7 +2536,7 @@
         "evidence": {
           "default": [],
           "items": {
-            "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+            "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
             "type": "string"
           },
           "title": "Evidence",
@@ -2516,7 +2603,7 @@
       "properties": {
         "refs": {
           "items": {
-            "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+            "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
             "type": "string"
           },
           "maxItems": 8,
@@ -2804,7 +2891,7 @@
         "evidence": {
           "default": [],
           "items": {
-            "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+            "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
             "type": "string"
           },
           "title": "Evidence",
@@ -3100,7 +3187,7 @@
           "type": "string"
         },
         "forecast_id": {
-          "pattern": "^fc_[0-9A-HJKMNP-TV-Z]{26}$",
+          "pattern": "^fc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})$",
           "title": "Forecast Id",
           "type": "string"
         },
@@ -3305,7 +3392,7 @@
         "evidence": {
           "default": [],
           "items": {
-            "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+            "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
             "type": "string"
           },
           "title": "Evidence",
@@ -3406,14 +3493,14 @@
           "type": "string"
         },
         "projection_ref": {
-          "pattern": "^calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*$",
+          "pattern": "^calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*$",
           "title": "Projection Ref",
           "type": "string"
         },
         "scenario_projection_refs": {
           "default": [],
           "items": {
-            "pattern": "^calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*$",
+            "pattern": "^calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*$",
             "type": "string"
           },
           "maxItems": 2,
@@ -3544,6 +3631,48 @@
       "title": "Healthz",
       "type": "object"
     },
+    "ImportQuestion": {
+      "additionalProperties": false,
+      "description": "Something only the user can answer before (or after) a file is used (docs/06 H13).",
+      "properties": {
+        "kind": {
+          "minLength": 1,
+          "title": "Kind",
+          "type": "string"
+        },
+        "options": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Options",
+          "type": "array"
+        },
+        "preselected": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Preselected"
+        },
+        "prompt": {
+          "minLength": 1,
+          "title": "Prompt",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "prompt"
+      ],
+      "title": "ImportQuestion",
+      "type": "object"
+    },
     "ImportReconciliation": {
       "additionalProperties": false,
       "properties": {
@@ -3586,9 +3715,16 @@
           "type": "array"
         },
         "import_id": {
-          "pattern": "^imp_[0-9A-HJKMNP-TV-Z]{26}$",
-          "title": "Import Id",
-          "type": "string"
+          "anyOf": [
+            {
+              "pattern": "^imp_[0-9A-HJKMNP-TV-Z]{26}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Import Id"
         },
         "workspace_id": {
           "pattern": "^wsp_[0-9A-HJKMNP-TV-Z]{26}$",
@@ -3608,6 +3744,11 @@
     "ImportedFile": {
       "additionalProperties": false,
       "properties": {
+        "already_imported": {
+          "default": false,
+          "title": "Already Imported",
+          "type": "boolean"
+        },
         "currency": {
           "anyOf": [
             {
@@ -3621,11 +3762,38 @@
           "default": null,
           "title": "Currency"
         },
+        "duplicates": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Duplicates",
+          "type": "integer"
+        },
         "filename": {
           "maxLength": 255,
           "minLength": 1,
           "title": "Filename",
           "type": "string"
+        },
+        "import_ids": {
+          "default": [],
+          "items": {
+            "pattern": "^imp_[0-9A-HJKMNP-TV-Z]{26}$",
+            "type": "string"
+          },
+          "title": "Import Ids",
+          "type": "array"
+        },
+        "matched_profile": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Matched Profile"
         },
         "messages": {
           "default": [],
@@ -3633,6 +3801,25 @@
             "type": "string"
           },
           "title": "Messages",
+          "type": "array"
+        },
+        "period": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DateRange"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "questions": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ImportQuestion"
+          },
+          "title": "Questions",
           "type": "array"
         },
         "reconciliation": {
@@ -3645,6 +3832,14 @@
             }
           ],
           "default": null
+        },
+        "rejections": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Rejections",
+          "type": "array"
         },
         "rows_imported": {
           "minimum": 0,
@@ -3738,7 +3933,7 @@
         "evidence": {
           "default": [],
           "items": {
-            "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+            "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
             "type": "string"
           },
           "title": "Evidence",
@@ -3809,7 +4004,7 @@
         "triggered_by": {
           "default": [],
           "items": {
-            "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+            "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
             "type": "string"
           },
           "title": "Triggered By",
@@ -4251,7 +4446,7 @@
         "compare_ref": {
           "anyOf": [
             {
-              "pattern": "^calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*$",
+              "pattern": "^calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*$",
               "type": "string"
             },
             {
@@ -4281,7 +4476,7 @@
           "type": "string"
         },
         "value_ref": {
-          "pattern": "^calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*$",
+          "pattern": "^calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*$",
           "title": "Value Ref",
           "type": "string"
         }
@@ -4340,7 +4535,7 @@
         "ref": {
           "anyOf": [
             {
-              "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+              "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
               "type": "string"
             },
             {
@@ -4458,7 +4653,7 @@
         "evidence": {
           "default": [],
           "items": {
-            "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+            "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
             "type": "string"
           },
           "title": "Evidence",
@@ -4601,7 +4796,7 @@
       "additionalProperties": false,
       "properties": {
         "ref": {
-          "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+          "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
           "title": "Ref",
           "type": "string"
         }
@@ -4692,7 +4887,7 @@
         "scenario_id": {
           "anyOf": [
             {
-              "pattern": "^scn_[0-9A-HJKMNP-TV-Z]{26}$",
+              "pattern": "^scn_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})$",
               "type": "string"
             },
             {
@@ -4766,6 +4961,17 @@
           "title": "Below Buffer",
           "type": "boolean"
         },
+        "chance_below_buffer": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PercentValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "low": {
           "$ref": "#/$defs/MoneyValue"
         },
@@ -4805,7 +5011,7 @@
         "ref": {
           "anyOf": [
             {
-              "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+              "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
               "type": "string"
             },
             {
@@ -4844,7 +5050,7 @@
         "ref": {
           "anyOf": [
             {
-              "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+              "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
               "type": "string"
             },
             {
@@ -4885,7 +5091,7 @@
         "ref": {
           "anyOf": [
             {
-              "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+              "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
               "type": "string"
             },
             {
@@ -4906,6 +5112,84 @@
         "display"
       ],
       "title": "PpChangeValue",
+      "type": "object"
+    },
+    "ProfileView": {
+      "additionalProperties": false,
+      "description": "The profile (workspace) the session cookie points at.",
+      "properties": {
+        "country": {
+          "pattern": "^[A-Z]{2}$",
+          "title": "Country",
+          "type": "string"
+        },
+        "data_version": {
+          "minimum": 0,
+          "title": "Data Version",
+          "type": "integer"
+        },
+        "home_currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Home Currency",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "demo",
+            "user"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "locale": {
+          "pattern": "^[a-z]{2,3}(-[A-Z]{2})?$",
+          "title": "Locale",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "persona": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Persona"
+        },
+        "read_only": {
+          "title": "Read Only",
+          "type": "boolean"
+        },
+        "timezone": {
+          "minLength": 1,
+          "title": "Timezone",
+          "type": "string"
+        },
+        "workspace_id": {
+          "pattern": "^wsp_[0-9A-HJKMNP-TV-Z]{26}$",
+          "title": "Workspace Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "name",
+        "kind",
+        "country",
+        "home_currency",
+        "locale",
+        "timezone",
+        "data_version",
+        "read_only"
+      ],
+      "title": "ProfileView",
       "type": "object"
     },
     "RecommendationAction": {
@@ -5173,7 +5457,7 @@
         "calc_ids": {
           "default": [],
           "items": {
-            "pattern": "^calc_[0-9A-HJKMNP-TV-Z]{26}$",
+            "pattern": "^calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})$",
             "type": "string"
           },
           "title": "Calc Ids",
@@ -5396,7 +5680,7 @@
         "evidence": {
           "default": [],
           "items": {
-            "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+            "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
             "type": "string"
           },
           "title": "Evidence",
@@ -5495,7 +5779,7 @@
           "type": "string"
         },
         "ref": {
-          "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+          "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
           "title": "Ref",
           "type": "string"
         }
@@ -5527,7 +5811,7 @@
         "metric_ref": {
           "anyOf": [
             {
-              "pattern": "^calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*$",
+              "pattern": "^calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*$",
               "type": "string"
             },
             {
@@ -5718,7 +6002,7 @@
         "evidence": {
           "default": [],
           "items": {
-            "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+            "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
             "type": "string"
           },
           "title": "Evidence",
@@ -5854,7 +6138,7 @@
       "additionalProperties": false,
       "properties": {
         "baseline_ref": {
-          "pattern": "^fc_[0-9A-HJKMNP-TV-Z]{26}$",
+          "pattern": "^fc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})$",
           "title": "Baseline Ref",
           "type": "string"
         },
@@ -5870,7 +6154,7 @@
         },
         "simulation_refs": {
           "items": {
-            "pattern": "^sim_[0-9A-HJKMNP-TV-Z]{26}$",
+            "pattern": "^sim_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})$",
             "type": "string"
           },
           "maxItems": 3,
@@ -5909,7 +6193,7 @@
           "type": "array"
         },
         "scenario_id": {
-          "pattern": "^scn_[0-9A-HJKMNP-TV-Z]{26}$",
+          "pattern": "^scn_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})$",
           "title": "Scenario Id",
           "type": "string"
         },
@@ -5917,7 +6201,7 @@
           "$ref": "#/$defs/ScenarioSeries"
         },
         "simulation_id": {
-          "pattern": "^sim_[0-9A-HJKMNP-TV-Z]{26}$",
+          "pattern": "^sim_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})$",
           "title": "Simulation Id",
           "type": "string"
         }
@@ -6344,12 +6628,12 @@
           "type": "string"
         },
         "scenario_id": {
-          "pattern": "^scn_[0-9A-HJKMNP-TV-Z]{26}$",
+          "pattern": "^scn_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})$",
           "title": "Scenario Id",
           "type": "string"
         },
         "simulation_id": {
-          "pattern": "^sim_[0-9A-HJKMNP-TV-Z]{26}$",
+          "pattern": "^sim_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})$",
           "title": "Simulation Id",
           "type": "string"
         },
@@ -6563,7 +6847,7 @@
         "source_ref": {
           "anyOf": [
             {
-              "pattern": "^calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*$",
+              "pattern": "^calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*$",
               "type": "string"
             },
             {
@@ -6684,7 +6968,7 @@
         "evidence": {
           "default": [],
           "items": {
-            "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+            "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
             "type": "string"
           },
           "title": "Evidence",
@@ -6880,7 +7164,7 @@
         "evidence": {
           "default": [],
           "items": {
-            "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+            "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
             "type": "string"
           },
           "title": "Evidence",
@@ -7228,73 +7512,45 @@
       "title": "TimeSeries",
       "type": "object"
     },
-    "TransactionRow": {
+    "TransactionPage": {
       "additionalProperties": false,
       "properties": {
-        "amount": {
-          "$ref": "#/$defs/MoneyValue"
+        "items": {
+          "items": {
+            "$ref": "#/$defs/backend__app__ui_contracts__response__TransactionRow"
+          },
+          "title": "Items",
+          "type": "array"
         },
-        "category": {
-          "$ref": "#/$defs/CategoryLabel"
+        "limit": {
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
         },
-        "counterparty": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Counterparty"
+        "offset": {
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
         },
-        "date": {
-          "format": "date",
-          "title": "Date",
-          "type": "string"
+        "total": {
+          "minimum": 0,
+          "title": "Total",
+          "type": "integer"
         },
-        "narration_display": {
-          "title": "Narration Display",
-          "type": "string"
-        },
-        "payment_type": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Payment Type"
-        },
-        "source": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/RowSource"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null
-        },
-        "txn_id": {
-          "pattern": "^txn_[0-9A-HJKMNP-TV-Z]{26}$",
-          "title": "Txn Id",
+        "workspace_id": {
+          "pattern": "^wsp_[0-9A-HJKMNP-TV-Z]{26}$",
+          "title": "Workspace Id",
           "type": "string"
         }
       },
       "required": [
-        "txn_id",
-        "date",
-        "narration_display",
-        "category",
-        "amount"
+        "workspace_id",
+        "total",
+        "limit",
+        "offset",
+        "items"
       ],
-      "title": "TransactionRow",
+      "title": "TransactionPage",
       "type": "object"
     },
     "TransactionTable": {
@@ -7414,7 +7670,7 @@
         "evidence": {
           "default": [],
           "items": {
-            "pattern": "^(calc_[0-9A-HJKMNP-TV-Z]{26}#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
+            "pattern": "^(calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})#[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*|(calc|fc|scn|sim)_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})|(calc|fnd|fc|scn|sim|rec|ver|goal|rob|txn|run|imp|acct|bal|inc|dob|cpty|fmt|lay|rcn)_[0-9A-HJKMNP-TV-Z]{26})$",
             "type": "string"
           },
           "title": "Evidence",
@@ -7447,7 +7703,7 @@
         },
         "rows": {
           "items": {
-            "$ref": "#/$defs/TransactionRow"
+            "$ref": "#/$defs/backend__app__ui_contracts__blocks__TransactionRow"
           },
           "maxItems": 50,
           "title": "Rows",
@@ -7822,6 +8078,198 @@
       ],
       "title": "VerificationLoop",
       "type": "object"
+    },
+    "backend__app__ui_contracts__blocks__TransactionRow": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "$ref": "#/$defs/MoneyValue"
+        },
+        "category": {
+          "$ref": "#/$defs/CategoryLabel"
+        },
+        "counterparty": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Counterparty"
+        },
+        "date": {
+          "format": "date",
+          "title": "Date",
+          "type": "string"
+        },
+        "narration_display": {
+          "title": "Narration Display",
+          "type": "string"
+        },
+        "payment_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payment Type"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RowSource"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "txn_id": {
+          "pattern": "^txn_[0-9A-HJKMNP-TV-Z]{26}$",
+          "title": "Txn Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "txn_id",
+        "date",
+        "narration_display",
+        "category",
+        "amount"
+      ],
+      "title": "TransactionRow",
+      "type": "object"
+    },
+    "backend__app__ui_contracts__response__TransactionRow": {
+      "additionalProperties": false,
+      "properties": {
+        "account_id": {
+          "pattern": "^acct_[0-9A-HJKMNP-TV-Z]{26}$",
+          "title": "Account Id",
+          "type": "string"
+        },
+        "amount": {
+          "$ref": "#/$defs/MoneyValue"
+        },
+        "categorised_by": {
+          "anyOf": [
+            {
+              "enum": [
+                "rule",
+                "memory",
+                "llm",
+                "user"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Categorised By"
+        },
+        "category_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Category Key"
+        },
+        "channel": {
+          "minLength": 1,
+          "title": "Channel",
+          "type": "string"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "counterparty": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Counterparty"
+        },
+        "flow_kind": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Flow Kind"
+        },
+        "import_id": {
+          "anyOf": [
+            {
+              "pattern": "^imp_[0-9A-HJKMNP-TV-Z]{26}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Import Id"
+        },
+        "narration": {
+          "title": "Narration",
+          "type": "string"
+        },
+        "posted_on": {
+          "format": "date",
+          "title": "Posted On",
+          "type": "string"
+        },
+        "transaction_id": {
+          "pattern": "^txn_[0-9A-HJKMNP-TV-Z]{26}$",
+          "title": "Transaction Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "transaction_id",
+        "account_id",
+        "posted_on",
+        "narration",
+        "channel",
+        "amount"
+      ],
+      "title": "TransactionRow",
+      "type": "object"
     }
   },
   "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -7834,6 +8282,9 @@
     "FeaturesPayload",
     "ImportSummary",
     "ForecastView",
-    "SimulationView"
+    "SimulationView",
+    "ProfileView",
+    "TransactionPage",
+    "CalculationView"
   ]
 }

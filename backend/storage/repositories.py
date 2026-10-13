@@ -16,7 +16,7 @@ from datetime import date, datetime, timezone
 from typing import Any, TypeVar
 
 from sqlalchemy import Select, delete, func, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
 
 from backend.storage import models as m
 from backend.storage.ids import new_id
@@ -144,6 +144,65 @@ class WorkspaceContext:
             stmt = stmt.where(m.Transaction.currency == currency)
         stmt = stmt.order_by(m.Transaction.posted_on, m.Transaction.account_id, m.Transaction.id)
         return list(self.session.scalars(stmt))
+
+    def transaction_page(
+        self,
+        *,
+        date_from: date | None = None,
+        date_to: date | None = None,
+        category_key: str | None = None,
+        flow_kind: str | None = None,
+        account_id: str | None = None,
+        limit: int = 100,
+        offset: int = 0,
+    ) -> tuple[int, list[tuple[m.Transaction, m.Categorisation | None]]]:
+        """Active transactions, newest first, each with its latest categorisation; and the total
+        number matching the filters (for pagination)."""
+        latest = (
+            select(m.Categorisation.transaction_id, func.max(m.Categorisation.seq).label("seq"))
+            .where(m.Categorisation.workspace_id == self.workspace_id)
+            .group_by(m.Categorisation.transaction_id)
+            .subquery()
+        )
+        current = (
+            select(m.Categorisation).join(latest, m.Categorisation.seq == latest.c.seq).subquery()
+        )
+        cat = aliased(m.Categorisation, current)
+        stmt = (
+            select(m.Transaction, cat)
+            .outerjoin(cat, cat.transaction_id == m.Transaction.id)
+            .where(m.Transaction.workspace_id == self.workspace_id)
+            .where(m.Transaction.status == "active")
+        )
+        if date_from is not None:
+            stmt = stmt.where(m.Transaction.posted_on >= date_from)
+        if date_to is not None:
+            stmt = stmt.where(m.Transaction.posted_on <= date_to)
+        if account_id is not None:
+            stmt = stmt.where(m.Transaction.account_id == account_id)
+        if category_key is not None:
+            stmt = stmt.where(cat.category_key == category_key)
+        if flow_kind is not None:
+            stmt = stmt.where(cat.flow_kind == flow_kind)
+        total = int(self.session.scalar(select(func.count()).select_from(stmt.subquery())) or 0)
+        page = (
+            stmt.order_by(
+                m.Transaction.posted_on.desc(),
+                m.Transaction.source_row_index.desc().nulls_last(),
+                m.Transaction.id.desc(),
+            )
+            .limit(limit)
+            .offset(offset)
+        )
+        return total, [(t, c) for t, c in self.session.execute(page).tuples()]
+
+    def batch_date_range(self, batch_id: str) -> tuple[date | None, date | None]:
+        stmt = select(func.min(m.Transaction.posted_on), func.max(m.Transaction.posted_on)).where(
+            m.Transaction.workspace_id == self.workspace_id,
+            m.Transaction.import_batch_id == batch_id,
+        )
+        first, last = self.session.execute(stmt).one()
+        return first, last
 
     def latest_categorisations(self) -> dict[str, m.Categorisation]:
         """transaction_id → its latest categorisation (append-only history, latest wins)."""
