@@ -56,7 +56,8 @@ Content priority:
   - **Overview** is one screen at 1440×900, slots always in this order: Verdict · ≤ 3 key numbers · exactly one main visual · What to do (the checked recommendation; the slot collapses when there is no advice) · Evidence line ("Checked by 6 agents · 1 draft rejected · View how").
   - **Tabs**, one fixed set in a fixed order: Overview · Details (e.g. weekly sawtooth with paydays) · Recommendation (what-if table, rejected drafts with reasons) · Transactions · How it was checked (agent timeline and methodology note). Hashes `#overview` `#details` `#recommendation` `#transactions` `#checked`; a tab with no content is hidden, never reordered or renamed. Keyboard-operable.
 - **Content adapts by intent, the frame doesn't.** Affordability → scenario comparison as the main visual, weekly cash flow in Details. Spending/trend → breakdown by merchant as the main visual, trend in Details, a behaviour-based suggestion in What to do. Low confidence → a clarifying question with 2–4 options.
-- **Loading:** a skeleton canvas plus live step labels ("Analysing transactions → Building forecast → Simulating → Checking"), streamed over SSE.
+- **Welcome (empty) state** (`/workspace`, no thread selected): a centred serif line, "Ask anything about your money.", then "Answers come from your transactions and the forecast engine — every number is computed, then checked." Four starter cards sit below it (one column on phones, 2×2 from 768px). Prepared threads open and stream their steps. A question the forecast can answer directly ("How does March look?") opens a short computed answer in place, labelled with its source and as-of date. A question the data can't answer yet opens the input prefilled and says so on the card. The disclaimer "Guidance, not regulated financial advice." sits under the cards; the conversation column keeps the recent-threads list, "New question" and the pinned input.
+- **Inline agent steps (loading):** while an answer streams, the answer area shows a live vertical checklist of agent steps over a skeleton: one row per finished step, each with an icon *and* words (✓ done, ✗ "Verifier rejected a draft" plus the draft and its reason), the logged time, and the running step marked `aria-current="step"`. Rows appear only once a step starts, so a rejection is never announced ahead of time. When the run completes, the checklist collapses into the evidence line. That line is a disclosure (`aria-expanded`) that reopens the same checklist in place, with "Full details" linking to `#checked`. Under reduced motion the spinner and row entrance animation stop; the steps still update.
 - **Follow-up actions** post structured messages (switch tab, try another amount, save to the Lab) with no re-classification.
 
 ### 3.3 Decision Lab (`/lab`, `/lab/[scenarioId]`)
@@ -149,7 +150,7 @@ Income stays £0 and is shown separately from "From your other account" and "Oth
 
 | State | Treatment |
 |---|---|
-| Loading | Skeletons at final sizes; agent step labels in the AI Workspace; "Running 500 paths…" in the Lab |
+| Loading | Skeletons at final sizes; the inline agent step checklist in the AI Workspace; "Running 500 paths…" in the Lab |
 | Empty | No data → "Import a CSV statement or explore the live demo", plus the drop zone |
 | Agent step failed | Name the step and reason, then **Retry the run**; keep the last good snapshot |
 | **Model unavailable** (Mesh down) | Deterministic numbers and charts still render; explanations show "Explanations are unavailable right now. Your figures are unaffected." |
@@ -184,6 +185,6 @@ Income stays £0 and is shown separately from "From your other account" and "Oth
 |---|---|
 | `landing.html` | Split sign-in (disabled) and marketing hero, demo and CSV actions |
 | `home.html` | Post-car-repair Home with the pay-cycle-lows chart, briefing and insights |
-| `workspace.html` | Affordability answer (Overview + 5 tabs), pinned input, `?q=spending` second composition, `?state=loading`, `?theme=dark` |
+| `workspace.html` | Welcome state (default, or `?state=new`), affordability answer `?q=holiday` (Overview + 5 tabs, evidence line with the expandable step checklist), pinned input, `?q=spending` second composition, `?state=loading` (checklist frozen mid-run), `?state=live` (plays the logged steps, then the answer), `?theme=dark` |
 
 Still to design directly in Next.js (`TASKS.md`): Decision Lab, Insight detail, Transactions, Import, Activity, Settings, Quality, and the full states pass.

@@ -1,10 +1,13 @@
 /* Interactions for the hi-fi prototype:
    - fills every [data-fx] / [data-calc] number from window.FIXTURE (generated, fictional);
    - mobile search, the collapsible conversation panel;
-   - Workspace: thread switcher (?q=holiday|spending) and the answer skeleton: every thread has the
-     same tabs in the same order (#overview, #details, #recommendation, #transactions, #checked;
-     old hashes redirect), ARIA tabs with arrow keys, jump links, the what-if table, recent orders,
-     and the loading state (?state=loading). */
+   - Workspace: the welcome state (no ?q, or ?state=new), thread switcher (?q=holiday|spending) and
+     the answer skeleton: every thread has the same tabs in the same order (#overview, #details,
+     #recommendation, #transactions, #checked; old hashes redirect), ARIA tabs with arrow keys, jump
+     links, the what-if table, recent orders;
+   - the agent step checklist: one list per thread, kept in the evidence line (a disclosure) and
+     cloned into the loading view. ?state=loading freezes it mid-run; ?state=live plays it from the
+     logged timestamps, then shows the answer with the checklist collapsed into the evidence line. */
 
 (function () {
   const F = window.FIXTURE;
@@ -23,6 +26,7 @@
   const FORMATS = {
     money0: (v) => (v < 0 ? "−" : "") + money(v),
     money2: (v) => (v < 0 ? "−" : "") + money(v, 2),
+    abs0: (v) => money(v),
     plusmoney2: (v) => (v < 0 ? "−" : "+") + money(v, 2),
     overdrawn: (v) => (v < 0 ? `${money(v)} overdrawn` : money(v)),
     pct: (v) => `${Math.round(v)}%`,
@@ -97,8 +101,14 @@
   const TABS = ["overview", "details", "recommendation", "transactions", "checked"];
   const REDIRECT = { cashflow: "details", impact: "details", trend: "details", where: "details",
     methodology: "checked", suggestion: "overview" };
+  const params = new URLSearchParams(location.search);
+  const STATE = params.get("state");
+  // No thread selected (no ?q, or ?state=new) shows the welcome state. The loading demos default to holiday.
   function currentThread() {
-    return new URLSearchParams(location.search).get("q") === "spending" ? "spending" : "holiday";
+    const q = params.get("q");
+    if (STATE === "new") return "new";
+    if (q === "holiday" || q === "spending") return q;
+    return STATE === "loading" || STATE === "live" ? "holiday" : "new";
   }
   const activeAnalysis = () => document.querySelector(`.analysis[data-thread="${currentThread()}"]`);
   function showThread(name) {
@@ -111,6 +121,63 @@
     });
     document.querySelectorAll("[data-thread-text]").forEach((n) => { n.hidden = n.dataset.threadText !== name; });
     document.querySelectorAll("[data-thread-link]").forEach((a) => a.setAttribute("aria-checked", String(a.dataset.threadLink === name)));
+    document.querySelector("[data-thread-new]")?.toggleAttribute("aria-current", name === "new");
+    const ask = document.getElementById("ask");
+    if (ask) ask.placeholder = name === "new" ? ask.dataset.placeholderNew : ask.dataset.placeholderThread;
+  }
+
+  /* ---------- Agent step checklist ---------- */
+  // Only steps that have started are shown: a live run can't know in advance that a draft will be rejected.
+  function setStep(li, state) {
+    li.dataset.state = state;
+    if (state === "active") li.setAttribute("aria-current", "step");
+    else li.removeAttribute("aria-current");
+    li.querySelector(".lt").textContent = state === "active" ? `${li.dataset.doing}…` : li.dataset.doneText;
+    li.querySelector(".st").textContent = state === "active" ? "In progress: "
+      : state === "pending" ? "Not started: " : li.dataset.result === "rejected" ? "Rejected: " : "Done: ";
+  }
+  function showUpTo(list, active) {
+    [...list.children].forEach((li, i) => setStep(li, i < active ? "done" : i === active ? "active" : "pending"));
+  }
+  const secs = (hms) => hms.split(":").reduce((t, n) => t * 60 + Number(n), 0);
+  function playRun(list, onDone) {
+    // Real gaps from the agent log, scaled down; steps logged in the same second still appear one by one.
+    const start = secs(list.dataset.start);
+    const steps = [...list.children];
+    let at = 0;
+    const times = steps.map((li) => (at = Math.max((secs(li.querySelector(".time").textContent) - start) * 600, at + 450)));
+    showUpTo(list, 0);
+    times.forEach((ms, i) => setTimeout(() => showUpTo(list, i + 1), ms));
+    setTimeout(onDone, times[times.length - 1] + 700);
+  }
+  function wireRuns() {
+    document.querySelectorAll("[data-steps-slot]").forEach((slot) => {
+      const source = document.getElementById(slot.dataset.stepsSlot)?.querySelector(".agent-steps");
+      if (!source) return;
+      [...source.children].forEach((li) => { li.dataset.doneText = li.querySelector(".lt").textContent; });
+      const list = source.cloneNode(true);
+      list.setAttribute("aria-label", "Progress");
+      slot.replaceWith(list);
+      const status = list.closest(".run")?.querySelector("[data-run-status] .time");
+      if (status) status.textContent = list.dataset.start;
+      showUpTo(list, Number(list.dataset.loadingAt));
+    });
+  }
+
+  // Disclosures: the evidence line (expands to the checklist in place) and the welcome "quick answer".
+  function wireDisclosures() {
+    document.querySelectorAll(".evidence-toggle, .starter[aria-controls]").forEach((b) => b.addEventListener("click", () => {
+      const open = b.getAttribute("aria-expanded") !== "true";
+      b.setAttribute("aria-expanded", String(open));
+      document.getElementById(b.getAttribute("aria-controls")).hidden = !open;
+    }));
+    // Starters we can't answer from the demo data open the question box, prefilled.
+    document.querySelectorAll("[data-prefill]").forEach((b) => b.addEventListener("click", () => {
+      const ask = document.getElementById("ask");
+      if (!ask) return;
+      ask.value = b.dataset.prefill;
+      ask.focus();
+    }));
   }
 
   /* ---------- Tabs (scoped to the visible thread) ---------- */
@@ -199,6 +266,8 @@
 
     if (document.querySelector(".ws-body")) {
       showThread(currentThread());
+      wireRuns();
+      wireDisclosures();
       document.querySelectorAll(".analysis").forEach(hideEmptyTabs);
       wireTabs();
       followHash({ initial: true });
@@ -213,9 +282,18 @@
     }
 
     const canvas = document.querySelector(".canvas");
-    if (canvas && new URLSearchParams(location.search).get("state") === "loading") {
+    if (canvas && currentThread() !== "new" && (STATE === "loading" || STATE === "live")) {
       canvas.classList.add("is-loading");
       canvas.setAttribute("aria-busy", "true");
+      if (STATE === "live") {
+        playRun(activeAnalysis().querySelector(".loading-view .agent-steps"), () => {
+          canvas.classList.remove("is-loading");
+          canvas.setAttribute("aria-busy", "false");
+          // The run is over; a reload shows the answer, not a replay.
+          history.replaceState(null, "", `?q=${currentThread()}${location.hash}`);
+          window.dispatchEvent(new Event("resize"));
+        });
+      }
     }
   });
 })();

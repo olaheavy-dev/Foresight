@@ -337,6 +337,8 @@ Each component lists: **purpose**, **plan fields** (what the LLM may say), **hyd
 | Hydrated | `run_id`, `workflow`, `duration_ms`, `steps[]: {step_id, agent, node, label, status: ok\|rejected\|retried\|error, started_at, duration_ms, model?, tokens?, outputs: Ref[], note?}`, `loops[]: {kind: "verification", recommendation_id, attempts: [{version_id, verdict, failed_checks: str[]}]}`, `cost: {tokens, usd: number|null}` (usd null until Mesh pricing for the chosen model is known) |
 | Constraints | Built entirely from `AgentStep` and `VerificationResult` rows — the LLM can only choose to include it. |
 
+**Compact inline variant.** Besides `summary` and `full`, the timeline has a compact inline form that the Workspace renders by itself (it is not a plan block, so the LLM never places it). While an answer streams, it is a vertical checklist built from the run's SSE step events. Each row shows a user-facing `label`, its `status` as an icon plus words (`ok` ✓, `rejected` ✗ with the rejected draft and the first failed check as `note`), and the step's logged time. Steps appear only once started. When the run completes, the checklist collapses into the Overview evidence line ("Checked by N agents · M drafts rejected"), which expands it in place and links to `#checked` for the `full` timeline. N and M come from the same `steps[]` and `loops[]`, so the line, the checklist and the tab can't disagree.
+
 ---
 
 ## 6. Validation pipeline
