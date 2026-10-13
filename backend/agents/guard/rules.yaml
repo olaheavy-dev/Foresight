@@ -1,0 +1,239 @@
+# Prompt-injection and scope rule pack (docs/05 §4.2 stage 1, §7.4a layer L3).
+#
+# Data, not code: a newly found attack shape is one rule here plus one E-SEC case
+# (evals/datasets/injection_cases.jsonl). The file's sha256 is the rule-pack version that goes
+# into `prompt_bundle_version` and every AgentStep that screened input.
+#
+# severity:  block      → scoped refusal, no model call (chat); always flags data
+#            suspicious → chat continues but the Understand step must confirm it is a real finance
+#                         question; data is flagged `suspicious_text`
+# applies_to: chat (the AI Workspace box) and/or data (narrations, CSV headers, PDF text, filenames)
+# reason:    injection | out_of_scope (FR-63) | exfiltration | encoded
+#
+# Patterns are Python regular expressions, matched case-insensitively against text that has been
+# NFKC-normalised, stripped of hidden characters and folded from look-alike letters to Latin.
+
+version: guard-1.1.0
+
+limits:
+  chat_max_chars: 2000
+  narration_max_chars: 64
+  header_max_chars: 48
+  filename_max_chars: 80
+  pdf_line_max_chars: 120
+
+rules:
+  # --- instruction override -------------------------------------------------------------------
+  - id: G-OVR-01
+    severity: block
+    reason: injection
+    applies_to: [chat, data]
+    pattern: '\b(ignore|disregard|forget|override|bypass|skip)\s+(all\s+|any\s+|the\s+|your\s+|my\s+|these\s+|those\s+)?(previous|prior|above|earlier|preceding|system|original|existing|safety)?\s*(instructions?|rules?|prompts?|guidelines?|directions?|constraints?|guardrails?|policies)\b'
+  - id: G-OVR-02
+    severity: block
+    reason: injection
+    applies_to: [chat, data]
+    pattern: '\b(new|updated|revised|real|actual)\s+(system\s+)?(instructions?|rules?|prompt)\s*[:=]'
+  - id: G-OVR-03
+    severity: block
+    reason: injection
+    applies_to: [chat, data]
+    pattern: '\b(from\s+now\s+on|henceforth|for\s+the\s+rest\s+of\s+(this|the)\s+(chat|conversation))\b.{0,40}\b(you|your|always|never|respond|answer|reply|act)\b'
+  - id: G-OVR-04
+    severity: block
+    reason: injection
+    applies_to: [chat, data]
+    pattern: '\b(developer|debug|god|admin|jailbreak|unrestricted|dan)\s+mode\b|\bjailbreak\b|\bdo\s+anything\s+now\b'
+  - id: G-OVR-05
+    severity: block
+    reason: injection
+    applies_to: [chat]
+    pattern: '\b(you\s+are\s+now|you\s+will\s+now\s+be|from\s+now\s+you\s+are|pretend\s+(that\s+)?you\s+are|pretend\s+to\s+be|act\s+as|role[- ]?play\s+as|behave\s+like)\s+(an?\s+|my\s+|the\s+)?(unfiltered|unrestricted|different|new|evil|broker|stockbroker|trader|financial\s+advis[eo]r|investment\s+advis[eo]r|wealth\s+manager|crypto|hacker|assistant\s+without)'
+  - id: G-OVR-06
+    severity: suspicious
+    reason: injection
+    applies_to: [chat]
+    pattern: '\b(pretend|role[- ]?play|act\s+as\s+if|imagine\s+you\s+are|you\s+are\s+no\s+longer)\b'
+  # Short forms that fit an 18-character Faster Payments reference or a merchant name.
+  - id: G-OVR-07
+    severity: block
+    reason: injection
+    applies_to: [chat, data]
+    pattern: '\bignore\s+(all\s+)?(rules|instructions|previous|above|prompt)\b'
+  - id: G-OVR-08
+    severity: block
+    reason: injection
+    applies_to: [data]
+    pattern: '\b(categori[sz]e|classify|label|mark|tag|treat|count|record|file)\s+(this\s+|me\s+|it\s+|row\s+|as\s+)?(as\s+)?(income|salary|wages|essential|refund|transfer|savings|investment|uncategori[sz]ed|benefit|not\s+spending)\b'
+  - id: G-OVR-09
+    severity: block
+    reason: injection
+    applies_to: [chat, data]
+    pattern: '\b(set|change|force|update)\s+(the\s+)?(category|balance|buffer|forecast|amount|verdict|approval)\s+(to|=)'
+  - id: G-OVR-10
+    severity: block
+    reason: injection
+    applies_to: [chat, data]
+    pattern: '\b(approve|auto[- ]?approve|mark\s+as\s+(checked|approved|verified))\s+(this|all|every|my)\s+(recommendation|advice|proposal|plan)s?\b'
+  # Multilingual overrides (es, fr, de, pt, it, hi, hinglish)
+  - id: G-OVR-11
+    severity: block
+    reason: injection
+    applies_to: [chat, data]
+    pattern: '\b(ignora|ignore[sz]?|olvida|oublie[sz]?|ignorier[e]?|vergiss|esque[cç]a|dimentica)\b.{0,30}\b(instrucciones|instructions|anweisungen|instru[cç][õo]es|istruzioni|reglas|r[eè]gles|regeln|regras|regole)\b'
+  - id: G-OVR-13
+    severity: block
+    reason: injection
+    applies_to: [data]
+    pattern: '\byou\s+are\s+now\s+(a|an|my|the|in)\b|\b(note|message|instruction)s?\s+(to|for)\s+(the\s+)?(ai|assistant|model|llm|chatbot|bot|gpt|claude)\b'
+  - id: G-OVR-12
+    severity: block
+    reason: injection
+    applies_to: [chat, data]
+    pattern: '(पिछले|सभी|ऊपर).{0,20}(निर्देश|नियम).{0,20}(अनदेखा|भूल|नज़रअंदाज़|नजरअंदाज)|\b(pichhle|saare|sabhi)\s+(nirdesh|instructions|rules)\s+(bhool|ignore|bhul)'
+  # --- fake roles, delimiters and markup -------------------------------------------------------
+  - id: G-ROLE-01
+    severity: block
+    reason: injection
+    applies_to: [chat, data]
+    pattern: '(^|[\s\[<(])(system|assistant|developer|tool)\s*(:|\s-|-\s)\s*\S|<\|?\s*(im[ _]start|im[ _]end|system|assistant|endoftext)\s*\|?>|\[/?(inst|system|sys)\]|<</?sys>>'
+  - id: G-ROLE-02
+    severity: block
+    reason: injection
+    applies_to: [chat, data]
+    pattern: '</?\s*(data|instructions?|system|user|context|tool_result|function_results?)\s*>'
+  - id: G-ROLE-03
+    severity: suspicious
+    reason: injection
+    applies_to: [data]
+    pattern: '```|\{\{|\}\}|\$\{|<script|javascript:'
+  # --- prompt extraction -------------------------------------------------------------------------
+  - id: G-EXT-01
+    severity: block
+    reason: exfiltration
+    applies_to: [chat, data]
+    pattern: '\b(reveal|show|print|repeat|output|display|dump|leak|tell\s+me|give\s+me)\s+(me\s+)?(your|the|all|those|these)\s+(hidden\s+|secret\s+|initial\s+|original\s+|full\s+|exact\s+)?(system\s+)?(prompts?|instructions|rules\s+you\s+(were|are)\s+given|configuration|canary|guidelines\s+you\s+follow)\b|\bwhat\s+(is|are|was|were)\s+(your|the\s+(hidden|secret|initial|original|system))\s+(prompts?|instructions|configuration|canary)\b'
+  - id: G-EXT-02
+    severity: block
+    reason: exfiltration
+    applies_to: [chat, data]
+    pattern: '\b(system\s+prompt|developer\s+message|hidden\s+prompt|prompt\s+canary)\b'
+  - id: G-EXT-03
+    severity: block
+    reason: exfiltration
+    applies_to: [chat, data]
+    pattern: '\b(repeat|print|copy|echo)\s+(everything|all\s+text|the\s+text|the\s+words)\s+(above|before|so\s+far)\b|\bwords?\s+above\s+(this|starting)'
+  # --- tools, network, code, data exfiltration ---------------------------------------------------
+  - id: G-NET-01
+    severity: block
+    reason: exfiltration
+    applies_to: [chat, data]
+    pattern: '\b(fetch|open|visit|browse|curl|wget|download|load|call|request|post\s+to|go\s+to|navigate\s+to|connect\s+to)\s+(this\s+|the\s+)?(url|link|page|site|website|endpoint|webhook|api)?\s*:?\s*(https?://|www\.|[a-z0-9-]+\.(com|net|io|xyz|ru|cn|top|app|dev)\b)'
+  - id: G-NET-02
+    severity: block
+    reason: exfiltration
+    applies_to: [chat, data]
+    pattern: '\b(send|email|e-mail|forward|upload|post|share|transmit|export)\s+((my|the|all|every|this|these|our|of)\s+){0,3}(data|transactions|statements?|balances?|ledger|history|account\s+details|information|details|everything)\s+(to|at|via)\b'
+  - id: G-NET-03
+    severity: block
+    reason: exfiltration
+    applies_to: [chat, data]
+    pattern: '!\[[^\]]*\]\(\s*https?://|\bmarkdown\s+image\b|\bimg\s+src\s*='
+  - id: G-CODE-01
+    severity: block
+    reason: injection
+    applies_to: [chat, data]
+    pattern: '\b(run|execute|eval|exec|evaluate)\s+(this|the\s+following|following|my|some|the)?\s*(code|script|command|shell|python|javascript|sql|query|bash|program)\b|\bimport\s+os\b|\bos\.system\b|\bsubprocess\b|\brm\s+-rf\b|\bdrop\s+table\b|\b__import__\b'
+  - id: G-CODE-02
+    severity: block
+    reason: injection
+    applies_to: [chat, data]
+    pattern: '\b(call|use|invoke|trigger)\s+(the\s+)?(tool|function)\b|\bfunction_call\b|\btool_choice\b'
+  # --- encoded or hidden payloads -----------------------------------------------------------------
+  - id: G-ENC-01
+    severity: suspicious
+    reason: encoded
+    applies_to: [chat, data]
+    pattern: '(?<![A-Za-z0-9+/=])[A-Za-z0-9+/]{40,}={0,2}(?![A-Za-z0-9+/=])'
+  - id: G-ENC-02
+    severity: suspicious
+    reason: encoded
+    applies_to: [chat, data]
+    pattern: '\b(?:[0-9a-f]{2}[\s:]?){24,}\b'
+  - id: G-ENC-03
+    severity: block
+    reason: encoded
+    applies_to: [chat, data]
+    pattern: '\b(decode|base64|rot13|hex[- ]?decode|unescape)\b.{0,40}\b(follow|obey|execute|run|do|instructions?)\b|\b(follow|obey|execute|run)\b.{0,40}\b(decoded|base64|rot13)\b'
+
+  # --- out of scope (FR-63): refused before any model call ----------------------------------------
+  - id: G-SCOPE-01
+    severity: block
+    reason: out_of_scope
+    applies_to: [chat]
+    pattern: '\b(which|what|best|top|good)\s+(stocks?|shares?|crypto(currenc(y|ies))?|coins?|tokens?|funds?|etfs?|index\s+funds?|bonds?|mutual\s+funds?)\s+(should|to|can|could|would)\s+(i\s+)?(buy|invest|pick|choose|get|put)\b'
+  - id: G-SCOPE-02
+    severity: block
+    reason: out_of_scope
+    applies_to: [chat]
+    pattern: '\b(should\s+i|tell\s+me\s+to|recommend\s+(that\s+)?i|is\s+it\s+(a\s+)?good\s+(time|idea)\s+to)\s+(buy|sell|invest\s+in|short|trade)\s+(bitcoin|btc|ethereum|eth|crypto|dogecoin|solana|shares|stocks?|tesla|nvidia|apple\s+shares|gold)\b'
+  - id: G-SCOPE-03
+    severity: block
+    reason: out_of_scope
+    applies_to: [chat]
+    pattern: '\b(file|submit|complete|fill\s+in|do)\s+(my\s+)?(self[- ]assessment|tax\s+return|itr|income\s+tax\s+return|vat\s+return)\b'
+  - id: G-SCOPE-04
+    severity: block
+    reason: out_of_scope
+    applies_to: [chat]
+    pattern: '\b(which|what|best)\s+(credit\s+card|loan|mortgage|savings\s+account|isa|pension|insurance\s+policy|bank\s+account|broker|trading\s+app)\s+(should|to|do\s+you\s+recommend|would\s+you\s+recommend)\b'
+
+# Hosts a model output may link to (docs/05 §4.2 stage 5). Everything else is dropped.
+url_allow_list:
+  - moneyhelper.org.uk
+  - www.moneyhelper.org.uk
+  - stepchange.org
+  - www.stepchange.org
+  - nationaldebtline.org
+  - www.nationaldebtline.org
+  - foresight.olaheavy.dev
+
+# Phrases a model output must never contain (V-14: no regulated product advice), per locale pack.
+# Matched case-insensitively on word boundaries.
+product_advice:
+  uk:
+    - "open an isa"
+    - "open a stocks and shares isa"
+    - "invest in"
+    - "buy shares"
+    - "buy bitcoin"
+    - "buy crypto"
+    - "index fund"
+    - "take out a loan"
+    - "apply for a credit card"
+    - "balance transfer card"
+    - "switch to a credit card"
+    - "get a payday loan"
+    - "consolidation loan"
+    - "remortgage"
+    - "buy-to-let"
+    - "pension contribution"
+    - "salary sacrifice"
+    - "high-interest savings account"
+    - "premium bonds"
+    - "guaranteed return"
+  in:
+    - "invest in"
+    - "mutual fund"
+    - "sip in"
+    - "start a sip"
+    - "buy shares"
+    - "buy gold"
+    - "fixed deposit"
+    - "ppf account"
+    - "elss"
+    - "nps account"
+    - "take a personal loan"
+    - "apply for a credit card"
+    - "buy crypto"
+    - "guaranteed return"

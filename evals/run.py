@@ -35,6 +35,7 @@ from evals.suites import (
     ingestion,
     locales,
     recurring,
+    security,
     simulation,
 )
 
@@ -49,6 +50,7 @@ SUITES: tuple[ModuleType, ...] = (
     anomalies,
     forecast,
     simulation,
+    security,
 )
 # Bulky per-row detail stays in the per-suite JSON; summary.json keeps the numbers.
 _DETAIL_KEYS = frozenset(

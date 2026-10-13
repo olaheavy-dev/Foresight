@@ -1,0 +1,5 @@
+# Hand-authored evaluation sets (not generated): frozen by sha256 (docs/09 §3.9). Change a file
+# only together with its line here. Verified by tests/unit/evals/test_authored_datasets.py.
+a28ab0c22e3dbc22a47e568528c0513863afa8af1ac027e6adc7c6b585cfce1f  injection_cases.jsonl
+432b1939842503255a46a573cf73af6145738356a2cd5dbdc94b3c7b485927f1  injection_cases_dev.jsonl
+59d673a7ebbf493808251affcd3dbc1b0162043d7991cf8a699e60be6b9af6ab  injection_benign_questions.jsonl
