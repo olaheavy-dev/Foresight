@@ -13,7 +13,7 @@ trend.
 A category must also be a regular behaviour: at least MIN_BASE_COUNT purchases in a typical prior
 window (the median of the three). Below that, a month's total is a handful of purchases and a
 "spike" is one or two extra ones (a second taxi, a dentist visit), not a change in behaviour
-(docs/07 §6.6, measured on dev windows, 13 Oct 2026).
+(docs/07 §6.6, measured on dev windows; owner-approved 13 Oct 2026).
 """
 
 from __future__ import annotations
