@@ -39,6 +39,7 @@
     house: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/>',
     bolt: '<path d="M13 2 4 14h7l-1 8 9-12h-7Z"/>',
     piggy: '<path d="M19 9.5c1.1 0 2 .9 2 2v1.5h-1.5L18 16v3h-3v-2h-4v2H8v-3a6 6 0 0 1 3-11h4a6 6 0 0 1 4 1.5Z"/><path d="M16 11h.01"/>',
+    plus: '<path d="M12 5v14"/><path d="M5 12h14"/>',
     check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
     checkcircle: '<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16 10"/>',
     xcircle: '<circle cx="12" cy="12" r="9"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',

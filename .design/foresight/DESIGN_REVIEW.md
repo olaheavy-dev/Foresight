@@ -100,3 +100,58 @@ Verified with Playwright and asserted programmatically:
 Screenshots: `review-workspace{,-spending}-desktop-1440*.png`, `-mobile-375*.png`, and `review-workspace{,-spending}-tab-{overview,details,recommendation,transactions,checked}-desktop-1440.png`. The superseded per-tab shots for cashflow, impact and methodology were removed.
 
 Result: **pass**, with no new Must or Should items.
+
+## Workspace welcome state and inline agent steps (13 Oct 2026)
+
+Reviewed against: `DESIGN_BRIEF.md` and `INFORMATION_ARCHITECTURE.md` › "AI Workspace (welcome)" and "Answer skeleton" slot 5 (the evidence line as an expandable step checklist). Theme: the FastPilot-derived dark neutrals now in `tokens.css` (`e5b11b0`).
+
+### Screenshots Captured
+
+All in `.design/foresight/screenshots/`, Playwright viewport captures (the Workspace is an app shell), at 1440×900, 1280×800, 768×1024 and 375×812, each in light and `-dark-mode`:
+
+| Screenshot | URL | Shows |
+|---|---|---|
+| `review-workspace-welcome-<size>[-dark-mode].png` | `workspace.html` / `?state=new` | Welcome: serif line, four starters, disclaimer, recent threads, pinned input |
+| `review-workspace-welcome-march-<size>[-dark-mode].png` | same, "How does March look?" opened | Quick computed answer (£8,388 on 31 Mar; tightest £604 on Tue 27 Oct) |
+| `review-workspace-loading-<size>[-dark-mode].png` | `?q=holiday&state=loading` | Live checklist frozen at "Revising: book after 27 Nov…", after the ✗ rejection of "Pay on 6 Nov" (−£148 on 26 Nov) |
+| `review-workspace-spending-loading-<size>[-dark-mode].png` | `?q=spending&state=loading` | Same component; the £40 cap rejected (72% below pace) |
+| `review-workspace{,-spending}-steps-collapsed-<size>[-dark-mode].png` | `?q=holiday`, `?q=spending` | The evidence line after the run, collapsed |
+| `review-workspace{,-spending}-steps-expanded-<size>[-dark-mode].png` | same, "View how" pressed | The checklist expanded in place, with "Full details" → `#checked` |
+| `review-workspace-live-midrun-desktop-1440.png` | `?q=holiday&state=live` | 1.6 s into a live run |
+| `review-{home,landing}-desktop-1440-dark-mode.png`, `review-home-mobile-375-dark-mode.png` | `?theme=dark` | Dark palette regression check: charts, mountains, cards |
+
+Checks asserted in the same run for every capture: no horizontal overflow, `#ask` fully inside the viewport, and no page errors. axe-core (WCAG 2 A/AA, serious and critical only) ran on every dark capture and on the light welcome: **0 violations** after the two fixes below. `?state=live` was checked to finish into the answer (and to drop `state=live` from the URL) for both threads, including under `reducedMotion: "reduce"`. The salary-late starter was checked to prefill the input.
+
+### Summary
+
+Both patterns read as part of the Atelier product rather than as bolted-on chat UI. The welcome uses the one serif moment the brief allows. The checklist turns the Verifier loop into the most legible thing on the loading screen: the ✗ row, with its reason, is what a judge reads first. No Must fix items remain.
+
+### Fixed in this pass
+
+- **`aria-prohibited-attr` on `.try`**: this pre-existing bug was exposed by the welcome view. It was an `aria-label` on a role-less `div`. _Fixed: `role="group"`._
+- **`scrollable-region-focusable` on the mobile loading canvas**: the canvas scrolls but had nothing focusable while loading. _Fixed: `.canvas` is `tabindex="0"`, with an inset focus ring._
+- **Welcome placeholder truncated** in the 1440 conversation column. _Fixed: "Ask about your money…"._
+- **Expanded checklist too wide at 1440**: the times drifted ~700px from their labels. _Fixed: the list is capped at 40rem; the footer keeps the full width._
+
+### Must Fix
+
+None.
+
+### Should Fix
+
+1. **Overview fold at 1440×900**: the collapsed evidence line sits on the bottom edge of the first screen (`review-workspace-steps-collapsed-desktop-1440.png`, scrolled). Expanding it pushes the checklist below the fold, which is acceptable for a disclosure. The IA rule "Overview fits one screen" is only just met, though. _Fix (Next.js build): drop the canvas-top status row once the verdict is visible, or tighten the key-numbers padding by `--space-1`._
+2. **Older Workspace screenshots now mislabelled**: `review-workspace-desktop-*.png` and `-mobile-*.png` (without a `-spending` or state suffix) were captured when plain `workspace.html` opened the holiday thread. That URL now opens the welcome state. _Fix: recapture them as `?q=holiday` in the next full review._
+
+### Could Improve
+
+1. **Same-second steps**: "Built your forecast", "Simulated the holiday" (09:14:05) and the spending "Revised" and "Checked" steps (09:21:05) share timestamps. That's honest to the agent log, but it looks repetitive. _Suggestion: in the build, show `duration_ms` ("0.4 s") from the AgentRun next to the time._
+2. **Welcome on phones** shows two and a half starters above the input (`review-workspace-welcome-mobile-375.png`). That's fine, but the 24px top padding plus the avatar could shrink so all four questions show at 812px tall.
+3. **Reduced motion** freezes the spinner as a static partial ring. That's still legible because the label also changes to "Revising…", but a static dot plus the word "running" would be cleaner.
+
+### What Works Well
+
+- **Honest streaming**: only started steps are rendered, so the UI never announces a rejection before it happens. The frozen `?state=loading` view stops on "Revising…" right after the ✗ row: the loop is visible in one glance.
+- **One source for the checklist**: the steps live once in each thread's evidence disclosure and are cloned into the loading view. Every figure in them (−£148, 26 Nov, 72%) is bound to `fixture.json`, so the line, the checklist and the "How it was checked" tab can't drift apart.
+- **✓/✗ never colour-only**: tinted icon chips plus words ("Verifier rejected a draft", sr-only "Done:"/"Rejected:"/"In progress:"), `aria-current="step"` on the running row, `aria-expanded` on the evidence toggle, `aria-live="polite"` on the loading view.
+- **Starters are truthful**: two open the real prepared threads and play the live run. "How does March look?" answers only what the engine computed, with its source and as-of date. "What if my salary is late?" says plainly that it isn't prepared and opens the input prefilled.
+- **Dark palette**: the welcome cards, the checklist tints (`--color-status-success-tint`, `--color-status-error-tint`) and the spinner all sit well on `#0C1222`/`#151D30`. Home charts and mountains are unchanged and correct.

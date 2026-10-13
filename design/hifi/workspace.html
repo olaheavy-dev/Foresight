@@ -46,13 +46,14 @@
     </div>
   </header>
 
-  <div class="ws-body" data-thread="holiday">
+  <div class="ws-body" data-thread="new">
     <!-- ================= Conversation ================= -->
     <section class="convo" data-collapsed="true" aria-label="Conversation">
       <button class="convo-toggle" type="button" aria-expanded="false" aria-controls="convo-body">
         <span class="icon-chip sm"><svg aria-hidden="true"><use href="#i-sparkles"/></svg></span>
-        <span class="q" data-thread-text="holiday">Can I afford a £1,200 holiday next month?</span>
-        <span class="q" data-thread-text="spending">Why is my food delivery spending higher?</span>
+        <span class="q" data-thread-text="new">New question</span>
+        <span class="q" data-thread-text="holiday" hidden>Can I afford a £1,200 holiday next month?</span>
+        <span class="q" data-thread-text="spending" hidden>Why is my food delivery spending higher?</span>
         <span class="xs faint">Conversation</span>
         <svg class="chev" aria-hidden="true"><use href="#i-chevdown"/></svg>
       </button>
@@ -62,13 +63,30 @@
           <div><h2>Foresight Assistant</h2><p>Your financial intelligence partner</p></div>
         </div>
 
-        <div class="threads" role="radiogroup" aria-label="Conversations">
-          <a href="?q=holiday" role="radio" data-thread-link="holiday" aria-checked="true"><svg aria-hidden="true"><use href="#i-plane"/></svg>Holiday in November</a>
-          <a href="?q=spending" role="radio" data-thread-link="spending" aria-checked="false"><svg aria-hidden="true"><use href="#i-utensils"/></svg>Food delivery</a>
+        <div class="recent">
+          <div class="recent-head">
+            <h3 id="recent-h">Recent</h3>
+            <a class="new-q" href="?state=new" data-thread-new><svg aria-hidden="true"><use href="#i-plus"/></svg>New question</a>
+          </div>
+          <div class="threads" role="radiogroup" aria-labelledby="recent-h">
+            <a href="?q=holiday" role="radio" data-thread-link="holiday" aria-checked="false"><svg aria-hidden="true"><use href="#i-plane"/></svg><span class="t">Holiday in November</span><span class="time">09:14</span></a>
+            <a href="?q=spending" role="radio" data-thread-link="spending" aria-checked="false"><svg aria-hidden="true"><use href="#i-utensils"/></svg><span class="t">Food delivery</span><span class="time">09:21</span></a>
+          </div>
+        </div>
+
+        <!-- Thread: new (no thread selected) -->
+        <div class="thread" data-thread="new">
+          <div class="msg-bot">
+            <span class="bot-avatar mini" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M7 11.5 27 5.5l-2.4 6.2L4.6 17.7Z"/><path d="M5.6 19.4 21.8 14.6l-2.2 5.6L3.4 25Z"/><path d="M4.4 26.6 13.8 23.8l-1.6 4L2.8 30.6Z"/></svg></span>
+            <div>
+              <div class="bubble"><p>Hi Amara. Ask about a decision, a change in your spending or the months ahead. I’ll show you what was checked before you see the answer.</p></div>
+              <div class="stamp">Data to Sun 11 Oct · Monzo current account</div>
+            </div>
+          </div>
         </div>
 
         <!-- Thread: holiday -->
-        <div class="thread" data-thread="holiday">
+        <div class="thread" data-thread="holiday" hidden>
           <div class="msg-user">
             <div class="bubble">Can I afford a £1,200 holiday next month?</div>
             <div class="stamp">Mon 12 Oct, 09:14</div>
@@ -113,8 +131,8 @@
 
     <!-- ================= Pinned follow-up input ================= -->
     <div class="dock">
-      <div class="try" aria-label="Try asking">
-        <div class="chips" data-thread="holiday">
+      <div class="try" role="group" aria-label="Try asking">
+        <div class="chips" data-thread="holiday" hidden>
           <button class="chip" type="button">What if I spend £1,500 instead?</button>
           <button class="chip" type="button">Can I still save £400 a month?</button>
           <button class="chip" type="button">What if my salary is late?</button>
@@ -125,26 +143,51 @@
           <button class="chip" type="button">Compare with groceries</button>
         </div>
       </div>
-      <div class="composer"><svg aria-hidden="true"><use href="#i-clip"/></svg><label class="sr-only" for="ask">Ask a follow-up question</label><input id="ask" type="text" placeholder="Ask a follow-up question…" autocomplete="off"><button class="send" type="button" aria-label="Send"><svg aria-hidden="true"><use href="#i-send"/></svg></button></div>
+      <div class="composer"><svg aria-hidden="true"><use href="#i-clip"/></svg><label class="sr-only" for="ask">Ask a question</label><input id="ask" type="text" placeholder="Ask about your money…" data-placeholder-new="Ask about your money…" data-placeholder-thread="Ask a follow-up question…" autocomplete="off"><button class="send" type="button" aria-label="Send"><svg aria-hidden="true"><use href="#i-send"/></svg></button></div>
     </div>
 
     <!-- ================= Analysis canvas ================= -->
-    <section class="canvas" aria-label="Analysis">
+    <section class="canvas" aria-label="Analysis" tabindex="0">
+
+      <!-- ---------- Welcome: no thread selected (?state=new, or no ?q) ---------- -->
+      <div class="analysis welcome" data-thread="new">
+        <div class="welcome-inner">
+          <span class="bot-avatar"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 11.5 27 5.5l-2.4 6.2L4.6 17.7Z"/><path d="M5.6 19.4 21.8 14.6l-2.2 5.6L3.4 25Z"/><path d="M4.4 26.6 13.8 23.8l-1.6 4L2.8 30.6Z"/></svg></span>
+          <h1 class="welcome-h serif">Ask anything about your money.</h1>
+          <p class="welcome-sub">Answers come from your transactions and the forecast engine — every number is computed, then checked.</p>
+          <ul class="starters" aria-label="Start with a question">
+            <li><a class="starter" href="?q=holiday&amp;state=live"><span class="icon-chip sm"><svg aria-hidden="true"><use href="#i-plane"/></svg></span><span class="s-q">Can I afford a holiday next month?</span><span class="s-n">Checks timing against your paydays</span><svg class="s-go" aria-hidden="true"><use href="#i-arrowright"/></svg></a></li>
+            <li><a class="starter" href="?q=spending&amp;state=live"><span class="icon-chip sm"><svg aria-hidden="true"><use href="#i-utensils"/></svg></span><span class="s-q">Why is my spending up?</span><span class="s-n">Compares the last 30 days with a usual month</span><svg class="s-go" aria-hidden="true"><use href="#i-arrowright"/></svg></a></li>
+            <li><button class="starter" type="button" data-prefill="What if my salary is late?"><span class="icon-chip sm"><svg aria-hidden="true"><use href="#i-briefcase"/></svg></span><span class="s-q">What if my salary is late?</span><span class="s-n">Not prepared in this prototype · opens the question box</span><svg class="s-go" aria-hidden="true"><use href="#i-arrowright"/></svg></button></li>
+            <li><button class="starter" type="button" aria-expanded="false" aria-controls="march-answer"><span class="icon-chip sm"><svg aria-hidden="true"><use href="#i-calendar"/></svg></span><span class="s-q">How does March look?</span><span class="s-n">A quick answer from your forecast</span><svg class="s-go chev" aria-hidden="true"><use href="#i-chevdown"/></svg></button></li>
+          </ul>
+
+          <section class="quick card" id="march-answer" aria-labelledby="march-h" hidden>
+            <p class="quick-src"><svg aria-hidden="true"><use href="#i-pulse"/></svg>From the forecast engine · data to Sun 11 Oct</p>
+            <h2 class="serif" id="march-h">About <span class="num" data-fx="end_of_march_all.plan" data-fmt="money0">£8,388</span> on 31 March.</h2>
+            <p>That’s the middle of 500 simulated paths, with your checked October plan in place. Your tightest point before then is <strong class="num" data-fx="overall.plan.lowest" data-fmt="money0">£604</strong> on <span data-fx="overall.plan.date" data-fmt="day">Tue 27 Oct</span>, <span class="num" data-fx="overall.plan.vs_buffer" data-fmt="money0">£104</span> above your buffer.</p>
+            <p>A £1,200 holiday booked from 28 Nov would make it <span class="num" data-fx="end_of_march_all.holiday_1200_28nov" data-fmt="money0">£7,188</span>.</p>
+            <a class="link" href="?q=holiday#details">See it week by week <svg aria-hidden="true"><use href="#i-arrowright"/></svg></a>
+          </section>
+
+          <p class="disclaimer"><svg aria-hidden="true"><use href="#i-info"/></svg>Guidance, not regulated financial advice.</p>
+        </div>
+      </div>
 
       <!-- ---------- Holiday analysis (intent: affordability) ---------- -->
-      <div class="analysis" data-thread="holiday" data-intent="affordability">
+      <div class="analysis" data-thread="holiday" data-intent="affordability" hidden>
         <div class="loading-view" aria-live="polite">
           <div class="canvas-top"><span class="ai"><svg aria-hidden="true"><use href="#i-sparkles"/></svg>AI Analysis</span><span class="done">Working on “Can I afford a £1,200 holiday next month?”</span></div>
-          <ol class="steps" aria-label="Progress">
-            <li data-state="done"><svg aria-hidden="true"><use href="#i-check"/></svg>Analysing transactions</li>
-            <li data-state="done"><svg aria-hidden="true"><use href="#i-check"/></svg>Building forecast</li>
-            <li data-state="active" aria-current="step">Simulating</li>
-            <li>Checking</li>
-          </ol>
-          <div class="skel h1"></div><div class="skel line"></div>
-          <div class="skel-grid"><div class="skel block short"></div><div class="skel block short"></div><div class="skel block short"></div></div>
-          <div class="skel-grid two"><div class="skel block"></div><div class="skel block"></div></div>
+          <section class="run" aria-labelledby="h-run-h">
+            <h2 class="run-h" id="h-run-h">Checking before you see it</h2>
+            <p class="run-sub" data-run-status>Started <span class="time"></span></p>
+            <div data-steps-slot="h-steps"></div>
+          </section>
           <p class="xs faint">Numbers appear once the Verifier has checked them.</p>
+          <div aria-hidden="true">
+            <div class="skel h1"></div><div class="skel line"></div>
+            <div class="skel-grid"><div class="skel block short"></div><div class="skel block short"></div><div class="skel block short"></div></div>
+          </div>
         </div>
 
         <div class="loaded">
@@ -207,7 +250,24 @@
               </article>
             </div>
 
-            <a class="evidence" data-slot="evidence" href="#checked"><svg aria-hidden="true"><use href="#i-checkcircle"/></svg><span>Checked by 6 agents · 1 draft rejected</span><span class="go">View how <svg aria-hidden="true"><use href="#i-arrowright"/></svg></span></a>
+            <div class="evidence" data-slot="evidence">
+              <button class="evidence-toggle" type="button" aria-expanded="false" aria-controls="h-steps">
+                <svg class="ok" aria-hidden="true"><use href="#i-checkcircle"/></svg>
+                <span class="ev-t">Checked by 6 agents · 1 draft rejected</span>
+                <span class="go"><span class="when-closed">View how</span><span class="when-open">Hide steps</span><svg class="chev" aria-hidden="true"><use href="#i-chevdown"/></svg></span>
+              </button>
+              <div class="evidence-body" id="h-steps" hidden>
+                <ol class="agent-steps" aria-label="Steps behind this answer" data-start="09:14:02" data-loading-at="4">
+                <li data-result="done" data-doing="Reading your transactions"><span class="ico"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="label"><span class="sr-only st">Done: </span><span class="lt">Read your transactions</span></span><span class="time">09:14:03</span></li>
+                <li data-result="done" data-doing="Building your forecast (500 paths)"><span class="ico"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="label"><span class="sr-only st">Done: </span><span class="lt">Built your forecast (500 paths)</span></span><span class="time">09:14:05</span></li>
+                <li data-result="done" data-doing="Simulating the holiday"><span class="ico"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="label"><span class="sr-only st">Done: </span><span class="lt">Simulated the holiday</span></span><span class="time">09:14:05</span></li>
+                <li data-result="rejected" data-doing="Checking the first draft"><span class="ico"><svg aria-hidden="true"><use href="#i-xcircle"/></svg></span><span class="label"><span class="sr-only st">Rejected: </span><span class="lt">Verifier rejected a draft</span></span><span class="time">09:14:06</span><span class="d">“Pay on 6 Nov”: overdrawn by <span class="num" data-fx="what_if.1200_on_6nov.lowest" data-fmt="abs0">£148</span> on <span data-fx="what_if.1200_on_6nov.date" data-fmt="short">26 Nov</span></span></li>
+                <li data-result="done" data-doing="Revising: book after 27 Nov"><span class="ico"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="label"><span class="sr-only st">Done: </span><span class="lt">Revised: book after 27 Nov</span></span><span class="time">09:14:06</span></li>
+                <li data-result="done" data-doing="Checking the revised answer"><span class="ico"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="label"><span class="sr-only st">Done: </span><span class="lt">Checked</span></span><span class="time">09:14:08</span></li>
+                </ol>
+                <p class="evidence-foot"><span>Started 09:14:02 · checked 09:14:08</span><a href="#checked">Full details <svg aria-hidden="true"><use href="#i-arrowright"/></svg></a></p>
+              </div>
+            </div>
           </div>
 
           <!-- Details: weekly cash flow with paydays + end-of-March impact -->
@@ -331,16 +391,16 @@
       <div class="analysis" data-thread="spending" data-intent="trend_or_change" hidden>
         <div class="loading-view" aria-live="polite">
           <div class="canvas-top"><span class="ai"><svg aria-hidden="true"><use href="#i-sparkles"/></svg>AI Analysis</span><span class="done">Working on “Why is my food delivery spending higher?”</span></div>
-          <ol class="steps" aria-label="Progress">
-            <li data-state="done"><svg aria-hidden="true"><use href="#i-check"/></svg>Analysing transactions</li>
-            <li data-state="done"><svg aria-hidden="true"><use href="#i-check"/></svg>Building forecast</li>
-            <li data-state="active" aria-current="step">Simulating</li>
-            <li>Checking</li>
-          </ol>
-          <div class="skel h1"></div><div class="skel line"></div>
-          <div class="skel-grid"><div class="skel block short"></div><div class="skel block short"></div><div class="skel block short"></div></div>
-          <div class="skel-grid two"><div class="skel block"></div><div class="skel block"></div></div>
+          <section class="run" aria-labelledby="s-run-h">
+            <h2 class="run-h" id="s-run-h">Checking before you see it</h2>
+            <p class="run-sub" data-run-status>Started <span class="time"></span></p>
+            <div data-steps-slot="s-steps"></div>
+          </section>
           <p class="xs faint">Numbers appear once the Verifier has checked them.</p>
+          <div aria-hidden="true">
+            <div class="skel h1"></div><div class="skel line"></div>
+            <div class="skel-grid"><div class="skel block short"></div><div class="skel block short"></div><div class="skel block short"></div></div>
+          </div>
         </div>
 
         <div class="loaded">
@@ -403,7 +463,24 @@
               </article>
             </div>
 
-            <a class="evidence" data-slot="evidence" href="#checked"><svg aria-hidden="true"><use href="#i-checkcircle"/></svg><span>Checked by 4 agents · 1 draft rejected</span><span class="go">View how <svg aria-hidden="true"><use href="#i-arrowright"/></svg></span></a>
+            <div class="evidence" data-slot="evidence">
+              <button class="evidence-toggle" type="button" aria-expanded="false" aria-controls="s-steps">
+                <svg class="ok" aria-hidden="true"><use href="#i-checkcircle"/></svg>
+                <span class="ev-t">Checked by 4 agents · 1 draft rejected</span>
+                <span class="go"><span class="when-closed">View how</span><span class="when-open">Hide steps</span><svg class="chev" aria-hidden="true"><use href="#i-chevdown"/></svg></span>
+              </button>
+              <div class="evidence-body" id="s-steps" hidden>
+                <ol class="agent-steps" aria-label="Steps behind this answer" data-start="09:21:01" data-loading-at="4">
+                <li data-result="done" data-doing="Reading your transactions"><span class="ico"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="label"><span class="sr-only st">Done: </span><span class="lt">Read your transactions</span></span><span class="time">09:21:02</span></li>
+                <li data-result="done" data-doing="Comparing with your usual month"><span class="ico"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="label"><span class="sr-only st">Done: </span><span class="lt">Compared with your usual month</span></span><span class="time">09:21:03</span></li>
+                <li data-result="done" data-doing="Drafting caps until payday"><span class="ico"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="label"><span class="sr-only st">Done: </span><span class="lt">Drafted two caps until payday</span></span><span class="time">09:21:04</span></li>
+                <li data-result="rejected" data-doing="Checking the first draft"><span class="ico"><svg aria-hidden="true"><use href="#i-xcircle"/></svg></span><span class="label"><span class="sr-only st">Rejected: </span><span class="lt">Verifier rejected a draft</span></span><span class="time">09:21:05</span><span class="d">“Cap delivery at £40”: <span data-fx="rejected_cap_below_pace_pct" data-fmt="pct">72%</span> below your pace, not realistic to keep</span></li>
+                <li data-result="done" data-doing="Revising: cap at £100"><span class="ico"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="label"><span class="sr-only st">Done: </span><span class="lt">Revised: cap at £100</span></span><span class="time">09:21:05</span></li>
+                <li data-result="done" data-doing="Checking the revised answer"><span class="ico"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="label"><span class="sr-only st">Done: </span><span class="lt">Checked</span></span><span class="time">09:21:05</span></li>
+                </ol>
+                <p class="evidence-foot"><span>Started 09:21:01 · checked 09:21:05</span><a href="#checked">Full details <svg aria-hidden="true"><use href="#i-arrowright"/></svg></a></p>
+              </div>
+            </div>
           </div>
 
           <!-- Details: merchant breakdown + the last three 30-day periods -->

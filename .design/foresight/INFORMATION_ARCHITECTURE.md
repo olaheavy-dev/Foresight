@@ -21,7 +21,7 @@ Supersedes the surface names in `docs/00` §10: Briefing → **Home**, Ask → *
   - Step 2 · Check what we found `/start?step=check`
   - Step 3 · Your briefing → redirects to `/home`
 - Home `/home`
-- AI Workspace `/workspace`. New question; recent threads listed in the conversation column.
+- AI Workspace `/workspace`. With no thread selected it shows the **welcome state** (see below); recent threads and "New question" are listed in the conversation column.
   - Thread `/workspace/[threadId]`. Answer canvas with the fixed tab set as URL hashes: `#overview` (default) · `#details` · `#recommendation` · `#transactions` · `#checked`. Tabs without content are hidden, never reordered (see Answer skeleton).
 - Decision Lab `/lab`
   - Scenario `/lab/[scenarioId]`
@@ -67,9 +67,15 @@ Supersedes the surface names in `docs/00` §10: Briefing → **Home**, Ask → *
 2. **Three key numbers** for this answer.
 3. **One chart**, chosen by intent.
 4. **The checked recommendation**, if the intent needs advice.
-5. **Evidence line** ("Checked by N agents · M drafts rejected · View how").
+5. **Evidence line** ("Checked by N agents · M drafts rejected · View how"). It is a disclosure: it expands in place into the agent step checklist, with a "Full details" link to `#checked`.
 
 Everything else lives in the tabs. **Rule: Overview fits about one screen at 1440×900.** Its content limit is 1 verdict, ≤3 numbers, 1 chart, ≤1 recommendation and 1 evidence line. The conversation input is always visible.
+
+### AI Workspace (welcome: no thread selected)
+1. **One serif line**: "Ask anything about your money." plus one line on where answers come from (transactions and the forecast engine; every number computed, then checked).
+2. **Four starter questions**: two open prepared threads (affordability, spending change) and play the step checklist; one opens a quick answer computed from the forecast ("How does March look?"); a question the data can't answer yet opens the question box prefilled, labelled as such.
+3. **Disclaimer**: "Guidance, not regulated financial advice."
+4. The pinned input ("Ask about your money…") and the recent-threads list in the conversation column. No "Try asking" chips: the starters do that job.
 
 ### Decision Lab
 1. **Baseline vs scenario chart**, the hero.
@@ -100,7 +106,7 @@ Everything else lives in the tabs. **Rule: Overview fits about one screen at 144
 2. **Key numbers**: up to 3.
 3. **Main visual**: exactly one, chosen by intent.
 4. **What to do**: the checked recommendation (omitted when the intent gives no advice; the slot collapses, nothing moves up out of order).
-5. **Evidence line**: "Checked by N agents · M drafts rejected · View how".
+5. **Evidence line**: "Checked by N agents · M drafts rejected · View how". An expandable step checklist (`aria-expanded` disclosure): each step has an icon and words (✓ done, ✗ rejected with the draft and reason) and its logged time, ending in a "Full details" link to `#checked`. While the answer streams, the same checklist is shown live in the answer area; when it completes it collapses into this line.
 
 **Tabs: one fixed set, always this order and these names:**
 **Overview · Details · Recommendation · Transactions · How it was checked**
@@ -148,8 +154,9 @@ Everything else lives in the tabs. **Rule: Overview fits about one screen at 144
 ### Ask a question
 1. Type in the top bar or the pinned input → the Coordinator classifies the intent.
    - Confidence < 0.6 → a clarifying question with options.
-2. Loading state: "Analysing transactions → Building forecast → Simulating → Checking".
-3. Answer → `#overview`. Follow-up chips switch tabs or ask a structured follow-up (no re-classification).
+2. Loading state: a live step checklist in the answer area, one row per agent step as it finishes (e.g. ✓ Read your transactions · ✓ Built your forecast (500 paths) · ✓ Simulated the holiday · ✗ Verifier rejected a draft, with the reason · ✓ Revised · ✓ Checked). Only started steps are shown; a rejection is never announced in advance.
+3. Complete → the checklist collapses into the evidence line.
+4. Answer → `#overview`. Follow-up chips switch tabs or ask a structured follow-up (no re-classification).
 
 ### Act on a recommendation
 1. From the Insight detail or the Workspace Overview, choose **Accept** / **Dismiss**.
@@ -182,7 +189,7 @@ Everything else lives in the tabs. **Rule: Overview fits about one screen at 144
 | ScenarioComparison | Workspace, Lab, Insight detail | Lab adds live controls. |
 | InterventionCard (Checked / Rejected) | Workspace, Insight detail, Lab, Home insight cards | Home shows the compact version. |
 | Evidence drawer | Global overlay | Same component everywhere. |
-| AgentExecutionTimeline | Workspace "How it was checked" tab, Insight detail, Activity | Activity shows a one-line summary per run. |
+| AgentExecutionTimeline | Workspace "How it was checked" tab, Insight detail, Activity; compact inline variant in the Workspace loading state and evidence line | Activity shows a one-line summary per run. The inline variant shows user-facing step names and times only; agent names and full reasons stay in `#checked`. |
 | Transaction row | Transactions, Workspace Transactions tab, Insight detail | Stacked layout below 768px. |
 | Quality checks card | Sidebar footer, `/quality` | The card summarises; the page shows full tables. |
 
@@ -199,6 +206,6 @@ Everything else lives in the tabs. **Rule: Overview fits about one screen at 144
 - **Pattern:** `/<section>` and `/<section>/[id]`. IDs use the data-model prefixes (`thr_`, `scn_`, `ins_`). IDs only, no slugs, since the content is private and not SEO-relevant.
 - **Tabs:** URL hash for answer tabs (`#overview`), and `?tab=` for list tabs that the server must render (Transactions).
 - **Overlays:** `?evidence=<id>`, which can be combined with any page and shared within the demo.
-- **States for design and testing:** `?state=loading|empty|error` (prototype and Playwright only).
+- **States for design and testing:** `?state=new|loading|live|empty|error` (prototype and Playwright only). `new` is the Workspace welcome state; `live` plays the step checklist from the logged timestamps and then shows the answer.
 - **Query parameters:** `q`, `category`, `from`, `to`, `account`, `page`; dates in ISO `YYYY-MM-DD`.
 - **Public routes:** `/`, `/quality`. All others require a profile (the demo profile counts).
