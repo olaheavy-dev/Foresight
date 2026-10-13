@@ -10,11 +10,18 @@
  * replaces it when the Verifier has checked it. Threads are remembered for the browser session
  * (sessionStorage); reopening one reads the stored snapshots, it never re-runs the agents.
  */
+import Link from "next/link";
 import { type FormEvent, useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Icon, type IconName } from "@/components/icons/Icon";
+import { NotShipped } from "@/components/ui/NotShipped";
 import { fetchResponse, parseAgentResponse, type ParsedResponse } from "@/lib/api";
 import {
+  AI_STATUS_POLL_MS,
+  type AiStatus,
   createThread,
+  fetchAiStatus,
+  fetchThread,
+  fetchThreads,
   followRun,
   initialRun,
   isTerminal,
@@ -24,6 +31,7 @@ import {
   runReducer,
   type RunState,
   type StructuredAction,
+  type ThreadDetail,
 } from "@/lib/ask";
 import { formatClock } from "@/lib/format";
 import type { FollowUpAction } from "@/ui-contracts/types";
@@ -47,6 +55,8 @@ type State = { threads: Thread[]; selected: string | null };
 
 type Action =
   | { type: "hydrate"; threads: Thread[] }
+  | { type: "remote"; threads: { threadId: string; title: string; createdAt: string }[] }
+  | { type: "turns"; key: string; turns: Turn[] }
   | { type: "select"; key: string | null }
   | { type: "start"; key: string; title: string; turn: Turn; now: string }
   | { type: "thread_id"; key: string; threadId: string }
@@ -69,6 +79,17 @@ export function workspaceReducer(state: State, action: Action): State {
   switch (action.type) {
     case "hydrate":
       return { ...state, threads: action.threads };
+    case "remote": {
+      // Conversations stored on the server that this browser session hasn't opened yet.
+      const known = new Set(state.threads.map((t) => t.threadId));
+      const added = action.threads
+        .filter((t) => !known.has(t.threadId))
+        .map((t): Thread => ({ key: t.threadId, threadId: t.threadId, title: t.title || "Conversation", createdAt: t.createdAt, turns: [] }));
+      const threads = [...state.threads, ...added].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      return { ...state, threads };
+    }
+    case "turns":
+      return { ...state, threads: state.threads.map((t) => (t.key === action.key && t.turns.length === 0 ? { ...t, turns: action.turns } : t)) };
     case "select":
       return { ...state, selected: action.key };
     case "start": {
@@ -96,6 +117,28 @@ export function workspaceReducer(state: State, action: Action): State {
         run: { ...t.run, phase: "error", error: { code: action.code, retryable: action.retryable, partialResponseId: null } },
       }));
   }
+}
+
+/** Rebuilds turns from a stored conversation: each user message, then the answer that followed. */
+export function turnsFromThread(detail: ThreadDetail): Turn[] {
+  const turns: Turn[] = [];
+  for (const m of detail.messages) {
+    if (m.role === "user") {
+      turns.push({
+        id: m.message_id,
+        question: m.text,
+        askedAt: m.created_at,
+        partial: null,
+        run: { ...initialRun(m.run_id), standaloneQuestion: m.standalone_question },
+      });
+    } else {
+      const t = turns.at(-1);
+      if (!t) continue;
+      t.run = { ...t.run, runId: t.run.runId ?? m.run_id };
+      if (m.response_id) t.run = { ...t.run, phase: "answered", answer: { responseId: m.response_id, response: null } };
+    }
+  }
+  return turns;
 }
 
 // What survives a reload: everything except the parsed snapshots, which are re-read by id.
@@ -132,7 +175,18 @@ const STARTERS: { icon: IconName; q: string; note: string }[] = [
   { icon: "calendar", q: "How does next month look?", note: "A quick read of your forecast" },
 ];
 
+/** While AI answers are paused, the starters point at what still works without them. */
+const STILL_WORKS: { icon: IconName; q: string; note: string; href: string | null }[] = [
+  { icon: "pulse", q: "See your forecast", note: "Your balance to the next paydays, from the engine", href: "/home" },
+  { icon: "sliders", q: "Try a what-if", note: "Decision Lab runs the engine directly", href: "/lab" },
+  { icon: "swap", q: "Look through transactions", note: "Search and filter your ledger", href: "/transactions" },
+  { icon: "clock", q: "Reopen an earlier answer", note: "Answers you’ve had are stored", href: null },
+];
+
+const PAUSED = "AI answers are paused right now. Your forecast and numbers still work.";
+
 const ERRORS: Record<string, string> = {
+  ai_unavailable: "AI answers are paused right now.",
   engine_timeout: "The forecast engine didn’t respond.",
   deadline: "This answer took too long to finish.",
   connection_lost: "We lost the connection to this answer.",
@@ -153,7 +207,7 @@ export type WorkspaceProps = {
   timeZone: string;
   currency: string;
   initialQuestion: string | null;
-  flags: { auditTrail: boolean; checkedAdvice: boolean };
+  flags: { auditTrail: boolean; checkedAdvice: boolean; anomalyDetection: boolean };
 };
 
 export function Workspace({ workspaceId, firstName, locale, timeZone, currency, initialQuestion, flags }: WorkspaceProps) {
@@ -162,6 +216,7 @@ export function Workspace({ workspaceId, firstName, locale, timeZone, currency, 
   const [draft, setDraft] = useState("");
   const [convoOpen, setConvoOpen] = useState(false);
   const [evidence, setEvidence] = useState<string | null>(null);
+  const [ai, setAi] = useState<AiStatus | null>(null);
   const stops = useRef(new Map<string, () => void>());
   const asked = useRef(false);
   const stateRef = useRef(state);
@@ -183,6 +238,9 @@ export function Workspace({ workspaceId, firstName, locale, timeZone, currency, 
             r ? dispatch({ type: "response", key, turnId, response: r }) : dispatch({ type: "fail", key, turnId, code: "unavailable", retryable: true }),
           );
         }
+        if (event.type === "error" && event.code === "ai_unavailable") {
+          setAi({ status: "unavailable", message: null });
+        }
         if (event.type === "error" && event.partialResponseId) {
           fetchResponse(event.partialResponseId).then((r) => (r ? dispatch({ type: "partial", key, turnId, response: r }) : null));
         }
@@ -196,6 +254,22 @@ export function Workspace({ workspaceId, firstName, locale, timeZone, currency, 
     const map = stops.current;
     return () => map.forEach((stop) => stop());
   }, []);
+
+  // -- AI status: on load and every two minutes while the Workspace is open --------------------
+  useEffect(() => {
+    let live = true;
+    const check = () =>
+      fetchAiStatus().then((s) => {
+        if (live) setAi(s);
+      });
+    void check();
+    const timer = window.setInterval(check, AI_STATUS_POLL_MS);
+    return () => {
+      live = false;
+      window.clearInterval(timer);
+    };
+  }, []);
+  const paused = ai?.status === "unavailable";
 
   // -- session persistence ------------------------------------------------------------------
   useEffect(() => {
@@ -223,7 +297,34 @@ export function Workspace({ workspaceId, firstName, locale, timeZone, currency, 
       }
     }
     setHydrated(true);
+    // Conversations from earlier sessions come from the server; their answers load when opened.
+    fetchThreads().then((list) => {
+      if (list) dispatch({ type: "remote", threads: list.map((t) => ({ threadId: t.thread_id, title: t.title, createdAt: t.created_at })) });
+    });
   }, [workspaceId, follow]);
+
+  // Opening a conversation this session hasn't seen: read its messages, then its stored answers.
+  const selectedEmpty = thread && thread.turns.length === 0 && thread.threadId ? thread : null;
+  useEffect(() => {
+    if (!selectedEmpty?.threadId) return;
+    const { key, threadId } = selectedEmpty;
+    let live = true;
+    fetchThread(threadId).then((detail) => {
+      if (!live || !detail) return;
+      const turns = turnsFromThread(detail);
+      dispatch({ type: "turns", key, turns });
+      for (const t of turns) {
+        if (t.run.answer) {
+          fetchResponse(t.run.answer.responseId).then((r) => (r ? dispatch({ type: "response", key, turnId: t.id, response: r }) : null));
+        } else if (t.run.runId) {
+          follow(key, t.id, t.run.runId);
+        }
+      }
+    });
+    return () => {
+      live = false;
+    };
+  }, [selectedEmpty?.key, selectedEmpty?.threadId, follow]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -409,7 +510,26 @@ export function Workspace({ workspaceId, firstName, locale, timeZone, currency, 
 
         {/* ======== Pinned question box ======== */}
         <div className="dock">
-          {chips.length ? (
+          {paused ? (
+            <div className="ai-notice" role="status">
+              <Icon name="info" />
+              <div>
+                <p>{PAUSED}</p>
+                <p className="sub">You can still ask; a free-text question may not get an AI explanation.</p>
+                <p className="links">
+                  <Link href="/home">Your forecast</Link>
+                  <Link href="/lab">Decision Lab</Link>
+                  <Link href="/transactions">Transactions</Link>
+                </p>
+              </div>
+            </div>
+          ) : ai?.status === "degraded" ? (
+            <p className="ai-notice soft" role="status">
+              <Icon name="info" />
+              <span>AI answers may be slower than usual. Numbers are unaffected.</span>
+            </p>
+          ) : null}
+          {chips.length && !paused ? (
             <div className="try" role="group" aria-label="Try asking">
               <div className="chips">
                 {chips.map((f) => (
@@ -443,9 +563,24 @@ export function Workspace({ workspaceId, firstName, locale, timeZone, currency, 
         {/* ======== Analysis canvas ======== */}
         <section className="canvas" aria-label="Analysis" aria-busy={busy} tabIndex={0}>
           {!thread || !turn ? (
-            <Welcome onAsk={(q) => void ask(q, { newThread: true })} />
+            <Welcome
+              paused={paused}
+              onAsk={(q) => void ask(q, { newThread: true })}
+              onEarlier={() => {
+                setConvoOpen(true);
+                document.querySelector<HTMLButtonElement>(".ws-body .threads button")?.focus();
+              }}
+            />
           ) : turn.run.phase === "answered" ? (
-            answer ? (
+            answer && answer.intent === "spending_question" && !flags.anomalyDetection ? (
+              <div className="analysis">
+                <CanvasTop question={turn.question} />
+                <NotShipped
+                  title="Spending analysis"
+                  detail="Spending answers appear here once behaviour and anomaly detection passes its evaluation."
+                />
+              </div>
+            ) : answer ? (
               <AnswerCanvas
                 response={answer}
                 liveSteps={turn.run.steps}
@@ -473,9 +608,11 @@ export function Workspace({ workspaceId, firstName, locale, timeZone, currency, 
                   <div>
                     <h2 className="card-title">{errorText(turn.run.error.code)}</h2>
                     <p className="card-sub">
-                      {turn.partial
-                        ? "Part of the answer was checked before it stopped; it’s shown below."
-                        : "No figures were shown, because none were checked. Your question is kept."}
+                      {turn.run.error.code === "ai_unavailable"
+                        ? "Your forecast and numbers still work. Try the Decision Lab for a what-if, or ask again later."
+                        : turn.partial
+                          ? "Part of the answer was checked before it stopped; it’s shown below."
+                          : "No figures were shown, because none were checked. Your question is kept."}
                     </p>
                   </div>
                 </div>
@@ -598,15 +735,40 @@ function Working({ turn, locale, timeZone, fetching = false }: { turn: Turn; loc
   );
 }
 
-function Welcome({ onAsk }: { onAsk: (q: string) => void }) {
+function Welcome({ onAsk, paused, onEarlier }: { onAsk: (q: string) => void; paused: boolean; onEarlier: () => void }) {
   return (
     <div className="welcome">
       <div className="welcome-inner">
         <BotAvatar />
         <h1 className="welcome-h serif">Ask anything about your money.</h1>
         <p className="welcome-sub">Answers come from your transactions and the forecast engine — every number is computed, then checked.</p>
-        <ul className="starters" aria-label="Start with a question">
-          {STARTERS.map((s) => (
+        {paused ? <p className="welcome-paused">{PAUSED}</p> : null}
+        <ul className="starters" aria-label={paused ? "What still works" : "Start with a question"}>
+          {paused
+            ? STILL_WORKS.map((s) => (
+                <li key={s.q}>
+                  {s.href ? (
+                    <Link className="starter" href={s.href}>
+                      <span className="icon-chip sm">
+                        <Icon name={s.icon} />
+                      </span>
+                      <span className="s-q">{s.q}</span>
+                      <span className="s-n">{s.note}</span>
+                      <Icon name="arrowright" className="s-go" />
+                    </Link>
+                  ) : (
+                    <button type="button" className="starter" onClick={onEarlier}>
+                      <span className="icon-chip sm">
+                        <Icon name={s.icon} />
+                      </span>
+                      <span className="s-q">{s.q}</span>
+                      <span className="s-n">{s.note}</span>
+                      <Icon name="arrowright" className="s-go" />
+                    </button>
+                  )}
+                </li>
+              ))
+            : STARTERS.map((s) => (
             <li key={s.q}>
               <button type="button" className="starter" onClick={() => onAsk(s.q)}>
                 <span className="icon-chip sm">

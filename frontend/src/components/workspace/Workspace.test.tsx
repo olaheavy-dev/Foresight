@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { affordabilityResponse, answerScript, clarifyScript, errorScript, uid, WORKSPACE_ID } from "@/test/workspaceFixtures";
+import { affordabilityResponse, answerScript, clarifyScript, errorScript, spendingResponse, uid, WORKSPACE_ID } from "@/test/workspaceFixtures";
 import { Workspace } from "./Workspace";
 
 class RO {
@@ -32,6 +32,8 @@ class FakeEventSource {
 const THREAD = uid("thr", 3);
 const RUN = uid("run", 3);
 let fetchMock: ReturnType<typeof vi.fn>;
+let aiStatus: "ok" | "degraded" | "unavailable" = "ok";
+let serverThreads: unknown[] = [];
 
 beforeEach(() => {
   sessionStorage.clear();
@@ -39,7 +41,24 @@ beforeEach(() => {
   FakeEventSource.all = [];
   vi.stubGlobal("ResizeObserver", RO);
   vi.stubGlobal("EventSource", FakeEventSource);
-  fetchMock = vi.fn(async (url: string) => {
+  aiStatus = "ok";
+  serverThreads = [];
+  fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+    if (url === "/api/ai-status") return new Response(JSON.stringify({ status: aiStatus, message: null }), { status: 200 });
+    if (url === "/api/threads" && !init?.method) return new Response(JSON.stringify({ threads: serverThreads }), { status: 200 });
+    if (url === `/api/threads/${uid("thr", 7)}`) {
+      return new Response(
+        JSON.stringify({
+          thread_id: uid("thr", 7),
+          title: "Trip in December",
+          messages: [
+            { message_id: "m1", role: "user", text: "Can I afford a trip in December?", run_id: uid("run", 7), created_at: "2026-10-12T09:14:02Z" },
+            { message_id: "m2", role: "assistant", text: "", run_id: uid("run", 7), response_id: affordabilityResponse().response_id, created_at: "2026-10-12T09:14:08Z" },
+          ],
+        }),
+        { status: 200 },
+      );
+    }
     if (url === "/api/threads") return new Response(JSON.stringify({ thread_id: THREAD }), { status: 201 });
     if (url.endsWith("/messages")) return new Response(JSON.stringify({ run_id: RUN }), { status: 202 });
     if (url.startsWith("/api/responses/")) return new Response(JSON.stringify(affordabilityResponse()), { status: 200 });
@@ -55,7 +74,7 @@ const props = {
   timeZone: "Europe/London",
   currency: "GBP",
   initialQuestion: null,
-  flags: { auditTrail: true, checkedAdvice: true },
+  flags: { auditTrail: true, checkedAdvice: true, anomalyDetection: true },
 };
 
 async function askViaComposer(text: string) {
@@ -142,5 +161,75 @@ describe("AI Workspace", () => {
     render(<Workspace {...props} initialQuestion="Why is my spending up?" />);
     await waitFor(() => expect(FakeEventSource.all).toHaveLength(1));
     expect(fetchMock.mock.calls.filter((c) => String(c[0]).endsWith("/messages"))).toHaveLength(1);
+  });
+
+  it("lists conversations from earlier sessions and opens one from its stored answer", async () => {
+    serverThreads = [{ thread_id: uid("thr", 7), title: "Trip in December", created_at: "2026-10-12T09:14:02Z" }];
+    render(<Workspace {...props} />);
+    const item = await screen.findByRole("button", { name: /Trip in December/ });
+    fireEvent.click(item);
+    expect(await screen.findByRole("heading", { level: 1, name: /27 November payday/ })).toBeInTheDocument();
+    expect(FakeEventSource.all).toHaveLength(0);
+  });
+
+  it("hides a spending answer when anomaly detection isn't shipped", async () => {
+    render(<Workspace {...props} flags={{ ...props.flags, anomalyDetection: false }} />);
+    await askViaComposer("Why is my spending up?");
+    act(() => FakeEventSource.all[0].play(answerScript(spendingResponse(), "q")));
+    expect(await screen.findByText("Not shipped yet")).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { level: 1, name: /Eating out/ })).toBeNull();
+  });
+});
+
+describe("AI status", () => {
+  it("ok: no notice, the usual starters", async () => {
+    render(<Workspace {...props} />);
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith("/api/ai-status", expect.anything()));
+    expect(screen.queryByText(/AI answers are paused/)).toBeNull();
+    expect(screen.getByRole("list", { name: "Start with a question" })).toBeInTheDocument();
+  });
+
+  it("degraded: a quiet note, nothing else changes", async () => {
+    aiStatus = "degraded";
+    render(<Workspace {...props} />);
+    expect(await screen.findByText("AI answers may be slower than usual. Numbers are unaffected.")).toBeInTheDocument();
+    expect(screen.getByRole("list", { name: "Start with a question" })).toBeInTheDocument();
+  });
+
+  it("unavailable: says so above the input, offers what still works, keeps the input enabled", async () => {
+    aiStatus = "unavailable";
+    render(<Workspace {...props} />);
+    expect(await screen.findAllByText("AI answers are paused right now. Your forecast and numbers still work.")).not.toHaveLength(0);
+    const still = screen.getByRole("list", { name: "What still works" });
+    expect(still).toHaveTextContent("See your forecast");
+    expect(screen.getByRole("link", { name: /Try a what-if/ })).toHaveAttribute("href", "/lab");
+    expect(screen.getByLabelText("Ask a question")).toBeEnabled();
+    expect(screen.getByText(/may not get an AI explanation/)).toBeInTheDocument();
+    expect(document.body.textContent).not.toMatch(/credit|billing|mesh/i);
+  });
+
+  it("checks again every two minutes while open", async () => {
+    vi.useFakeTimers({ toFake: ["setInterval", "clearInterval"] });
+    render(<Workspace {...props} />);
+    const calls = () => fetchMock.mock.calls.filter((c) => c[0] === "/api/ai-status").length;
+    await waitFor(() => expect(calls()).toBe(1));
+    aiStatus = "unavailable";
+    await act(async () => {
+      vi.advanceTimersByTime(120_000);
+    });
+    await waitFor(() => expect(calls()).toBe(2));
+    expect(await screen.findAllByText(/AI answers are paused right now/)).not.toHaveLength(0);
+    vi.useRealTimers();
+  });
+
+  it("an ai_unavailable error pauses AI answers without mentioning the provider", async () => {
+    render(<Workspace {...props} />);
+    await askViaComposer("Can I afford a trip?");
+    act(() => FakeEventSource.all[0].emit("error", { code: "ai_unavailable", retryable: true }, "1"));
+    const alert = screen.getByRole("region", { name: "Analysis" }).querySelector("[role=alert]")!;
+    expect(alert).toHaveTextContent("AI answers are paused right now.");
+    expect(alert).toHaveTextContent("Your forecast and numbers still work.");
+    expect(screen.getByText(/may not get an AI explanation/)).toBeInTheDocument();
+    expect(document.body.textContent).not.toMatch(/credit|billing|mesh/i);
   });
 });

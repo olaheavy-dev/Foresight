@@ -43,7 +43,11 @@ export default async function WorkspacePage({ searchParams }: { searchParams: Pr
         timeZone={profile.timezone}
         currency={profile.home_currency}
         initialQuestion={q?.trim() ? q.trim().slice(0, 2000) : null}
-        flags={{ auditTrail: isShipped(features, "audit_trail"), checkedAdvice: isShipped(features, "checked_advice") }}
+        flags={{
+          auditTrail: isShipped(features, "audit_trail"),
+          checkedAdvice: isShipped(features, "checked_advice"),
+          anomalyDetection: isShipped(features, "anomaly_detection"),
+        }}
       />
     </main>
   );

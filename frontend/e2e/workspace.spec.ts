@@ -35,7 +35,12 @@ async function ask(page: Page, text: string) {
   await page.getByRole("button", { name: "Send" }).click();
 }
 
+const MOCK = "http://localhost:8787";
+const setAiStatus = (page: Page, status: "ok" | "degraded" | "unavailable") =>
+  page.request.post(`${MOCK}/__mock/ai-status`, { data: { status } });
+
 test.beforeEach(async ({ page }) => {
+  await setAiStatus(page, "ok");
   await page.goto("/workspace");
 });
 
@@ -143,4 +148,40 @@ test("reloading reopens the thread from its stored snapshot", async ({ page }) =
   await page.reload();
   await expect(page.getByRole("heading", { level: 1, name: /27 November payday/ })).toBeVisible();
   expect(streams).toEqual([]);
+});
+
+test("when AI answers are paused, the Workspace says so calmly and points to what still works", async ({ page }) => {
+  await setAiStatus(page, "unavailable");
+  await page.reload();
+  const notice = page.locator(".dock .ai-notice");
+  await expect(notice).toContainText("AI answers are paused right now. Your forecast and numbers still work.");
+  await expect(page.getByRole("list", { name: "What still works" }).getByRole("link")).toHaveCount(3);
+  await expect(page.getByLabel("Ask a question")).toBeEnabled();
+  await inputVisible(page);
+  await expect(page.locator("body")).not.toContainText(/credit|billing|mesh/i);
+  await noSeriousA11yIssues(page);
+  await ask(page, "Can I afford a trip in December?");
+  const alert = page.getByRole("region", { name: "Analysis" }).getByRole("alert");
+  await expect(alert).toContainText("AI answers are paused right now.");
+  await expect(alert).toContainText("Your forecast and numbers still work.");
+});
+
+test("a degraded AI status is a quiet note only", async ({ page }) => {
+  await setAiStatus(page, "degraded");
+  await page.reload();
+  await expect(page.getByText("AI answers may be slower than usual. Numbers are unaffected.")).toBeVisible();
+  await expect(page.getByRole("list", { name: "Start with a question" })).toBeVisible();
+});
+
+test("conversations from an earlier session are listed from the server and reopen from their snapshots", async ({ page, context }) => {
+  await ask(page, "Can I afford a trip in December?");
+  await expect(page.getByRole("heading", { level: 1, name: /27 November payday/ })).toBeVisible({ timeout: 15_000 });
+  // A new session: nothing in this browser's storage, only what the server stored.
+  await page.evaluate(() => sessionStorage.clear());
+  await page.goto("/workspace");
+  const convo = page.getByRole("region", { name: "Conversation" });
+  if (await convo.getByRole("button", { name: /Conversation/ }).isVisible()) await convo.getByRole("button", { name: /Conversation/ }).click();
+  await convo.getByRole("button", { name: /Can I afford a trip in December\?/ }).first().click();
+  await expect(page.getByRole("heading", { level: 1, name: /27 November payday/ })).toBeVisible({ timeout: 15_000 });
+  void context;
 });

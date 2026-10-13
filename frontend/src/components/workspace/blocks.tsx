@@ -764,7 +764,7 @@ export function TimelineBlock({ block }: { block: AgentExecutionTimeline }) {
         <Icon name="info" />
         <span>
           Every number here comes from the forecast engine and your categorised transactions, not written by AI. The AI chose which views
-          to show and wrote the sentences around them. Costs are estimated from the tokens Mesh reported and its published prices.
+          to show and wrote the sentences around them. Costs are estimated from the tokens each step used.
         </span>
       </p>
     </article>

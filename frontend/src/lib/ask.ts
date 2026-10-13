@@ -15,9 +15,9 @@
  * Step labels and reasons are server templates filled with hydrated values (never model text),
  * so the UI shows them as they arrive.
  *
- * The stream must be sent with `Cache-Control: no-cache, no-transform` (and `X-Accel-Buffering:
- * no`): without no-transform, the Next proxy gzips the response and the browser receives every
- * event at once when the run ends, so the live checklist never shows.
+ * The browser reads the stream through app/api/runs/[runId]/events/route.ts, which marks it
+ * `no-transform`: through the plain /api rewrite, Next gzips the response and the browser gets
+ * every event at once when the run ends, so the live checklist never shows.
  */
 import { parseAgentResponse, type ApiOptions, type ParsedResponse } from "@/lib/api";
 
@@ -345,4 +345,79 @@ export function followRun(
 export function newClientMsgId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
   return `m_${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`;
+}
+
+// ---------------------------------------------------------------------------------------------
+// Stored threads (GET /api/threads, GET /api/threads/{id})
+
+export type ThreadSummary = { thread_id: string; title: string; created_at: string };
+export type ThreadMessage = {
+  message_id: string;
+  role: "user" | "assistant";
+  text: string;
+  standalone_question: string | null;
+  run_id: string | null;
+  response_id: string | null;
+  created_at: string;
+};
+export type ThreadDetail = { thread_id: string; title: string; messages: ThreadMessage[] };
+
+async function get(path: string, { fetchImpl = fetch, baseUrl = "" }: ApiOptions = {}): Promise<unknown> {
+  try {
+    const response = await fetchImpl(`${baseUrl}${path}`, {
+      cache: "no-store",
+      credentials: "include",
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+    return response.ok ? ((await response.json()) as unknown) : null;
+  } catch {
+    return null;
+  }
+}
+
+function isSummary(v: unknown): v is ThreadSummary {
+  const t = v as Record<string, unknown> | null;
+  return !!t && isThreadId(t.thread_id) && typeof t.title === "string" && typeof t.created_at === "string";
+}
+
+/** The profile's conversations, newest first; null if the list can't be read. */
+export async function fetchThreads(options: ApiOptions = {}): Promise<ThreadSummary[] | null> {
+  const body = (await get("/api/threads", options)) as { threads?: unknown } | null;
+  return Array.isArray(body?.threads) ? body.threads.filter(isSummary) : null;
+}
+
+/** One conversation with its messages (answers are read separately as snapshots). */
+export async function fetchThread(threadId: string, options: ApiOptions = {}): Promise<ThreadDetail | null> {
+  if (!isThreadId(threadId)) return null;
+  const body = (await get(`/api/threads/${encodeURIComponent(threadId)}`, options)) as Record<string, unknown> | null;
+  if (!body || !isThreadId(body.thread_id) || !Array.isArray(body.messages)) return null;
+  const messages = body.messages.flatMap((raw): ThreadMessage[] => {
+    const m = raw as Record<string, unknown>;
+    if (typeof m?.message_id !== "string" || (m.role !== "user" && m.role !== "assistant") || typeof m.text !== "string") return [];
+    return [
+      {
+        message_id: m.message_id,
+        role: m.role,
+        text: m.text,
+        standalone_question: str(m.standalone_question),
+        run_id: isRunId(m.run_id) ? m.run_id : null,
+        response_id: isResponseId(m.response_id) ? m.response_id : null,
+        created_at: str(m.created_at) ?? new Date(0).toISOString(),
+      },
+    ];
+  });
+  return { thread_id: body.thread_id, title: typeof body.title === "string" ? body.title : "", messages };
+}
+
+// ---------------------------------------------------------------------------------------------
+// AI status (GET /api/ai-status): whether model-written answers are available right now.
+
+export type AiStatus = { status: "ok" | "degraded" | "unavailable"; message: string | null };
+export const AI_STATUS_POLL_MS = 120_000;
+
+export async function fetchAiStatus(options: ApiOptions = {}): Promise<AiStatus | null> {
+  const body = (await get("/api/ai-status", options)) as Record<string, unknown> | null;
+  const s = body?.status;
+  if (s !== "ok" && s !== "degraded" && s !== "unavailable") return null;
+  return { status: s, message: str(body?.message) };
 }

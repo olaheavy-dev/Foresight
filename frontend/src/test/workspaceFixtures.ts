@@ -122,7 +122,7 @@ export const forecastChart = (placement: Placement = tab("details")): CashFlowFo
 
 const SIM_A = `sim_${"1b2c3d4e5f60718293a4b5c6"}`;
 const SIM_B = `sim_${"2c3d4e5f60718293a4b5c6d7"}`;
-const TRIP = 92_000;
+const TRIP = 30_000;
 const WEEKS = Array.from({ length: 13 }, (_, i) => addDays(AS_OF, 7 * (i + 1)));
 const weekly = (shift: number, from: string) =>
   WEEKS.map((d) => balanceOn(d) - (d >= from ? shift : 0));
