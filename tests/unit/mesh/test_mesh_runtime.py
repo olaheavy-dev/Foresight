@@ -272,6 +272,33 @@ def test_record_mode_takes_the_path_replay_takes(tmp_path: Path) -> None:
     assert three.value == one.value
 
 
+def test_cassette_keeps_live_latency_and_replay_reports_it(tmp_path: Path) -> None:
+    import json as _json
+
+    recorder = client(
+        ScriptedCompletions(ok()),
+        settings=settings(mesh_cassette_mode="record"),
+        cassettes=CassetteStore(tmp_path, live_run_sha="abc1234"),
+    )
+    live = recorder.complete(tier=ModelTier.FAST, messages=MSG)
+    path = next(tmp_path.glob("*.json"))
+    entry = _json.loads(path.read_text())
+    assert entry["response"]["latency_ms"] == live.latency_ms
+    assert entry["response"]["cost_estimate_usd"] == live.cost_estimate
+
+    entry["response"]["latency_ms"] = 4321  # as if the live call had taken 4.3 s
+    path.write_text(_json.dumps(entry))
+    player = MeshClient(settings=settings(mesh_cassette_mode="replay", mesh_api_key=""),
+                        cassettes=CassetteStore(tmp_path))  # fmt: skip
+    replayed = ask(player)
+    assert replayed.latency_ms == 4321  # type: ignore[attr-defined]
+    assert replayed.latency_measured is True  # type: ignore[attr-defined]
+
+    del entry["response"]["latency_ms"]  # recorded before latency was kept
+    path.write_text(_json.dumps(entry))
+    assert ask(player).latency_measured is False  # type: ignore[attr-defined]
+
+
 def test_replay_of_changed_request_is_a_cassette_miss(tmp_path: Path) -> None:
     player = MeshClient(
         settings=settings(mesh_cassette_mode="replay", mesh_api_key=""),

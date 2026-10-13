@@ -46,6 +46,8 @@ class Settings(BaseSettings):
     # below the per-question worst case, AI answers pause. Figures never reach users or logs.
     mesh_low_balance_usd: float = 2.00
     mesh_question_worst_case_usd: float = 0.30
+    # Project-wide cap on model spend per UTC day (backend/mesh/spend_guard.py); 0 disables it.
+    mesh_daily_budget_usd: float = 0.50
 
     database_url: str = ""
     # Baked into the image at build time (backend/Dockerfile). Deliberately a name that no

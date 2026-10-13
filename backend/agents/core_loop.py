@@ -27,7 +27,7 @@ from backend.agents.advice.verifier import verification_record, verify
 from backend.agents.advice.world import AdviceWorld, Finding, SpendRow
 from backend.agents.contracts import PAY_TODAY
 from backend.agents.forecaster import drivers, parse_scenario, to_engine_spec
-from backend.agents.runtime import NodeOutput, NodeSpec, RunContext
+from backend.agents.runtime import NodeOutput, NodeSpec, RunContext, concurrent_ms
 from backend.agents.state import ForesightState
 from backend.finance_core.simulate import ScenarioError
 from backend.finance_core.types import ForecastInputs, ScenarioModifier, ScenarioSpec
@@ -602,6 +602,7 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
         llm=llm,
         prompt_version=prompt,
         label=label,
+        model_ms=concurrent_ms([outcome.llm for _, _, outcome in checked], JUDGE_POOL),
     )
 
 

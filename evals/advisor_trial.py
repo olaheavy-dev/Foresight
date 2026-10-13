@@ -59,6 +59,8 @@ ARMS: dict[str, dict[str, str]] = {
     "A": {"reasoning": "anthropic/claude-sonnet-5.5", "verifier": "openai/gpt-6.1-sol"},
     "B": {"reasoning": "google/gemini-3.8-flash", "verifier": "openai/gpt-6.1-sol"},
     "C": {"reasoning": "openai/gpt-5.6-luna-pro", "verifier": "anthropic/claude-sonnet-5.5"},
+    # Owner-approved follow-up (13 Oct 2026): a ~20x cheaper judge, still a different provider.
+    "D": {"reasoning": "openai/gpt-5.6-luna-pro", "verifier": "anthropic/claude-haiku-5.5"},
 }
 FINDING = {
     "food.delivery": "fnd:category_spike:food.delivery",

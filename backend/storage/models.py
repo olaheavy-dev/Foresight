@@ -428,6 +428,9 @@ class AgentStep(Base):
     cost_estimate_usd: Mapped[float | None] = mapped_column(Float)  # usage × catalogue price
     llm_calls: Mapped[int] = mapped_column(Integer, server_default="0")
     latency_ms: Mapped[int] = mapped_column(Integer, server_default="0")
+    # Model wait on the step's critical path (concurrent judge calls overlap); None = no model
+    # call, or a replayed call without a recorded latency.
+    model_ms: Mapped[int | None] = mapped_column(Integer)
     attempt: Mapped[int] = mapped_column(Integer, server_default="1")
     cached: Mapped[bool] = mapped_column(Boolean, server_default="false")
     status: Mapped[str] = mapped_column(String(12))  # ok | retried | failed | skipped

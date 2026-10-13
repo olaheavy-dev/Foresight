@@ -240,7 +240,7 @@ class ForecastSummary(BaseModel):               # deterministic, persisted
 |---|---|
 | **Responsibility** | Propose a small number (1–3) of specific, feasible interventions that improve the forecast or goal outcome, each tied to the finding or forecast that triggered it. |
 | **Model tier** | `reasoning`. |
-| **Prompt intent** | "Here are the user's ranked findings, forecast risk, goals, buffer and the intervention types you may use. Propose at most 3 interventions. Each must name a concrete action on a specific merchant, category, obligation or date, cite the trigger evidence IDs, and state the *expected direction* of impact. Do not state impact amounts — they will be computed. If revising, address every point in the critique." |
+| **Prompt intent** | "Here are the user's ranked findings, forecast risk, goals, buffer and the intervention types you may use. Propose at most 2 interventions. Each must name a concrete action on a specific merchant, category, obligation or date, cite the trigger evidence IDs, and state the *expected direction* of impact. Do not state impact amounts — they will be computed. If revising, address every point in the critique." |
 | **Tools** | `list_findings`, `get_forecast_summary`, `get_goal`, `simulate` (called by the graph after the proposal to compute impact, not by the LLM), `intervention_catalogue` (allowed action types and their parameters) |
 
 ```python
@@ -504,12 +504,14 @@ stateDiagram-v2
     verify_deterministic --> decide: any block rule fails
     verify_judge --> decide
     decide --> persist_approved: APPROVE
-    decide --> revise: REJECT and revision_round < 2
-    decide --> withdraw: REJECT and revision_round = 2
+    decide --> revise: REJECT and revision_round < 2 and a round still fits
+    decide --> withdraw: REJECT and (revision_round = 2 or no time for a round)
     revise --> advise: critique appended, revision_round++
     persist_approved --> [*]
     withdraw --> [*]
 ```
+
+**Latency budget (owner rule, 13 Oct 2026).** A question has 60 s (docs/05 §6.4), and the deadline is not raised. The Advisor drafts at most two proposals a round (a shorter answer is a faster call), all of a round's judge calls run concurrently (`JUDGE_POOL`, no sequential waits), and a revision round starts only if it can finish: model wait so far + one round (`REVISION_ROUND_MS`, 25 s: an Advisor call and its judge calls) + composing the answer (`ANSWER_TAIL_MS`, 5 s) must fit in the 60 s. The model wait is the recorded latency of the calls (`AgentStep.model_ms`), not the wall clock, so a live run, a recording and its replay take the same path. Otherwise the drafts are withdrawn and the answer says no recommendation passed the checks. E-EFF (docs/09 §10f) measures whether the answers meet the latency targets.
 
 Decisions are made per proposal: in one round, some proposals can be approved while others are sent back for revision. Each pass persists a `VerificationResult` with `round` (1..3; revision_round is separately 0..2). A proposal withdrawn at round 3 (initial + 2 revisions) is stored with its full critique history and surfaced only in the audit trail. If *nothing* is approved, the response says plainly "No recommendation passed verification", together with the risk itself. That is an honest outcome, not a failure.
 
@@ -708,7 +710,7 @@ Test: freeze the same accepted ledger interpretations, forecast inputs and typed
 | Verifier judge | verifier tier: a different provider from the Advisor | Independence | model default* |
 | Digest headline | fast | ≤ 20 words | 0.3 |
 
-Model IDs are configuration (settings `MESH_MODEL_<TIER>` and `MESH_MODEL_<TIER>_FALLBACK`); each model's capabilities and price are data in `backend/mesh/models.yaml` (or the file named by `MESH_MODELS_FILE`), so switching a model needs no code change. Chosen from Mesh's catalogue, probed live on 13 Oct 2026; the reasoning and verifier tiers follow the owner's decision after the Advisor model trial (13 Oct 2026, `evals/results/20261013T2200Z_advisor_model_trial/`: GPT-5.6 Luna Pro matched Sonnet on revision success and grounding on 18 dev cases at about 37% lower cost per case; Gemini 3.8 Flash failed the schema). The reasoning tier also serves the Analyst's ranking and the Forecaster's multi-modifier parse:
+Model IDs are configuration (settings `MESH_MODEL_<TIER>` and `MESH_MODEL_<TIER>_FALLBACK`); each model's capabilities and price are data in `backend/mesh/models.yaml` (or the file named by `MESH_MODELS_FILE`), so switching a model needs no code change. Chosen from Mesh's catalogue, probed live on 13 Oct 2026; the reasoning and verifier tiers follow the owner's decision after the Advisor model trial (13 Oct 2026, `evals/results/20261013T2200Z_advisor_model_trial/`: GPT-5.6 Luna Pro matched Sonnet on revision success and grounding on 18 dev cases at about 37% lower cost per case; Gemini 3.8 Flash failed the schema). The reasoning tier also serves the Analyst's ranking and the Forecaster's multi-modifier parse. **Selection rule** (docs/00 §8): drop any model that fails its tier's accuracy gates; drop any model that breaks the end-to-end latency targets; of what is left, pick the cheapest, and choose the faster one when costs are within 10%. Applied 13 Oct 2026: for the judge, Haiku 5.5 failed the E-VER accuracy gate on the dev trial (52% repairs with json_schema; with tool calls one correct fix withdrawn), so Sonnet 5.5 stays; for the Advisor, Luna Pro is kept only if E-EFF shows advice answers within p50 ≤ 35 s and p95 ≤ 60 s:
 
 | Tier | Primary | Fallback |
 |---|---|---|

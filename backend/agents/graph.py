@@ -167,9 +167,9 @@ def build_graph(
         "verify",
         lambda s: (
             "revise"
-            if decide_after_verify(s) == "revise"
+            if decide_after_verify(s, ctx) == "revise"
             else "withdraw"
-            if decide_after_verify(s) == "withdraw"
+            if decide_after_verify(s, ctx) == "withdraw"
             else after_loop(s)
         ),
         ["revise", "withdraw", *targets],

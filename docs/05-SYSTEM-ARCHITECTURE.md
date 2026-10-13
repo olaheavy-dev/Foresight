@@ -582,6 +582,7 @@ Redaction runs inside `mesh_client.redact()` *and* at the call site, so a missed
 - CSV: max 10 MB, max 20k rows, UTF-8/UTF-16/Windows-1252 detection, formula-injection guard on export (`=`, `+`, `-`, `@` prefixes are escaped), no evaluation of cell content.
 - Chat input: max 2,000 characters, Unicode-normalised with hidden control characters removed (§4.2 stage 0). The LLM has no tools that mutate financial data; all mutations go through API endpoints that require explicit user action. The full prompt-injection design, covering chat **and** imported statement text, is §7.4a.
 - Rate limits per session on `/threads/*/messages` and `/scenarios` to cap Mesh spend.
+- At most 10 questions per profile per 10 minutes (owner decision, 13 Oct 2026), and a project-wide daily model budget, `MESH_DAILY_BUDGET_USD` (default $0.50): today's spend is the sum of `AgentStep.cost_estimate_usd` since UTC midnight across every profile; once it is reached, AI answers pause (`/api/ai-status` reports `unavailable` with the usual paused wording, live Mesh calls are refused) until the next UTC day. The figure is never shown or logged (`backend/mesh/spend_guard.py`).
 
 ### 7.4a Prompt-injection defence in depth (rev 7)
 

@@ -6,7 +6,9 @@
   `MESH_LOW_BALANCE_USD`, `unavailable` at or below the per-question worst case
   (`MESH_QUESTION_WORST_CASE_USD`);
 - `unavailable` at once while the circuit breaker is open, or after any call is refused for
-  spend (`note_spend_limit`), until the next balance check says otherwise.
+  spend (`note_spend_limit`), until the next balance check says otherwise;
+- `unavailable` once today's model spend reaches `MESH_DAILY_BUDGET_USD`
+  (`backend/mesh/spend_guard.py`), until the next UTC day.
 
 The balance figure never leaves this module: callers get the status word only, and nothing is
 logged. Users never see `low` (it maps to `ok`) and never see billing words.
@@ -33,9 +35,11 @@ class AiAvailability:
         worst_case_usd: float,
         ttl_seconds: float = CACHE_SECONDS,
         clock: Callable[[], float] = time.monotonic,
+        budget_used: Callable[[], bool] = lambda: False,
     ) -> None:
         self._fetch = fetch_available_usd
         self._breaker_open = breaker_open
+        self._budget_used = budget_used
         self._low = low_usd
         self._worst = worst_case_usd
         self._ttl = ttl_seconds
@@ -58,7 +62,7 @@ class AiAvailability:
         return "ok"
 
     def status(self) -> AiStatus:
-        if self._breaker_open():
+        if self._breaker_open() or self._budget_used():
             return "unavailable"
         with self._lock:
             now = self._clock()

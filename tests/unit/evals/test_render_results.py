@@ -76,11 +76,40 @@ def test_check_mode_detects_drift(tmp_path: Path) -> None:
     readme = tmp_path / "README.md"
     results.write_text(json.dumps(SUMMARY))
     readme.write_text(f"# x\n\n{START}\nstale\n{END}\n\nmore\n")
-    args = ["--results", str(results), "--readme", str(readme)]
+    core = tmp_path / "core-metrics.json"
+    args = ["--results", str(results), "--readme", str(readme), "--core-json", str(core)]
     assert main([*args, "--check"]) == 1
     assert main(args) == 0
     assert main([*args, "--check"]) == 0
     assert readme.read_text().endswith(f"{END}\n\nmore\n")
+    assert json.loads(core.read_text())["run_id"] == "evalrun_x"
+    core.write_text("{}")
+    assert main([*args, "--check"]) == 1  # /quality's copy drifted
+
+
+def test_core_metrics_come_first_with_tier_gates() -> None:
+    summary = {
+        **SUMMARY,
+        "gate_detail": {**SUMMARY["gate_detail"], "E-EFF": {"status": "fail"},
+                        "E-VER": {"status": "pass"}},
+        "targets": {"E-EFF": [{"id": "EFF-7", "label": "Advice p95", "value": 61.0,
+                               "target": "<= 60.0", "met": False}]},
+        "suites": {**SUMMARY["suites"], "efficiency": {
+            "by_tier": {"verifier": {"models": ["anthropic/claude-sonnet-5.5"],
+                                     "accuracy_gates": ["E-VER"], "cost_per_answer_usd": 0.004,
+                                     "call_latency_p50_s": 4.8, "call_latency_p95_s": 7.0}},
+            "by_answer_type": {"advice": {"answers": 9, "cost_mean_usd": 0.02,
+                                          "cost_p95_usd": 0.03, "latency_p50_s": 31.0,
+                                          "latency_p95_s": 61.0}},
+        }},
+    }  # fmt: skip
+    block = render(summary)
+    assert block.index("**Core metrics: cost · accuracy · latency**") < block.index("**Headline**")
+    assert (
+        "| verifier | `anthropic/claude-sonnet-5.5` | E-VER ✓ | $0.0040 | 4.8 s / 7.0 s |" in block
+    )
+    assert "| Advice answers | 9 | $0.0200 · $0.0300 | 31.0 s · 61.0 s |" in block
+    assert "EFF-7 <= 60.0 ✗" in block
 
 
 def test_missing_markers_raise() -> None:

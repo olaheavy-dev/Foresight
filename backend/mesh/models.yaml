@@ -26,8 +26,10 @@ models:
     {supports_temperature: true, supports_forced_tool_choice: true, structured_mode: json_schema, price_in: 0.25, price_out: 1.50}
   anthropic/claude-sonnet-5.5:
     {supports_temperature: false, supports_forced_tool_choice: false, structured_mode: json_schema, price_in: 2.00, price_out: 10.00}
+  # Judge trial 13 Oct 2026: under json_schema Haiku returned `{}` on about half of first attempts
+  # (a repair call each); tool calls with tool_choice "auto" are used instead.
   anthropic/claude-haiku-5.5:
-    {supports_temperature: false, supports_forced_tool_choice: false, structured_mode: json_schema, price_in: 0.10, price_out: 0.50}
+    {supports_temperature: false, supports_forced_tool_choice: false, structured_mode: tools, price_in: 0.10, price_out: 0.50}
   google/gemini-3.1-pro:
     {supports_temperature: true, supports_forced_tool_choice: true, structured_mode: tools, price_in: 2.00, price_out: 12.00}
   google/gemini-3.8-flash:

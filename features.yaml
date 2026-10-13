@@ -48,7 +48,7 @@ features:
     stage: 2
     title: Advisor and Verifier loop (advice checked before you see it)
     enabled: false
-    suites: [E-VER, E-GRD]
+    suites: [E-VER, E-GRD, E-EFF]
   audit_trail:
     stage: 2
     title: Evidence and audit trail for every recommendation
@@ -58,7 +58,7 @@ features:
     stage: 2
     title: AI Workspace — conversational analysis with generated answers
     enabled: false
-    suites: [E-ORC, E-SCN, E-UI, E-SEC]
+    suites: [E-ORC, E-SCN, E-UI, E-SEC, E-EFF]
 
   # Stage 3 — experiences, proactive delivery, goals
   briefing:

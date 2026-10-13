@@ -5,8 +5,9 @@ node that:
 
 - skips it when the run deadline has passed (the run becomes `partial`);
 - refuses model work once the run budget is used (docs/01 FR-60), with an audit event;
-- writes exactly one `AgentStep` for it: timing, status, model, tokens, cost (Mesh `usage` × the
-  price table, never model text), temperature sent ("model default" = None), templated label;
+- writes exactly one `AgentStep` for it: timing, model wait (`model_ms`), status, model, tokens,
+  cost (Mesh `usage` × the price table, never model text), temperature sent ("model default" =
+  None), templated label;
 - turns a Mesh failure into a recorded, degraded step (docs/06 §10.1), while any other exception
   fails the run loudly: no fabricated fallback numbers.
 """
@@ -56,6 +57,32 @@ class NodeOutput:
     prompt_version: str | None = None
     cached: bool = False
     error: str | None = None
+    # Model wait on the step's critical path when its calls overlapped (see `concurrent_ms`);
+    # None = the calls ran one after another, so their latencies add up.
+    model_ms: int | None = None
+
+
+def model_ms(results: Sequence[MeshResult]) -> int | None:
+    """Model wait of calls made one after another; None if any latency was not measured."""
+    if not results or any(not r.latency_measured for r in results):
+        return None
+    return sum(r.latency_ms for r in results)
+
+
+def concurrent_ms(groups: Sequence[Sequence[MeshResult]], workers: int) -> int | None:
+    """Model wait of call groups run on a pool of `workers` threads, each group's calls in turn:
+    groups start in order on the first free worker (as `ThreadPoolExecutor.map` does), and the
+    wait is when the busiest worker finishes."""
+    lanes = [0] * max(1, workers)
+    for group in groups:
+        if not group:
+            continue
+        ms = model_ms(group)
+        if ms is None:
+            return None
+        free = lanes.index(min(lanes))
+        lanes[free] += ms
+    return max(lanes) if any(groups) else None
 
 
 @dataclass
@@ -74,6 +101,9 @@ class RunContext:
     # Every call charged in this run, in order: a step stopped by the budget still records the
     # calls it made before the refusal (they were paid for).
     charged: list[MeshResult] = field(default_factory=list)
+    # Model wait so far on the run's critical path (sum of the steps' `model_ms`): the recorded
+    # latencies, so a time-based decision is the same live, in record mode and in replay.
+    waited_ms: int = 0
 
     def deadline_passed(self) -> bool:
         return self.clock() >= self.deadline_at
@@ -107,7 +137,7 @@ class NodeSpec:
     on_deadline: NodeFn | None = None
 
 
-def _usage(results: Sequence[MeshResult]) -> dict[str, Any]:
+def _usage(results: Sequence[MeshResult], overlapped_ms: int | None = None) -> dict[str, Any]:
     tokens_in = sum(r.usage.prompt_tokens for r in results)
     tokens_out = sum(r.usage.completion_tokens for r in results)
     costs = [r.cost_estimate for r in results]
@@ -123,6 +153,7 @@ def _usage(results: Sequence[MeshResult]) -> dict[str, Any]:
         "provider": "mesh" if last else None,
         "temperature": last.temperature if last else None,
         "attempt": max((r.attempts for r in results), default=1),
+        "model_ms": overlapped_ms if overlapped_ms is not None else model_ms(results),
     }
 
 
@@ -156,8 +187,9 @@ def write_step(
     out: NodeOutput,
     started: datetime,
 ) -> None:
-    usage = _usage(out.llm)
+    usage = _usage(out.llm, out.model_ms)
     with ctx.lock:
+        ctx.waited_ms += usage["model_ms"] or 0
         ctx.store.add_step(
             ctx.run_id,
             node=spec.name,

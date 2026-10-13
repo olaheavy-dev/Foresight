@@ -40,6 +40,7 @@ Judges reward self-evaluation "heavily" and penalise "a test set that doesn't ex
 | Audit completeness | `E-AUD` | unbroken evidence chains, recomputability | F | no |
 | Prompt injection | `E-SEC` | attack success rate (chat and imported data), canary leaks, false refusals, which layer stopped each attack | trust (#7), H | yes (or recorded) |
 | Follow-ups and answer cache | `E-CTX` | follow-up intent and slot accuracy, standalone-rewrite adequacy, cache hit rate, false cache hits | conversational, A | yes (or recorded) |
+| Cost and latency | `E-EFF` | cost per answer (mean, p95) and end-to-end latency (p50, p95) per answer type and per model tier, time to first progress step, from recorded live latencies | core metrics (owner, 13 Oct 2026), H | reuses E-UI's recorded answers |
 | Wording quality | `E-WRD` | human ratings (1–5) on five rubric dimensions, inter-rater agreement; an LLM judge only if it agrees with people (ρ ≥ 0.7) | trust, self-evaluation (#6) | optional (judge arm only) |
 | Ablation | `E-ABL` | each component's measured effect on its headline metric | evidence for all criteria | reuses the suites above |
 
@@ -739,6 +740,28 @@ Every other suite checks that text is grounded (no model-written numbers, real e
 - WRD-3 (optional, model judge): a judge prompt on the verifier tier scores the same 30 answers with the same rubric. It may be used to score larger sets **only if** its agreement with the mean human score reaches Spearman ρ ≥ 0.7 on every dimension it is used for; otherwise it is reported as "not validated" and never used. The judge's known bias toward model-written text is stated next to its numbers.
 
 **Cost.** Human rating: about 1–1.5 hours per rater. Model judge (optional): 30 calls, about $0.15. Runs once on the final build (EVL-14); results in `summary.json → suites.wording`, README row "Wording quality (human-rated)".
+
+## 10f. Suite `E-EFF`: cost and latency (owner decision 13 Oct 2026)
+
+Cost, accuracy and latency are the three core metrics; accuracy is every other suite's gates, and `E-EFF` measures the other two on the E-UI test questions answered through the real graph (the same 60 answers E-UI scores).
+
+**Measurement.** Every cassette stores the live call's wall time (`latency_ms`, retries included) and its cost estimate; a replayed call reports the recorded latency, so latency is only ever measured from real calls and nothing is recorded for timing alone. Each step stores its model wait (`AgentStep.model_ms`): the sum of its calls' latencies, or for the Verifier's concurrent judge calls the time the busiest worker was busy. An answer's end-to-end time is the local time measured in replay plus the model wait of every step, less the overlap of the two opening branches (Understand runs while the forecast is prefetched). Time to first step is until the first progress step is written (what the SSE stream shows first). Answers with a failed or unrecorded model step are counted and left out; a call recorded before latency was kept leaves latency "not measured". Network and server time outside Mesh calls are not included.
+
+**Breakdowns.** Per answer type: *advice* (the Advisor ran) and *simple* (everything else, including cache hits, refusals and clarifications). Per tier (fast, reasoning, verifier): models used, calls, per-call latency p50/p95, cost per call and per answer, and the suites whose gates are that tier's accuracy (fast: E-CTX, E-UI, E-SCN, E-CAT; reasoning: E-ORC, E-GRD; verifier: E-VER).
+
+**Targets (TARGETS, not results).**
+
+| ID | Metric | Target |
+|---|---|---|
+| EFF-1 | Mean cost per answer | ≤ $0.03 |
+| EFF-2 | Mean cost per advice answer | ≤ $0.05 |
+| EFF-3 | p95 cost per answer | ≤ $0.10 |
+| EFF-4 | Time to first progress step, p95 | ≤ 2 s |
+| EFF-5 | Simple answers, latency p50 | ≤ 10 s |
+| EFF-6 | Advice answers, latency p50 | ≤ 35 s |
+| EFF-7 | Advice answers, latency p95 | ≤ 60 s (the question deadline, not raised) |
+
+**Model selection rule** (docs/00 §8, docs/06 §13): drop any model that fails its tier's accuracy gates; drop any model that breaks the end-to-end latency targets; of what is left, pick the cheapest, and choose the faster one when costs are within 10%. A model change is accepted only with E-EFF and the tier's accuracy suites re-run on new recordings. The README's results block and /quality open with a "Core metrics: cost · accuracy · latency" table generated from this suite.
 
 ## 11. Suite `E-AUD`: audit completeness
 

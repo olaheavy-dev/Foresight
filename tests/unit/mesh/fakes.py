@@ -108,6 +108,7 @@ def settings(**overrides: Any) -> Settings:
         "mesh_model_reasoning_fallback": "google/gemini-3.1-pro",
         "mesh_model_verifier": "openai/gpt-6.1-sol",
         "mesh_model_verifier_fallback": "google/gemini-3.1-pro",
+        "mesh_daily_budget_usd": 0.0,  # the daily guard has its own tests (test_spend_guard.py)
     }
     base.update(overrides)
     return Settings(**base)

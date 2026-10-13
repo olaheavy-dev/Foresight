@@ -250,7 +250,9 @@ Scope note: the user has explicitly confirmed **nothing in the original brief is
 | Digest | Telegram Bot API + SMTP email | + push |
 | Auth | Single local user with a **workspace switcher**; signed session cookie; all queries workspace-scoped | Managed auth (Clerk/Auth0/Supabase); a `User` owns ≥ 1 `Workspace` |
 | Hosting | Owner's VPS (Docker Compose, Caddy, GHCR, Watchtower; `05` §12); Docker Compose also for judges' local runs | Separate managed services |
-| Observability | Every agent node writes `AgentStep` rows (model, tokens, latency, cost, inputs hash, output) + structured logs | + OpenTelemetry/Langfuse |
+| Observability | Every agent node writes `AgentStep` rows (model, tokens, latency, model wait, cost, inputs hash, output) + structured logs | + OpenTelemetry/Langfuse |
+
+**Core metrics and model selection (owner decision, 13 Oct 2026).** Cost, accuracy and latency are the three core metrics. Every model choice follows one rule: drop any model that fails its tier's accuracy gates; drop any model that breaks the end-to-end latency targets; of what is left, pick the cheapest, and choose the faster one when costs are within 10%. Accuracy is each tier's eval gates (docs/09 §10f lists them); cost and latency are measured by `E-EFF` from real calls (each recording stores the live call's latency). Targets: mean cost ≤ $0.03 per answer, ≤ $0.05 per advice answer, p95 ≤ $0.10; first progress step ≤ 2 s; simple answers p50 ≤ 10 s; advice answers p50 ≤ 35 s and p95 ≤ 60 s, inside the unchanged 60 s question deadline. A project-wide daily model budget (`MESH_DAILY_BUDGET_USD`, $0.50) pauses AI answers until the next UTC day once reached, and a profile may ask at most 10 questions per 10 minutes (docs/05 §7.4).
 
 ## 9. Visual direction (DECIDED — rev 6) — "Atelier light"
 

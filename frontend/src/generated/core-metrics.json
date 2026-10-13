@@ -1,0 +1,63 @@
+{
+  "run_id": "evalrun_20261013T144947Z_fa7026d",
+  "gate": "not run",
+  "tiers": [
+    {
+      "tier": "fast",
+      "models": [],
+      "accuracy_gates": {},
+      "accuracy_pass": false,
+      "cost_per_answer_usd": null,
+      "call_latency_p50_s": null,
+      "call_latency_p95_s": null
+    },
+    {
+      "tier": "reasoning",
+      "models": [],
+      "accuracy_gates": {},
+      "accuracy_pass": false,
+      "cost_per_answer_usd": null,
+      "call_latency_p50_s": null,
+      "call_latency_p95_s": null
+    },
+    {
+      "tier": "verifier",
+      "models": [],
+      "accuracy_gates": {},
+      "accuracy_pass": false,
+      "cost_per_answer_usd": null,
+      "call_latency_p50_s": null,
+      "call_latency_p95_s": null
+    }
+  ],
+  "answers": [
+    {
+      "type": "simple",
+      "label": "Simple answers",
+      "answers": null,
+      "cost_mean_usd": null,
+      "cost_p95_usd": null,
+      "latency_p50_s": null,
+      "latency_p95_s": null
+    },
+    {
+      "type": "advice",
+      "label": "Advice answers",
+      "answers": null,
+      "cost_mean_usd": null,
+      "cost_p95_usd": null,
+      "latency_p50_s": null,
+      "latency_p95_s": null
+    },
+    {
+      "type": "all",
+      "label": "All answers",
+      "answers": null,
+      "cost_mean_usd": null,
+      "cost_p95_usd": null,
+      "latency_p50_s": null,
+      "latency_p95_s": null
+    }
+  ],
+  "targets": []
+}

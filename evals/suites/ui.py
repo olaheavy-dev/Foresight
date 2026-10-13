@@ -11,7 +11,9 @@ paraphrases).
 
 from __future__ import annotations
 
+import time
 import uuid
+from datetime import datetime, timezone
 from typing import Any
 
 from backend.agents.runner import ask
@@ -30,6 +32,7 @@ from evals.assistant import (
 )
 from evals.authored import AUTHORED_DIR
 from evals.common import read_jsonl
+from evals.efficiency import CallLog, answer_profile
 from evals.metrics import r4
 from evals.suites import Target, target
 
@@ -87,7 +90,21 @@ def _expected_types(row: dict[str, Any]) -> set[str]:
     return types | set(exp.get("details") or [])
 
 
+_ANSWERED: dict[tuple[str, tuple[str, ...]], dict[str, Any] | None] = {}
+
+
+def composition(rows: list[dict[str, Any]], mesh: Any) -> dict[str, Any] | None:
+    """Whole answers to `rows`, scored; computed once per process and mode, since E-EFF reads the
+    cost and latency of the same answers (`answers`)."""
+    key = (eval_mode(), tuple(r["id"] for r in rows))
+    if key not in _ANSWERED:
+        _ANSWERED[key] = _composition(rows, mesh)
+    return _ANSWERED[key]
+
+
 def _composition(rows: list[dict[str, Any]], mesh: Any) -> dict[str, Any] | None:
+    mesh = CallLog(mesh)
+    answers: list[dict[str, Any]] = []
     with seeded_database() as factory:
         if factory is None:
             return None
@@ -104,10 +121,13 @@ def _composition(rows: list[dict[str, Any]], mesh: Any) -> dict[str, Any] | None
                 fresh_breaker(mesh)
                 thread = store.create_thread()
                 session.commit()
+                mesh.take()
+                started, tick = datetime.now(timezone.utc), time.perf_counter()
                 try:
                     out = ask(store, thread_id=thread.id, text=row["question"],
                               client_msg_id=uuid.uuid4().hex, mesh=mesh,
                               as_of=row["as_of"])  # fmt: skip
+                    wall_ms = int((time.perf_counter() - tick) * 1000)
                 except (CassetteMiss, LookupError):
                     session.rollback()
                     failed += 1
@@ -118,6 +138,9 @@ def _composition(rows: list[dict[str, Any]], mesh: Any) -> dict[str, Any] | None
                     failed += 1
                     continue
                 answered += 1
+                answers.append({"case": row["id"], "intent": row["intent"], **answer_profile(
+                    store, out.run_id, started=started, wall_ms=wall_ms, calls=mesh.take(),
+                    replayed=eval_mode() == "replay")})  # fmt: skip
                 try:
                     body = AgentResponse.model_validate(snapshot.body)
                     valid += 1
@@ -152,6 +175,7 @@ def _composition(rows: list[dict[str, Any]], mesh: Any) -> dict[str, Any] | None
             "ui9_tab_placement": _rate(placement_ok, valid),
             "ui10_skeleton": _rate(skeleton_ok, valid),
             "detail": detail,
+            "answers": answers,
         }
 
 
@@ -161,7 +185,7 @@ def run(fast: bool = False, cases: Any = None) -> dict[str, Any]:
         rows = rows[:8]
     mesh = eval_mesh()
     intents = _intent_scores(rows, mesh)
-    composed = _composition(rows, mesh)
+    composed = composition(rows, mesh)
     metrics: dict[str, Any] = {
         "mode": eval_mode(),
         "ui8_intent": intents,

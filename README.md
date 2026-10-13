@@ -76,6 +76,22 @@ Run `evalrun_20261013T144947Z_fa7026d` · commit `fa7026d` · 2026-10-13T14:49:4
 
 Reproduce: `make eval` (every deterministic suite) or `make eval-fast` (< 60 s). Full report: `evals/results/<run>/report.md`. LLM arms (hybrid categorisation, Verifier, orchestration) arrive with Stage 2 and show as —.
 
+**Core metrics: cost · accuracy · latency** (E-EFF gate: not run; latency from recorded live calls, docs/09 §10f)
+
+| Tier | Model | Accuracy gates | Cost per answer | Call latency p50 / p95 |
+|---|---|---|---|---|
+| fast | — | — | — | — / — |
+| reasoning | — | — | — | — / — |
+| verifier | — | — | — | — / — |
+
+| Answers | n | Cost mean · p95 | Latency p50 · p95 |
+|---|---|---|---|
+| Simple answers | — | — · — | — · — |
+| Advice answers | — | — · — | — · — |
+| All answers | — | — · — | — · — |
+
+Targets: —.
+
 **Headline**
 
 | Area | Metric | Dataset | Foresight | Best baseline | Target | Met |
