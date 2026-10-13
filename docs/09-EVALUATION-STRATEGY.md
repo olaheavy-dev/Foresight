@@ -731,11 +731,11 @@ Every other suite checks that text is grounded (no model-written numbers, real e
 | Actionable | Says what to do next, specifically, or says plainly that nothing checked fixes it and where to get help |
 | Tone | Calm and respectful; no blame, no moralising (betting and family support stay neutral) |
 
-**Raters.** At least two people rate all 30 answers independently and blind to each other (the owner plus one other person; if only the owner is available, the README says "single rater" and the agreement statistics below are not reported). Ratings are stored as `wording_ratings_<rater>.jsonl`.
+**Raters (updated 13 Oct 2026).** The owner plus a small focus group rate all 30 answers independently, each in their own random order, using an offline rating kit (`tools/wording_kit/index.html`: one self-contained page, no sign-up, nothing sent anywhere; it saves a ratings file the rater returns to the owner). Raters are recorded only as `R1…Rn`, with no names or other personal details; the answers are from the fictional personas only. Ratings are stored as `evals/datasets/authored/wording_ratings/R<n>.json`. If the group doesn't return ratings in time, the result is reported as "single rater (owner)" and no agreement figure is claimed.
 
 **Metrics.**
 - WRD-1: mean score per dimension and the share of answers scoring ≥ 4 (TARGET ≥ 80% on "Answers the question" and "Honest about uncertainty").
-- WRD-2: inter-rater agreement, quadratic-weighted Cohen's κ per dimension (reported; κ < 0.4 means the rubric needs rewording before any target is claimed).
+- WRD-2: inter-rater agreement per dimension, Krippendorff's α (ordinal) across all raters, with a bootstrap 95% CI over answers. α < 0.4 on a dimension means no target is claimed for it.
 - WRD-3 (optional, model judge): a judge prompt on the verifier tier scores the same 30 answers with the same rubric. It may be used to score larger sets **only if** its agreement with the mean human score reaches Spearman ρ ≥ 0.7 on every dimension it is used for; otherwise it is reported as "not validated" and never used. The judge's known bias toward model-written text is stated next to its numbers.
 
 **Cost.** Human rating: about 1–1.5 hours per rater. Model judge (optional): 30 calls, about $0.15. Runs once on the final build (EVL-14); results in `summary.json → suites.wording`, README row "Wording quality (human-rated)".
