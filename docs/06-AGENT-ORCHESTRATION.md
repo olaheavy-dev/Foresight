@@ -240,7 +240,7 @@ class ForecastSummary(BaseModel):               # deterministic, persisted
 |---|---|
 | **Responsibility** | Propose a small number (1–3) of specific, feasible interventions that improve the forecast or goal outcome, each tied to the finding or forecast that triggered it. |
 | **Model tier** | `reasoning`. |
-| **Prompt intent** | "Here are the user's ranked findings, forecast risk, goals, buffer and the intervention types you may use. Propose at most 2 interventions. Each must name a concrete action on a specific merchant, category, obligation or date, cite the trigger evidence IDs, and state the *expected direction* of impact. Do not state impact amounts — they will be computed. If revising, address every point in the critique." |
+| **Prompt intent** | "Here are the user's ranked findings, forecast risk, goals, buffer and the intervention types you may use. Propose at most 3 interventions. Each must name a concrete action on a specific merchant, category, obligation or date, cite the trigger evidence IDs, and state the *expected direction* of impact. Do not state impact amounts — they will be computed. If revising, address every point in the critique." |
 | **Tools** | `list_findings`, `get_forecast_summary`, `get_goal`, `simulate` (called by the graph after the proposal to compute impact, not by the LLM), `intervention_catalogue` (allowed action types and their parameters) |
 
 ```python
@@ -337,6 +337,8 @@ Rule versions are stored with each `RuleResult` (`rule_id@version`) so the audit
 | Scenario submitted in Lab | W3 Scenario simulation | Forecaster(parse → confirm → simulate) → [Advisor ⇄ Verifier if breach/goal miss] → compose |
 | Advice needed (from W1/W2/W3/W5) | W4 Recommendation loop | Advisor → quantify → Verifier → loop ≤ 2 revisions |
 | Digest schedule | W6 Scheduled digest | Freshness check → [W2 if stale] → select insight + action → render → deliver |
+
+**The Analyst ranks once per data change (owner decision, 13 Oct 2026).** Only W1 and W2 call the model to rank and word findings. A question's Analyst step reuses the findings ranked for the current `data_version` and makes no model call; if nothing is ranked for it yet (straight after seeding, or before the first refresh), it ranks the deterministic candidates by their deterministic salience, also with no model call. This keeps a reasoning-tier call (several seconds to tens of seconds) out of every spending, trend, subscription and advice question.
 
 ### 6.2 User question (W5): intent → route
 
@@ -511,7 +513,7 @@ stateDiagram-v2
     withdraw --> [*]
 ```
 
-**Latency budget (owner rule, 13 Oct 2026).** A question has 60 s (docs/05 §6.4), and the deadline is not raised. The Advisor drafts at most two proposals a round (a shorter answer is a faster call), all of a round's judge calls run concurrently (`JUDGE_POOL`, no sequential waits), and a revision round starts only if it can finish: model wait so far + one round (`REVISION_ROUND_MS`, 25 s: an Advisor call and its judge calls) + composing the answer (`ANSWER_TAIL_MS`, 5 s) must fit in the 60 s. The model wait is the recorded latency of the calls (`AgentStep.model_ms`), not the wall clock, so a live run, a recording and its replay take the same path. Otherwise the drafts are withdrawn and the answer says no recommendation passed the checks. E-EFF (docs/09 §10f) measures whether the answers meet the latency targets.
+**Latency budget (owner rule, 13 Oct 2026).** A question has 60 s (docs/05 §6.4), and the deadline is not raised. The Advisor drafts at most three proposals a round (two were tried while GPT-5.6 Luna Pro was on trial; with Sonnet the original three stay), all of a round's judge calls run concurrently (`JUDGE_POOL`, no sequential waits), and a revision round starts only if it can finish: model wait so far + one round (`REVISION_ROUND_MS`, 25 s: an Advisor call and its judge calls) + composing the answer (`ANSWER_TAIL_MS`, 5 s) must fit in the 60 s. The model wait is the recorded latency of the calls (`AgentStep.model_ms`), not the wall clock, so a live run, a recording and its replay take the same path. Otherwise the drafts are withdrawn and the answer says no recommendation passed the checks. E-EFF (docs/09 §10f) measures whether the answers meet the latency targets.
 
 Decisions are made per proposal: in one round, some proposals can be approved while others are sent back for revision. Each pass persists a `VerificationResult` with `round` (1..3; revision_round is separately 0..2). A proposal withdrawn at round 3 (initial + 2 revisions) is stored with its full critique history and surfaced only in the audit trail. If *nothing* is approved, the response says plainly "No recommendation passed verification", together with the risk itself. That is an honest outcome, not a failure.
 
@@ -704,18 +706,21 @@ Test: freeze the same accepted ledger interpretations, forecast inputs and typed
 | Coordinator Understand (standalone rewrite + intent) and block plan | fast | Short classification, high volume; one call does both rewrite and intent | 0 |
 | Ledger categorisation | fast | Batched, constrained taxonomy; quality measured in evals | 0 |
 | Ledger format/layout profile proposal (CSV and PDF) | fast → reasoning on second attempt | Rare (new bank formats only); output checked by reconciliation and/or user preview | 0 |
-| Analyst ranking & wording | reasoning | Judgement about salience; one call per refresh | 0 |
+| Analyst ranking & wording | reasoning | Judgement about salience; one call per refresh (questions reuse it, §6.1) | model default* |
 | Forecaster scenario parse | fast → reasoning if multi-modifier or low confidence | Most scenarios are simple | 0 |
-| Advisor | reasoning | Hardest judgement task | 0 |
-| Verifier judge | verifier tier: a different provider from the Advisor | Independence | model default* |
+| Advisor | reasoning | Hardest judgement task | model default* |
+| Verifier judge | verifier tier: a different provider from the Advisor | Independence | 0 |
 | Digest headline | fast | ≤ 20 words | 0.3 |
 
-Model IDs are configuration (settings `MESH_MODEL_<TIER>` and `MESH_MODEL_<TIER>_FALLBACK`); each model's capabilities and price are data in `backend/mesh/models.yaml` (or the file named by `MESH_MODELS_FILE`), so switching a model needs no code change. Chosen from Mesh's catalogue, probed live on 13 Oct 2026; the reasoning and verifier tiers follow the owner's decision after the Advisor model trial (13 Oct 2026, `evals/results/20261013T2200Z_advisor_model_trial/`: GPT-5.6 Luna Pro matched Sonnet on revision success and grounding on 18 dev cases at about 37% lower cost per case; Gemini 3.8 Flash failed the schema). The reasoning tier also serves the Analyst's ranking and the Forecaster's multi-modifier parse. **Selection rule** (docs/00 §8): drop any model that fails its tier's accuracy gates; drop any model that breaks the end-to-end latency targets; of what is left, pick the cheapest, and choose the faster one when costs are within 10%. Applied 13 Oct 2026: for the judge, Haiku 5.5 failed the E-VER accuracy gate on the dev trial (52% repairs with json_schema; with tool calls one correct fix withdrawn), so Sonnet 5.5 stays; for the Advisor, Luna Pro is kept only if E-EFF shows advice answers within p50 ≤ 35 s and p95 ≤ 60 s:
+Model IDs are configuration (settings `MESH_MODEL_<TIER>` and `MESH_MODEL_<TIER>_FALLBACK`); each model's capabilities and price are data in `backend/mesh/models.yaml` (or the file named by `MESH_MODELS_FILE`), so switching a model needs no code change. Chosen from Mesh's catalogue, probed live on 13 Oct 2026. The reasoning tier also serves the Analyst's ranking and the Forecaster's multi-modifier parse. **Selection rule** (docs/00 §8): drop any model that fails its tier's accuracy gates; drop any model that breaks the end-to-end latency targets; of what is left, pick the cheapest, and choose the faster one when costs are within 10%. Applied 13 Oct 2026 (owner decision; `evals/results/20261013T2200Z_advisor_model_trial/`, evals/CHANGELOG.md):
+
+- **Reasoning tier stays on Claude Sonnet 5.5.** GPT-5.6 Luna Pro matched it on the Advisor's 18 dev cases at about 37% lower cost, then failed on whole answers: *accuracy*, the Analyst's ranking broke its output check even after the repair (explanations over the 240-character limit), so 21 of the 60 E-UI answers lost their Analyst step; *latency*, Advisor calls took 17–57 s, putting advice answers at about 44 s median and 62 s at worst (targets 35 s and 60 s). Gemini 3.8 Flash failed the Advisor schema.
+- **Verifier judge stays on GPT-6.1 Sol** (a different provider from the Advisor). Haiku 5.5 failed the E-VER accuracy gate as judge on the dev trial (52% repairs with json_schema; with tool calls, one correct fix withdrawn).
 
 | Tier | Primary | Fallback |
 |---|---|---|
 | fast | `openai/gpt-6-luna` | `anthropic/claude-haiku-5.5` |
-| reasoning | `openai/gpt-5.6-luna-pro` | `google/gemini-3.1-pro` |
-| verifier | `anthropic/claude-sonnet-5.5` | `google/gemini-3.1-pro` |
+| reasoning | `anthropic/claude-sonnet-5.5` | `google/gemini-3.1-pro` |
+| verifier | `openai/gpt-6.1-sol` | `google/gemini-3.1-pro` |
 
 \* **Anthropic-tier temperatures are the model default.** Through Mesh, Anthropic models reject a `temperature` parameter and a forced `tool_choice`, so the client never sends either to them (`backend/mesh/models.yaml`); their structured output uses `json_schema`, or tool calls with `tool_choice: "auto"`. `google/gemini-3.1-pro` uses the tool-call path because its `json_schema` output didn't parse. Each `AgentStep` records the temperature actually sent, with `null` meaning "model default". The eval suite records which models produced each result, so swapping a model shows up as a measurable change.

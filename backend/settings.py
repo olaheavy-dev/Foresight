@@ -27,12 +27,12 @@ class Settings(BaseSettings):
     # judge uses a different provider from the Advisor so the check is independent.
     mesh_model_fast: str = "openai/gpt-6-luna"
     mesh_model_fast_fallback: str = "anthropic/claude-haiku-5.5"
-    # Owner decision 13 Oct 2026, after the Advisor model trial
-    # (evals/results/20261013T2200Z_advisor_model_trial):
-    # Advisor/Analyst on GPT-5.6 Luna Pro, the judge on Claude Sonnet 5.5 (different providers).
-    mesh_model_reasoning: str = "openai/gpt-5.6-luna-pro"
+    # Owner decision 13 Oct 2026 under the core-metrics rule (docs/00 §8): GPT-5.6 Luna Pro was
+    # tried on the reasoning tier and failed accuracy and latency (evals/CHANGELOG.md), so the
+    # Advisor/Analyst stay on Claude Sonnet 5.5 and the judge on GPT-6.1 Sol (another provider).
+    mesh_model_reasoning: str = "anthropic/claude-sonnet-5.5"
     mesh_model_reasoning_fallback: str = "google/gemini-3.1-pro"
-    mesh_model_verifier: str = "anthropic/claude-sonnet-5.5"
+    mesh_model_verifier: str = "openai/gpt-6.1-sol"
     mesh_model_verifier_fallback: str = "google/gemini-3.1-pro"
     # Per-call timeouts by tier (docs/05 §6.4); transport retries are ours, not the SDK's.
     mesh_timeout_fast_seconds: float = 8.0

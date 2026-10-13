@@ -254,8 +254,36 @@ def ledger_query_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
 # ------------------------------------------------------------------------------ analyst
 
 
+def stored_ranking(ws: WorkspaceContext) -> list[m.Finding]:
+    """The live findings ranked for the workspace's current data version, most salient first
+    (empty when nothing has been ranked since the data last changed)."""
+    version = int(ws.workspace.data_version or 0)
+    rows = [
+        f
+        for f in ws.all(m.Finding)
+        if f.status == "open" and f.salience is not None and f.data_version == version
+    ]
+    return sorted(rows, key=lambda f: (-(f.salience or 0), -f.score, f.id))
+
+
 def analyst_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
+    """Findings, ranked once per data change (owner decision, 13 Oct 2026; docs/06 §6.1).
+
+    A refresh (import, risk detection, the daily run) detects candidates and has the model rank
+    and word them. A question reuses that stored ranking and never calls the model; when nothing
+    is ranked for the current data (e.g. straight after seeding) it ranks deterministically."""
     ws = ctx.store.ctx
+    question = state.get("workflow") == "conversation"
+    if question:
+        stored = stored_ranking(ws)
+        if stored:
+            ordered = [f.id for f in stored]
+            return NodeOutput(
+                update={"findings": ordered},
+                output={"candidates": len(ordered), "ranked": ordered, "reused": True},
+                cached=True,
+                label="Using the latest spending analysis",
+            )
     home = ws.workspace.home_currency
     rows = ws.transactions(currency=home)
     latest = ws.latest_categorisations()
@@ -277,9 +305,13 @@ def analyst_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
             label="Analysing spending patterns",
         )
     calls: Sequence[MeshResult] = ()
-    if ctx.mesh is None:
+    if question or ctx.mesh is None:
         ranking = an.template_ranking(pairs)
-        label = "Analysing spending patterns (no AI ranking)"
+        label = (
+            "Analysing spending patterns"
+            if question
+            else "Analysing spending patterns (no AI ranking)"
+        )
     else:
         ranking = an.rank_with_model(
             pairs,

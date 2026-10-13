@@ -44,9 +44,7 @@ class InterventionProposal(BaseModel):
 class AdvisorOutput(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    # At most two drafts a round (owner rule, 13 Oct 2026): a shorter Advisor answer leaves room
-    # for a revision round inside the 60 s question deadline (docs/06 §13).
-    proposals: list[InterventionProposal] = Field(max_length=2)
+    proposals: list[InterventionProposal] = Field(max_length=3)
     critique_addressed: list[str] | None = None
 
 
