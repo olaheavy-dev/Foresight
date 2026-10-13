@@ -1,4 +1,6 @@
-"""What each configured model accepts through Mesh (observed in live probes, 13 Oct 2026).
+"""What each configured model accepts through Mesh, read from `models.yaml` (configuration).
+
+The observations behind the file's values (live probes, 13 Oct 2026):
 
 - Anthropic models (Bedrock upstream) reject `temperature` ("temperature is deprecated for this
   model") and a forced `tool_choice`; they accept `response_format` json_schema with temperature
@@ -17,6 +19,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 
+from backend.mesh import model_config
+
 StructuredMode = Literal["json_schema", "tools"]
 
 
@@ -27,32 +31,22 @@ class ModelCapabilities:
     structured_mode: StructuredMode
 
 
-_OPENAI = ModelCapabilities(
-    supports_temperature=True, supports_forced_tool_choice=True, structured_mode="json_schema"
-)
-_ANTHROPIC = ModelCapabilities(
-    supports_temperature=False, supports_forced_tool_choice=False, structured_mode="json_schema"
-)
-
-MODEL_CAPABILITIES: dict[str, ModelCapabilities] = {
-    "openai/gpt-6-luna": _OPENAI,
-    "openai/gpt-6.1-sol": _OPENAI,
-    "anthropic/claude-sonnet-5.5": _ANTHROPIC,
-    "anthropic/claude-haiku-5.5": _ANTHROPIC,
-    "google/gemini-3.1-pro": ModelCapabilities(
-        supports_temperature=True, supports_forced_tool_choice=True, structured_mode="tools"
-    ),
-    "google/gemini-3.8-flash": _OPENAI,
-}
-
-DEFAULT_CAPABILITIES = ModelCapabilities(
-    supports_temperature=False, supports_forced_tool_choice=False, structured_mode="json_schema"
-)
+def _caps(entry: dict[str, object]) -> ModelCapabilities:
+    mode = str(entry.get("structured_mode", "json_schema"))
+    return ModelCapabilities(
+        supports_temperature=bool(entry.get("supports_temperature", False)),
+        supports_forced_tool_choice=bool(entry.get("supports_forced_tool_choice", False)),
+        structured_mode="tools" if mode == "tools" else "json_schema",
+    )
 
 
 def capabilities_for(model: str) -> ModelCapabilities:
-    if model in MODEL_CAPABILITIES:
-        return MODEL_CAPABILITIES[model]
-    if model.startswith("anthropic/"):
-        return _ANTHROPIC
-    return DEFAULT_CAPABILITIES
+    """From `models.yaml`: the model's own entry, else its provider's default, else the
+    conservative default (no temperature, no forced tool choice, json_schema first)."""
+    config = model_config.load()
+    if model in config["models"]:
+        return _caps(config["models"][model])
+    provider = model.split("/", 1)[0] if "/" in model else ""
+    if provider in config["provider_defaults"]:
+        return _caps(config["provider_defaults"][provider])
+    return _caps(config["defaults"])
