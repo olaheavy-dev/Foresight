@@ -494,5 +494,5 @@ def test_a_card_that_narrows_but_does_not_close_the_gap_says_so_and_signposts_he
     text = note["segments"][0]["text"]
     tokens = [t.strip(".,;:()") for t in text.split()]
     hosts = {urlsplit(t if "://" in t else f"https://{t}").hostname for t in tokens if "." in t}
-    assert "moneyhelper.org.uk" in hosts or "www.moneyhelper.org.uk" in hosts, text
+    assert any(h == "moneyhelper.org.uk" or h == "www.moneyhelper.org.uk" for h in hosts), text
     assert check_skeleton(AgentResponse.model_validate(body).blocks) == []
