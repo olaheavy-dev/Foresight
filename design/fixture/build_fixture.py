@@ -12,12 +12,32 @@ import random
 from datetime import date, timedelta
 from pathlib import Path
 
+import holidays
+
 TODAY = date(2026, 10, 12)
 END = date(2027, 3, 31)
 START_BALANCE = 2184.50  # Monzo statement, as of Sun 11 Oct
 PAY = 4050.00
-PAYDAYS = [date(2026, 10, 28), date(2026, 11, 27), date(2026, 12, 18), date(2027, 1, 28),
-           date(2027, 2, 26), date(2027, 3, 26)]
+# Paydays follow the same rule as backend/finance_core/calendar.py (uk pack): paid on the 28th,
+# moved to the previous working day at weekends and England & Wales bank holidays; December is
+# paid early, on the 18th. Bank holidays come from python-holidays (GB, subdiv ENG), so Good
+# Friday 26 Mar 2027 moves March pay to Thu 25 Mar.
+PAY_DAY, DECEMBER_PAY_DAY = 28, 18
+BANK_HOLIDAYS = frozenset(holidays.country_holidays("GB", subdiv="ENG", years=[2026, 2027]))
+
+
+def previous_working_day(d: date) -> date:
+    while d.weekday() >= 5 or d in BANK_HOLIDAYS:
+        d -= timedelta(days=1)
+    return d
+
+
+def payday(year: int, month: int) -> date:
+    return previous_working_day(date(year, month, DECEMBER_PAY_DAY if month == 12 else PAY_DAY))
+
+
+PAYDAYS = [payday(y, m) for y, m in ((2026, 10), (2026, 11), (2026, 12),
+                                     (2027, 1), (2027, 2), (2027, 3))]
 RENT = 1250.00
 BUFFER = 500.00
 DAILY = None  # calibrated below so the calm baseline low before payday is £812
