@@ -49,7 +49,7 @@ function scriptFor(text) {
   const t = text.toLowerCase();
   if (/invest|shares|crypto/.test(t)) return fx.answerScript(fx.refusalResponse(), text).filter((e) => e.event !== "step" || e.data.agent === "coordinator");
   if (aiStatus === "unavailable") return [{ event: "error", data: { code: "ai_unavailable", retryable: true }, delayMs: 300 }];
-  if (/^which|trip\?$/.test(t)) return fx.clarifyScript();
+  if (/^which/.test(t) || /trip\?$/.test(t)) return fx.clarifyScript();
   if (/next month/.test(t)) return fx.errorScript();
   if (/degraded/.test(t)) return fx.answerScript(fx.degradedResponse(), text);
   if (/spend|eat|delivery/.test(t)) return fx.answerScript(fx.spendingResponse(), "Why is my eating-out spending higher than usual?");
