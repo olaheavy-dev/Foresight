@@ -104,7 +104,7 @@ def parse_amount(text: str, currency: str, decimal_sep: str = ".", group_sep: st
 
 
 def format_money(amount_minor: int, currency: str, grouping: str = "thousands") -> str:
-    """Render minor units with the currency's exponent, e.g. 218450 GBP → '£2,184.50'.
+    """Render minor units with the currency's exponent, e.g. 123456 GBP → '£1,234.56'.
 
     grouping: 'thousands' (1,234,567) or 'lakh' (12,34,567). Display only; never re-parsed.
     """
