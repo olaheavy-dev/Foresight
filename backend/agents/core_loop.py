@@ -260,6 +260,20 @@ def forecaster_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
         )
     modifiers = [modifier_json(mod) for mod in spec.modifiers]
     spec_dict: dict[str, Any] = {"name": spec.name, "modifiers": modifiers}
+    # docs/06 W3: a what-if that takes a pay cycle below the buffer asks the Advisor ⇄ Verifier
+    # loop for advice (the scenario workflow has no separate risk check).
+    breach = [
+        {
+            "kind": "scenario_buffer_breach",
+            "payday": c.payday.isoformat(),
+            "chance": c.chance_below_buffer,
+            "simulation_id": sim.calculation.id,
+        }
+        for c in sim.result.simulated.pay_cycles
+        if c.chance_below_buffer is not None and c.chance_below_buffer >= RISK_CHANCE
+    ]
+    if breach and state.get("workflow") == "scenario":
+        update["risk_flags"] = breach
     return NodeOutput(
         update={**update, "simulation_ids": [sim.calculation.id], "scenario_spec": spec_dict},
         output={

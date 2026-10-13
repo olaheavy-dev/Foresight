@@ -71,12 +71,16 @@ class RunContext:
     clock: Callable[[], datetime] = utcnow
     commit: bool = True  # commit after each step so SSE readers see progress
     lock: threading.RLock = field(default_factory=threading.RLock)
+    # Every call charged in this run, in order: a step stopped by the budget still records the
+    # calls it made before the refusal (they were paid for).
+    charged: list[MeshResult] = field(default_factory=list)
 
     def deadline_passed(self) -> bool:
         return self.clock() >= self.deadline_at
 
     def charge(self, results: Sequence[MeshResult]) -> None:
         self.budget.charge(len(results), sum(r.usage.total_tokens for r in results))
+        self.charged.extend(results)
 
     def before_llm(self) -> None:
         """Call before each model call; raises BudgetExceeded when the run's budget is used."""
@@ -191,6 +195,7 @@ def instrument(spec: NodeSpec, ctx: RunContext) -> Callable[[ForesightState], di
                 update={"partial": True},
             )
         else:
+            charged_before = len(ctx.charged)
             try:
                 out = spec.fn(state, ctx)
             except BudgetExceeded as exc:
@@ -204,6 +209,7 @@ def instrument(spec: NodeSpec, ctx: RunContext) -> Callable[[ForesightState], di
                         run_id=ctx.run_id,
                     )
                 out = NodeOutput(
+                    llm=tuple(ctx.charged[charged_before:]),
                     status="skipped",
                     label=f"{spec.label}: model budget for this run used",
                     output={"reason": "budget", "detail": str(exc)},
