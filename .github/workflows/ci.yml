@@ -45,6 +45,19 @@ jobs:
         run: python -m tools.check_feature_flags
       - name: README status section is generated, not typed
         run: python -m tools.render_readme_status --check
+      - name: Deterministic evals (docs/09 §16)
+        run: python -m evals.run --suite all --results-dir "$RUNNER_TEMP/evals"
+      - name: Eval regression gate against evals/results/baseline.json
+        run: python -m evals.regression --latest "$RUNNER_TEMP/evals/latest.json"
+      - name: README results section is generated from latest.json
+        run: python -m tools.render_results --check
+      - name: Keep this run's eval results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results
+          path: ${{ runner.temp }}/evals
+          if-no-files-found: ignore
 
   frontend:
     runs-on: ubuntu-24.04
