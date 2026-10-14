@@ -198,3 +198,14 @@ def test_period_range() -> None:
     assert period_range("November", today) == (date(2025, 11, 1), date(2025, 11, 30))
     assert period_range("last month", today) == (date(2026, 9, 1), date(2026, 9, 30))
     assert period_range("someday", today) == (None, None)
+
+
+def test_provenance_collects_every_recommendation_and_finding_ref() -> None:
+    from backend.agents.compose import block_refs
+
+    rec, fnd = "rec_01JAAAAAAAAAAAAAAAAAAAAAAA", "fnd_01JBBBBBBBBBBBBBBBBBBBBBBB"
+    blocks = [
+        {"type": "InterventionCard", "recommendation_id": rec, "evidence": [f"{fnd}#summary"]},
+        {"type": "Narrative", "segments": [{"ref": rec}, {"text": "rec_not_an_id"}]},
+    ]
+    assert block_refs(blocks) == ([rec], [fnd])
