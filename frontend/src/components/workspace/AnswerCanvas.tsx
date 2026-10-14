@@ -34,7 +34,8 @@ const TABS: { id: TabName; label: string }[] = [
 function placeOf(b: BlockResult): { area: "overview"; slot: Slot } | { area: "tab"; tab: TabName } {
   const p = b.ok ? b.block.placement : b.placement;
   if (!p) return { area: "tab", tab: "details" };
-  if (p.area === "overview") return p.slot === "evidence" ? { area: "tab", tab: "checked" } : { area: "overview", slot: p.slot };
+  if (p.area === "overview")
+    return p.slot === "evidence" ? { area: "tab", tab: "checked" } : { area: "overview", slot: p.slot };
   return { area: "tab", tab: p.tab };
 }
 
@@ -121,13 +122,23 @@ export function AnswerCanvas({
           ) : null}
           {todo ? (
             <div className="slot-todo">
-              {todo.ok && todo.block.type === "InterventionCard" ? <InterventionBlock block={todo.block} compact /> : <BlockResultView result={todo} />}
+              {todo.ok && todo.block.type === "InterventionCard" ? (
+                <InterventionBlock block={todo.block} compact />
+              ) : (
+                <BlockResultView result={todo} />
+              )}
             </div>
           ) : null}
         </div>
       ) : null}
       {!refusal ? (
-        <EvidenceLine line={response.evidence_line} steps={steps} locale={locale} timeZone={timeZone} showFullDetails={showChecked} />
+        <EvidenceLine
+          line={response.evidence_line}
+          steps={steps}
+          locale={locale}
+          timeZone={timeZone}
+          showFullDetails={showChecked}
+        />
       ) : null}
     </div>
   );
@@ -224,7 +235,11 @@ export function verdictText(response: ParsedResponse): string | null {
   const v = layoutAnswer(response).overview.verdict[0];
   if (!v?.ok) return null;
   const b: Block = v.block;
-  if (b.type === "Narrative") return b.title ?? b.segments.map((s) => (s.kind === "text" ? s.text : s.kind === "value" ? s.value.display : s.label)).join("");
+  if (b.type === "Narrative")
+    return (
+      b.title ??
+      b.segments.map((s) => (s.kind === "text" ? s.text : s.kind === "value" ? s.value.display : s.label)).join("")
+    );
   if (b.type === "ClarifyingQuestion") return b.question;
   return null;
 }

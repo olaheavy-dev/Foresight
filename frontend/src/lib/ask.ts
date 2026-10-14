@@ -393,7 +393,12 @@ export async function fetchThread(threadId: string, options: ApiOptions = {}): P
   if (!body || !isThreadId(body.thread_id) || !Array.isArray(body.messages)) return null;
   const messages = body.messages.flatMap((raw): ThreadMessage[] => {
     const m = raw as Record<string, unknown>;
-    if (typeof m?.message_id !== "string" || (m.role !== "user" && m.role !== "assistant") || typeof m.text !== "string") return [];
+    if (
+      typeof m?.message_id !== "string" ||
+      (m.role !== "user" && m.role !== "assistant") ||
+      typeof m.text !== "string"
+    )
+      return [];
     return [
       {
         message_id: m.message_id,

@@ -44,8 +44,7 @@ import {
 } from "@/ui-contracts/validate";
 
 // Browser: same origin (the Next proxy). Server: straight to the private backend container.
-const DEFAULT_BASE_URL =
-  typeof window === "undefined" ? (process.env.API_BASE_URL ?? "http://backend:8000") : "";
+const DEFAULT_BASE_URL = typeof window === "undefined" ? (process.env.API_BASE_URL ?? "http://backend:8000") : "";
 export const TIMEOUTS = { read: 3000, simulate: 10000, import: 30000 } as const;
 const RESPONSE_ID = /^rsp_[0-9A-HJKMNP-TV-Z]{26}$/;
 
@@ -101,10 +100,7 @@ export function fetchHealthz(options: ApiOptions = {}): Promise<Healthz | null> 
 }
 
 /** Upload one or more statement files (multipart, field `files`). */
-export function importStatements(
-  files: readonly Blob[],
-  options: ApiOptions = {},
-): Promise<ImportSummary | null> {
+export function importStatements(files: readonly Blob[], options: ApiOptions = {}): Promise<ImportSummary | null> {
   if (files.length === 0) return Promise.resolve(null);
   const form = new FormData();
   for (const file of files) form.append("files", file);
@@ -120,10 +116,7 @@ export function importStatements(
 }
 
 /** Choose the seeded demo profile (browser only: stores the session cookie). */
-export function startDemo(
-  persona: "P1" | "P2" = "P1",
-  options: ApiOptions = {},
-): Promise<ProfileView | null> {
+export function startDemo(persona: "P1" | "P2" = "P1", options: ApiOptions = {}): Promise<ProfileView | null> {
   const query = new URLSearchParams({ persona });
   return request(`/api/session/demo?${query}`, okAnd(isProfileView), options, {
     method: "POST",
@@ -175,32 +168,19 @@ export function fetchTransactions(
 }
 
 /** A stored calculation for the Evidence drawer. */
-export function fetchCalculation(
-  calcId: string,
-  options: ApiOptions = {},
-): Promise<CalculationView | null> {
+export function fetchCalculation(calcId: string, options: ApiOptions = {}): Promise<CalculationView | null> {
   if (!/^calc_[0-9A-Za-z]+$/.test(calcId)) return Promise.resolve(null);
-  return request(
-    `/api/calculations/${encodeURIComponent(calcId)}`,
-    okAnd(isCalculationView),
-    options,
-  );
+  return request(`/api/calculations/${encodeURIComponent(calcId)}`, okAnd(isCalculationView), options);
 }
 
 /** The current baseline forecast for a scope. */
-export function fetchForecast(
-  scope: Scope = "mine",
-  options: ApiOptions = {},
-): Promise<ForecastView | null> {
+export function fetchForecast(scope: Scope = "mine", options: ApiOptions = {}): Promise<ForecastView | null> {
   const query = new URLSearchParams({ scope });
   return request(`/api/forecast?${query}`, okAnd(isForecastView), options);
 }
 
 /** Run a what-if through the engine (deterministic, no AI). */
-export function simulate(
-  spec: ScenarioSpecPayload,
-  options: ApiOptions = {},
-): Promise<SimulationView | null> {
+export function simulate(spec: ScenarioSpecPayload, options: ApiOptions = {}): Promise<SimulationView | null> {
   return request(
     "/api/simulate",
     okAnd(isSimulationView),
@@ -267,10 +247,7 @@ export function parseAgentResponse(body: unknown): ParsedResponse | null {
 }
 
 /** A persisted answer snapshot (no agent or engine re-run, docs/08 §10). */
-export function fetchResponse(
-  responseId: string,
-  options: ApiOptions = {},
-): Promise<ParsedResponse | null> {
+export function fetchResponse(responseId: string, options: ApiOptions = {}): Promise<ParsedResponse | null> {
   if (!RESPONSE_ID.test(responseId)) return Promise.resolve(null);
   return request(
     `/api/responses/${encodeURIComponent(responseId)}`,

@@ -2,7 +2,9 @@
 import type { ForecastView } from "@/ui-contracts/types";
 
 const days = (from: string, n: number) =>
-  Array.from({ length: n }, (_, i) => new Date(Date.parse(`${from}T00:00:00Z`) + i * 86_400_000).toISOString().slice(0, 10));
+  Array.from({ length: n }, (_, i) =>
+    new Date(Date.parse(`${from}T00:00:00Z`) + i * 86_400_000).toISOString().slice(0, 10),
+  );
 
 const histDates = days("2026-01-01", 30);
 const fanDates = days("2026-01-30", 70);

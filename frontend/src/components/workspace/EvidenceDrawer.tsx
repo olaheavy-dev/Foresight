@@ -87,8 +87,12 @@ export function EvidenceDrawer({
   }, [calcId]);
 
   const blocks = (response?.blocks ?? []).flatMap((b) => (b.ok ? [b.block] : []));
-  const items: EvidenceItem[] = blocks.flatMap((b) => (b.type === "EvidencePanel" ? b.items.filter((i) => baseRef(i.ref) === base) : []));
-  const usedBy = blocks.filter((b) => blockRefs(b).some((r) => baseRef(r) === base)).map((b) => b.title ?? b.type.replace(/([a-z])([A-Z])/g, "$1 $2"));
+  const items: EvidenceItem[] = blocks.flatMap((b) =>
+    b.type === "EvidencePanel" ? b.items.filter((i) => baseRef(i.ref) === base) : [],
+  );
+  const usedBy = blocks
+    .filter((b) => blockRefs(b).some((r) => baseRef(r) === base))
+    .map((b) => b.title ?? b.type.replace(/([a-z])([A-Z])/g, "$1 $2"));
   const run = blocks.find((b) => b.type === "AgentExecutionTimeline" && b.run_id === base);
 
   return (
@@ -125,7 +129,9 @@ export function EvidenceDrawer({
                       <Icon name={c.passed ? "check" : "xcircle"} />
                       <span className="sr-only">{c.passed ? "Passed: " : "Failed: "}</span>
                       {c.name}
-                      {c.kind ? <span className="faint"> · {c.kind === "model" ? "model check" : "computed check"}</span> : null}
+                      {c.kind ? (
+                        <span className="faint"> · {c.kind === "model" ? "model check" : "computed check"}</span>
+                      ) : null}
                       {c.detail ? <span className="faint"> · {c.detail}</span> : null}
                     </li>
                   ))}
@@ -151,9 +157,7 @@ export function EvidenceDrawer({
           {run && run.type === "AgentExecutionTimeline" ? (
             <section className="drawer-sec">
               <h3>Agent run</h3>
-              <p>
-                {run.steps.length} logged steps. The full record is in “How it was checked”.
-              </p>
+              <p>{run.steps.length} logged steps. The full record is in “How it was checked”.</p>
             </section>
           ) : null}
 
@@ -176,7 +180,8 @@ export function EvidenceDrawer({
                   ) : null}
                   <dt>Computed</dt>
                   <dd>
-                    {formatLongDate(calc.created_at.slice(0, 10), locale)} {formatClock(calc.created_at, locale, timeZone)}
+                    {formatLongDate(calc.created_at.slice(0, 10), locale)}{" "}
+                    {formatClock(calc.created_at, locale, timeZone)}
                   </dd>
                   <dt>Engine</dt>
                   <dd>{calc.engine_version}</dd>
@@ -194,7 +199,9 @@ export function EvidenceDrawer({
                   <dd className="mono">{short(calc.result_hash)}</dd>
                 </dl>
               ) : null}
-              <p className="faint">The same inputs always give the same result: rerun it and the result hash matches.</p>
+              <p className="faint">
+                The same inputs always give the same result: rerun it and the result hash matches.
+              </p>
             </section>
           ) : null}
 

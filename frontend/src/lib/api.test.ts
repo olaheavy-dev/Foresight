@@ -362,9 +362,7 @@ describe("session and ledger", () => {
       ),
     ).toEqual(page);
     expect(calls[0].url).toBe("http://api.test/api/transactions?category=food.coffee&limit=50");
-    expect(
-      await fetchTransactions({}, { ...base, fetchImpl: respond({ ...page, total: -1 }) }),
-    ).toBeNull();
+    expect(await fetchTransactions({}, { ...base, fetchImpl: respond({ ...page, total: -1 }) })).toBeNull();
   });
 
   it("rejects a malformed calculation id without calling the API", async () => {

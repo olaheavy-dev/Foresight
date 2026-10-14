@@ -22,7 +22,9 @@ export function ShippingStatus({ features }: Props) {
           Shipped
         </h2>
         {shipped.length === 0 ? (
-          <p className="note">Nothing yet. Foresight is being built in stages, and each feature appears here once its evaluation passes.</p>
+          <p className="note">
+            Nothing yet. Foresight is being built in stages, and each feature appears here once its evaluation passes.
+          </p>
         ) : (
           <ul>
             {shipped.map((f) => (

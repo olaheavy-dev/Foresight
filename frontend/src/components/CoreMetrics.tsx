@@ -39,8 +39,8 @@ export function CoreMetrics({ data }: { data: CoreMetricsData }) {
         Core metrics: cost · accuracy · latency
       </h2>
       <p className="note">
-        From evaluation run {data.run_id ?? "—"}. Latency comes from recorded live model calls. Cost and latency
-        checks: {mark(data.gate)}.
+        From evaluation run {data.run_id ?? "—"}. Latency comes from recorded live model calls. Cost and latency checks:{" "}
+        {mark(data.gate)}.
       </p>
       <table className="data">
         <caption className="sr-only">Models by tier</caption>

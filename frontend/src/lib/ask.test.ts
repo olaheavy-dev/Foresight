@@ -41,13 +41,24 @@ describe("parseRunEvent", () => {
 
   it("accepts clarify options as AskActions or plain labels", () => {
     const fromBlock = parseRunEvent("clarify", JSON.stringify(clarifyScript()[2].data));
-    expect(fromBlock).toMatchObject({ type: "clarify", options: [{ label: "A one-off trip" }, { label: "A monthly getaway" }] });
-    const plain = parseRunEvent("clarify", JSON.stringify({ question: "Which?", options: ["This month", "Next month"] }));
-    expect(plain).toMatchObject({ options: [{ label: "This month", question: "This month" }, { label: "Next month" }] });
+    expect(fromBlock).toMatchObject({
+      type: "clarify",
+      options: [{ label: "A one-off trip" }, { label: "A monthly getaway" }],
+    });
+    const plain = parseRunEvent(
+      "clarify",
+      JSON.stringify({ question: "Which?", options: ["This month", "Next month"] }),
+    );
+    expect(plain).toMatchObject({
+      options: [{ label: "This month", question: "This month" }, { label: "Next month" }],
+    });
   });
 
   it("keeps a partial answer id on errors", () => {
-    const e = parseRunEvent("error", JSON.stringify({ code: "engine_timeout", retryable: true, partial_rsp_id: uid("rsp", 4) }));
+    const e = parseRunEvent(
+      "error",
+      JSON.stringify({ code: "engine_timeout", retryable: true, partial_rsp_id: uid("rsp", 4) }),
+    );
     expect(e).toMatchObject({ type: "error", retryable: true, partialResponseId: uid("rsp", 4) });
   });
 });

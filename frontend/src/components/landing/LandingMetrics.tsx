@@ -30,7 +30,9 @@ export function LandingMetrics({ forecast }: { forecast: ForecastView }) {
         <div>
           <p className="m-label">Chance below buffer</p>
           <p className="m-value serif num">{low?.chance_below_buffer ? low.chance_below_buffer.display : "—"}</p>
-          <p className="m-note">{low ? `Before payday on ${formatShortDate(low.payday, loc)}` : "Needs a buffer and a payday"}</p>
+          <p className="m-note">
+            {low ? `Before payday on ${formatShortDate(low.payday, loc)}` : "Needs a buffer and a payday"}
+          </p>
         </div>
       </div>
     </div>

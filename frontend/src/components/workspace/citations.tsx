@@ -51,7 +51,12 @@ export function Cite({ refId }: { refId: string | null | undefined }) {
   const n = number(refId);
   if (n === null) return null;
   return (
-    <button type="button" className="cite" onClick={() => open(baseRef(refId))} aria-label={`Source ${n}: open the evidence`}>
+    <button
+      type="button"
+      className="cite"
+      onClick={() => open(baseRef(refId))}
+      aria-label={`Source ${n}: open the evidence`}
+    >
       [{n}]
     </button>
   );
@@ -77,7 +82,9 @@ function valueRefs(v: Value | null | undefined): string[] {
 }
 
 function segmentRefs(segments: Segment[] | undefined): string[] {
-  return (segments ?? []).flatMap((s) => (s.kind === "value" ? valueRefs(s.value) : s.kind === "entity" ? [s.ref] : []));
+  return (segments ?? []).flatMap((s) =>
+    s.kind === "value" ? valueRefs(s.value) : s.kind === "entity" ? [s.ref] : [],
+  );
 }
 
 /** Every reference a block shows, in the order it shows them. */

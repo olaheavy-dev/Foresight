@@ -51,13 +51,17 @@ for (const theme of THEMES) {
       await shot(page, file("welcome", s, theme));
 
       await ask(page, "Can I afford a trip in December?");
-      await expect(page.getByRole("heading", { level: 1, name: /27 November payday/ })).toBeVisible({ timeout: 20_000 });
+      await expect(page.getByRole("heading", { level: 1, name: /27 November payday/ })).toBeVisible({
+        timeout: 20_000,
+      });
       await page.waitForTimeout(300);
       await shot(page, file("answer", s, theme));
 
       await open(page, s, theme);
       await ask(page, "Why is my spending up?");
-      await expect(page.getByRole("heading", { level: 1, name: "Eating out is up on a usual month." })).toBeVisible({ timeout: 20_000 });
+      await expect(page.getByRole("heading", { level: 1, name: "Eating out is up on a usual month." })).toBeVisible({
+        timeout: 20_000,
+      });
       await page.waitForTimeout(300);
       await shot(page, file("spending", s, theme));
     });
@@ -95,7 +99,10 @@ test("states at 1440 · light", async ({ page }) => {
   await shot(page, file("recommendation", s, "light"));
 
   await page.getByRole("tab", { name: "Overview" }).click();
-  await page.getByRole("button", { name: /^Source 1:/ }).first().click();
+  await page
+    .getByRole("button", { name: /^Source 1:/ })
+    .first()
+    .click();
   await expect(page.getByRole("dialog", { name: "Calculation" }).getByText("fc-test")).toBeVisible();
   await shot(page, file("evidence-drawer", s, "light"));
   await page.keyboard.press("Escape");

@@ -33,7 +33,9 @@ export function Unavailable({ what }: { what: string }) {
       <Icon name="info" />
       <div>
         <p className="ns-title">{what} isn’t available right now</p>
-        <p className="ns-detail">The Foresight service didn’t answer, or answered with data we couldn’t check. Try again shortly.</p>
+        <p className="ns-detail">
+          The Foresight service didn’t answer, or answered with data we couldn’t check. Try again shortly.
+        </p>
       </div>
     </div>
   );

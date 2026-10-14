@@ -1,5 +1,13 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { affordabilityResponse, answerScript, clarifyScript, errorScript, spendingResponse, uid, WORKSPACE_ID } from "@/test/workspaceFixtures";
+import {
+  affordabilityResponse,
+  answerScript,
+  clarifyScript,
+  errorScript,
+  spendingResponse,
+  uid,
+  WORKSPACE_ID,
+} from "@/test/workspaceFixtures";
 import { Workspace } from "./Workspace";
 
 class RO {
@@ -44,16 +52,31 @@ beforeEach(() => {
   aiStatus = "ok";
   serverThreads = [];
   fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
-    if (url === "/api/ai-status") return new Response(JSON.stringify({ status: aiStatus, message: null }), { status: 200 });
-    if (url === "/api/threads" && !init?.method) return new Response(JSON.stringify({ threads: serverThreads }), { status: 200 });
+    if (url === "/api/ai-status")
+      return new Response(JSON.stringify({ status: aiStatus, message: null }), { status: 200 });
+    if (url === "/api/threads" && !init?.method)
+      return new Response(JSON.stringify({ threads: serverThreads }), { status: 200 });
     if (url === `/api/threads/${uid("thr", 7)}`) {
       return new Response(
         JSON.stringify({
           thread_id: uid("thr", 7),
           title: "Trip in December",
           messages: [
-            { message_id: "m1", role: "user", text: "Can I afford a trip in December?", run_id: uid("run", 7), created_at: "2026-10-12T09:14:02Z" },
-            { message_id: "m2", role: "assistant", text: "", run_id: uid("run", 7), response_id: affordabilityResponse().response_id, created_at: "2026-10-12T09:14:08Z" },
+            {
+              message_id: "m1",
+              role: "user",
+              text: "Can I afford a trip in December?",
+              run_id: uid("run", 7),
+              created_at: "2026-10-12T09:14:02Z",
+            },
+            {
+              message_id: "m2",
+              role: "assistant",
+              text: "",
+              run_id: uid("run", 7),
+              response_id: affordabilityResponse().response_id,
+              created_at: "2026-10-12T09:14:08Z",
+            },
           ],
         }),
         { status: 200 },
@@ -61,7 +84,8 @@ beforeEach(() => {
     }
     if (url === "/api/threads") return new Response(JSON.stringify({ thread_id: THREAD }), { status: 201 });
     if (url.endsWith("/messages")) return new Response(JSON.stringify({ run_id: RUN }), { status: 202 });
-    if (url.startsWith("/api/responses/")) return new Response(JSON.stringify(affordabilityResponse()), { status: 200 });
+    if (url.startsWith("/api/responses/"))
+      return new Response(JSON.stringify(affordabilityResponse()), { status: 200 });
     return new Response("{}", { status: 404 });
   });
   vi.stubGlobal("fetch", fetchMock);
@@ -97,7 +121,10 @@ describe("AI Workspace", () => {
     const es = FakeEventSource.all[0];
     expect(es.url).toBe(`/api/runs/${RUN}/events`);
     const [, init] = fetchMock.mock.calls.find((c) => String(c[0]).endsWith("/messages"))!;
-    expect(JSON.parse(init.body)).toMatchObject({ text: "Can I afford a trip in December?", client_msg_id: expect.any(String) });
+    expect(JSON.parse(init.body)).toMatchObject({
+      text: "Can I afford a trip in December?",
+      client_msg_id: expect.any(String),
+    });
 
     const script = answerScript(affordabilityResponse(), "Can I afford a one-off trip in December?");
     act(() => es.play(script, 0, 6));
@@ -106,7 +133,9 @@ describe("AI Workspace", () => {
     expect(screen.getAllByText(/Checking: Can I afford a one-off trip in December\?/).length).toBeGreaterThan(0);
 
     act(() => es.play(script, 6));
-    expect(await screen.findByRole("heading", { level: 1, name: /pay for it after your 27 November payday/ })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { level: 1, name: /pay for it after your 27 November payday/ }),
+    ).toBeInTheDocument();
     expect(es.readyState).toBe(2);
     // Follow-up chips come from the answer's ask actions.
     expect(screen.getByRole("button", { name: "What if it costs more?" })).toBeEnabled();
@@ -199,7 +228,9 @@ describe("AI status", () => {
   it("unavailable: says so above the input, offers what still works, keeps the input enabled", async () => {
     aiStatus = "unavailable";
     render(<Workspace {...props} />);
-    expect(await screen.findAllByText("AI answers are paused right now. Your forecast and numbers still work.")).not.toHaveLength(0);
+    expect(
+      await screen.findAllByText("AI answers are paused right now. Your forecast and numbers still work."),
+    ).not.toHaveLength(0);
     const still = screen.getByRole("list", { name: "What still works" });
     expect(still).toHaveTextContent("See your forecast");
     expect(screen.getByRole("link", { name: /Try a what-if/ })).toHaveAttribute("href", "/lab");

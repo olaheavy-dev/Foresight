@@ -84,18 +84,16 @@ describe("validate", () => {
   it("accepts a valid block and tolerates added optional fields by default", () => {
     expect(validateBlock(narrative)).toEqual([]);
     expect(validateBlock({ ...narrative, added_later: true })).toEqual([]);
-    expect(
-      validateBlock({ ...narrative, added_later: true }, { allowUnknownProperties: false }),
-    ).toEqual([{ path: "added_later", message: "unknown property" }]);
+    expect(validateBlock({ ...narrative, added_later: true }, { allowUnknownProperties: false })).toEqual([
+      { path: "added_later", message: "unknown property" },
+    ]);
   });
 
   it("reports unknown block types, bad refs, bad placements and wrong types", () => {
     expect(validateBlock({ ...narrative, type: "PieChart" })[0].message).toMatch(/unknown type/);
     expect(validateBlock({ ...narrative, evidence: ["calc_nope"] })[0].path).toBe("evidence.0");
     expect(validateBlock({ ...narrative, evidence: [`calc_${U}#result.total`] })).toEqual([]);
-    expect(
-      validateBlock({ ...narrative, placement: { area: "tab", tab: "overview" } }),
-    ).not.toEqual([]);
+    expect(validateBlock({ ...narrative, placement: { area: "tab", tab: "overview" } })).not.toEqual([]);
     expect(validateBlock({ ...narrative, segments: "Fine" })).toEqual([
       { path: "segments", message: "expected array, got string" },
     ]);

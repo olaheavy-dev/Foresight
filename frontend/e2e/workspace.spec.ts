@@ -79,7 +79,10 @@ test("an affordability answer streams its checks, then shows the answer skeleton
 test("a citation opens the Evidence drawer with the stored calculation", async ({ page }) => {
   await ask(page, "Can I afford a trip in December?");
   await expect(page.getByRole("heading", { level: 1, name: /27 November payday/ })).toBeVisible({ timeout: 15_000 });
-  await page.getByRole("button", { name: /^Source 1:/ }).first().click();
+  await page
+    .getByRole("button", { name: /^Source 1:/ })
+    .first()
+    .click();
   const drawer = page.getByRole("dialog", { name: "Calculation" });
   await expect(drawer).toBeVisible();
   await expect(drawer.getByText("Stored calculation")).toBeVisible();
@@ -93,7 +96,9 @@ test("a citation opens the Evidence drawer with the stored calculation", async (
 
 test("a spending answer uses the same frame and hides the empty Recommendation tab", async ({ page }) => {
   await ask(page, "Why is my spending up?");
-  await expect(page.getByRole("heading", { level: 1, name: "Eating out is up on a usual month." })).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByRole("heading", { level: 1, name: "Eating out is up on a usual month." })).toBeVisible({
+    timeout: 15_000,
+  });
   await expect(page.getByRole("tablist", { name: "Analysis sections" }).getByRole("tab")).toHaveText([
     "Overview",
     "Details",
@@ -125,7 +130,9 @@ test("an engine failure is said plainly, with no figures and a retry", async ({ 
 
 test("out-of-scope requests get a polite scope statement", async ({ page }) => {
   await ask(page, "Which shares should I invest in?");
-  await expect(page.getByRole("heading", { level: 1, name: "I can’t recommend investments." })).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByRole("heading", { level: 1, name: "I can’t recommend investments." })).toBeVisible({
+    timeout: 15_000,
+  });
   await expect(page.getByRole("tablist")).toHaveCount(0);
 });
 
@@ -134,7 +141,9 @@ test("the top-bar ask box opens the Workspace with the question already asked", 
   await page.goto("/home");
   await page.getByRole("searchbox", { name: "Ask Foresight about your finances" }).fill("Why is my spending up?");
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("heading", { level: 1, name: "Eating out is up on a usual month." })).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole("heading", { level: 1, name: "Eating out is up on a usual month." })).toBeVisible({
+    timeout: 20_000,
+  });
   await expect(page).not.toHaveURL(/[?&]q=/);
 });
 
@@ -173,15 +182,22 @@ test("a degraded AI status is a quiet note only", async ({ page }) => {
   await expect(page.getByRole("list", { name: "Start with a question" })).toBeVisible();
 });
 
-test("conversations from an earlier session are listed from the server and reopen from their snapshots", async ({ page, context }) => {
+test("conversations from an earlier session are listed from the server and reopen from their snapshots", async ({
+  page,
+  context,
+}) => {
   await ask(page, "Can I afford a trip in December?");
   await expect(page.getByRole("heading", { level: 1, name: /27 November payday/ })).toBeVisible({ timeout: 15_000 });
   // A new session: nothing in this browser's storage, only what the server stored.
   await page.evaluate(() => sessionStorage.clear());
   await page.goto("/workspace");
   const convo = page.getByRole("region", { name: "Conversation" });
-  if (await convo.getByRole("button", { name: /Conversation/ }).isVisible()) await convo.getByRole("button", { name: /Conversation/ }).click();
-  await convo.getByRole("button", { name: /Can I afford a trip in December\?/ }).first().click();
+  if (await convo.getByRole("button", { name: /Conversation/ }).isVisible())
+    await convo.getByRole("button", { name: /Conversation/ }).click();
+  await convo
+    .getByRole("button", { name: /Can I afford a trip in December\?/ })
+    .first()
+    .click();
   await expect(page.getByRole("heading", { level: 1, name: /27 November payday/ })).toBeVisible({ timeout: 15_000 });
   void context;
 });

@@ -100,7 +100,13 @@ export function EvidenceLine({
   const times = steps.map((s) => s.at).filter((t): t is string => Boolean(t));
   return (
     <div className="evidence">
-      <button type="button" className="evidence-toggle" aria-expanded={open} aria-controls={id} onClick={() => setOpen((o) => !o)}>
+      <button
+        type="button"
+        className="evidence-toggle"
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => setOpen((o) => !o)}
+      >
         <Icon name="checkcircle" className="ok" />
         <span className="ev-t">{evidenceText(line, steps)}</span>
         <span className="go">

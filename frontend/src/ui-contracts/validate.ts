@@ -163,10 +163,7 @@ const placementSchema = (defs.Narrative.properties as Record<string, Schema>).pl
 
 /** Validate one hydrated block, so an invalid block renders BlockError instead of failing the
  * whole answer (§6 Step 3, §9). */
-export function validateBlock(
-  value: unknown,
-  opts: ValidateOptions = { allowUnknownProperties: true },
-): SchemaError[] {
+export function validateBlock(value: unknown, opts: ValidateOptions = { allowUnknownProperties: true }): SchemaError[] {
   return check(blockSchema, value, "", opts);
 }
 
