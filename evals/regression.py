@@ -104,7 +104,7 @@ def compare(latest: dict[str, Any], baseline: dict[str, Any]) -> list[str]:
         for t in b_targets:
             tid = str(t["id"])
             if t.get("met") is not None and l_met.get(tid) is None:
-                if tid not in l_met and fast:
+                if fast:  # the fast subset skips slow measurements; the full run must measure them
                     continue
                 problems.append(f"{sid} {tid} is no longer measured (was measured in the baseline)")
 

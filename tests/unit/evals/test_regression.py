@@ -152,3 +152,24 @@ def test_a_target_that_stops_being_measured_fails_the_gate() -> None:
     problems = compare(summary(None), summary(True))
     assert any("VER-1 is no longer measured" in p for p in problems)
     assert not any("VER-1" in p for p in compare(summary(True), summary(True)))
+
+
+def test_the_fast_subset_may_leave_a_target_unmeasured() -> None:
+    from evals.regression import compare
+
+    def summary(met: bool | None, *, fast: bool) -> dict[str, object]:
+        return {
+            "fast": fast,
+            "suites_run": ["E-VER"],
+            "gates": {"E-VER": "pass"},
+            "targets": {"E-VER": [{"id": "VER-1", "met": met}]},
+            "suites": {},
+        }
+
+    assert not any(
+        "VER-1" in p for p in compare(summary(None, fast=True), summary(True, fast=False))
+    )
+    assert any(
+        "VER-1 is no longer measured" in p
+        for p in compare(summary(None, fast=False), summary(True, fast=False))
+    )

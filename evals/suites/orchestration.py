@@ -447,7 +447,7 @@ def _egress(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult) -
         except EgressBlocked:
             failed = True
         result.assertions["other_host_fails_the_run"] = failed and any(
-            b.startswith("example.org") for b in blocked
+            b.rpartition(":")[0] == "example.org" for b in blocked
         )
 
 
