@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:42:18+00:00",
+  "recorded_at": "2026-10-14T15:43:59+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "390d900ea2d356fa4213543bd82a6b642f591f1535e3000289c8561e91a377e1",
   "response": {
     "content": "{\"standalone_question\":\"What stocks should I invest in?\",\"intent\":\"smalltalk_or_out_of_scope\",\"slots\":{},\"needs_forecast\":false,\"needs_advice\":true,\"confidence\":0.99,\"out_of_scope\":true,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdc8pQJBqgBEW5nRdow91bRmUy0d",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002663,
+    "latency_ms": 498,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHBBSFW0DNFVGFR3CTB6SY",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 142,

@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T18:46:18+00:00",
+  "recorded_at": "2026-10-14T15:44:42+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -52,8 +52,10 @@
   "request_hash": "8626a63a3afbe2a935e20caf9bad443b6c0ce7e8d99253057069efc45f5d42af",
   "response": {
     "content": "{\"verdict\":\"Here are your Deliveroo payments.\",\"key_numbers\":[],\"main_visual\":\"TransactionTable\"}",
-    "mesh_response_id": "chatcmpl-EYbns3hODgIZUGJRHB4SrmsPbIw0l",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0001037,
+    "latency_ms": 471,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHCP3QBYNBF32QGJ15RWA9",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 67,

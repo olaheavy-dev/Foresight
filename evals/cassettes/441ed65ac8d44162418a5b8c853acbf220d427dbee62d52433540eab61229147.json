@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:29:48+00:00",
+  "recorded_at": "2026-10-14T15:43:40+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "441ed65ac8d44162418a5b8c853acbf220d427dbee62d52433540eab61229147",
   "response": {
     "content": "{\"standalone_question\":\"List payments over \u00a3100 this month.\",\"intent\":\"transaction_lookup\",\"slots\":{\"period\":\"this_month\",\"min_amount_minor\":10000},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdQ1AVgSsbCxHtt5GfocHPw2hBHt",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002899,
+    "latency_ms": 441,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHAS4RW7JKCK5CKGMX7Z5E",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 189,

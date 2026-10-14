@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:29:12+00:00",
+  "recorded_at": "2026-10-14T15:43:42+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "9cb26e811a72fb507d760b5850b9a573f8ad6f8ebfd7c492a234032a579f7518",
   "response": {
     "content": "{\"standalone_question\":\"Am I on track for my emergency fund?\",\"intent\":\"goal_status\",\"slots\":{\"goal\":\"emergency_fund\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.96,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdPS3FuuR2K2Rk7dCRc3blp8Esyw",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002766,
+    "latency_ms": 506,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHAVM7DN2FW7AS8WM8XFPD",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 162,

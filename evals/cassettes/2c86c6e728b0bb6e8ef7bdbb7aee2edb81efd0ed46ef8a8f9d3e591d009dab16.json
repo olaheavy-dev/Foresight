@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:40:21+00:00",
+  "recorded_at": "2026-10-14T15:43:37+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "2c86c6e728b0bb6e8ef7bdbb7aee2edb81efd0ed46ef8a8f9d3e591d009dab16",
   "response": {
     "content": "{\"standalone_question\":\"Why is food delivery up this month?\",\"intent\":\"trend_or_change\",\"slots\":{\"category_key\":\"food.delivery\",\"period\":\"this_month\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdaF6qtFRApvnW6OEfrnNActp9Go",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002625,
+    "latency_ms": 518,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHAP2F1RFPD70TFFKZ19S1",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 134,

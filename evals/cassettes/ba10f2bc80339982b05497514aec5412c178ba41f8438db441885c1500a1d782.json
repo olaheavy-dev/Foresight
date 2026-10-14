@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T18:42:57+00:00",
+  "recorded_at": "2026-10-14T15:44:27+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -52,8 +52,10 @@
   "request_hash": "ba10f2bc80339982b05497514aec5412c178ba41f8438db441885c1500a1d782",
   "response": {
     "content": "{\"verdict\":\"Your projected low balance over the forecast is {{R5}} on {{R6}}. These figures don\u2019t include your emergency-fund target, so they can\u2019t confirm whether you\u2019re on track to reach it.\",\"key_numbers\":[\"R5\",\"R6\",\"R1\"],\"main_visual\":\"FinancialMetricGroup\"}",
-    "mesh_response_id": "chatcmpl-EYbkbLtIO18ioD8YVKpExzHCii2wD",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002011,
+    "latency_ms": 423,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHC7F0VTXHJSKSVD6NXE9C",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 261,

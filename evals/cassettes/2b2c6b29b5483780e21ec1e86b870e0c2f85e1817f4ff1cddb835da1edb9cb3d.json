@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:41:37+00:00",
+  "recorded_at": "2026-10-14T15:43:51+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "2b2c6b29b5483780e21ec1e86b870e0c2f85e1817f4ff1cddb835da1edb9cb3d",
   "response": {
     "content": "{\"standalone_question\":\"What happens if I pay \u00a31,200 for a holiday on 6 November 2026?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":120000,\"date\":\"2026-11-06\",\"purpose\":\"holiday\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdbS784aQBwHeSkjUuZMQxeekGjQ",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002723,
+    "latency_ms": 497,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHB49D0MVR7DEKWM3G4ZFJ",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 152,

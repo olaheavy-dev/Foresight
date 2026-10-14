@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:41:16+00:00",
+  "recorded_at": "2026-10-14T15:43:48+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "a8ee9eacfaff81e8cdd7138cc84fda0fe2867e6ce8030427b917a1fda0a2d8ed",
   "response": {
     "content": "{\"standalone_question\":\"Can you file my tax return?\",\"intent\":\"smalltalk_or_out_of_scope\",\"slots\":{},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":true,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdb8P6VBnFqvagi9Rq40XGneVIJv",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002484,
+    "latency_ms": 459,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHB1CMHEF0Q1CSJH0QK6NX",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 106,

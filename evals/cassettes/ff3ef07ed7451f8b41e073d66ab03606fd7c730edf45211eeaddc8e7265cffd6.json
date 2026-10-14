@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:42:15+00:00",
+  "recorded_at": "2026-10-14T15:43:59+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "ff3ef07ed7451f8b41e073d66ab03606fd7c730edf45211eeaddc8e7265cffd6",
   "response": {
     "content": "{\"standalone_question\":\"Explain the \u00a3604 figure.\",\"intent\":\"explain_recommendation\",\"slots\":{\"amount_minor\":60400,\"subject\":\"number\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.9,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdc4QTx3gNjHEJuMSJzcCF45nbRX",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002733,
+    "latency_ms": 510,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHBB94HHWB3NMBMDT2AD9P",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 156,

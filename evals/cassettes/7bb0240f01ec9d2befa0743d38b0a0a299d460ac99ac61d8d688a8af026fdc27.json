@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:41:02+00:00",
+  "recorded_at": "2026-10-14T15:43:46+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "7bb0240f01ec9d2befa0743d38b0a0a299d460ac99ac61d8d688a8af026fdc27",
   "response": {
     "content": "{\"standalone_question\":\"Give me a plan to get through October.\",\"intent\":\"advice_request\",\"slots\":{\"period\":\"2026-10\"},\"needs_forecast\":true,\"needs_advice\":true,\"confidence\":0.87,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdaspA4ofHge5W7CVlYmMIvKj0D0",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0003595,
+    "latency_ms": 429,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHAZ34RQ3QFKW9604XYQQ8",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 328,

@@ -1,22 +1,22 @@
 {
   "durations_s": {
-    "E-ANOM": 0.81,
-    "E-AUD": 8.64,
-    "E-CAT": 0.43,
-    "E-CTX": 0.55,
+    "E-ANOM": 0.87,
+    "E-AUD": 8.53,
+    "E-CAT": 0.44,
+    "E-CTX": 1.09,
     "E-EFF": 0.0,
-    "E-FC": 10.18,
-    "E-GRD": 6.55,
-    "E-INC": 0.82,
-    "E-ING": 0.72,
-    "E-LOC": 0.32,
-    "E-ORC": 32.5,
-    "E-REC": 0.42,
-    "E-SCN": 0.24,
-    "E-SEC": 0.27,
-    "E-SIM": 15.71,
-    "E-UI": 33.68,
-    "E-VER": 16.39
+    "E-FC": 10.43,
+    "E-GRD": 6.77,
+    "E-INC": 0.86,
+    "E-ING": 0.89,
+    "E-LOC": 0.35,
+    "E-ORC": 36.14,
+    "E-REC": 0.43,
+    "E-SCN": 0.65,
+    "E-SEC": 0.34,
+    "E-SIM": 16.04,
+    "E-UI": 34.52,
+    "E-VER": 16.95
   },
   "engine_version": "fc-1.3.0",
   "errors": {},
@@ -68,13 +68,9 @@
     },
     "E-EFF": {
       "failed": [],
-      "rule": "docs/09 targets (4 measured)",
+      "rule": "docs/09 targets (7 measured)",
       "status": "pass",
-      "unmeasured": [
-        "EFF-5",
-        "EFF-6",
-        "EFF-7"
-      ]
+      "unmeasured": []
     },
     "E-FC": {
       "failed": [],
@@ -181,7 +177,7 @@
   },
   "generator_version": "gen-1.1.0",
   "git_dirty": false,
-  "git_sha": "c3f6e0c7d9573d6e44dac8decd128364b15a5eb4",
+  "git_sha": "4a6b8f1c88b0d1a5a05bf073ab8938b16d939e3f",
   "holdout_version": null,
   "home_currency_primary": "GBP",
   "layout_set_version": null,
@@ -200,7 +196,7 @@
     "null = not run. Gates: a suite that did not run is 'fail'; see gate_detail.rule."
   ],
   "prompt_versions": {},
-  "run_id": "evalrun_20261014T152046Z_c3f6e0c",
+  "run_id": "evalrun_20261014T155025Z_4a6b8f1",
   "schema_version": "1.1",
   "seeds": [
     1729
@@ -358,7 +354,7 @@
         "model_calls_per_cache_hit_after_understand": 0,
         "model_calls_per_cache_miss": 1,
         "recorded_tokens_total": 447216,
-        "replay_seconds": 0.55
+        "replay_seconds": 1.09
       },
       "followup_turns_scored": 45,
       "mode": "replay",
@@ -1111,38 +1107,38 @@
           "count": 13,
           "degraded_left_out": 0,
           "first_step_p95_s": 0.02,
-          "latency_estimated_p50_s": 21.52,
-          "latency_estimated_p95_s": 44.42,
-          "latency_measured": 0,
-          "latency_p50_s": null,
-          "latency_p50_s_measured_only": null,
-          "latency_p95_s": null
+          "latency_estimated_p50_s": 19.07,
+          "latency_estimated_p95_s": 41.86,
+          "latency_measured": 13,
+          "latency_p50_s": 19.07,
+          "latency_p50_s_measured_only": 19.07,
+          "latency_p95_s": 41.86
         },
         "all": {
-          "cost_mean_usd": 0.00992,
+          "cost_mean_usd": 0.00993,
           "cost_p95_usd": 0.06753,
           "count": 60,
           "degraded_left_out": 0,
           "first_step_p95_s": 0.02,
-          "latency_estimated_p50_s": 6.34,
-          "latency_estimated_p95_s": 37.65,
-          "latency_measured": 3,
-          "latency_p50_s": null,
-          "latency_p50_s_measured_only": 0.03,
-          "latency_p95_s": null
+          "latency_estimated_p50_s": 3.41,
+          "latency_estimated_p95_s": 35.02,
+          "latency_measured": 60,
+          "latency_p50_s": 3.41,
+          "latency_p50_s_measured_only": 3.41,
+          "latency_p95_s": 35.02
         },
         "simple": {
-          "cost_mean_usd": 0.0006,
+          "cost_mean_usd": 0.00061,
           "cost_p95_usd": 0.00063,
           "count": 47,
           "degraded_left_out": 0,
           "first_step_p95_s": 0.02,
-          "latency_estimated_p50_s": 6.31,
-          "latency_estimated_p95_s": 10.48,
-          "latency_measured": 3,
-          "latency_p50_s": null,
-          "latency_p50_s_measured_only": 0.03,
-          "latency_p95_s": null
+          "latency_estimated_p50_s": 2.21,
+          "latency_estimated_p95_s": 7.31,
+          "latency_measured": 47,
+          "latency_p50_s": 2.21,
+          "latency_p50_s_measured_only": 2.21,
+          "latency_p95_s": 7.31
         }
       },
       "by_tier": {
@@ -1153,12 +1149,12 @@
             "E-SCN",
             "E-CAT"
           ],
-          "call_latency_p50_s": 3.11,
-          "call_latency_p95_s": 7.32,
+          "call_latency_p50_s": 0.5,
+          "call_latency_p95_s": 4.5,
           "calls": 95,
           "cost_per_answer_usd": 0.00038,
           "cost_per_call_usd": 0.00024,
-          "latency_measured": 24,
+          "latency_measured": 95,
           "models": [
             "gpt-6-luna",
             "openai/gpt-6-luna"
@@ -1169,12 +1165,12 @@
             "E-ORC",
             "E-GRD"
           ],
-          "call_latency_p50_s": 10.79,
-          "call_latency_p95_s": 12.56,
+          "call_latency_p50_s": 10.75,
+          "call_latency_p95_s": 12.55,
           "calls": 25,
-          "cost_per_answer_usd": 0.00931,
-          "cost_per_call_usd": 0.02234,
-          "latency_measured": 24,
+          "cost_per_answer_usd": 0.00932,
+          "cost_per_call_usd": 0.02237,
+          "latency_measured": 25,
           "models": [
             "anthropic/claude-sonnet-5.5"
           ]
@@ -1585,18 +1581,18 @@
     },
     "orchestration": {
       "agent_coverage": {
-        "advisor": 19,
+        "advisor": 20,
         "analyst": 9,
-        "coordinator": 26,
+        "coordinator": 27,
         "forecaster": 16,
         "ledger": 5,
-        "verifier": 18
+        "verifier": 19
       },
       "by_status": {
         "not_measured": 2,
-        "pass": 28
+        "pass": 29
       },
-      "case_count": 30,
+      "case_count": 31,
       "case_pass_rate_measured": 1.0,
       "distinctness": {
         "prompt_versions_per_agent": {
@@ -1626,7 +1622,7 @@
         "tool_calls_outside_allow_list": []
       },
       "mode": "replay",
-      "seconds": 32.5
+      "seconds": 36.1
     },
     "recurring": {
       "council_tax_months_exact": true,
@@ -2084,7 +2080,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 0.03",
-        "value": 0.00992
+        "value": 0.00993
       },
       {
         "dataset": "13 advice answers",
@@ -2117,28 +2113,28 @@
         "dataset": "47 simple answers",
         "id": "EFF-5",
         "label": "Simple answer latency p50 (s)",
-        "met": null,
+        "met": true,
         "stage1": false,
         "target": "<= 10.0",
-        "value": null
+        "value": 2.21
       },
       {
         "dataset": "13 advice answers",
         "id": "EFF-6",
         "label": "Advice answer latency p50 (s)",
-        "met": null,
+        "met": true,
         "stage1": false,
         "target": "<= 35.0",
-        "value": null
+        "value": 19.07
       },
       {
         "dataset": "13 advice answers",
         "id": "EFF-7",
         "label": "Advice answer latency p95 (s)",
-        "met": null,
+        "met": true,
         "stage1": false,
         "target": "<= 60.0",
-        "value": null
+        "value": 41.86
       }
     ],
     "E-FC": [
@@ -2468,7 +2464,7 @@
     ],
     "E-ORC": [
       {
-        "dataset": "30 cases",
+        "dataset": "31 cases",
         "gated": false,
         "id": "ORC-pass",
         "label": "Case pass rate (all 30; not recorded or not built count as unmet)",
@@ -2476,10 +2472,10 @@
         "not_gated_because": "includes cases for features of later stages not built yet",
         "stage1": true,
         "target": ">= 1.0",
-        "value": 0.9333
+        "value": 0.9355
       },
       {
-        "dataset": "28 cases",
+        "dataset": "29 cases",
         "id": "ORC-pass-built",
         "label": "Case pass rate (cases whose feature is built; not recorded counts as unmet)",
         "met": true,
@@ -2488,7 +2484,7 @@
         "value": 1.0
       },
       {
-        "dataset": "28 cases",
+        "dataset": "29 cases",
         "id": "ORC-pass-measured",
         "label": "Case pass rate (cases that ran)",
         "met": true,
@@ -2771,5 +2767,5 @@
       }
     ]
   },
-  "timestamp_utc": "2026-10-14T15:20:46Z"
+  "timestamp_utc": "2026-10-14T15:50:25Z"
 }

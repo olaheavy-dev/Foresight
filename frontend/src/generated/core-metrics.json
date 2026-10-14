@@ -1,5 +1,5 @@
 {
-  "run_id": "evalrun_20261014T152046Z_c3f6e0c",
+  "run_id": "evalrun_20261014T155025Z_4a6b8f1",
   "gate": "pass",
   "tiers": [
     {
@@ -16,8 +16,8 @@
       },
       "accuracy_pass": false,
       "cost_per_answer_usd": 0.00038,
-      "call_latency_p50_s": 3.11,
-      "call_latency_p95_s": 7.32
+      "call_latency_p50_s": 0.5,
+      "call_latency_p95_s": 4.5
     },
     {
       "tier": "reasoning",
@@ -29,9 +29,9 @@
         "E-GRD": "pass"
       },
       "accuracy_pass": true,
-      "cost_per_answer_usd": 0.00931,
-      "call_latency_p50_s": 10.79,
-      "call_latency_p95_s": 12.56
+      "cost_per_answer_usd": 0.00932,
+      "call_latency_p50_s": 10.75,
+      "call_latency_p95_s": 12.55
     },
     {
       "tier": "verifier",
@@ -52,12 +52,12 @@
       "type": "simple",
       "label": "Simple answers",
       "count": 47,
-      "cost_mean_usd": 0.0006,
+      "cost_mean_usd": 0.00061,
       "cost_p95_usd": 0.00063,
-      "latency_p50_s": null,
-      "latency_p95_s": null,
-      "latency_estimated_p50_s": 6.31,
-      "latency_estimated_p95_s": 10.48
+      "latency_p50_s": 2.21,
+      "latency_p95_s": 7.31,
+      "latency_estimated_p50_s": 2.21,
+      "latency_estimated_p95_s": 7.31
     },
     {
       "type": "advice",
@@ -65,28 +65,28 @@
       "count": 13,
       "cost_mean_usd": 0.04361,
       "cost_p95_usd": 0.08247,
-      "latency_p50_s": null,
-      "latency_p95_s": null,
-      "latency_estimated_p50_s": 21.52,
-      "latency_estimated_p95_s": 44.42
+      "latency_p50_s": 19.07,
+      "latency_p95_s": 41.86,
+      "latency_estimated_p50_s": 19.07,
+      "latency_estimated_p95_s": 41.86
     },
     {
       "type": "all",
       "label": "All answers",
       "count": 60,
-      "cost_mean_usd": 0.00992,
+      "cost_mean_usd": 0.00993,
       "cost_p95_usd": 0.06753,
-      "latency_p50_s": null,
-      "latency_p95_s": null,
-      "latency_estimated_p50_s": 6.34,
-      "latency_estimated_p95_s": 37.65
+      "latency_p50_s": 3.41,
+      "latency_p95_s": 35.02,
+      "latency_estimated_p50_s": 3.41,
+      "latency_estimated_p95_s": 35.02
     }
   ],
   "targets": [
     {
       "id": "EFF-1",
       "label": "Mean cost per answer (USD)",
-      "value": 0.00992,
+      "value": 0.00993,
       "target": "<= 0.03",
       "met": true
     },
@@ -114,23 +114,23 @@
     {
       "id": "EFF-5",
       "label": "Simple answer latency p50 (s)",
-      "value": null,
+      "value": 2.21,
       "target": "<= 10.0",
-      "met": null
+      "met": true
     },
     {
       "id": "EFF-6",
       "label": "Advice answer latency p50 (s)",
-      "value": null,
+      "value": 19.07,
       "target": "<= 35.0",
-      "met": null
+      "met": true
     },
     {
       "id": "EFF-7",
       "label": "Advice answer latency p95 (s)",
-      "value": null,
+      "value": 41.86,
       "target": "<= 60.0",
-      "met": null
+      "met": true
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T18:42:29+00:00",
+  "recorded_at": "2026-10-14T15:44:25+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -52,8 +52,10 @@
   "request_hash": "3bd07ad3238e1a99618af2206f330132d404f0846148459717fce25fb1be768f",
   "response": {
     "content": "{\"verdict\":\"I can't identify your last rent payment from the available details.\",\"key_numbers\":[],\"main_visual\":\"TransactionTable\"}",
-    "mesh_response_id": "chatcmpl-EYbkBZ3V0HBZBrXHN8QCNvTJF9PXr",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0001153,
+    "latency_ms": 428,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHC5BJRG34XXBGFYY5CV45",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 90,

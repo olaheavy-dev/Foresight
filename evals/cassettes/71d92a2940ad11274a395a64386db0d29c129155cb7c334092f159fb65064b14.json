@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:28:06+00:00",
+  "recorded_at": "2026-10-14T15:43:44+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "71d92a2940ad11274a395a64386db0d29c129155cb7c334092f159fb65064b14",
   "response": {
     "content": "{\"standalone_question\":\"Will I get through to payday?\",\"intent\":\"risk_check\",\"slots\":{\"window\":\"to_next_payday\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdOOxu0ipapTJy9VzcGeN7jI4OB6",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002464,
+    "latency_ms": 498,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHAX2Z09858T63EZS2FC4T",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 102,

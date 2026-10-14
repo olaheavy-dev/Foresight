@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:28:54+00:00",
+  "recorded_at": "2026-10-14T15:43:32+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "4bd339fdd95956921975ec9c6e06cc8d5bf7e0c8b4fcf2731b9ab3eefc3bcfec",
   "response": {
     "content": "{\"standalone_question\":\"What if I lose my job for two months?\",\"intent\":\"scenario\",\"slots\":{\"modifier\":\"income_change_pct\",\"pct\":-100,\"months\":2},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.96,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdP8iYJlBXI36UqBG4YrLje8JUHH",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0003337,
+    "latency_ms": 502,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHAHSDZNSM4WPCD4JTJCMR",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 276,

@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:42:02+00:00",
+  "recorded_at": "2026-10-14T15:43:57+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "9c8b109d836acba45b53bc4afc40cbfce3e429bfbe50cf1a710a9ccdcf1db5f8",
   "response": {
     "content": "{\"standalone_question\":\"How do I keep above my safety buffer?\",\"intent\":\"advice_request\",\"slots\":{},\"needs_forecast\":true,\"needs_advice\":true,\"confidence\":0.91,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdbs0SEBopDlTClq9Y5BunbiFBCq",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.000287,
+    "latency_ms": 502,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHB9S9SANZW35HMW9X1WST",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 183,

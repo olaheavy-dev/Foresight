@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:42:21+00:00",
+  "recorded_at": "2026-10-14T15:44:00+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "5e1b3a8b00cab134a9bca9e59e8c1bc419337635e703542b8a3d018f82f9f85b",
   "response": {
     "content": "{\"standalone_question\":\"Is my spending up compared to normal?\",\"intent\":\"trend_or_change\",\"slots\":{},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.94,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdcBEUq2AE6UjCizLvmSSztLj8bY",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002565,
+    "latency_ms": 497,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHBCSHP6WZBQH379QS69TB",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 122,

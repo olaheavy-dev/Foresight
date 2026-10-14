@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:33:27+00:00",
+  "recorded_at": "2026-10-14T15:44:00+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "a48b057031b8de53ff8af19d271ca8ce51da4d4ccd3087f81a54fd2a099baf3c",
   "response": {
     "content": "{\"standalone_question\":\"What happens if my rent rises to \u00a31,300 in February?\",\"intent\":\"scenario\",\"slots\":{\"amount_minor\":130000,\"date\":\"2027-02-01\",\"purpose\":\"rent\",\"modifier\":\"recurring_change\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.96,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdTW7gW352bB4IXovH5ITAEzqcUq",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.000359,
+    "latency_ms": 505,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHBC9FPB8GGP97HV132TKV",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 326,

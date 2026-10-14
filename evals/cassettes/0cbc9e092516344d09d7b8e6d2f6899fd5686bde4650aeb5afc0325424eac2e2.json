@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:41:33+00:00",
+  "recorded_at": "2026-10-14T15:43:51+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "0cbc9e092516344d09d7b8e6d2f6899fd5686bde4650aeb5afc0325424eac2e2",
   "response": {
     "content": "{\"standalone_question\":\"Can I swing an 800 quid trip early November?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":80000,\"purpose\":\"trip\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.84,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdbP0iRvCGKRFoxtvzaoNdNh1c7c",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002767,
+    "latency_ms": 510,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHB3TC5XQCEQVM1FR4CTZG",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 162,

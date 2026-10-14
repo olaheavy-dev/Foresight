@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:41:41+00:00",
+  "recorded_at": "2026-10-14T15:43:52+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "bb577785763420dd7b14b3746cc8ae00581a846f2114b68c3fb10491e58c6d75",
   "response": {
     "content": "{\"standalone_question\":\"What if my salary comes 10 days late?\",\"intent\":\"scenario\",\"slots\":{\"modifier\":\"income_delay\",\"days\":10},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdbVugqLRlqt2Z8EiFfa3F1EuvPV",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002741,
+    "latency_ms": 501,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHB4SEW50JVZ1Q7V67N7RA",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 157,

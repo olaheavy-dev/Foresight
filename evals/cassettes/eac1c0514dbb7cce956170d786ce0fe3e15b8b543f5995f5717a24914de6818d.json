@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:41:56+00:00",
+  "recorded_at": "2026-10-14T15:43:56+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "eac1c0514dbb7cce956170d786ce0fe3e15b8b543f5995f5717a24914de6818d",
   "response": {
     "content": "{\"standalone_question\":\"Am I going to be okay before payday?\",\"intent\":\"risk_check\",\"slots\":{\"window\":\"to_next_payday\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdblopms69Sy8Ybp3MR4qSCZVvfS",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002655,
+    "latency_ms": 500,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHB8P8P0AWJTAAWT985FA9",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 140,

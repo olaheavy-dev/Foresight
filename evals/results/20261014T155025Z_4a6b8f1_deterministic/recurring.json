@@ -1,0 +1,513 @@
+{
+  "duration_s": 0.43,
+  "error": null,
+  "metrics": {
+    "by_dataset": {
+      "P1-base": {
+        "assumptions": [],
+        "commitments_recognised": "1/1",
+        "council_tax": {
+          "detected_months": [
+            1,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "exact": true,
+          "expected_months": [
+            1,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ]
+        },
+        "detected": [
+          {
+            "amount_minor": -4600,
+            "cadence": "monthly",
+            "key": "rob_sky",
+            "label": "Sky",
+            "matched_truth": "rob_sky"
+          },
+          {
+            "amount_minor": -40000,
+            "cadence": "monthly",
+            "key": "rob_savings",
+            "label": "Savings",
+            "matched_truth": "rob_savings"
+          },
+          {
+            "amount_minor": -16200,
+            "cadence": "monthly",
+            "key": "rob_leeds_city_council",
+            "label": "Leeds City Council",
+            "matched_truth": "rob_council_tax"
+          },
+          {
+            "amount_minor": -26500,
+            "cadence": "monthly",
+            "key": "rob_lemfi",
+            "label": "Lemfi",
+            "matched_truth": "rob_family_support"
+          },
+          {
+            "amount_minor": -1299,
+            "cadence": "monthly",
+            "key": "rob_netflix",
+            "label": "Netflix",
+            "matched_truth": "rob_netflix"
+          },
+          {
+            "amount_minor": -7800,
+            "cadence": "monthly",
+            "key": "rob_octopus_energy",
+            "label": "Octopus Energy",
+            "matched_truth": "rob_energy"
+          },
+          {
+            "amount_minor": -1299,
+            "cadence": "monthly",
+            "key": "rob_spotify",
+            "label": "Spotify",
+            "matched_truth": "rob_spotify"
+          },
+          {
+            "amount_minor": -899,
+            "cadence": "monthly",
+            "key": "rob_amazon_prime",
+            "label": "Amazon Prime",
+            "matched_truth": "rob_prime"
+          },
+          {
+            "amount_minor": -2799,
+            "cadence": "monthly",
+            "key": "rob_puregym",
+            "label": "Puregym",
+            "matched_truth": "rob_gym"
+          },
+          {
+            "amount_minor": -299,
+            "cadence": "monthly",
+            "key": "rob_apple",
+            "label": "Apple",
+            "matched_truth": "rob_icloud"
+          },
+          {
+            "amount_minor": -125000,
+            "cadence": "monthly",
+            "key": "rob_northside_lettings",
+            "label": "Northside Lettings",
+            "matched_truth": "rob_rent"
+          },
+          {
+            "amount_minor": -999,
+            "cadence": "monthly",
+            "key": "rob_now",
+            "label": "Now",
+            "matched_truth": "rob_now"
+          },
+          {
+            "amount_minor": -4200,
+            "cadence": "monthly",
+            "key": "rob_yorkshire_water",
+            "label": "Yorkshire Water",
+            "matched_truth": "rob_water"
+          },
+          {
+            "amount_minor": -899,
+            "cadence": "monthly",
+            "key": "rob_disney+",
+            "label": "Disney+",
+            "matched_truth": "rob_disney"
+          },
+          {
+            "amount_minor": -3100,
+            "cadence": "monthly",
+            "key": "rob_plusnet",
+            "label": "Plusnet",
+            "matched_truth": "rob_broadband"
+          }
+        ],
+        "median_amount_error": 0.0,
+        "median_next_date_error_days": 0,
+        "monthly_only_next_date": true,
+        "n_detected": 15,
+        "n_detected_matched": 15,
+        "n_truth": 15,
+        "n_truth_found": 15,
+        "overlaps_detected": [
+          [
+            "rob_disney",
+            "rob_netflix"
+          ]
+        ],
+        "overlaps_expected": [
+          [
+            "rob_netflix",
+            "rob_sky"
+          ]
+        ],
+        "overlaps_ok": false,
+        "price_rises": [
+          {
+            "detected": false,
+            "replayed_to": "2026-07-23",
+            "rise_on": "2026-06-22",
+            "subject": "rob_spotify"
+          }
+        ],
+        "price_rises_ok": false,
+        "truth": [
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_rent",
+            "label": "Rent",
+            "next_date_error_days": 1
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_council_tax",
+            "label": "Council tax",
+            "next_date_error_days": 0
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_water",
+            "label": "Water",
+            "next_date_error_days": 0
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_broadband",
+            "label": "Broadband",
+            "next_date_error_days": 0
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_sky",
+            "label": "Sky TV",
+            "next_date_error_days": 0
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_energy",
+            "label": "Energy",
+            "next_date_error_days": 0
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_gym",
+            "label": "PureGym",
+            "next_date_error_days": 0
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_netflix",
+            "label": "Netflix",
+            "next_date_error_days": 0
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_spotify",
+            "label": "Spotify",
+            "next_date_error_days": 0
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_now",
+            "label": "NOW",
+            "next_date_error_days": 0
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_disney",
+            "label": "Disney+",
+            "next_date_error_days": 0
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_prime",
+            "label": "Amazon Prime",
+            "next_date_error_days": 0
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_icloud",
+            "label": "iCloud+",
+            "next_date_error_days": 0
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_savings",
+            "label": "Savings pot",
+            "next_date_error_days": 0
+          },
+          {
+            "amount_error": 0.06,
+            "found": true,
+            "key": "rob_family_support",
+            "label": "Family support abroad",
+            "next_date_error_days": 1
+          }
+        ]
+      },
+      "P2-base": {
+        "assumptions": [],
+        "commitments_recognised": "0/0",
+        "council_tax": {
+          "detected_months": [
+            1,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "exact": true,
+          "expected_months": [
+            1,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ]
+        },
+        "detected": [
+          {
+            "amount_minor": -8400,
+            "cadence": "monthly",
+            "key": "rob_ovo_energy",
+            "label": "Ovo Energy",
+            "matched_truth": "rob_energy"
+          },
+          {
+            "amount_minor": -1299,
+            "cadence": "monthly",
+            "key": "rob_spotify",
+            "label": "Spotify",
+            "matched_truth": "rob_spotify"
+          },
+          {
+            "amount_minor": -1200,
+            "cadence": "monthly",
+            "key": "rob_giffgaff",
+            "label": "Giffgaff",
+            "matched_truth": "rob_mobile"
+          },
+          {
+            "amount_minor": -110000,
+            "cadence": "monthly",
+            "key": "rob_harbourside_homes",
+            "label": "Harbourside Homes",
+            "matched_truth": "rob_rent"
+          },
+          {
+            "amount_minor": -5698,
+            "cadence": "monthly",
+            "key": "rob_adobe_creative_cld",
+            "label": "Adobe Creative Cld",
+            "matched_truth": "rob_adobe"
+          },
+          {
+            "amount_minor": -3800,
+            "cadence": "monthly",
+            "key": "rob_bristol_water",
+            "label": "Bristol Water",
+            "matched_truth": "rob_water"
+          },
+          {
+            "amount_minor": -17800,
+            "cadence": "monthly",
+            "key": "rob_bristol_city_council",
+            "label": "Bristol City Council",
+            "matched_truth": "rob_council_tax"
+          },
+          {
+            "amount_minor": -3500,
+            "cadence": "monthly",
+            "key": "rob_virgin_media",
+            "label": "Virgin Media",
+            "matched_truth": "rob_broadband"
+          }
+        ],
+        "median_amount_error": 0.0,
+        "median_next_date_error_days": 0.0,
+        "monthly_only_next_date": true,
+        "n_detected": 8,
+        "n_detected_matched": 8,
+        "n_truth": 10,
+        "n_truth_found": 8,
+        "overlaps_detected": [],
+        "overlaps_expected": [],
+        "overlaps_ok": true,
+        "price_rises": [],
+        "price_rises_ok": true,
+        "truth": [
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_rent",
+            "label": "Rent",
+            "next_date_error_days": 0
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_council_tax",
+            "label": "Council tax",
+            "next_date_error_days": 29
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_energy",
+            "label": "Energy",
+            "next_date_error_days": 0
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_water",
+            "label": "Water",
+            "next_date_error_days": 0
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_broadband",
+            "label": "Broadband",
+            "next_date_error_days": 30
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_mobile",
+            "label": "Mobile",
+            "next_date_error_days": 0
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_adobe",
+            "label": "Adobe",
+            "next_date_error_days": 0
+          },
+          {
+            "amount_error": 0.0,
+            "found": true,
+            "key": "rob_spotify",
+            "label": "Spotify",
+            "next_date_error_days": 0
+          },
+          {
+            "found": false,
+            "key": "rob_self_assessment",
+            "label": "Self Assessment"
+          },
+          {
+            "found": false,
+            "key": "rob_isa_sweep",
+            "label": "Savings sweep"
+          }
+        ]
+      }
+    },
+    "council_tax_months_exact": true,
+    "median_amount_error": 0.0,
+    "median_next_date_error_days": 0,
+    "precision": 1.0,
+    "price_rise_within_one_cycle": false,
+    "recall": 0.92,
+    "subscription_overlap_detected": false
+  },
+  "name": "recurring",
+  "notes": [
+    "A detected obligation matches a truth obligation when most of its member transactions carry that truth `recurring` key and the cadence agrees.",
+    "Per-dataset medians are combined by taking the worst dataset.",
+    "Next-date error: predicted first occurrence after as_of (finance_core obligation calendar) vs the truth anchor day and day rule.",
+    "Price rise: detection replayed with the ledger cut one billing cycle (31 days) after the rise. Overlap: the truth pair must sit inside one detected subscription family. Both are reported, not gated (docs/09 \u00a76.5 sets no numeric target for them)."
+  ],
+  "suite": "E-REC",
+  "targets": [
+    {
+      "dataset": "P1-base, P2-base",
+      "id": "REC-P",
+      "label": "Obligation precision",
+      "met": true,
+      "stage1": true,
+      "target": ">= 0.9",
+      "value": 1.0
+    },
+    {
+      "dataset": "P1-base, P2-base",
+      "id": "REC-R",
+      "label": "Obligation recall",
+      "met": true,
+      "stage1": true,
+      "target": ">= 0.9",
+      "value": 0.92
+    },
+    {
+      "dataset": "P1-base, P2-base",
+      "id": "REC-amount",
+      "label": "Median amount error",
+      "met": true,
+      "stage1": true,
+      "target": "<= 0.02",
+      "value": 0.0
+    },
+    {
+      "dataset": "P1-base, P2-base",
+      "id": "REC-next-date",
+      "label": "Median next-date error (days)",
+      "met": true,
+      "stage1": true,
+      "target": "<= 2",
+      "value": 0
+    },
+    {
+      "dataset": "P1-base, P2-base",
+      "id": "REC-council-tax",
+      "label": "Council tax active Apr\u2013Jan only",
+      "met": true,
+      "stage1": true,
+      "target": "== 1",
+      "value": 1.0
+    }
+  ]
+}
