@@ -759,7 +759,7 @@ Cost, accuracy and latency are the three core metrics; accuracy is every other s
 | EFF-4 | Time to first progress step, p95 | ≤ 2 s |
 | EFF-5 | Simple answers, latency p50 | ≤ 10 s |
 | EFF-6 | Advice answers, latency p50 | ≤ 35 s |
-| EFF-7 | Advice answers, latency p95 | ≤ 60 s (the question deadline, not raised) |
+| EFF-7 | Advice answers, latency p95 | ≤ 60 s (the question deadline itself is 75 s since 14 Oct 2026) |
 
 **Model selection rule** (docs/00 §8, docs/06 §13): drop any model that fails its tier's accuracy gates; drop any model that breaks the end-to-end latency targets; of what is left, pick the cheapest, and choose the faster one when costs are within 10%. A model change is accepted only with E-EFF and the tier's accuracy suites re-run on new recordings. The README's results block and /quality open with a "Core metrics: cost · accuracy · latency" table generated from this suite.
 

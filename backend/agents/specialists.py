@@ -13,7 +13,7 @@ from backend.agents.runtime import DEADLINES, NodeOutput, NodeSpec, RunContext
 from backend.agents.state import ForesightState
 
 MAX_REVISIONS = 2  # initial proposal + 2 revisions = 3 Verifier rounds (docs/06 W4)
-# docs/06 §13 latency budget for a question (60 s deadline): one revision round is an Advisor
+# docs/06 §13 latency budget for a question (75 s deadline since 14 Oct 2026): one revision round is an Advisor
 # call plus its concurrent judge calls; composing and saving the answer follows the loop.
 REVISION_ROUND_MS = 25_000
 ANSWER_TAIL_MS = 5_000
