@@ -289,6 +289,12 @@ class WorkspaceContext:
     def calculation(self, calc_id: str) -> m.Calculation | None:
         return self.get(m.Calculation, calc_id)
 
+    def calculations(self, kind: str, inputs_hash: str) -> list[m.Calculation]:
+        stmt = self.select(m.Calculation).where(
+            m.Calculation.kind == kind, m.Calculation.inputs_hash == inputs_hash
+        )
+        return list(self.session.scalars(stmt))
+
     def latest_calculation(self, kind: str) -> m.Calculation | None:
         stmt = (
             self.select(m.Calculation)

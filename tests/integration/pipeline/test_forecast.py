@@ -69,6 +69,34 @@ def test_forecast_is_persisted_and_recomputes_identically(session: Session) -> N
     session.rollback()
 
 
+def test_an_unchanged_question_reads_the_stored_forecast_without_recomputing(
+    session: Session, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """docs/05 A5: read paths are cheap. Once a forecast is stored, the same question on the
+    same data returns it as stored; new data computes a new one."""
+    from backend.pipeline import forecast as fc
+
+    ctx, acct, on, amount = _p1(session)
+    first = run_forecast(ctx, as_of=on, n_paths=200)
+
+    def engine_called(*_a: object, **_k: object) -> None:
+        raise AssertionError("the engine ran for a forecast that was already stored")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(fc, "calibration_for", engine_called)
+        patch.setattr(fc, "build_forecast", engine_called)
+        again = run_forecast(ctx, as_of=on, n_paths=200)
+    assert not again.created
+    assert again.calculation.id == first.calculation.id
+    assert again.result == first.result
+
+    declare_balance(ctx, acct, on, amount + 100)
+    fresh = run_forecast(ctx, as_of=on, n_paths=200)
+    assert fresh.created
+    assert fresh.calculation.id != first.calculation.id
+    session.rollback()
+
+
 def test_product_forecast_carries_the_prior_and_a_calibration_it_can_rebuild(
     session: Session,
 ) -> None:

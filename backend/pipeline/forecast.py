@@ -27,7 +27,7 @@ from functools import lru_cache
 from typing import Any
 
 from backend.finance_core.calc import Calculation as CalcRecord
-from backend.finance_core.calc import recompute, record
+from backend.finance_core.calc import content_hash, recompute, record, to_jsonable
 from backend.finance_core.forecast import build_forecast
 from backend.finance_core.forecast.calibration import (
     MAX_LOOKBACK_DAYS,
@@ -41,7 +41,11 @@ from backend.finance_core.forecast.calibration import (
 from backend.finance_core.forecast.calibration import (
     to_jsonable as calibration_json,
 )
-from backend.finance_core.forecast.engine import LOOKBACK_DAYS, is_unscheduled_outflow
+from backend.finance_core.forecast.engine import (
+    ENGINE_VERSION,
+    LOOKBACK_DAYS,
+    is_unscheduled_outflow,
+)
 from backend.finance_core.forecast.prior import IrregularPrior, load_irregular_prior
 from backend.finance_core.forecast.prior import to_jsonable as prior_json
 from backend.finance_core.importers.anchors import balance_on
@@ -53,6 +57,8 @@ from backend.finance_core.types import (
     ForecastResult,
     KnownFlow,
     ParsedRow,
+    PayCycleLow,
+    Quantiles,
     ScenarioModifier,
     ScenarioSpec,
     SimulationResult,
@@ -331,6 +337,57 @@ def _store(ctx: WorkspaceContext, rec: CalcRecord, duration_ms: int) -> tuple[m.
     return row, True
 
 
+def _result_from_json(data: dict[str, Any]) -> ForecastResult:
+    """A stored forecast result (to_jsonable shape) as the engine's ForecastResult."""
+    day = date.fromisoformat
+
+    def quantiles(q: dict[str, Any]) -> Quantiles:
+        return Quantiles(int(q["p10"]), int(q["p50"]), int(q["p90"]))
+
+    return ForecastResult(
+        as_of=day(data["as_of"]),
+        currency=data["currency"],
+        horizon_days=int(data["horizon_days"]),
+        dates=tuple(day(d) for d in data["dates"]),
+        p10=tuple(int(v) for v in data["p10"]),
+        p50=tuple(int(v) for v in data["p50"]),
+        p90=tuple(int(v) for v in data["p90"]),
+        pay_cycles=tuple(
+            PayCycleLow(
+                payday=day(c["payday"]),
+                low=quantiles(c["low"]),
+                low_date=day(c["low_date"]),
+                chance_below_buffer=c["chance_below_buffer"],
+            )
+            for c in data["pay_cycles"]
+        ),
+        min_balance_p50_minor=int(data["min_balance_p50_minor"]),
+        min_balance_date=day(data["min_balance_date"]),
+        buffer_minor=data["buffer_minor"],
+        n_paths=int(data["n_paths"]),
+        seed=int(data["seed"]),
+        inputs_hash=data["inputs_hash"],
+        engine_version=data["engine_version"],
+    )
+
+
+def _stored_forecast(
+    ctx: WorkspaceContext, inputs: ForecastInputs, params: dict[str, Any]
+) -> m.Calculation | None:
+    """The forecast already computed for these inputs and parameters, if any (docs/05 A5: read
+    paths never recompute). The calibration is left out of the match: it is a function of the
+    ledger at the inputs' data_version (in the seed, so in the inputs hash), the inputs, the
+    prior and window_days, all of which are matched. A change to the calibration code must bump
+    ENGINE_VERSION."""
+    want = to_jsonable(params)
+    for row in ctx.calculations("forecast", content_hash(inputs)):
+        if row.engine_version == ENGINE_VERSION and all(
+            row.params.get(k) == v for k, v in want.items()
+        ):
+            return row
+    return None
+
+
 def run_forecast(
     ctx: WorkspaceContext,
     *,
@@ -349,8 +406,12 @@ def run_forecast(
         window_days=window_days,
         known_flows=known_flows,
     )
-    started = time.perf_counter()
     prior = irregular_prior(inputs.currency)
+    base = {**_params(ctx, inputs, window_days), "prior": _model_params(prior, None)["prior"]}
+    stored = _stored_forecast(ctx, inputs, base)
+    if stored is not None:
+        return StoredForecast(stored, _result_from_json(stored.result), inputs, False)
+    started = time.perf_counter()
     calibration = calibration_for(ctx, inputs, prior, window_days)
     result = build_forecast(inputs, prior=prior, calibration=calibration)
     elapsed = int((time.perf_counter() - started) * 1000)

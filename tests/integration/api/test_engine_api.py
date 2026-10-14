@@ -241,3 +241,28 @@ def test_openapi_documents_every_engine_route(api: TestClient) -> None:
         operation = paths[path][method]
         ok = operation["responses"].get("200") or operation["responses"]["201"]
         assert "$ref" in ok["content"]["application/json"]["schema"], path
+
+
+def test_home_forecast_reads_the_stored_calculation_quickly(
+    api: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """docs/05 A5: opening Home never recomputes. The demo seed stores the forecast, so even the
+    first request reads it: the engine (~3 s live) must not run, and the read stays under 0.5 s."""
+    import time
+
+    from backend.pipeline import forecast as fc
+
+    demo(api)
+
+    def engine_called(*_a: object, **_k: object) -> None:
+        raise AssertionError("Home recomputed a forecast that was already stored")
+
+    monkeypatch.setattr(fc, "calibration_for", engine_called)
+    monkeypatch.setattr(fc, "build_forecast", engine_called)
+    timings = []
+    for _ in range(3):
+        started = time.perf_counter()
+        response = api.get("/api/forecast")
+        timings.append(time.perf_counter() - started)
+        assert response.status_code == 200, response.text
+    assert max(timings) <= 0.5, timings

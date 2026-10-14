@@ -418,6 +418,10 @@ button.user[aria-expanded="true"] .chev { transform: rotate(180deg); }
 .m-note { margin: 0; font-size: var(--font-size-xs); color: var(--color-text-secondary); }
 
 .row-2 { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); margin-bottom: var(--space-4); }
+.skel { background: linear-gradient(90deg, var(--color-border-primary), var(--color-bg-secondary), var(--color-border-primary)); background-size: 200% 100%; animation: home-shimmer calc(var(--duration-slower) * 3) linear infinite; }
+.metric-skel { min-height: 108px; }
+.forecast-skel { min-height: 360px; }
+@keyframes home-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 .forecast { padding: var(--space-4); }
 .forecast .select { display: none; }
 .info-bar {
