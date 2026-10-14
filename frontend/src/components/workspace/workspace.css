@@ -441,3 +441,8 @@
   .ws-body .ov-grid.single { grid-template-columns: minmax(0, 1fr); }
   .ws-body .verdict { font-size: var(--font-size-3xl); }
 }
+
+/* A checked recommendation that follows the answer (docs/06 §13). */
+.ws-body .ws-followup { margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--color-border-primary); }
+.ws-body .ws-followup-h { margin: 0 0 var(--space-3); font-family: var(--font-family-display); font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); }
+.ws-body .ws-followup-note { margin: var(--space-4) 0 0; padding: var(--space-3) var(--space-4); border-radius: var(--border-radius-md); background: var(--color-accent-primary-tint); font-size: var(--font-size-sm); color: var(--color-text-secondary); }

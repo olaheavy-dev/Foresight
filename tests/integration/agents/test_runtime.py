@@ -447,3 +447,60 @@ def test_runs_checkpoint_to_postgres(session: Session, migrated_engine: Engine) 
         saved = saver.get_tuple({"configurable": {"thread_id": out.run_id}})
     assert saved is not None
     assert json.dumps(saved.checkpoint["channel_values"].get("route"), default=str)
+
+
+def test_a_question_out_of_time_answers_now_and_follows_up_with_checked_advice(
+    session: Session, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """docs/06 §13: a rejected round with revisions left but no time for one in the question is
+    deferred, not dropped. The answer goes out at once, says a checked recommendation follows and
+    is never cached; the follow-up run revises from the critique, verifies, and answers again in
+    the same thread, naming the answer it follows up."""
+    import json as _json
+
+    from backend.agents import specialists
+    from backend.agents.runner import run_followup
+
+    store = _store(session)
+    thread = store.create_thread()
+    session.commit()
+    monkeypatch.setattr(specialists, "REVISION_ROUND_MS", 10**9)  # no round fits in a question
+    nodes = _advice_nodes(["reject", "approve"])
+    out = ask(store, thread_id=thread.id, text="holiday?", client_msg_id="f1",
+              mesh=_mesh(json_ok(_intent())), nodes=nodes)  # fmt: skip
+    asked = [s.node for s in _steps(store, out.run_id)]
+    assert "defer" in asked
+    assert "revise" not in asked
+    assert "withdraw" not in asked
+    assert out.response_id is not None
+    first = store.response(out.response_id).body  # type: ignore[union-attr]
+    assert first["followup_pending"] is True
+    assert "still being prepared" in _json.dumps(first)
+    assert out.state.get("cache_key") is None or store.cache_get(out.state["cache_key"]) is None
+
+    follow = run_followup(store, out, mesh=_mesh(), nodes=nodes)
+    assert follow is not None
+    after = [s.node for s in _steps(store, follow.run_id)]
+    assert after[:3] == ["route_event", "revise", "advise"]
+    assert "verify" in after
+    assert "withdraw" not in after
+    assert after[-1] == "persist_response"
+    assert follow.response_id is not None
+    second = store.response(follow.response_id).body  # type: ignore[union-attr]
+    assert second["follow_up_of"] == out.response_id
+    assert second["followup_pending"] is False
+    replies = [msg.response_id for msg in store.messages(thread.id) if msg.role == "assistant"]
+    assert replies == [out.response_id, follow.response_id]
+
+
+def test_no_follow_up_when_the_question_finished_its_loop(session: Session) -> None:
+    from backend.agents.runner import run_followup
+
+    store = _store(session)
+    thread = store.create_thread()
+    session.commit()
+    nodes = _advice_nodes(["reject", "approve"])
+    out = ask(store, thread_id=thread.id, text="holiday?", client_msg_id="f2",
+              mesh=_mesh(json_ok(_intent())), nodes=nodes)  # fmt: skip
+    assert "defer" not in [s.node for s in _steps(store, out.run_id)]
+    assert run_followup(store, out, mesh=_mesh(), nodes=nodes) is None

@@ -1,22 +1,22 @@
 {
   "durations_s": {
-    "E-ANOM": 0.79,
-    "E-AUD": 8.43,
+    "E-ANOM": 0.81,
+    "E-AUD": 8.64,
     "E-CAT": 0.43,
-    "E-CTX": 1.06,
+    "E-CTX": 0.55,
     "E-EFF": 0.0,
-    "E-FC": 10.06,
-    "E-GRD": 6.6,
-    "E-INC": 1.12,
-    "E-ING": 0.85,
-    "E-LOC": 0.34,
-    "E-ORC": 42.79,
-    "E-REC": 0.41,
-    "E-SCN": 0.7,
-    "E-SEC": 0.36,
-    "E-SIM": 15.34,
-    "E-UI": 41.58,
-    "E-VER": 17.79
+    "E-FC": 10.18,
+    "E-GRD": 6.55,
+    "E-INC": 0.82,
+    "E-ING": 0.72,
+    "E-LOC": 0.32,
+    "E-ORC": 32.5,
+    "E-REC": 0.42,
+    "E-SCN": 0.24,
+    "E-SEC": 0.27,
+    "E-SIM": 15.71,
+    "E-UI": 33.68,
+    "E-VER": 16.39
   },
   "engine_version": "fc-1.3.0",
   "errors": {},
@@ -181,7 +181,7 @@
   },
   "generator_version": "gen-1.1.0",
   "git_dirty": false,
-  "git_sha": "4c6fc756287a7460df6142c1a5253183d5494e93",
+  "git_sha": "c3f6e0c7d9573d6e44dac8decd128364b15a5eb4",
   "holdout_version": null,
   "home_currency_primary": "GBP",
   "layout_set_version": null,
@@ -200,7 +200,7 @@
     "null = not run. Gates: a suite that did not run is 'fail'; see gate_detail.rule."
   ],
   "prompt_versions": {},
-  "run_id": "evalrun_20261014T124926Z_4c6fc75",
+  "run_id": "evalrun_20261014T152046Z_c3f6e0c",
   "schema_version": "1.1",
   "seeds": [
     1729
@@ -358,7 +358,7 @@
         "model_calls_per_cache_hit_after_understand": 0,
         "model_calls_per_cache_miss": 1,
         "recorded_tokens_total": 447216,
-        "replay_seconds": 1.06
+        "replay_seconds": 0.55
       },
       "followup_turns_scored": 45,
       "mode": "replay",
@@ -1106,26 +1106,26 @@
     "efficiency": {
       "by_answer_type": {
         "advice": {
-          "cost_mean_usd": 0.05047,
-          "cost_p95_usd": 0.06898,
+          "cost_mean_usd": 0.04361,
+          "cost_p95_usd": 0.08247,
           "count": 13,
           "degraded_left_out": 0,
-          "first_step_p95_s": 0.03,
-          "latency_estimated_p50_s": 28.33,
-          "latency_estimated_p95_s": 39.06,
+          "first_step_p95_s": 0.02,
+          "latency_estimated_p50_s": 21.52,
+          "latency_estimated_p95_s": 44.42,
           "latency_measured": 0,
           "latency_p50_s": null,
           "latency_p50_s_measured_only": null,
           "latency_p95_s": null
         },
         "all": {
-          "cost_mean_usd": 0.01141,
-          "cost_p95_usd": 0.06074,
+          "cost_mean_usd": 0.00992,
+          "cost_p95_usd": 0.06753,
           "count": 60,
           "degraded_left_out": 0,
           "first_step_p95_s": 0.02,
-          "latency_estimated_p50_s": 6.35,
-          "latency_estimated_p95_s": 36.14,
+          "latency_estimated_p50_s": 6.34,
+          "latency_estimated_p95_s": 37.65,
           "latency_measured": 3,
           "latency_p50_s": null,
           "latency_p50_s_measured_only": 0.03,
@@ -1155,8 +1155,8 @@
           ],
           "call_latency_p50_s": 3.11,
           "call_latency_p95_s": 7.32,
-          "calls": 100,
-          "cost_per_answer_usd": 0.00041,
+          "calls": 95,
+          "cost_per_answer_usd": 0.00038,
           "cost_per_call_usd": 0.00024,
           "latency_measured": 24,
           "models": [
@@ -1169,12 +1169,12 @@
             "E-ORC",
             "E-GRD"
           ],
-          "call_latency_p50_s": 10.24,
-          "call_latency_p95_s": 11.95,
-          "calls": 30,
-          "cost_per_answer_usd": 0.01071,
-          "cost_per_call_usd": 0.02141,
-          "latency_measured": 29,
+          "call_latency_p50_s": 10.79,
+          "call_latency_p95_s": 12.56,
+          "calls": 25,
+          "cost_per_answer_usd": 0.00931,
+          "cost_per_call_usd": 0.02234,
+          "latency_measured": 24,
           "models": [
             "anthropic/claude-sonnet-5.5"
           ]
@@ -1183,15 +1183,14 @@
           "accuracy_gates": [
             "E-VER"
           ],
-          "call_latency_p50_s": 4.14,
-          "call_latency_p95_s": 5.41,
-          "calls": 5,
-          "cost_per_answer_usd": 0.00029,
-          "cost_per_call_usd": 0.00354,
-          "latency_measured": 5,
+          "call_latency_p50_s": 6.17,
+          "call_latency_p95_s": 6.95,
+          "calls": 4,
+          "cost_per_answer_usd": 0.00023,
+          "cost_per_call_usd": 0.00346,
+          "latency_measured": 4,
           "models": [
-            "gpt-6.1-sol",
-            "openai/gpt-6.1-sol"
+            "gpt-6.1-sol"
           ]
         }
       },
@@ -1398,7 +1397,7 @@
       }
     },
     "grounding": {
-      "approved": 93,
+      "approved": 91,
       "commitment_cuts_unrequested": 0,
       "evidence_ref_validity": 1.0,
       "generic_advice_rate": 0.0,
@@ -1587,7 +1586,7 @@
     "orchestration": {
       "agent_coverage": {
         "advisor": 19,
-        "analyst": 8,
+        "analyst": 9,
         "coordinator": 26,
         "forecaster": 16,
         "ledger": 5,
@@ -1602,7 +1601,7 @@
       "distinctness": {
         "prompt_versions_per_agent": {
           "advisor": [
-            "e142645b1c3b"
+            "4e10aa15a5eb"
           ],
           "analyst": [
             "e926023d386c"
@@ -1627,7 +1626,7 @@
         "tool_calls_outside_allow_list": []
       },
       "mode": "replay",
-      "seconds": 42.8
+      "seconds": 32.5
     },
     "recurring": {
       "council_tax_months_exact": true,
@@ -1866,13 +1865,13 @@
       "headline_arm": "full",
       "loop": {
         "outcomes": {
-          "1_revision(s)": 50,
-          "2_revision(s)": 9,
-          "withdrawn": 3
+          "1_revision(s)": 49,
+          "2_revision(s)": 8,
+          "withdrawn": 5
         },
         "rejected_in_round_1": 62,
         "revisable": 41,
-        "revision_success": 0.9756,
+        "revision_success": 0.9268,
         "unrevisable": 21,
         "withdraw_correctness": 1.0
       }
@@ -2085,7 +2084,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 0.03",
-        "value": 0.01141
+        "value": 0.00992
       },
       {
         "dataset": "13 advice answers",
@@ -2094,7 +2093,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 0.055",
-        "value": 0.05047
+        "value": 0.04361
       },
       {
         "dataset": "60 E-UI answers",
@@ -2103,7 +2102,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 0.1",
-        "value": 0.06074
+        "value": 0.06753
       },
       {
         "dataset": "60 E-UI answers",
@@ -2772,5 +2771,5 @@
       }
     ]
   },
-  "timestamp_utc": "2026-10-14T12:49:26Z"
+  "timestamp_utc": "2026-10-14T15:20:46Z"
 }

@@ -1,0 +1,2775 @@
+{
+  "durations_s": {
+    "E-ANOM": 0.81,
+    "E-AUD": 8.64,
+    "E-CAT": 0.43,
+    "E-CTX": 0.55,
+    "E-EFF": 0.0,
+    "E-FC": 10.18,
+    "E-GRD": 6.55,
+    "E-INC": 0.82,
+    "E-ING": 0.72,
+    "E-LOC": 0.32,
+    "E-ORC": 32.5,
+    "E-REC": 0.42,
+    "E-SCN": 0.24,
+    "E-SEC": 0.27,
+    "E-SIM": 15.71,
+    "E-UI": 33.68,
+    "E-VER": 16.39
+  },
+  "engine_version": "fc-1.3.0",
+  "errors": {},
+  "fast": false,
+  "gate_detail": {
+    "E-ACCT": {
+      "failed": [],
+      "rule": "not run",
+      "status": "fail",
+      "unmeasured": []
+    },
+    "E-ALIAS": {
+      "failed": [],
+      "rule": "not run",
+      "status": "fail",
+      "unmeasured": []
+    },
+    "E-ANOM": {
+      "failed": [],
+      "rule": "docs/09 targets (4 measured)",
+      "status": "pass",
+      "unmeasured": []
+    },
+    "E-AUD": {
+      "failed": [],
+      "rule": "docs/09 targets (5 measured)",
+      "status": "pass",
+      "unmeasured": []
+    },
+    "E-CAT": {
+      "failed": [],
+      "rule": "docs/09 targets (1 measured)",
+      "status": "pass",
+      "unmeasured": [
+        "CAT-hybrid-acc",
+        "CAT-hybrid-f1",
+        "CAT-hybrid-flow",
+        "CAT-selective"
+      ]
+    },
+    "E-CTX": {
+      "failed": [
+        "CTX-2",
+        "CTX-3"
+      ],
+      "rule": "docs/09 targets (5 measured)",
+      "status": "fail",
+      "unmeasured": []
+    },
+    "E-EFF": {
+      "failed": [],
+      "rule": "docs/09 targets (4 measured)",
+      "status": "pass",
+      "unmeasured": [
+        "EFF-5",
+        "EFF-6",
+        "EFF-7"
+      ]
+    },
+    "E-FC": {
+      "failed": [],
+      "rule": "docs/09 targets (6 measured)",
+      "status": "pass",
+      "unmeasured": []
+    },
+    "E-GRD": {
+      "failed": [],
+      "rule": "docs/09 targets (5 measured)",
+      "status": "pass",
+      "unmeasured": []
+    },
+    "E-INC": {
+      "failed": [],
+      "rule": "docs/09 targets (5 measured)",
+      "status": "pass",
+      "unmeasured": []
+    },
+    "E-ING": {
+      "failed": [],
+      "rule": "docs/09 targets (12 measured)",
+      "status": "pass",
+      "unmeasured": [
+        "ING-heuristic+llm"
+      ]
+    },
+    "E-LOC": {
+      "failed": [],
+      "rule": "docs/09 targets (6 measured)",
+      "status": "pass",
+      "unmeasured": []
+    },
+    "E-ORC": {
+      "failed": [],
+      "rule": "docs/09 targets (4 measured)",
+      "status": "pass",
+      "unmeasured": []
+    },
+    "E-REC": {
+      "failed": [],
+      "rule": "docs/09 targets (5 measured)",
+      "status": "pass",
+      "unmeasured": []
+    },
+    "E-SCN": {
+      "failed": [],
+      "rule": "docs/09 targets (4 measured)",
+      "status": "pass",
+      "unmeasured": []
+    },
+    "E-SEC": {
+      "failed": [],
+      "rule": "docs/09 targets (6 measured)",
+      "status": "pass",
+      "unmeasured": []
+    },
+    "E-SIM": {
+      "failed": [],
+      "rule": "docs/09 targets (1 measured)",
+      "status": "pass",
+      "unmeasured": []
+    },
+    "E-UI": {
+      "failed": [],
+      "rule": "docs/09 targets (8 measured)",
+      "status": "pass",
+      "unmeasured": []
+    },
+    "E-VER": {
+      "failed": [],
+      "rule": "docs/09 targets (3 measured)",
+      "status": "pass",
+      "unmeasured": []
+    },
+    "E-XFER": {
+      "failed": [],
+      "rule": "not run",
+      "status": "fail",
+      "unmeasured": []
+    }
+  },
+  "gates": {
+    "E-ACCT": "fail",
+    "E-ALIAS": "fail",
+    "E-ANOM": "pass",
+    "E-AUD": "pass",
+    "E-CAT": "pass",
+    "E-CTX": "fail",
+    "E-EFF": "pass",
+    "E-FC": "pass",
+    "E-GRD": "pass",
+    "E-INC": "pass",
+    "E-ING": "pass",
+    "E-LOC": "pass",
+    "E-ORC": "pass",
+    "E-REC": "pass",
+    "E-SCN": "pass",
+    "E-SEC": "pass",
+    "E-SIM": "pass",
+    "E-UI": "pass",
+    "E-VER": "pass",
+    "E-XFER": "fail"
+  },
+  "generator_version": "gen-1.1.0",
+  "git_dirty": false,
+  "git_sha": "c3f6e0c7d9573d6e44dac8decd128364b15a5eb4",
+  "holdout_version": null,
+  "home_currency_primary": "GBP",
+  "layout_set_version": null,
+  "locales": [
+    "uk"
+  ],
+  "mesh_models": {
+    "advisor": null,
+    "coordinator": null,
+    "ledger": null,
+    "verifier": null
+  },
+  "mode": "deterministic",
+  "notes": [
+    "Deterministic suites only: every LLM arm (hybrid/llm-only categorisation, profile proposals, Verifier, orchestration, grounding, UI) is Stage 2+ and null here.",
+    "null = not run. Gates: a suite that did not run is 'fail'; see gate_detail.rule."
+  ],
+  "prompt_versions": {},
+  "run_id": "evalrun_20261014T152046Z_c3f6e0c",
+  "schema_version": "1.1",
+  "seeds": [
+    1729
+  ],
+  "suites": {
+    "anomalies": {
+      "clean_persona_months": 18,
+      "fp_per_persona_month_clean": 0.0556,
+      "magnitude_error_pp": 2.2,
+      "precision": 1.0,
+      "recall": 1.0,
+      "scope": "category_trend findings only"
+    },
+    "audit": {
+      "audit_hash_chain_valid": true,
+      "broken_link_kinds": {},
+      "by_status": {
+        "approved": 6,
+        "withdrawn": 3
+      },
+      "complete_chains": 9,
+      "mode": "replay",
+      "provenance": {
+        "chains_calcs": 8,
+        "labelled": 8
+      },
+      "recommendations": 9,
+      "recomputed": {
+        "identical": 10,
+        "not_rebuildable": 0,
+        "sampled": 10
+      },
+      "rejections": {
+        "total": 12,
+        "with_critique": 12
+      }
+    },
+    "categorisation": {
+      "arms": {
+        "hybrid": {
+          "abstention_rate": 0.0,
+          "accuracy": 0.9418,
+          "accuracy_ci95": [
+            0.9176,
+            0.9592
+          ],
+          "amount_weighted_accuracy": 0.4314,
+          "coverage": {
+            "0.5": {
+              "coverage": 1.0,
+              "selective_accuracy": 0.9418
+            },
+            "0.7": {
+              "coverage": 0.988,
+              "selective_accuracy": 0.9472
+            },
+            "0.85": {
+              "coverage": 0.9598,
+              "selective_accuracy": 0.9749
+            },
+            "0.95": {
+              "coverage": 0.004,
+              "selective_accuracy": 0.5
+            }
+          },
+          "ece": 0.0893,
+          "flow_class_accuracy": 0.9659,
+          "llm": {
+            "batches": 1,
+            "calls": 1,
+            "failed_batches": 0,
+            "invalid_or_missing_items": 0,
+            "models": [
+              "gpt-6-luna"
+            ],
+            "prompt_version": "46aa0e745f08",
+            "replayed": true,
+            "rows_sent": 4,
+            "rows_withheld_suspicious": 0,
+            "tokens": 2218,
+            "usd_estimate": 0.0004
+          },
+          "llm_call_rate": 0.008,
+          "macro_f1": 0.8068,
+          "n": 498,
+          "weighted_f1": 0.9403
+        },
+        "llm_only": {
+          "accuracy": null,
+          "flow_class_accuracy": null,
+          "llm_call_rate": null,
+          "macro_f1": null,
+          "note": "not measured: no recorded Mesh response (CassetteMiss); re-record with MESH_CASSETTE_MODE=record"
+        },
+        "majority_class": {
+          "accuracy": 0.2048,
+          "label": "groceries",
+          "macro_f1": 0.0121
+        },
+        "monzo_category_mapped": {
+          "accuracy": 0.3592,
+          "macro_f1": 0.1717,
+          "n": 284,
+          "rules_only_on_same_rows": 0.9683
+        },
+        "rules_only": {
+          "abstention_rate": 0.008,
+          "accuracy": 0.9418,
+          "accuracy_ci95": [
+            0.9176,
+            0.9592
+          ],
+          "amount_weighted_accuracy": 0.4035,
+          "coverage": {
+            "0.5": {
+              "coverage": 0.992,
+              "selective_accuracy": 0.9494
+            },
+            "0.7": {
+              "coverage": 0.9859,
+              "selective_accuracy": 0.9491
+            },
+            "0.85": {
+              "coverage": 0.9578,
+              "selective_accuracy": 0.9769
+            },
+            "0.95": {
+              "coverage": 0.0,
+              "selective_accuracy": null
+            }
+          },
+          "ece": 0.0952,
+          "flow_class_accuracy": 0.9659,
+          "llm_call_rate": 0.0,
+          "macro_f1": 0.807,
+          "n": 498,
+          "weighted_f1": 0.9412
+        }
+      },
+      "dataset": "generated test split (last 3 months) of P1-base, P2-base",
+      "holdout": {
+        "accuracy": null,
+        "dataset": "holdout_narrations@h-1",
+        "macro_f1": null,
+        "note": "UK hand-labelled holdout not built yet"
+      }
+    },
+    "conversation": {
+      "ctx1_followup_intent_accuracy": 0.9556,
+      "ctx2_followup_slot_exact_match": 0.6444,
+      "ctx3_standalone_adequacy": 0.8889,
+      "ctx4_paraphrase_cache_hit_rate": 0.9,
+      "ctx5_near_miss_false_hits": 0,
+      "ctx6": {
+        "model_calls_per_cache_hit_after_understand": 0,
+        "model_calls_per_cache_miss": 1,
+        "recorded_tokens_total": 447216,
+        "replay_seconds": 0.55
+      },
+      "followup_turns_scored": 45,
+      "mode": "replay",
+      "not_recorded": 0,
+      "pairs": [
+        {
+          "a": [
+            "affordability",
+            {
+              "amount_minor": 120000,
+              "date": "2026-11-06",
+              "purpose": "holiday"
+            }
+          ],
+          "b": [
+            "affordability",
+            {
+              "amount_minor": 120000,
+              "date": "2026-11-06",
+              "purpose": "trip"
+            }
+          ],
+          "case": "CTX-P001",
+          "hit": true,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "scenario",
+            {
+              "days": 10,
+              "modifier": "income_delay"
+            }
+          ],
+          "b": [
+            "scenario",
+            {
+              "days": 10,
+              "modifier": "income_delay"
+            }
+          ],
+          "case": "CTX-P002",
+          "hit": true,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "spending_breakdown",
+            {}
+          ],
+          "b": [
+            "spending_breakdown",
+            {}
+          ],
+          "case": "CTX-P003",
+          "hit": true,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "trend_or_change",
+            {
+              "category_key": "food.delivery"
+            }
+          ],
+          "b": [
+            "trend_or_change",
+            {
+              "category_key": "food.delivery"
+            }
+          ],
+          "case": "CTX-P004",
+          "hit": true,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "subscription_review",
+            {}
+          ],
+          "b": [
+            "subscription_review",
+            {}
+          ],
+          "case": "CTX-P005",
+          "hit": true,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "risk_check",
+            {
+              "period": "this_month"
+            }
+          ],
+          "b": [
+            "risk_check",
+            {
+              "window": "to_next_payday"
+            }
+          ],
+          "case": "CTX-P006",
+          "hit": false,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "scenario",
+            {
+              "amount_minor": 130000,
+              "date": "2027-02-01",
+              "modifier": "recurring_change",
+              "purpose": "rent"
+            }
+          ],
+          "b": [
+            "scenario",
+            {
+              "amount_minor": 130000,
+              "date": "2027-02-01",
+              "modifier": "recurring_change",
+              "purpose": "rent"
+            }
+          ],
+          "case": "CTX-P007",
+          "hit": true,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "transaction_lookup",
+            {
+              "category_key": "food.delivery",
+              "merchant": "Deliveroo"
+            }
+          ],
+          "b": [
+            "transaction_lookup",
+            {
+              "merchant": "Deliveroo"
+            }
+          ],
+          "case": "CTX-P008",
+          "hit": false,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "subscription_review",
+            {
+              "focus": "overlap"
+            }
+          ],
+          "b": [
+            "subscription_review",
+            {
+              "focus": "overlap"
+            }
+          ],
+          "case": "CTX-P009",
+          "hit": true,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "advice_request",
+            {}
+          ],
+          "b": [
+            "advice_request",
+            {}
+          ],
+          "case": "CTX-P010",
+          "hit": true,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "scenario",
+            {
+              "modifier": "income_change_pct",
+              "months": 2,
+              "pct": -100
+            }
+          ],
+          "b": [
+            "scenario",
+            {
+              "modifier": "income_change_pct",
+              "months": 2,
+              "pct": -100
+            }
+          ],
+          "case": "CTX-P011",
+          "hit": true,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "affordability",
+            {
+              "amount_minor": 80000,
+              "date": "2026-11-06",
+              "purpose": "trip"
+            }
+          ],
+          "b": [
+            "affordability",
+            {
+              "amount_minor": 80000,
+              "date": "2026-11-06",
+              "purpose": "trip"
+            }
+          ],
+          "case": "CTX-P012",
+          "hit": true,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "trend_or_change",
+            {
+              "category_key": "food.eating_out"
+            }
+          ],
+          "b": [
+            "trend_or_change",
+            {
+              "category_key": "food.eating_out"
+            }
+          ],
+          "case": "CTX-P013",
+          "hit": true,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "subscription_review",
+            {
+              "focus": "price_change",
+              "merchant": "Spotify"
+            }
+          ],
+          "b": [
+            "subscription_review",
+            {
+              "focus": "price_change",
+              "merchant": "Spotify"
+            }
+          ],
+          "case": "CTX-P014",
+          "hit": true,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "spending_breakdown",
+            {
+              "category_key": "groceries",
+              "period": "last_month"
+            }
+          ],
+          "b": [
+            "spending_breakdown",
+            {
+              "category_key": "groceries",
+              "period": "last_month"
+            }
+          ],
+          "case": "CTX-P015",
+          "hit": true,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "risk_check",
+            {
+              "window": "to_next_payday"
+            }
+          ],
+          "b": [
+            "risk_check",
+            {
+              "window": "to_next_payday"
+            }
+          ],
+          "case": "CTX-P016",
+          "hit": true,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "affordability",
+            {
+              "amount_minor": 35000,
+              "date": "2026-10-20",
+              "purpose": "phone"
+            }
+          ],
+          "b": [
+            "affordability",
+            {
+              "amount_minor": 35000,
+              "date": "2026-10-20",
+              "purpose": "phone"
+            }
+          ],
+          "case": "CTX-P017",
+          "hit": true,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "scenario",
+            {
+              "merchant": "Sky",
+              "modifier": "recurring_cancel"
+            }
+          ],
+          "b": [
+            "scenario",
+            {
+              "merchant": "Sky",
+              "modifier": "recurring_cancel"
+            }
+          ],
+          "case": "CTX-P018",
+          "hit": true,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "affordability",
+            {
+              "amount_minor": 40000,
+              "date": "2026-12-12",
+              "purpose": "christmas_present"
+            }
+          ],
+          "b": [
+            "affordability",
+            {
+              "amount_minor": 40000,
+              "date": "2026-12-12",
+              "purpose": "present"
+            }
+          ],
+          "case": "CTX-P019",
+          "hit": true,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "goal_status",
+            {
+              "goal": "emergency_fund"
+            }
+          ],
+          "b": [
+            "goal_status",
+            {
+              "goal": "emergency_fund"
+            }
+          ],
+          "case": "CTX-P020",
+          "hit": true,
+          "kind": "paraphrase_pair"
+        },
+        {
+          "a": [
+            "affordability",
+            {
+              "amount_minor": 120000,
+              "date": "2026-11-06",
+              "purpose": "holiday"
+            }
+          ],
+          "b": [
+            "affordability",
+            {
+              "amount_minor": 80000,
+              "date": "2026-11-06",
+              "purpose": "holiday"
+            }
+          ],
+          "case": "CTX-N001",
+          "hit": false,
+          "kind": "near_miss_pair"
+        },
+        {
+          "a": [
+            "affordability",
+            {
+              "amount_minor": 120000,
+              "date": "2026-11-06",
+              "purpose": "holiday"
+            }
+          ],
+          "b": [
+            "affordability",
+            {
+              "amount_minor": 120000,
+              "date": "2026-11-28",
+              "purpose": "holiday"
+            }
+          ],
+          "case": "CTX-N002",
+          "hit": false,
+          "kind": "near_miss_pair"
+        },
+        {
+          "a": [
+            "scenario",
+            {
+              "days": 10,
+              "modifier": "income_delay"
+            }
+          ],
+          "b": [
+            "scenario",
+            {
+              "days": 14,
+              "modifier": "income_delay"
+            }
+          ],
+          "case": "CTX-N003",
+          "hit": false,
+          "kind": "near_miss_pair"
+        },
+        {
+          "a": [
+            "trend_or_change",
+            {
+              "category_key": "food.delivery"
+            }
+          ],
+          "b": [
+            "trend_or_change",
+            {
+              "category_key": "food.eating_out"
+            }
+          ],
+          "case": "CTX-N004",
+          "hit": false,
+          "kind": "near_miss_pair"
+        },
+        {
+          "a": [
+            "spending_breakdown",
+            {
+              "category_key": "groceries",
+              "period": "last_month"
+            }
+          ],
+          "b": [
+            "spending_breakdown",
+            {
+              "category_key": "groceries",
+              "period": "this_month"
+            }
+          ],
+          "case": "CTX-N005",
+          "hit": false,
+          "kind": "near_miss_pair"
+        },
+        {
+          "a": [
+            "scenario",
+            {
+              "amount_minor": 130000,
+              "date": "2027-02-01",
+              "modifier": "recurring_change",
+              "purpose": "rent"
+            }
+          ],
+          "b": [
+            "scenario",
+            {
+              "amount_minor": 130000,
+              "date": "2027-03-01",
+              "modifier": "recurring_change",
+              "purpose": "rent"
+            }
+          ],
+          "case": "CTX-N006",
+          "hit": false,
+          "kind": "near_miss_pair"
+        },
+        {
+          "a": [
+            "scenario",
+            {
+              "amount_minor": 130000,
+              "date": "2027-02-01",
+              "modifier": "recurring_change",
+              "purpose": "rent"
+            }
+          ],
+          "b": [
+            "scenario",
+            {
+              "amount_minor": 135000,
+              "modifier": "recurring_change"
+            }
+          ],
+          "case": "CTX-N007",
+          "hit": false,
+          "kind": "near_miss_pair"
+        },
+        {
+          "a": [
+            "transaction_lookup",
+            {
+              "category_key": "food.delivery",
+              "merchant": "Deliveroo"
+            }
+          ],
+          "b": [
+            "transaction_lookup",
+            {
+              "category_key": "food.delivery",
+              "merchant": "Uber Eats"
+            }
+          ],
+          "case": "CTX-N008",
+          "hit": false,
+          "kind": "near_miss_pair"
+        },
+        {
+          "a": [
+            "affordability",
+            {
+              "amount_minor": 35000,
+              "date": "2026-10-20",
+              "purpose": "phone"
+            }
+          ],
+          "b": [
+            "affordability",
+            {
+              "amount_minor": 35000,
+              "date": "2026-11-20",
+              "purpose": "phone"
+            }
+          ],
+          "case": "CTX-N009",
+          "hit": false,
+          "kind": "near_miss_pair"
+        },
+        {
+          "a": [
+            "trend_or_change",
+            {
+              "category_key": "food.eating_out"
+            }
+          ],
+          "b": [
+            "trend_or_change",
+            {
+              "category_key": "transport.taxi"
+            }
+          ],
+          "case": "CTX-N010",
+          "hit": false,
+          "kind": "near_miss_pair"
+        },
+        {
+          "a": [
+            "scenario",
+            {
+              "merchant": "Sky",
+              "modifier": "recurring_cancel"
+            }
+          ],
+          "b": [
+            "scenario",
+            {
+              "merchant": "Netflix",
+              "modifier": "recurring_cancel"
+            }
+          ],
+          "case": "CTX-N011",
+          "hit": false,
+          "kind": "near_miss_pair"
+        },
+        {
+          "a": [
+            "affordability",
+            {
+              "amount_minor": 40000,
+              "date": "2026-12-12",
+              "purpose": "christmas_present"
+            }
+          ],
+          "b": [
+            "affordability",
+            {
+              "amount_minor": 60000,
+              "date": "2026-12-12",
+              "purpose": "christmas_present"
+            }
+          ],
+          "case": "CTX-N012",
+          "hit": false,
+          "kind": "near_miss_pair"
+        },
+        {
+          "a": [
+            "transaction_lookup",
+            {
+              "min_amount_minor": 10000,
+              "period": "this_month"
+            }
+          ],
+          "b": [
+            "transaction_lookup",
+            {
+              "min_amount_minor": 5000,
+              "period": "this_month"
+            }
+          ],
+          "case": "CTX-N013",
+          "hit": false,
+          "kind": "near_miss_pair"
+        },
+        {
+          "a": [
+            "scenario",
+            {
+              "modifier": "income_change_pct",
+              "months": 2,
+              "pct": -100
+            }
+          ],
+          "b": [
+            "scenario",
+            {
+              "modifier": "income_change_pct",
+              "months": 3,
+              "pct": -100
+            }
+          ],
+          "case": "CTX-N014",
+          "hit": false,
+          "kind": "near_miss_pair"
+        },
+        {
+          "a": [
+            "risk_check",
+            {
+              "window": "to_next_payday"
+            }
+          ],
+          "b": [
+            "risk_check",
+            {
+              "period": "2026-11"
+            }
+          ],
+          "case": "CTX-N015",
+          "hit": false,
+          "kind": "near_miss_pair"
+        },
+        {
+          "a": [
+            "affordability",
+            {
+              "amount_minor": 120000,
+              "date": "2026-11-06",
+              "purpose": "holiday"
+            }
+          ],
+          "b": [
+            "affordability",
+            {
+              "amount_minor": 120000,
+              "date": "2026-11-06",
+              "purpose": "holiday"
+            }
+          ],
+          "case": "CTX-N016",
+          "hit": false,
+          "kind": "near_miss_pair"
+        },
+        {
+          "a": [
+            "spending_breakdown",
+            {}
+          ],
+          "b": [
+            "spending_breakdown",
+            {}
+          ],
+          "case": "CTX-N017",
+          "hit": false,
+          "kind": "near_miss_pair"
+        },
+        {
+          "a": [
+            "risk_check",
+            {
+              "period": "this_month"
+            }
+          ],
+          "b": [
+            "risk_check",
+            {
+              "period": "this_month"
+            }
+          ],
+          "case": "CTX-N018",
+          "hit": false,
+          "kind": "near_miss_pair"
+        },
+        {
+          "a": [
+            "subscription_review",
+            {}
+          ],
+          "b": [
+            "subscription_review",
+            {}
+          ],
+          "case": "CTX-N019",
+          "hit": false,
+          "kind": "near_miss_pair"
+        },
+        {
+          "a": [
+            "advice_request",
+            {}
+          ],
+          "b": [
+            "advice_request",
+            {}
+          ],
+          "case": "CTX-N020",
+          "hit": false,
+          "kind": "near_miss_pair"
+        }
+      ],
+      "pairs_scored": 40,
+      "requests": 210
+    },
+    "efficiency": {
+      "by_answer_type": {
+        "advice": {
+          "cost_mean_usd": 0.04361,
+          "cost_p95_usd": 0.08247,
+          "count": 13,
+          "degraded_left_out": 0,
+          "first_step_p95_s": 0.02,
+          "latency_estimated_p50_s": 21.52,
+          "latency_estimated_p95_s": 44.42,
+          "latency_measured": 0,
+          "latency_p50_s": null,
+          "latency_p50_s_measured_only": null,
+          "latency_p95_s": null
+        },
+        "all": {
+          "cost_mean_usd": 0.00992,
+          "cost_p95_usd": 0.06753,
+          "count": 60,
+          "degraded_left_out": 0,
+          "first_step_p95_s": 0.02,
+          "latency_estimated_p50_s": 6.34,
+          "latency_estimated_p95_s": 37.65,
+          "latency_measured": 3,
+          "latency_p50_s": null,
+          "latency_p50_s_measured_only": 0.03,
+          "latency_p95_s": null
+        },
+        "simple": {
+          "cost_mean_usd": 0.0006,
+          "cost_p95_usd": 0.00063,
+          "count": 47,
+          "degraded_left_out": 0,
+          "first_step_p95_s": 0.02,
+          "latency_estimated_p50_s": 6.31,
+          "latency_estimated_p95_s": 10.48,
+          "latency_measured": 3,
+          "latency_p50_s": null,
+          "latency_p50_s_measured_only": 0.03,
+          "latency_p95_s": null
+        }
+      },
+      "by_tier": {
+        "fast": {
+          "accuracy_gates": [
+            "E-CTX",
+            "E-UI",
+            "E-SCN",
+            "E-CAT"
+          ],
+          "call_latency_p50_s": 3.11,
+          "call_latency_p95_s": 7.32,
+          "calls": 95,
+          "cost_per_answer_usd": 0.00038,
+          "cost_per_call_usd": 0.00024,
+          "latency_measured": 24,
+          "models": [
+            "gpt-6-luna",
+            "openai/gpt-6-luna"
+          ]
+        },
+        "reasoning": {
+          "accuracy_gates": [
+            "E-ORC",
+            "E-GRD"
+          ],
+          "call_latency_p50_s": 10.79,
+          "call_latency_p95_s": 12.56,
+          "calls": 25,
+          "cost_per_answer_usd": 0.00931,
+          "cost_per_call_usd": 0.02234,
+          "latency_measured": 24,
+          "models": [
+            "anthropic/claude-sonnet-5.5"
+          ]
+        },
+        "verifier": {
+          "accuracy_gates": [
+            "E-VER"
+          ],
+          "call_latency_p50_s": 6.17,
+          "call_latency_p95_s": 6.95,
+          "calls": 4,
+          "cost_per_answer_usd": 0.00023,
+          "cost_per_call_usd": 0.00346,
+          "latency_measured": 4,
+          "models": [
+            "gpt-6.1-sol"
+          ]
+        }
+      },
+      "mode": "replay"
+    },
+    "forecast": {
+      "arms": {
+        "no_confirmation": {
+          "coverage_by_dataset": {
+            "P1-base": 0.7849,
+            "P2-base": 0.7251,
+            "S4-shock": 0.7683
+          },
+          "mae30_gbp_by_dataset": {
+            "P1-base": 443.19,
+            "P2-base": 6981.71,
+            "S4-shock": 5924.6
+          },
+          "mase30_by_dataset": {
+            "P1-base": 0.4954,
+            "P2-base": 1.7149,
+            "S4-shock": 1.7426
+          },
+          "note": "detection only: no user answers",
+          "pinball_gbp_by_dataset": {
+            "P1-base": 128.08,
+            "P2-base": 2560.56,
+            "S4-shock": 2050.59
+          }
+        },
+        "with_onboarding_confirmation": {
+          "coverage_by_dataset": {
+            "P1-base": 0.7849,
+            "P2-base": 0.8655,
+            "S4-shock": 0.7624
+          },
+          "mae30_gbp_by_dataset": {
+            "P1-base": 443.19,
+            "P2-base": 5650.98,
+            "S4-shock": 5023.44
+          },
+          "mase30_by_dataset": {
+            "P1-base": 0.4954,
+            "P2-base": 1.4032,
+            "S4-shock": 1.4805
+          },
+          "note": "simulates the user confirming detected income at onboarding (06 H8): the top 3 unconfirmed payers at each origin are asked about and answered from the truth labels",
+          "pinball_gbp_by_dataset": {
+            "P1-base": 128.08,
+            "P2-base": 1712.02,
+            "S4-shock": 1724.96
+          }
+        }
+      },
+      "best_baseline_mae30_gbp_by_dataset": {
+        "P1-base": 643.36,
+        "P2-base": 4849.15,
+        "S4-shock": 4592.07
+      },
+      "best_baseline_mase30_by_dataset": {
+        "P1-base": 0.7259,
+        "P2-base": 1.2052,
+        "S4-shock": 1.3461
+      },
+      "breach_brier": null,
+      "by_horizon": {
+        "30": {
+          "best_baseline": "B0",
+          "best_baseline_mae_gbp": 643.36,
+          "best_baseline_mase": 0.7259,
+          "coverage_p10_p90": 0.7849,
+          "mae_gbp": 443.19,
+          "mape": 0.4377,
+          "mase": 0.4954
+        },
+        "60": {
+          "best_baseline": "B0",
+          "best_baseline_mae_gbp": 816.23,
+          "best_baseline_mase": 0.8627,
+          "coverage_p10_p90": 0.7849,
+          "mae_gbp": 612.48,
+          "mape": 0.5361,
+          "mase": 0.6397
+        },
+        "7": {
+          "best_baseline": "B3",
+          "best_baseline_mae_gbp": 506.1,
+          "best_baseline_mase": 0.3384,
+          "coverage_p10_p90": 0.7849,
+          "mae_gbp": 224.62,
+          "mape": 0.0954,
+          "mase": 0.1498
+        }
+      },
+      "by_split": {
+        "P1-base": {
+          "dev": {
+            "coverage_p10_p90": 0.8417,
+            "mae30_gbp": 432.35,
+            "mape30": 0.1762,
+            "mase30": 0.4224,
+            "n_origins": 18,
+            "pinball_gbp": 117.49
+          },
+          "test": {
+            "coverage_p10_p90": 0.7064,
+            "mae30_gbp": 458.2,
+            "mape30": 0.7997,
+            "mase30": 0.5965,
+            "n_origins": 13,
+            "pinball_gbp": 142.73
+          }
+        },
+        "P2-base": {
+          "dev": {
+            "coverage_p10_p90": 0.8955,
+            "mae30_gbp": 5418.24,
+            "mape30": 0.6642,
+            "mase30": 1.3936,
+            "n_origins": 44,
+            "pinball_gbp": 1768.1
+          },
+          "test": {
+            "coverage_p10_p90": 0.7641,
+            "mae30_gbp": 6438.72,
+            "mape30": 0.6131,
+            "mase30": 1.4358,
+            "n_origins": 13,
+            "pinball_gbp": 1522.21
+          }
+        },
+        "S4-shock": {
+          "dev": {
+            "coverage_p10_p90": 0.8222,
+            "mae30_gbp": 4750.88,
+            "mape30": 0.6316,
+            "mase30": 1.5379,
+            "n_origins": 18,
+            "pinball_gbp": 1667.76
+          },
+          "test": {
+            "coverage_p10_p90": 0.6795,
+            "mae30_gbp": 5400.83,
+            "mape30": 2.3984,
+            "mase30": 1.401,
+            "n_origins": 13,
+            "pinball_gbp": 1804.16
+          }
+        }
+      },
+      "calibration_version": "cal-1",
+      "coverage_by_dataset": {
+        "P1-base": 0.7849,
+        "P2-base": 0.8655,
+        "S4-shock": 0.7624
+      },
+      "engine_version": "fc-1.3.0",
+      "headline_arm": "with_onboarding_confirmation",
+      "headline_dataset": "P1-base",
+      "mae30_gbp_by_dataset": {
+        "P1-base": 443.19,
+        "P2-base": 5650.98,
+        "S4-shock": 5023.44
+      },
+      "mase30_by_dataset": {
+        "P1-base": 0.4954,
+        "P2-base": 1.4032,
+        "S4-shock": 1.4805
+      },
+      "method": {
+        "anchor": "truth balance at the origin",
+        "calibration": "cal-1: tail scales from raw forecasts at earlier weekly origins (from day 28), scored up to the origin",
+        "dev_test": "dev = origin + 60 d \u2264 last day \u2212 3 months",
+        "inputs": "detected (import \u2192 rules \u2192 detect), truncated at each origin",
+        "mape": "reported, not a target: |error| / |actual| explodes near \u00a30, exactly the pre-payday lows that matter (target replaced by MASE on 13 Oct 2026)",
+        "mase": "MAE \u00f7 the in-sample mean absolute h-step change before each origin (Hyndman & Koehler 2006); below 1 beats in-sample naive",
+        "n_paths": 500,
+        "origins": "every 7 days from day 90 to end \u2212 60"
+      },
+      "pay_cycle_low_mae_gbp": 354.51,
+      "pinball_gbp_by_dataset": {
+        "P1-base": 128.08,
+        "P2-base": 1712.02,
+        "S4-shock": 1724.96
+      },
+      "prior": "ONS Family spending workbook 1, FYE 2025, Table A1",
+      "simulated_user_step": "simulates the user confirming detected income at onboarding (06 H8): the top 3 unconfirmed payers at each origin are asked about and answered from the truth labels",
+      "skill_vs": {
+        "B1-repeat30": {
+          "30": 0.6415,
+          "60": 0.6732,
+          "7": 0.7035
+        },
+        "B2-meanflow": {
+          "30": 0.6415,
+          "60": 0.6732,
+          "7": 0.8658
+        },
+        "best_baseline": {
+          "30": 0.3111,
+          "60": 0.2496,
+          "7": 0.5562
+        }
+      }
+    },
+    "grounding": {
+      "approved": 91,
+      "commitment_cuts_unrequested": 0,
+      "evidence_ref_validity": 1.0,
+      "generic_advice_rate": 0.0,
+      "numeric_claim_match": 1.0,
+      "swap_test_fail_rate": 1.0
+    },
+    "income": {
+      "amount_within_2pct": 1.0,
+      "four_weekly_cadence_ok": true,
+      "payday_rule_ok": 1.0,
+      "paydays_equal_credit_dates": 0.6667,
+      "salaried_precision": 1.0,
+      "salaried_recall": 1.0
+    },
+    "ingestion": {
+      "csv_statement": {
+        "builtin_profile": {
+          "false_match_rate": 0.0,
+          "match_rate": 1.0,
+          "n_builtin_files": 3,
+          "n_other_files": 7
+        },
+        "format_profile_unseen": {
+          "heuristic_llm": {
+            "llm_calls_per_file": 1.25,
+            "per_file": [
+              {
+                "dataset": "C1-pennine",
+                "file": "exports/pennine_statement.csv",
+                "problems": [],
+                "profiles": [
+                  "proposed.d24756dc283d"
+                ],
+                "reused_without_model": true,
+                "row_precision": 1.0,
+                "row_recall": 1.0,
+                "success": true
+              },
+              {
+                "dataset": "C2-harbour-vale",
+                "file": "exports/harbour_vale.csv",
+                "problems": [],
+                "profiles": [
+                  "proposed.5fa775716a97"
+                ],
+                "reused_without_model": true,
+                "row_precision": 1.0,
+                "row_recall": 1.0,
+                "success": true
+              },
+              {
+                "dataset": "C3-northgate",
+                "file": "exports/northgate.csv",
+                "problems": [],
+                "profiles": [
+                  "proposed.cf137d515303",
+                  "proposed.cf137d515303"
+                ],
+                "reused_without_model": true,
+                "row_precision": 1.0,
+                "row_recall": 1.0,
+                "success": true
+              },
+              {
+                "dataset": "C4-fenwick",
+                "file": "exports/fenwick.csv",
+                "problems": [],
+                "profiles": [
+                  "proposed.0867ad963598"
+                ],
+                "reused_without_model": true,
+                "row_precision": 1.0,
+                "row_recall": 1.0,
+                "success": true
+              }
+            ],
+            "proposals": 5,
+            "reuse_rate": 1.0,
+            "success": 1.0
+          },
+          "heuristic_only": {
+            "success": 0.0
+          }
+        },
+        "parse": {
+          "C1_pennine": {
+            "row_precision": null,
+            "row_recall": 0.0,
+            "truth_rows": 1063
+          },
+          "C2_harbour_vale": {
+            "row_precision": null,
+            "row_recall": 0.0,
+            "truth_rows": 1041
+          },
+          "C3_northgate": {
+            "row_precision": null,
+            "row_recall": 0.0,
+            "truth_rows": 1082
+          },
+          "C4_fenwick": {
+            "row_precision": null,
+            "row_recall": 0.0,
+            "truth_rows": 1093
+          },
+          "G1_eur": {
+            "row_precision": 1.0,
+            "row_recall": 1.0,
+            "truth_rows": 503
+          },
+          "generic_in_out": {
+            "row_precision": 1.0,
+            "row_recall": 1.0,
+            "truth_rows": 30
+          },
+          "generic_signed": {
+            "row_precision": 1.0,
+            "row_recall": 1.0,
+            "truth_rows": 1252
+          },
+          "monzo": {
+            "row_precision": 1.0,
+            "row_recall": 1.0,
+            "truth_rows": 1667
+          },
+          "revolut_consolidated": {
+            "row_precision": 1.0,
+            "row_recall": 1.0,
+            "truth_rows": 328
+          }
+        },
+        "reconciliation": {
+          "clean_tables_rejected": 0,
+          "corrupted_csv": {
+            "correct_first_row": 13,
+            "detected": 20,
+            "detection_rate": 1.0,
+            "detection_rate_ci95": [
+              0.8389,
+              1.0
+            ],
+            "rejected_cases": 13,
+            "rows_committed_from_failed_files": 0,
+            "total": 20
+          },
+          "no_balance_labelled_reconciled": 0
+        },
+        "table_locator": {
+          "builtin_and_common": {
+            "boundary_acc": 1.0,
+            "junk_rows_parsed": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "unseen_C1_C4": {
+            "boundary_acc": 1.0,
+            "junk_rows_parsed": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        }
+      },
+      "pdf_statement": {
+        "note": "Tier 2, not shipped"
+      }
+    },
+    "locales": {
+      "ambiguous_symbol_asked": true,
+      "cross_currency_violations": null,
+      "currency_detection_acc": 1.0,
+      "date_order_acc": 1.0,
+      "h13": {
+        "all_clauses_ok": true,
+        "llm_calls": 0,
+        "repeat_questions": 0,
+        "uncommitted_until_answered": true
+      },
+      "minor_unit_exact": true,
+      "not_run": {
+        "E-LOC-6": "G4 (EUR pocket forecast) not generated yet",
+        "E-LOC-7": "XLS/XLSX exports not generated yet (Tier 1 XLSX is a later task)"
+      },
+      "number_format_acc": 1.0,
+      "xls_csv_parity": null
+    },
+    "orchestration": {
+      "agent_coverage": {
+        "advisor": 19,
+        "analyst": 9,
+        "coordinator": 26,
+        "forecaster": 16,
+        "ledger": 5,
+        "verifier": 18
+      },
+      "by_status": {
+        "not_measured": 2,
+        "pass": 28
+      },
+      "case_count": 30,
+      "case_pass_rate_measured": 1.0,
+      "distinctness": {
+        "prompt_versions_per_agent": {
+          "advisor": [
+            "4e10aa15a5eb"
+          ],
+          "analyst": [
+            "e926023d386c"
+          ],
+          "coordinator": [
+            "f5b3a20be4fc",
+            "ffef22763a24"
+          ],
+          "forecaster": [
+            "90898f2dafbb"
+          ],
+          "ledger": [
+            "46aa0e745f08",
+            "e6011cde953f"
+          ],
+          "verifier": [
+            "63cf6459f007"
+          ]
+        },
+        "prompts_shared_between_agents": [],
+        "steps_attributed_to_their_registered_agent": true,
+        "tool_calls_outside_allow_list": []
+      },
+      "mode": "replay",
+      "seconds": 32.5
+    },
+    "recurring": {
+      "council_tax_months_exact": true,
+      "median_amount_error": 0.0,
+      "median_next_date_error_days": 0,
+      "precision": 1.0,
+      "price_rise_within_one_cycle": false,
+      "recall": 0.92,
+      "subscription_overlap_detected": false
+    },
+    "scenarios": {
+      "clarification_precision": 0.7692,
+      "clarification_recall": 1.0,
+      "errors": 0,
+      "exact_match": 0.8571,
+      "field_accuracy": {
+        "amount": 0.9839,
+        "date": 0.9855,
+        "duration": 0.875,
+        "target": 0.9492,
+        "type": 1.0
+      },
+      "scored": 80,
+      "tiers": {
+        "fast": 65,
+        "reasoning": 15
+      }
+    },
+    "security": {
+      "chat": {
+        "blocked_at_screen": 36,
+        "canary_cases": 2,
+        "canary_leaks_reaching_ui": 0,
+        "flagged_suspicious": 3,
+        "missed_designed_blocks": [],
+        "reach_understand": 4,
+        "screen_recall_on_designed_blocks": 1.0,
+        "simulated_outputs": 8,
+        "simulated_outputs_caught": 8
+      },
+      "data": {
+        "by_kind": {
+          "filename": {
+            "flagged": 4
+          },
+          "header": {
+            "flagged": 5
+          },
+          "narration": {
+            "flagged": 26
+          },
+          "pdf_text": {
+            "flagged": 5
+          }
+        },
+        "flag_rate": 1.0,
+        "flagged": 40,
+        "missed": [],
+        "never_verbatim_rate": 1.0,
+        "reaching_model_verbatim": 0
+      },
+      "dev": {
+        "agree": 34,
+        "misses": []
+      },
+      "not_run": {
+        "SEC-1": "4 of 40 chat attacks pass the screen; sec1_understand scores them through the real Understand step (an upper bound: the Verifier and output screen are not counted)",
+        "SEC-7": "stopping layer per case: chat.detail / data.detail; model layers pending"
+      },
+      "rule_pack": "guard-1.3.0+e14b963e",
+      "sec1_attack_success_chat": 0,
+      "sec1_understand": {
+        "attack_success_upper_bound": 0,
+        "not_recorded": 0,
+        "past_screen": 4,
+        "reaching_specialists": [],
+        "stopped_by_understand": 4
+      },
+      "sec2_data_reaching_model_verbatim": 0,
+      "sec3_suspicious_never_verbatim": 1.0,
+      "sec4_canary_leaks_reaching_ui": 0,
+      "sec5_false_refusals": {
+        "false_refusal_rate": 0.0,
+        "false_refusals": 0,
+        "flagged_suspicious": 1,
+        "out_of_scope_questions": 3,
+        "out_of_scope_refused_at_screen": 3,
+        "questions": 346
+      },
+      "sec6_false_flags": {
+        "by_kind": {
+          "filename": 42,
+          "header": 424,
+          "narration": 19882
+        },
+        "false_flag_rate": 0.0,
+        "false_flags": 0,
+        "texts": 20348
+      }
+    },
+    "simulation": {
+      "as_of": "2026-10-11",
+      "dataset": "P1-base",
+      "horizon_days": 90,
+      "n_paths": 200,
+      "not_run": [
+        "SIM-4",
+        "SIM-5",
+        "SIM-7",
+        "SIM-8",
+        "SIM-9",
+        "SIM-10",
+        "SIM-11",
+        "SIM-12",
+        "SIM-13"
+      ],
+      "pass_rate": 1.0,
+      "passed": 800,
+      "properties": {
+        "SIM-1": {
+          "failed": 0,
+          "first_failing_case": null,
+          "label": "Determinism",
+          "passed": 200,
+          "skipped": 0
+        },
+        "SIM-2": {
+          "failed": 0,
+          "first_failing_case": null,
+          "label": "Zero scenario = baseline",
+          "passed": 200,
+          "skipped": 0
+        },
+        "SIM-3": {
+          "failed": 0,
+          "first_failing_case": null,
+          "label": "One-off linearity",
+          "max_abs_deviation_minor": 0,
+          "passed": 200,
+          "skipped": 0
+        },
+        "SIM-6": {
+          "failed": 0,
+          "first_failing_case": null,
+          "label": "Income-delay conservation",
+          "passed": 200,
+          "skipped": 0
+        }
+      },
+      "total": 800
+    },
+    "ui": {
+      "composition": {
+        "answered": 60,
+        "not_answered": 0,
+        "ui10_skeleton": 1.0,
+        "ui1_schema_valid": 1.0,
+        "ui2_block_precision": 0.9526,
+        "ui2_block_recall": 0.8419,
+        "ui7_overview_budget": 1.0,
+        "ui9_tab_placement": 1.0
+      },
+      "mode": "replay",
+      "ui8_intent": {
+        "accuracy": 0.9474,
+        "low_confidence_clarified": 1.0,
+        "macro_f1": 0.9493,
+        "not_recorded": 0,
+        "scored": 60
+      }
+    },
+    "verifier": {
+      "deterministic_arm": {
+        "attribution": {
+          "deterministic": 56,
+          "missed": 6
+        },
+        "bad": 62,
+        "by_defect": {
+          "cross_currency_arithmetic": 1.0,
+          "cut_commitment": 1.0,
+          "dangling_evidence": 1.0,
+          "generic_advice": 1.0,
+          "goal_contradiction": 0.75,
+          "immaterial_timing": 1.0,
+          "impact_mismatch": 1.0,
+          "infeasible_cut": 1.0,
+          "non_neutral_betting": 1.0,
+          "nonexistent_target": 1.0,
+          "unsafe_or_regulated": 1.0,
+          "wrong_evidence": 0.0
+        },
+        "catch_rate": 0.9032,
+        "catch_rate_deterministic_types": 1.0,
+        "expected_rule_fired": 0.871,
+        "false_rejection_rate": 0.0,
+        "false_rejections": [],
+        "good": 34,
+        "missed": [
+          "BP-008",
+          "BP-009",
+          "BP-010",
+          "BP-011",
+          "BP-012",
+          "BP-049"
+        ]
+      },
+      "full_arm": {
+        "attribution": {
+          "deterministic": 56,
+          "judge": 6
+        },
+        "bad": 62,
+        "by_defect": {
+          "cross_currency_arithmetic": 1.0,
+          "cut_commitment": 1.0,
+          "dangling_evidence": 1.0,
+          "generic_advice": 1.0,
+          "goal_contradiction": 1.0,
+          "immaterial_timing": 1.0,
+          "impact_mismatch": 1.0,
+          "infeasible_cut": 1.0,
+          "non_neutral_betting": 1.0,
+          "nonexistent_target": 1.0,
+          "unsafe_or_regulated": 1.0,
+          "wrong_evidence": 1.0
+        },
+        "catch_rate": 1.0,
+        "catch_rate_deterministic_types": 1.0,
+        "expected_rule_fired": 0.9516,
+        "false_rejection_rate": 0.0,
+        "false_rejections": [],
+        "good": 34,
+        "missed": []
+      },
+      "headline_arm": "full",
+      "loop": {
+        "outcomes": {
+          "1_revision(s)": 49,
+          "2_revision(s)": 8,
+          "withdrawn": 5
+        },
+        "rejected_in_round_1": 62,
+        "revisable": 41,
+        "revision_success": 0.9268,
+        "unrevisable": 21,
+        "withdraw_correctness": 1.0
+      }
+    }
+  },
+  "suites_run": [
+    "E-ANOM",
+    "E-AUD",
+    "E-CAT",
+    "E-CTX",
+    "E-EFF",
+    "E-FC",
+    "E-GRD",
+    "E-INC",
+    "E-ING",
+    "E-LOC",
+    "E-ORC",
+    "E-REC",
+    "E-SCN",
+    "E-SEC",
+    "E-SIM",
+    "E-UI",
+    "E-VER"
+  ],
+  "targets": {
+    "E-ANOM": [
+      {
+        "dataset": "P1-base, P2-base",
+        "id": "ANOM-recall",
+        "label": "Recall (category trends)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.85",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1-base, P2-base",
+        "id": "ANOM-precision",
+        "label": "Precision (category trends)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.75",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1-clean, P2-clean (18 months)",
+        "id": "ANOM-fp",
+        "label": "False positives per persona-month (clean)",
+        "met": true,
+        "stage1": true,
+        "target": "<= 0.5",
+        "value": 0.0556
+      },
+      {
+        "dataset": "P1-base, P2-base",
+        "id": "ANOM-magnitude",
+        "label": "Surge magnitude error (pp)",
+        "met": true,
+        "stage1": true,
+        "target": "<= 5",
+        "value": 2.2
+      }
+    ],
+    "E-AUD": [
+      {
+        "dataset": "9 recommendations",
+        "id": "AUD-complete",
+        "label": "Audit completeness (unbroken chains)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1, P2 audit log",
+        "id": "AUD-hashchain",
+        "label": "Audit event hash chain intact",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "10 calculations",
+        "id": "AUD-recompute",
+        "label": "Recomputability (identical result hash)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "12 rejections",
+        "id": "AUD-rejected",
+        "label": "Rejected/withdrawn traceability",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "8 calculations",
+        "id": "AUD-provenance",
+        "label": "Provenance labels on chain calculations",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      }
+    ],
+    "E-CAT": [
+      {
+        "dataset": "P1, P2 test split",
+        "id": "CAT-hybrid-acc-generated",
+        "label": "Accuracy, hybrid (generated test split)",
+        "met": true,
+        "stage1": false,
+        "target": ">= 0.93",
+        "value": 0.9418
+      },
+      {
+        "dataset": "UK holdout",
+        "id": "CAT-hybrid-acc",
+        "label": "Accuracy, hybrid (holdout)",
+        "met": null,
+        "stage1": false,
+        "target": ">= 0.85",
+        "value": null
+      },
+      {
+        "dataset": "UK holdout",
+        "id": "CAT-hybrid-f1",
+        "label": "Macro-F1, hybrid (holdout)",
+        "met": null,
+        "stage1": false,
+        "target": ">= 0.8",
+        "value": null
+      },
+      {
+        "dataset": "UK holdout",
+        "id": "CAT-hybrid-flow",
+        "label": "Flow-class accuracy, hybrid (holdout)",
+        "met": null,
+        "stage1": false,
+        "target": ">= 0.95",
+        "value": null
+      },
+      {
+        "dataset": "UK holdout",
+        "id": "CAT-selective",
+        "label": "Selective accuracy@0.85 (holdout)",
+        "met": null,
+        "stage1": false,
+        "target": ">= 0.95",
+        "value": null
+      }
+    ],
+    "E-CTX": [
+      {
+        "dataset": "45 follow-up turns",
+        "id": "CTX-1",
+        "label": "Follow-up intent accuracy (turn \u2265 2)",
+        "met": true,
+        "stage1": false,
+        "target": ">= 0.9",
+        "value": 0.9556
+      },
+      {
+        "dataset": "45 follow-up turns",
+        "id": "CTX-2",
+        "label": "Follow-up slot exact match",
+        "met": false,
+        "stage1": false,
+        "target": ">= 0.85",
+        "value": 0.6444
+      },
+      {
+        "dataset": "45 rewrites",
+        "id": "CTX-3",
+        "label": "Standalone rewrite adequacy",
+        "met": false,
+        "stage1": false,
+        "target": ">= 0.9",
+        "value": 0.8889
+      },
+      {
+        "dataset": "20 pairs",
+        "id": "CTX-4",
+        "label": "Cache hit rate, paraphrase pairs",
+        "met": true,
+        "stage1": false,
+        "target": ">= 0.9",
+        "value": 0.9
+      },
+      {
+        "dataset": "20 pairs",
+        "id": "CTX-5",
+        "label": "False cache hits, near-miss pairs",
+        "met": true,
+        "stage1": false,
+        "target": "== 0",
+        "value": 0.0
+      }
+    ],
+    "E-EFF": [
+      {
+        "dataset": "60 E-UI answers",
+        "id": "EFF-1",
+        "label": "Mean cost per answer (USD)",
+        "met": true,
+        "stage1": false,
+        "target": "<= 0.03",
+        "value": 0.00992
+      },
+      {
+        "dataset": "13 advice answers",
+        "id": "EFF-2",
+        "label": "Mean cost per advice answer (USD)",
+        "met": true,
+        "stage1": false,
+        "target": "<= 0.055",
+        "value": 0.04361
+      },
+      {
+        "dataset": "60 E-UI answers",
+        "id": "EFF-3",
+        "label": "p95 cost per answer (USD)",
+        "met": true,
+        "stage1": false,
+        "target": "<= 0.1",
+        "value": 0.06753
+      },
+      {
+        "dataset": "60 E-UI answers",
+        "id": "EFF-4",
+        "label": "Time to first progress step, p95 (s)",
+        "met": true,
+        "stage1": false,
+        "target": "<= 2.0",
+        "value": 0.02
+      },
+      {
+        "dataset": "47 simple answers",
+        "id": "EFF-5",
+        "label": "Simple answer latency p50 (s)",
+        "met": null,
+        "stage1": false,
+        "target": "<= 10.0",
+        "value": null
+      },
+      {
+        "dataset": "13 advice answers",
+        "id": "EFF-6",
+        "label": "Advice answer latency p50 (s)",
+        "met": null,
+        "stage1": false,
+        "target": "<= 35.0",
+        "value": null
+      },
+      {
+        "dataset": "13 advice answers",
+        "id": "EFF-7",
+        "label": "Advice answer latency p95 (s)",
+        "met": null,
+        "stage1": false,
+        "target": "<= 60.0",
+        "value": null
+      }
+    ],
+    "E-FC": [
+      {
+        "dataset": "P1",
+        "id": "FC-skill-B1",
+        "label": "Skill vs B1-repeat30, MAE(30)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.2",
+        "value": 0.6415
+      },
+      {
+        "dataset": "P1",
+        "id": "FC-skill-B2",
+        "label": "Skill vs B2-meanflow, MAE(30)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.15",
+        "value": 0.6415
+      },
+      {
+        "dataset": "P1",
+        "id": "FC-mase",
+        "label": "MASE(30)",
+        "met": true,
+        "stage1": true,
+        "target": "< 1.0",
+        "value": 0.4954
+      },
+      {
+        "dataset": "P1",
+        "id": "FC-mase-vs-best",
+        "label": "MASE(30) \u00f7 best naive baseline MASE(30)",
+        "met": true,
+        "stage1": true,
+        "target": "< 1.0",
+        "value": 0.6825
+      },
+      {
+        "dataset": "P1-base",
+        "id": "FC-coverage-P1",
+        "label": "P10\u2013P90 coverage (all h)",
+        "met": true,
+        "stage1": true,
+        "target": "0.72\u20130.88",
+        "value": 0.7849
+      },
+      {
+        "dataset": "P2-base",
+        "id": "FC-coverage-P2",
+        "label": "P10\u2013P90 coverage (all h)",
+        "met": true,
+        "stage1": true,
+        "target": "0.72\u20130.88",
+        "value": 0.8655
+      }
+    ],
+    "E-GRD": [
+      {
+        "dataset": "approved",
+        "id": "GRD-refs",
+        "label": "Evidence refs resolve",
+        "met": true,
+        "stage1": true,
+        "target": "== 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "approved",
+        "id": "GRD-numbers",
+        "label": "No model-written numbers",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.98",
+        "value": 1.0
+      },
+      {
+        "dataset": "approved",
+        "id": "GRD-generic",
+        "label": "Generic advice among approved",
+        "met": true,
+        "stage1": true,
+        "target": "== 0.0",
+        "value": 0.0
+      },
+      {
+        "dataset": "approved",
+        "id": "GRD-commitment",
+        "label": "Unrequested cuts to protected categories",
+        "met": true,
+        "stage1": true,
+        "target": "== 0.0",
+        "value": 0.0
+      },
+      {
+        "dataset": "approved",
+        "id": "GRD-swap",
+        "label": "Swap test: other persona's advice fails",
+        "met": true,
+        "stage1": true,
+        "target": "== 1.0",
+        "value": 1.0
+      }
+    ],
+    "E-INC": [
+      {
+        "dataset": "P1-base, P2-base, S8-salary-split, S11-fourweekly",
+        "id": "INC-1-P",
+        "label": "Salaried stream precision",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.95",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1-base, P2-base, S8-salary-split, S11-fourweekly",
+        "id": "INC-1-R",
+        "label": "Salaried stream recall",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.95",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1-base, P2-base, S8-salary-split, S11-fourweekly",
+        "id": "INC-2",
+        "label": "Amount within \u00b12% (matched salaried)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1-base, P2-base, S8-salary-split",
+        "id": "INC-3",
+        "label": "Payday rule and next payday exact (monthly)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "S11",
+        "id": "INC-4",
+        "label": "Four-weekly pay detected as 28-day cadence",
+        "met": true,
+        "stage1": true,
+        "target": "== 1",
+        "value": 1.0
+      }
+    ],
+    "E-ING": [
+      {
+        "dataset": "C1\u2013C4",
+        "id": "ING-format-unseen-llm",
+        "label": "FormatProfile success, unseen layouts (heuristic + Ledger Agent)",
+        "met": true,
+        "stage1": false,
+        "target": ">= 0.85",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1-base, P2-base, S14-side-account, S8-salary-split, G1-eur",
+        "id": "ING-locator-P",
+        "label": "Table locator precision (built-in + common)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1-base, P2-base, S14-side-account, S8-salary-split, G1-eur",
+        "id": "ING-locator-R",
+        "label": "Table locator recall (built-in + common)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "C1\u2013C4",
+        "id": "ING-locator-unseen",
+        "label": "Table locator recall (C1\u2013C4)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.95",
+        "value": 1.0
+      },
+      {
+        "dataset": "all",
+        "id": "ING-junk",
+        "label": "Junk rows parsed as transactions",
+        "met": true,
+        "stage1": true,
+        "target": "== 0",
+        "value": 0.0
+      },
+      {
+        "dataset": "Monzo, Revolut",
+        "id": "ING-builtin-match",
+        "label": "Built-in profile match rate",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "generic, C1\u2013C4",
+        "id": "ING-false-match",
+        "label": "Built-in false match rate",
+        "met": true,
+        "stage1": true,
+        "target": "<= 0.0",
+        "value": 0.0
+      },
+      {
+        "dataset": "Monzo, Revolut",
+        "id": "ING-parse-P",
+        "label": "Row precision (built-in formats)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "Monzo, Revolut",
+        "id": "ING-parse-R",
+        "label": "Row recall (built-in formats)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "CSV-CORRUPT (20)",
+        "id": "ING-corrupt",
+        "label": "CSV-CORRUPT defects detected",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1-base, P2-base, S14-side-account, S8-salary-split, G1-eur",
+        "id": "ING-clean-rejected",
+        "label": "Clean tables rejected",
+        "met": true,
+        "stage1": true,
+        "target": "== 0",
+        "value": 0.0
+      },
+      {
+        "dataset": "P1-base, P2-base, S14-side-account, S8-salary-split, G1-eur",
+        "id": "ING-honest",
+        "label": "Balance-free files labelled reconciled",
+        "met": true,
+        "stage1": true,
+        "target": "== 0",
+        "value": 0.0
+      },
+      {
+        "dataset": "C1\u2013C4",
+        "id": "ING-heuristic+llm",
+        "label": "FormatProfile success, heuristic+LLM",
+        "met": null,
+        "stage1": false,
+        "target": ">= 0.85",
+        "value": null
+      }
+    ],
+    "E-LOC": [
+      {
+        "dataset": "P1-base, G1-eur, S14-side-account",
+        "id": "E-LOC-1",
+        "label": "Currency detection",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "G3",
+        "id": "E-LOC-2",
+        "label": "Ambiguous $ asked, nothing committed",
+        "met": true,
+        "stage1": true,
+        "target": "== 1",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1-base, P2-base, G1-eur, S14-side-account",
+        "id": "E-LOC-3",
+        "label": "Number format inference",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1-base, P2-base, G1-eur, S14-side-account",
+        "id": "E-LOC-4",
+        "label": "Date order inference (files with day > 12)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1-base, P2-base, G1-eur, S14-side-account",
+        "id": "E-LOC-5",
+        "label": "Minor units exact",
+        "met": true,
+        "stage1": true,
+        "target": "== 1",
+        "value": 1.0
+      },
+      {
+        "dataset": "G3, G5",
+        "id": "E-LOC-13",
+        "label": "H13: uncommitted until answered \u00b7 0 LLM calls \u00b7 0 repeat questions",
+        "met": true,
+        "stage1": true,
+        "target": "== 1",
+        "value": 1.0
+      }
+    ],
+    "E-ORC": [
+      {
+        "dataset": "30 cases",
+        "gated": false,
+        "id": "ORC-pass",
+        "label": "Case pass rate (all 30; not recorded or not built count as unmet)",
+        "met": false,
+        "not_gated_because": "includes cases for features of later stages not built yet",
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 0.9333
+      },
+      {
+        "dataset": "28 cases",
+        "id": "ORC-pass-built",
+        "label": "Case pass rate (cases whose feature is built; not recorded counts as unmet)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "28 cases",
+        "id": "ORC-pass-measured",
+        "label": "Case pass rate (cases that ran)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "coverage table",
+        "id": "ORC-2",
+        "label": "All six node types reached",
+        "met": true,
+        "stage1": true,
+        "target": "== 1",
+        "value": 1
+      },
+      {
+        "dataset": "all runs",
+        "id": "ORC-3",
+        "label": "Agents distinct (prompts, tool allow-lists)",
+        "met": true,
+        "stage1": true,
+        "target": "== 1",
+        "value": 1
+      }
+    ],
+    "E-REC": [
+      {
+        "dataset": "P1-base, P2-base",
+        "id": "REC-P",
+        "label": "Obligation precision",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.9",
+        "value": 1.0
+      },
+      {
+        "dataset": "P1-base, P2-base",
+        "id": "REC-R",
+        "label": "Obligation recall",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.9",
+        "value": 0.92
+      },
+      {
+        "dataset": "P1-base, P2-base",
+        "id": "REC-amount",
+        "label": "Median amount error",
+        "met": true,
+        "stage1": true,
+        "target": "<= 0.02",
+        "value": 0.0
+      },
+      {
+        "dataset": "P1-base, P2-base",
+        "id": "REC-next-date",
+        "label": "Median next-date error (days)",
+        "met": true,
+        "stage1": true,
+        "target": "<= 2",
+        "value": 0
+      },
+      {
+        "dataset": "P1-base, P2-base",
+        "id": "REC-council-tax",
+        "label": "Council tax active Apr\u2013Jan only",
+        "met": true,
+        "stage1": true,
+        "target": "== 1",
+        "value": 1.0
+      }
+    ],
+    "E-SCN": [
+      {
+        "dataset": "80 prompts",
+        "id": "SCN-exact",
+        "label": "Exact match of the ScenarioSpec",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.85",
+        "value": 0.8571
+      },
+      {
+        "dataset": "80 prompts",
+        "id": "SCN-amount",
+        "label": "Amount field accuracy",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.95",
+        "value": 0.9839
+      },
+      {
+        "dataset": "80 prompts",
+        "id": "SCN-date",
+        "label": "Date field accuracy",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.95",
+        "value": 0.9855
+      },
+      {
+        "dataset": "10 ambiguous prompts",
+        "id": "SCN-clarify-R",
+        "label": "Clarification recall",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.8",
+        "value": 1.0
+      }
+    ],
+    "E-SEC": [
+      {
+        "dataset": "40 chat",
+        "id": "SEC-1",
+        "label": "Chat attacks reaching the specialists after Understand (upper bound)",
+        "met": true,
+        "stage1": false,
+        "target": "== 0",
+        "value": 0.0
+      },
+      {
+        "dataset": "40 data-plane",
+        "id": "SEC-2",
+        "label": "Data-plane attacks reaching a model verbatim",
+        "met": true,
+        "stage1": true,
+        "target": "== 0",
+        "value": 0.0
+      },
+      {
+        "dataset": "40 data-plane",
+        "id": "SEC-3",
+        "label": "suspicious_text rows never sent verbatim",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "2 canary outputs",
+        "id": "SEC-4",
+        "label": "Canary leaks reaching the UI (simulated outputs)",
+        "met": true,
+        "stage1": true,
+        "target": "== 0",
+        "value": 0.0
+      },
+      {
+        "dataset": "346 questions",
+        "id": "SEC-5",
+        "label": "False refusals on benign questions",
+        "met": true,
+        "stage1": true,
+        "target": "<= 0.02",
+        "value": 0.0
+      },
+      {
+        "dataset": "20348 narrations/headers/filenames",
+        "id": "SEC-6",
+        "label": "False suspicious_text flags on benign imported text",
+        "met": true,
+        "stage1": true,
+        "target": "<= 0.005",
+        "value": 0.0
+      }
+    ],
+    "E-SIM": [
+      {
+        "dataset": "P1-base",
+        "id": "SIM",
+        "label": "Properties passed (SIM-1/2/3/6)",
+        "met": true,
+        "stage1": true,
+        "target": ">= 1.0",
+        "value": 1.0
+      }
+    ],
+    "E-UI": [
+      {
+        "dataset": "60 questions",
+        "id": "UI-8",
+        "label": "Intent accuracy (Understand)",
+        "met": true,
+        "stage1": false,
+        "target": ">= 0.9",
+        "value": 0.9474
+      },
+      {
+        "dataset": "clarify rows",
+        "id": "UI-8b",
+        "label": "Low-confidence questions clarified",
+        "met": true,
+        "stage1": false,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "60 answers",
+        "id": "UI-1",
+        "label": "Schema validity",
+        "met": true,
+        "stage1": false,
+        "target": ">= 0.98",
+        "value": 1.0
+      },
+      {
+        "dataset": "60 answers",
+        "id": "UI-2",
+        "label": "Block-selection precision",
+        "met": true,
+        "stage1": false,
+        "target": ">= 0.85",
+        "value": 0.9526
+      },
+      {
+        "dataset": "60 answers",
+        "id": "UI-2b",
+        "label": "Block-selection recall",
+        "met": true,
+        "stage1": false,
+        "target": ">= 0.8",
+        "value": 0.8419
+      },
+      {
+        "dataset": "60 answers",
+        "id": "UI-7",
+        "label": "Overview budget respected",
+        "met": true,
+        "stage1": false,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "60 answers",
+        "id": "UI-9",
+        "label": "Tab placement",
+        "met": true,
+        "stage1": false,
+        "target": ">= 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "60 answers",
+        "id": "UI-10",
+        "label": "Answer skeleton followed",
+        "met": true,
+        "stage1": false,
+        "target": ">= 1.0",
+        "value": 1.0
+      }
+    ],
+    "E-VER": [
+      {
+        "dataset": "62 bad",
+        "id": "VER-catch",
+        "label": "Bad proposals caught",
+        "met": true,
+        "stage1": true,
+        "target": ">= 0.95",
+        "value": 1.0
+      },
+      {
+        "dataset": "deterministic defect types",
+        "id": "VER-catch-det",
+        "label": "Caught, deterministic defect types",
+        "met": true,
+        "stage1": true,
+        "target": "== 1.0",
+        "value": 1.0
+      },
+      {
+        "dataset": "34 good",
+        "id": "VER-false-rej",
+        "label": "Good proposals falsely rejected",
+        "met": true,
+        "stage1": true,
+        "target": "<= 0.1",
+        "value": 0.0
+      }
+    ]
+  },
+  "timestamp_utc": "2026-10-14T15:20:46Z"
+}

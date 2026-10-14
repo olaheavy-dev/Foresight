@@ -19,7 +19,9 @@ from backend.agents.specialists import decide_after_verify, specialist_nodes
 from backend.agents.state import ForesightState
 
 ADVICE_LOOP = "advice_loop"
-TAIL = {"conversation": "compose"}  # conversation answers always end in compose → persist
+# Answers always end in compose → persist: questions, and their advice follow-ups.
+TAIL = {"conversation": "compose", "advice_followup": "compose"}
+ANSWERING = frozenset(TAIL)
 
 
 def coordinator_nodes() -> dict[str, NodeSpec]:
@@ -67,6 +69,8 @@ def _next_after(current: str | None, state: ForesightState) -> str:
     while index < len(route):
         step = route[index]
         if step == ADVICE_LOOP:
+            if state.get("workflow") == "advice_followup":
+                return "revise"  # the question's last round was rejected: revise first
             # System workflows run advice only when a risk or finding asked for it.
             if state.get("workflow") == "conversation" or state.get("risk_flags"):
                 return "advise"
@@ -76,7 +80,7 @@ def _next_after(current: str | None, state: ForesightState) -> str:
     tail = TAIL.get(str(state.get("workflow")))
     if tail and current != tail:
         return tail
-    return "persist_response" if state.get("workflow") == "conversation" else END
+    return "persist_response" if state.get("workflow") in ANSWERING else END
 
 
 def build_graph(
@@ -108,6 +112,7 @@ def build_graph(
             "verify",
             "revise",
             "withdraw",
+            "defer",
         }
     ]
     targets = [*route_steps, "persist_response", END]
@@ -138,7 +143,7 @@ def build_graph(
         graph.add_edge("persist_response", END)
     else:
         graph.add_edge(START, "route_event")
-        graph.add_conditional_edges("route_event", dispatch_from(None), targets)
+        graph.add_conditional_edges("route_event", dispatch_from(None), ["revise", *targets])
         for name in (
             "intake",
             "prefetch",
@@ -163,16 +168,11 @@ def build_graph(
     def after_loop(state: ForesightState) -> str:
         return _next_after(ADVICE_LOOP, state)
 
-    graph.add_conditional_edges(
-        "verify",
-        lambda s: (
-            "revise"
-            if decide_after_verify(s, ctx) == "revise"
-            else "withdraw"
-            if decide_after_verify(s, ctx) == "withdraw"
-            else after_loop(s)
-        ),
-        ["revise", "withdraw", *targets],
-    )
+    def after_verify(state: ForesightState) -> str:
+        decision = decide_after_verify(state, ctx)
+        return decision if decision in ("revise", "withdraw", "defer") else after_loop(state)
+
+    graph.add_conditional_edges("verify", after_verify, ["revise", "withdraw", "defer", *targets])
     graph.add_conditional_edges("withdraw", after_loop, targets)
+    graph.add_conditional_edges("defer", after_loop, targets)
     return graph.compile(checkpointer=checkpointer)

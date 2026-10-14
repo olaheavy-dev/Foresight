@@ -49,6 +49,9 @@ export type Turn = {
   askedAt: string;
   run: RunState;
   partial: ParsedResponse | null;
+  // A checked recommendation that followed the answer in the same thread (docs/06 §13): the
+  // answer said `followup_pending`; `missed` once watching for it ended with nothing.
+  followUp?: { responseId: string | null; response: ParsedResponse | null; missed?: boolean };
 };
 export type Thread = { key: string; threadId: string | null; title: string; createdAt: string; turns: Turn[] };
 type State = { threads: Thread[]; selected: string | null };
@@ -64,6 +67,7 @@ type Action =
   | { type: "event"; key: string; turnId: string; event: RunEvent }
   | { type: "response"; key: string; turnId: string; response: ParsedResponse }
   | { type: "partial"; key: string; turnId: string; response: ParsedResponse }
+  | { type: "follow_up"; key: string; turnId: string; followUp: NonNullable<Turn["followUp"]> }
   | { type: "fail"; key: string; turnId: string; code: string; retryable: boolean };
 
 function updateTurn(state: State, key: string, turnId: string, fn: (t: Turn) => Turn): State {
@@ -131,6 +135,8 @@ export function workspaceReducer(state: State, action: Action): State {
       );
     case "partial":
       return updateTurn(state, action.key, action.turnId, (t) => ({ ...t, partial: action.response }));
+    case "follow_up":
+      return updateTurn(state, action.key, action.turnId, (t) => ({ ...t, followUp: action.followUp }));
     case "fail":
       return updateTurn(state, action.key, action.turnId, (t) => ({
         ...t,
@@ -158,6 +164,11 @@ export function turnsFromThread(detail: ThreadDetail): Turn[] {
     } else {
       const t = turns.at(-1);
       if (!t) continue;
+      if (t.run.answer && m.response_id && m.response_id !== t.run.answer.responseId) {
+        // A second answer to the same question is its advice follow-up, never a replacement.
+        t.followUp = { responseId: m.response_id, response: null };
+        continue;
+      }
       t.run = { ...t.run, runId: t.run.runId ?? m.run_id };
       if (m.response_id) t.run = { ...t.run, phase: "answered", answer: { responseId: m.response_id, response: null } };
     }
@@ -165,8 +176,25 @@ export function turnsFromThread(detail: ThreadDetail): Turn[] {
   return turns;
 }
 
+/** The advice follow-up to an answer: the next assistant message after it, before the next question. */
+export function findFollowUp(detail: ThreadDetail, answerId: string): string | null {
+  const at = detail.messages.findIndex((m) => m.role === "assistant" && m.response_id === answerId);
+  if (at < 0) return null;
+  for (const m of detail.messages.slice(at + 1)) {
+    if (m.role === "user") return null;
+    if (m.response_id) return m.response_id;
+  }
+  return null;
+}
+
+export const FOLLOW_UP_POLL_MS = 5_000;
+export const FOLLOW_UP_TRIES = 36; // about three minutes: the follow-up run's deadline is 120 s
+
 // What survives a reload: everything except the parsed snapshots, which are re-read by id.
-type StoredTurn = Omit<Turn, "run" | "partial"> & { run: Omit<RunState, "answer"> & { responseId: string | null } };
+type StoredTurn = Omit<Turn, "run" | "partial" | "followUp"> & {
+  run: Omit<RunState, "answer"> & { responseId: string | null };
+  followUpId?: string | null;
+};
 type StoredThread = Omit<Thread, "turns"> & { turns: StoredTurn[] };
 
 const storageKey = (workspaceId: string) => `foresight.workspace.threads.${workspaceId}`;
@@ -174,9 +202,10 @@ const storageKey = (workspaceId: string) => `foresight.workspace.threads.${works
 function toStored(threads: Thread[]): StoredThread[] {
   return threads.slice(0, 20).map((th) => ({
     ...th,
-    turns: th.turns.map(({ partial: _partial, run: { answer, ...run }, ...t }) => ({
+    turns: th.turns.map(({ partial: _partial, followUp, run: { answer, ...run }, ...t }) => ({
       ...t,
       run: { ...run, responseId: answer?.responseId ?? null },
+      followUpId: followUp?.responseId ?? null,
     })),
   }));
 }
@@ -184,9 +213,10 @@ function toStored(threads: Thread[]): StoredThread[] {
 function fromStored(stored: StoredThread[]): Thread[] {
   return stored.map((th) => ({
     ...th,
-    turns: th.turns.map(({ run: { responseId, ...run }, ...t }) => ({
+    turns: th.turns.map(({ run: { responseId, ...run }, followUpId, ...t }) => ({
       ...t,
       partial: null,
+      followUp: followUpId ? { responseId: followUpId, response: null } : undefined,
       run: { ...initialRun(run.runId), ...run, answer: responseId ? { responseId, response: null } : null },
     })),
   }));
@@ -446,6 +476,59 @@ export function Workspace({
 
   // -- derived ------------------------------------------------------------------------------
   const answer = turn?.run.answer?.response ?? null;
+
+  // -- an answer whose advice is still being checked: watch its thread for the follow-up -------
+  const followKey = thread?.key ?? null;
+  const followThread = thread?.threadId ?? null;
+  const followTurn = turn?.id ?? null;
+  const followFor = answer?.followup_pending ? answer.response_id : null;
+  const turnFollowUp = turn?.followUp;
+  const followDone = Boolean(turnFollowUp?.response || turnFollowUp?.missed);
+  const followKnown = turnFollowUp?.responseId ?? null;
+  useEffect(() => {
+    if (!followKey || !followThread || !followTurn || !followFor || followDone) return;
+    let live = true;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const load = (id: string) =>
+      fetchResponse(id).then((r) => {
+        if (live && r && r.follow_up_of === followFor)
+          dispatch({
+            type: "follow_up",
+            key: followKey,
+            turnId: followTurn,
+            followUp: { responseId: id, response: r },
+          });
+      });
+    if (followKnown) {
+      void load(followKnown);
+      return () => {
+        live = false;
+      };
+    }
+    let tries = 0;
+    const tick = async () => {
+      const detail = await fetchThread(followThread);
+      if (!live) return;
+      const id = detail ? findFollowUp(detail, followFor) : null;
+      if (id) return void load(id);
+      tries += 1;
+      if (tries >= FOLLOW_UP_TRIES) {
+        dispatch({
+          type: "follow_up",
+          key: followKey,
+          turnId: followTurn,
+          followUp: { responseId: null, response: null, missed: true },
+        });
+        return;
+      }
+      timer = setTimeout(() => void tick(), FOLLOW_UP_POLL_MS);
+    };
+    timer = setTimeout(() => void tick(), FOLLOW_UP_POLL_MS);
+    return () => {
+      live = false;
+      clearTimeout(timer);
+    };
+  }, [followKey, followThread, followTurn, followFor, followDone, followKnown]);
   const laid = useMemo(() => (answer ? layoutAnswer(answer) : null), [answer]);
   const chips = (answer?.follow_ups ?? []).filter(
     (f) => f.kind === "ask" || (f.kind === "open_evidence" && flags.auditTrail),
@@ -643,14 +726,25 @@ export function Workspace({
                 />
               </div>
             ) : answer ? (
-              <AnswerCanvas
-                response={answer}
-                liveSteps={turn.run.steps}
-                locale={locale}
-                timeZone={timeZone}
-                auditTrail={flags.auditTrail}
-                openEvidence={setEvidence}
-              />
+              <>
+                <AnswerCanvas
+                  response={answer}
+                  liveSteps={turn.run.steps}
+                  locale={locale}
+                  timeZone={timeZone}
+                  auditTrail={flags.auditTrail}
+                  openEvidence={setEvidence}
+                />
+                {answer.followup_pending ? (
+                  <FollowUpAnswer
+                    followUp={turn.followUp}
+                    locale={locale}
+                    timeZone={timeZone}
+                    auditTrail={flags.auditTrail}
+                    openEvidence={setEvidence}
+                  />
+                ) : null}
+              </>
             ) : (
               <Working turn={turn} locale={locale} timeZone={timeZone} fetching />
             )
@@ -738,6 +832,45 @@ function BotAvatar({ mini = false }: { mini?: boolean }) {
         <path d="M4.4 26.6 13.8 23.8l-1.6 4L2.8 30.6Z" />
       </svg>
     </span>
+  );
+}
+
+/** The checked recommendation that follows an answer whose advice ran out of question time. */
+function FollowUpAnswer({
+  followUp,
+  locale,
+  timeZone,
+  auditTrail,
+  openEvidence,
+}: {
+  followUp: Turn["followUp"];
+  locale: string;
+  timeZone: string;
+  auditTrail: boolean;
+  openEvidence: (ref: string) => void;
+}) {
+  if (followUp?.response)
+    return (
+      <section className="ws-followup" aria-labelledby="ws-followup-h">
+        <h2 className="ws-followup-h" id="ws-followup-h">
+          Checked recommendation
+        </h2>
+        <AnswerCanvas
+          response={followUp.response}
+          liveSteps={[]}
+          locale={locale}
+          timeZone={timeZone}
+          auditTrail={auditTrail}
+          openEvidence={openEvidence}
+        />
+      </section>
+    );
+  return (
+    <p className="ws-followup-note" role="status">
+      {followUp?.missed
+        ? "No checked recommendation came through for this answer. Ask for advice again to try once more."
+        : "Checking a recommendation after this answer. It appears here once it passes the checks."}
+    </p>
   );
 }
 

@@ -13,8 +13,8 @@ from backend.agents.runtime import DEADLINES, NodeOutput, NodeSpec, RunContext
 from backend.agents.state import ForesightState
 
 MAX_REVISIONS = 2  # initial proposal + 2 revisions = 3 Verifier rounds (docs/06 W4)
-# docs/06 §13 latency budget for a question (60 s deadline): one revision round is an Advisor
-# call plus its concurrent judge calls; composing and saving the answer follows the loop.
+# docs/06 §13 latency budget for a question (75 s deadline since 14 Oct 2026): one revision round
+# is an Advisor call plus its concurrent judge calls; composing and saving the answer follows.
 REVISION_ROUND_MS = 25_000
 ANSWER_TAIL_MS = 5_000
 
@@ -67,6 +67,19 @@ def withdraw(state: ForesightState, ctx: RunContext) -> NodeOutput:
     )
 
 
+def defer(state: ForesightState, ctx: RunContext) -> NodeOutput:
+    """A rejected round with revisions left but no time for one inside the question: the drafts
+    stay in review (never shown) and the answer says a checked recommendation is on its way; the
+    API starts an `advice_followup` run once the answer is saved."""
+    proposals = list(state.get("proposals") or [])
+    keys = [str(p.get("proposal_key", i)) for i, p in enumerate(proposals)]
+    return NodeOutput(
+        update={"followup_pending": True, "verdict": "none"},
+        output={"deferred": keys, "rounds": int(state.get("revision_round") or 0) + 1},
+        label="Checking a recommendation after the answer",
+    )
+
+
 def revision_fits(ctx: RunContext | None) -> bool:
     """A question's revision round starts only if it can finish inside the run deadline: the
     model wait so far plus one Advisor call and its judge calls, plus composing the answer.
@@ -78,8 +91,9 @@ def revision_fits(ctx: RunContext | None) -> bool:
 
 
 def decide_after_verify(state: ForesightState, ctx: RunContext | None = None) -> str:
-    """W4 edge: approve/none → leave the loop; reject → revise (≤ 2, and only while a round
-    still fits in the question deadline) or withdraw."""
+    """W4 edge: approve/none → leave the loop; reject → revise (≤ 2, and in a question only while
+    a round still fits in its deadline), defer (a question out of time: a follow-up run carries
+    on) or withdraw (no revisions left)."""
     if state.get("partial") and state.get("proposals"):
         # Out of time (or budget) with drafts still unchecked: withdraw them, never leave them
         # in review and never loop.
@@ -90,8 +104,12 @@ def decide_after_verify(state: ForesightState, ctx: RunContext | None = None) ->
         # The run deadline or budget stopped work: nodes are being skipped, so a revision round
         # would never complete. Withdraw instead of looping (nothing unchecked is shown).
         return "withdraw"
-    if int(state.get("revision_round") or 0) < MAX_REVISIONS and revision_fits(ctx):
-        return "revise"
+    if int(state.get("revision_round") or 0) < MAX_REVISIONS:
+        if revision_fits(ctx):
+            return "revise"
+        # A question with revisions left but no time for one: answer now and carry the loop on
+        # in a follow-up run (docs/06 §13) rather than dropping the advice.
+        return "defer"
     return "withdraw"
 
 
@@ -116,6 +134,7 @@ def specialist_nodes() -> dict[str, NodeSpec]:
             ledger_nodes.nodes()["analyst"],
             *core_loop.nodes().values(),
             NodeSpec("revise", "coordinator", "control", revise_marker, "Revising the draft"),
+            NodeSpec("defer", "coordinator", "control", defer, "Checking after the answer"),
             NodeSpec(
                 "withdraw",
                 "coordinator",

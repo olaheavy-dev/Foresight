@@ -517,6 +517,33 @@ def test_a_card_that_narrows_but_does_not_close_the_gap_says_so_and_signposts_he
     assert check_skeleton(AgentResponse.model_validate(body).blocks) == []
 
 
+def test_a_plain_dated_purchase_is_simulated_without_the_parser(p1: AgentStore) -> None:
+    """Understand's amount and date for one purchase are the whole what-if: the Forecaster
+    simulates that payment without its own parse call (one fewer model wait on the advice path).
+    The amount is unique per test so the exact answer cache never joins two tests."""
+    nodes = {k: v for k, v in _stand_ins().items() if k != "forecaster"}
+    amount = 120000 + next(_CASE)
+    intent = _intent(slots={"amount_minor": amount, "date": "2026-11-06", "purpose": "holiday"})
+    out, calls = _ask_with(p1, nodes, json_ok(intent))
+    assert len(calls.calls) == 1  # Understand only
+    step = next(s for s in p1.steps(out.run_id) if s.node == "forecaster")
+    sim = p1.ctx.calculation(step.output["simulation_id"])
+    assert sim is not None
+    (mod,) = sim.params["spec"]["modifiers"]
+    assert (mod["type"], mod["amount_minor"]) == ("one_off_outflow", amount)
+    assert mod["date"] == "2026-11-06"
+
+
+def test_only_a_plain_purchase_skips_the_parser() -> None:
+    from backend.agents.core_loop import _plain_purchase
+
+    plain = {"intent": "affordability", "slots": {"amount_minor": 1, "date": "2026-11-06"}}
+    assert _plain_purchase(plain)
+    assert _plain_purchase({**plain, "slots": {**plain["slots"], "modifier": "one_off_outflow"}})
+    assert not _plain_purchase({**plain, "slots": {**plain["slots"], "instalments": 3}})
+    assert not _plain_purchase({**plain, "slots": {**plain["slots"], "modifier": "split_outflow"}})
+
+
 def test_an_amount_with_no_date_assumes_today_and_offers_change_date(p1: AgentStore) -> None:
     """Owner decision (13 Oct 2026, docs/06 §6.2): an affordability question with an amount but
     no date is simulated as a payment today, answered straight away, the assumption stated on the

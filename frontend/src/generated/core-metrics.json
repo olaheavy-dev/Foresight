@@ -1,5 +1,5 @@
 {
-  "run_id": "evalrun_20261014T124926Z_4c6fc75",
+  "run_id": "evalrun_20261014T152046Z_c3f6e0c",
   "gate": "pass",
   "tiers": [
     {
@@ -15,7 +15,7 @@
         "E-CAT": "pass"
       },
       "accuracy_pass": false,
-      "cost_per_answer_usd": 0.00041,
+      "cost_per_answer_usd": 0.00038,
       "call_latency_p50_s": 3.11,
       "call_latency_p95_s": 7.32
     },
@@ -29,23 +29,22 @@
         "E-GRD": "pass"
       },
       "accuracy_pass": true,
-      "cost_per_answer_usd": 0.01071,
-      "call_latency_p50_s": 10.24,
-      "call_latency_p95_s": 11.95
+      "cost_per_answer_usd": 0.00931,
+      "call_latency_p50_s": 10.79,
+      "call_latency_p95_s": 12.56
     },
     {
       "tier": "verifier",
       "models": [
-        "gpt-6.1-sol",
-        "openai/gpt-6.1-sol"
+        "gpt-6.1-sol"
       ],
       "accuracy_gates": {
         "E-VER": "pass"
       },
       "accuracy_pass": true,
-      "cost_per_answer_usd": 0.00029,
-      "call_latency_p50_s": 4.14,
-      "call_latency_p95_s": 5.41
+      "cost_per_answer_usd": 0.00023,
+      "call_latency_p50_s": 6.17,
+      "call_latency_p95_s": 6.95
     }
   ],
   "answers": [
@@ -64,44 +63,44 @@
       "type": "advice",
       "label": "Advice answers",
       "count": 13,
-      "cost_mean_usd": 0.05047,
-      "cost_p95_usd": 0.06898,
+      "cost_mean_usd": 0.04361,
+      "cost_p95_usd": 0.08247,
       "latency_p50_s": null,
       "latency_p95_s": null,
-      "latency_estimated_p50_s": 28.33,
-      "latency_estimated_p95_s": 39.06
+      "latency_estimated_p50_s": 21.52,
+      "latency_estimated_p95_s": 44.42
     },
     {
       "type": "all",
       "label": "All answers",
       "count": 60,
-      "cost_mean_usd": 0.01141,
-      "cost_p95_usd": 0.06074,
+      "cost_mean_usd": 0.00992,
+      "cost_p95_usd": 0.06753,
       "latency_p50_s": null,
       "latency_p95_s": null,
-      "latency_estimated_p50_s": 6.35,
-      "latency_estimated_p95_s": 36.14
+      "latency_estimated_p50_s": 6.34,
+      "latency_estimated_p95_s": 37.65
     }
   ],
   "targets": [
     {
       "id": "EFF-1",
       "label": "Mean cost per answer (USD)",
-      "value": 0.01141,
+      "value": 0.00992,
       "target": "<= 0.03",
       "met": true
     },
     {
       "id": "EFF-2",
       "label": "Mean cost per advice answer (USD)",
-      "value": 0.05047,
+      "value": 0.04361,
       "target": "<= 0.055",
       "met": true
     },
     {
       "id": "EFF-3",
       "label": "p95 cost per answer (USD)",
-      "value": 0.06074,
+      "value": 0.06753,
       "target": "<= 0.1",
       "met": true
     },

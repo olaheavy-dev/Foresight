@@ -229,6 +229,18 @@ def forecaster_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
                 status="failed", error=str(exc), label="The what-if couldn't be simulated",
             )  # fmt: skip
         return _simulated(state, update, forecast_id, spec, sim, assumptions, [], None)
+    dated = _dated_purchase_spec(intent, inputs)
+    if dated is not None and _plain_purchase(intent):
+        # Understand already gave the one purchase's amount and date and nothing else: the
+        # model parse would only restate them, so simulate that payment straight away (saves a
+        # fast-tier call on the advice path; docs/05 §6.4 latency).
+        try:
+            with ctx.lock:
+                sim = run_simulation(ctx.store.ctx, dated)
+        except ScenarioError:
+            pass
+        else:
+            return _simulated(state, update, forecast_id, dated, sim, [], [], None)
     mesh = ctx.require_mesh()
     with ctx.lock:
         recurring = [
@@ -252,7 +264,6 @@ def forecaster_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
         before_llm=ctx.before_llm,
     )
     ctx.charge(parsed.llm)
-    dated = _dated_purchase_spec(intent, inputs)
     if (parsed.parse.status == "needs_clarification" or parsed.parse.spec is None) and dated:
         # The parse asked for something Understand already has (one purchase, its amount and
         # date): never ask again what the question answered; simulate that one payment.
@@ -354,6 +365,16 @@ def _pay_today_spec(intent: dict[str, Any], inputs: ForecastInputs) -> ScenarioS
         type="one_off_outflow", date=first_day, amount_minor=amount, label=label
     )
     return ScenarioSpec(f"{label} today", inputs.currency, (payment,))
+
+
+# Understand slots that a plain one-purchase question can carry; any other slot (instalments,
+# months, a percentage, …) means the what-if is richer than one payment, so the parse decides.
+PLAIN_PURCHASE_SLOTS = frozenset({"amount_minor", "date", "purpose", "merchant", "modifier"})
+
+
+def _plain_purchase(intent: dict[str, Any]) -> bool:
+    slots = intent.get("slots") or {}
+    return set(slots) <= PLAIN_PURCHASE_SLOTS and slots.get("modifier") in (None, "one_off_outflow")
 
 
 def _dated_purchase_spec(intent: dict[str, Any], inputs: ForecastInputs) -> ScenarioSpec | None:

@@ -392,6 +392,7 @@ def persist_response(state: ForesightState, ctx: RunContext) -> NodeOutput:
             kind == "answer"
             and state.get("cache_key")
             and not state.get("partial")
+            and not state.get("followup_pending")  # its follow-up is not part of the snapshot
             and body.get("status") == "complete"
         )
         if cacheable:

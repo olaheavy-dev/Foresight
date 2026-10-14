@@ -1321,6 +1321,9 @@ def envelope(
         evidence_line=evidence,
         follow_ups=follow_ups or [],
         provenance=ResponseProvenance(calc_ids=sorted(set(calc_ids))),
+        followup_pending=bool(state.get("followup_pending"))
+        and state.get("workflow", "conversation") == "conversation",
+        follow_up_of=state.get("follow_up_of"),
     )
 
 
@@ -1401,6 +1404,7 @@ def clarify_response(
 
 
 NOT_CHECKED_IN_TIME = "No recommendation was checked in time."
+CHECKING_AFTER = "A checked recommendation is still being prepared; it will appear below."
 
 
 def _advice_unchecked(state: ForesightState) -> bool:
@@ -1436,6 +1440,7 @@ def compose(state: ForesightState, ctx: RunContext) -> NodeOutput:
     late = bool(state.get("partial"))  # deadline or budget: deterministic answer, no model call
     if late and _advice_unchecked(state):
         choice = choice.model_copy(update={"verdict": f"{choice.verdict} {NOT_CHECKED_IN_TIME}"})
+    pending = bool(state.get("followup_pending")) and not late
     # When the verdict is the engine's own outcome (docs/08 §5.4 verdict case), the blocks come
     # from the §7a table and the key numbers from the catalogue order: there is nothing left for a
     # model to choose, so no model call is made.
@@ -1486,6 +1491,8 @@ def compose(state: ForesightState, ctx: RunContext) -> NodeOutput:
                     verdict = f"{composer.case.template} {EXPLANATION_UNAVAILABLE}"
                 choice = composer.template_output().model_copy(update={"verdict": verdict})
 
+    if pending:  # fixed wording, after any model choice, so it is always said
+        choice = choice.model_copy(update={"verdict": f"{choice.verdict} {CHECKING_AFTER}"})
     with ctx.lock:
         blocks = composer.build_blocks(choice)
         workflow = str(state.get("workflow") or "conversation")

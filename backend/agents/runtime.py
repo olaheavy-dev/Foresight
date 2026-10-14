@@ -29,7 +29,7 @@ from backend.storage.agent_repo import AgentStore
 
 # docs/05 §6.4: run deadlines.
 DEADLINES = {
-    "conversation": timedelta(seconds=60),
+    "conversation": timedelta(seconds=75),  # owner, 14 Oct 2026 (was 60 s)
     "ingestion": timedelta(seconds=120),
 }
 DEFAULT_DEADLINE = timedelta(seconds=120)

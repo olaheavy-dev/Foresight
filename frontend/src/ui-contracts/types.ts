@@ -116,10 +116,12 @@ export interface AgentResponse {
   data_version: number;
   engine_version: string;
   evidence_line?: EvidenceLine | null;
+  follow_up_of?: string | null;
   /**
    * @maxItems 4
    */
   follow_ups?: FollowUpAction[];
+  followup_pending?: boolean;
   forecast_id?: string | null;
   intent?:
     | (
