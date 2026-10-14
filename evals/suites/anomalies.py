@@ -6,9 +6,10 @@ sensitivity sweep and the other finding types arrive with the Analyst in Stage 3
 
 from __future__ import annotations
 
+from datetime import date, timedelta
 from typing import Any
 
-from backend.finance_core.detect.trends import category_trends
+from backend.finance_core.detect.trends import MAX_PRIOR_WINDOWS, WINDOW_DAYS, category_trends
 from evals.common import build_ledger, load_dataset
 from evals.metrics import r4
 from evals.suites import Target, target
@@ -17,6 +18,29 @@ SUITE_ID = "E-ANOM"
 NAME = "anomalies"
 BASE = ["P1-base", "P2-base"]
 CLEAN = ["P1-clean", "P2-clean"]
+
+
+def _origins(first: date, as_of: date) -> list[date]:
+    """Monthly origins (as_of, as_of − 30 d, …) that have a full baseline behind them."""
+    need = timedelta(days=(MAX_PRIOR_WINDOWS + 1) * WINDOW_DAYS - 1)
+    out, origin = [], as_of
+    while origin - need >= first:
+        out.append(origin)
+        origin -= timedelta(days=WINDOW_DAYS)
+    return out or [as_of]
+
+
+def _clean_months(name: str) -> list[dict[str, Any]]:
+    """Every scored persona-month of a clean twin: its origin and the spikes found there."""
+    ds = load_dataset(name)
+    ledger = build_ledger(ds)
+    first = min(t.posted_on for t in ledger.txns)
+    months = []
+    for origin in _origins(first, ds.as_of):
+        txns = [t for t in ledger.txns if t.posted_on <= origin]
+        found = [t.category_key for t in category_trends(txns, ledger.cats, origin) if t.is_spike]
+        months.append({"as_of": origin.isoformat(), "spikes": found})
+    return months
 
 
 def _findings(name: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
@@ -63,17 +87,19 @@ def run(fast: bool = False) -> dict[str, Any]:
                 if a.get("magnitude_pct") is not None:
                     magnitude_errors.append(abs(hit["change_pct"] - float(a["magnitude_pct"])))
         per[name] = {"spikes": spikes, "truth": truth}
-    clean_fp = 0
+    clean_fp = clean_months = 0
     for name in clean:
-        spikes, _truth = _findings(name)
-        clean_fp += len(spikes)
-        per[name] = {"spikes": spikes}
-    fp_rate = clean_fp / len(clean) if clean else None
+        months = _clean_months(name)
+        clean_fp += sum(len(m["spikes"]) for m in months)
+        clean_months += len(months)
+        per[name] = {"months": months}
+    fp_rate = clean_fp / clean_months if clean_months else None
     metrics: dict[str, Any] = {
         "scope": "category_trend findings only",
         "recall": r4(n_recalled / n_truth) if n_truth else None,
         "precision": r4(n_true_spikes / n_spikes) if n_spikes else None,
         "fp_per_persona_month_clean": r4(fp_rate),
+        "clean_persona_months": clean_months,
         "magnitude_error_pp": r4(max(magnitude_errors)) if magnitude_errors else None,
         "by_dataset": per,
     }
@@ -100,7 +126,7 @@ def run(fast: bool = False) -> dict[str, Any]:
             metrics["fp_per_persona_month_clean"],
             "<=",
             0.5,
-            ", ".join(clean),
+            f"{', '.join(clean)} ({clean_months} months)",
         ),
         target(
             "ANOM-magnitude",
@@ -112,7 +138,9 @@ def run(fast: bool = False) -> dict[str, Any]:
         ),
     ]
     notes = [
-        "Trend part only: one 30-day window at as_of per persona, so one persona-month each.",
+        "Trend part only. Recall and precision: one 30-day window at as_of per base persona, where "
+        "the anomalies are injected. False positives: every monthly origin of the clean twins with "
+        f"a full {MAX_PRIOR_WINDOWS}-window baseline behind it.",
         "A spike matches an injected anomaly when its category equals the anomaly subject.",
     ]
     return {"metrics": metrics, "targets": targets, "notes": notes}
