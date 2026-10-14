@@ -39,6 +39,22 @@ function calcIdFor(ref: string): string | null {
 
 const short = (hash: string) => (hash.length > 16 ? `${hash.slice(0, 12)}…` : hash);
 
+// Plain names for untitled blocks in "Used in this answer" (never the component's type name).
+const BLOCK_NAMES: Record<string, string> = {
+  Narrative: "The answer",
+  FinancialMetricGroup: "Key figures",
+  CashFlowForecastChart: "Forecast chart",
+  ScenarioComparison: "With and without comparison",
+  InterventionCard: "Recommendation",
+  TransactionTable: "Transactions",
+  SpendingBreakdownChart: "Spending breakdown",
+  RiskAssessment: "Risk check",
+  GoalProjection: "Goal projection",
+  ClarifyingQuestion: "Question",
+  EvidencePanel: "Evidence",
+  AgentExecutionTimeline: "How it was checked",
+};
+
 export function EvidenceDrawer({
   refId,
   response,
@@ -92,7 +108,7 @@ export function EvidenceDrawer({
   );
   const usedBy = blocks
     .filter((b) => blockRefs(b).some((r) => baseRef(r) === base))
-    .map((b) => b.title ?? b.type.replace(/([a-z])([A-Z])/g, "$1 $2"));
+    .map((b) => b.title ?? BLOCK_NAMES[b.type] ?? b.type.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase());
   const run = blocks.find((b) => b.type === "AgentExecutionTimeline" && b.run_id === base);
 
   return (

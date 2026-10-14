@@ -418,6 +418,13 @@ button.user[aria-expanded="true"] .chev { transform: rotate(180deg); }
 .m-note { margin: 0; font-size: var(--font-size-xs); color: var(--color-text-secondary); }
 
 .row-2 { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); margin-bottom: var(--space-4); }
+.row-1 { margin-bottom: var(--space-4); }
+.coming-next { padding: var(--space-4); }
+.coming-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); margin-top: var(--space-3); }
+@media (min-width: 768px) {
+  .coming-next { padding: var(--space-5) var(--space-6); }
+  .coming-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 .skel { background: linear-gradient(90deg, var(--color-border-primary), var(--color-bg-secondary), var(--color-border-primary)); background-size: 200% 100%; animation: home-shimmer calc(var(--duration-slower) * 3) linear infinite; }
 .metric-skel { min-height: 108px; }
 .forecast-skel { min-height: 360px; }
@@ -476,7 +483,7 @@ button.user[aria-expanded="true"] .chev { transform: rotate(180deg); }
 }
 
 @media (min-width: 1280px) {
-  .metrics { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .row-2 { grid-template-columns: minmax(0, 1.95fr) minmax(0, 1fr); }
   .ins-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .ins-head .link { margin-left: auto; }
@@ -660,3 +667,7 @@ button.user[aria-expanded="true"] .chev { transform: rotate(180deg); }
 /* Landing: preview without the hi-fi's insight card spans the row; three key numbers below. */
 .preview.single { grid-template-columns: minmax(0, 1fr); }
 .preview .card-title { font-size: var(--font-size-lg); }
+
+/* Quality page core metrics: long check lists wrap so the tables fit a tablet width. */
+.core-metrics table.data td { white-space: normal; }
+.core-metrics table.data td.lead, .core-metrics table.data th { white-space: nowrap; }

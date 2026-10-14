@@ -640,7 +640,7 @@ export const spendingResponse = (): AgentResponse =>
             label: "Above usual",
             value: { kind: "pct_change", value: 0.57, display: "+57%" },
             emphasis: "secondary",
-            tone: "negative",
+            tone: "caution",
           },
         ],
       },
