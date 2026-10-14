@@ -30,7 +30,7 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, s
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import StringConstraints
 
-from backend.agents.runner import ask
+from backend.agents.runner import ask, run_followup
 from backend.app.session import Profile
 from backend.app.ui_contracts.primitives import Contract
 from backend.app.ui_contracts.response import AgentResponse
@@ -277,7 +277,7 @@ def _run_in_background(
         try:
             with session_factory(database_url)() as session:
                 store = AgentStore(WorkspaceContext.open(session, workspace_id))
-                ask(
+                outcome = ask(
                     store,
                     thread_id=thread_id,
                     text=text,
@@ -286,6 +286,9 @@ def _run_in_background(
                     action=action,
                     on_run_created=created,
                 )
+                # The answer is saved and streamed; a question that ran out of time for its
+                # advice loop carries it on here (docs/06 §13), its answer added to the thread.
+                run_followup(store, outcome, mesh=mesh)
         except BaseException as exc:  # noqa: BLE001 - recorded on the run; reported to the caller
             failed(exc)
         finally:

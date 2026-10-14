@@ -208,3 +208,66 @@ def ask(
     message.standalone_question = intent.get("standalone_question")
     store.session.commit()
     return outcome
+
+
+# What a question's advice follow-up needs from the question's final state (docs/06 §13): the
+# question, the forecast and what-if it asked about, and the rejected round's drafts with their
+# critiques, so the loop carries on from where the question stopped.
+FOLLOWUP_KEYS = (
+    "intent",
+    "user_message",
+    "forecast_id",
+    "snapshot_id",
+    "simulation_ids",
+    "scenario_spec",
+    "risk_flags",
+    "locale_pack",
+    "as_of",
+    "proposals",
+    "revision_round",
+    "verifications",
+    "data_version",
+    "prefs_version",
+)
+
+
+def followup_inputs(outcome: RunOutcome) -> dict[str, Any] | None:
+    """The seed for an `advice_followup` run, or None when the question needs no follow-up."""
+    final = outcome.state
+    if not final.get("followup_pending") or not outcome.response_id or outcome.partial:
+        return None
+    seed = {k: final[k] for k in FOLLOWUP_KEYS if k in final}
+    # The follow-up answers with the advice itself: the recommendation leads (the question's own
+    # answer is already in the thread). The Advisor reads only the question text, not the intent.
+    intent = dict(final.get("intent") or {})
+    seed["intent"] = {**intent, "intent": "advice_request", "needs_advice": True}
+    seed["follow_up_of"] = outcome.response_id
+    seed["verdict"] = None
+    return seed
+
+
+def run_followup(
+    store: AgentStore,
+    outcome: RunOutcome,
+    *,
+    mesh: MeshClient | None,
+    nodes: Mapping[str, NodeSpec] | None = None,
+    clock: Callable[[], datetime] = utcnow,
+) -> RunOutcome | None:
+    """Carry a question's advice loop on after its answer: revise from the stored critiques,
+    verify, and answer again in the same thread. Runs in the background in the API; evals and
+    tests call it straight after `ask`, so recording and replay take one path."""
+    seed = followup_inputs(outcome)
+    if seed is None:
+        return None
+    return run_workflow(
+        store,
+        workflow="advice_followup",
+        trigger="event",
+        event="advice_deferred",
+        mesh=mesh,
+        nodes=nodes,
+        inputs=seed,
+        thread_id=outcome.state.get("thread_id"),
+        clock=clock,
+    )

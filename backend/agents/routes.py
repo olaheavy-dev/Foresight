@@ -15,6 +15,7 @@ SYSTEM_EVENTS: dict[str, Workflow] = {
     "scenario_submitted": "scenario",
     "advice_needed": "recommendation",
     "digest_due": "digest",
+    "advice_deferred": "advice_followup",
 }
 
 # The specialists each workflow runs, in order. The advise ⇄ verify loop (W4) is a sub-graph that
@@ -25,6 +26,9 @@ WORKFLOW_ROUTES: dict[Workflow, tuple[str, ...]] = {
     "scenario": ("forecaster", "advice_loop", "compose"),
     "recommendation": ("advice_loop",),
     "digest": ("freshness_check", "select_content", "compose_digest", "deliver"),
+    # A question's advice loop continued after its answer (docs/06 §13): revise from the stored
+    # critiques, verify, then a follow-up answer in the same thread.
+    "advice_followup": ("advice_loop",),
 }
 
 # docs/06 §6.2: user question intent → specialists in order. "advice_loop" runs only when the

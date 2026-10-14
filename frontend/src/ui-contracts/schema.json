@@ -535,6 +535,19 @@
           ],
           "default": null
         },
+        "follow_up_of": {
+          "anyOf": [
+            {
+              "pattern": "^rsp_[0-9A-HJKMNP-TV-Z]{26}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Follow Up Of"
+        },
         "follow_ups": {
           "default": [],
           "items": {
@@ -593,6 +606,11 @@
           "maxItems": 4,
           "title": "Follow Ups",
           "type": "array"
+        },
+        "followup_pending": {
+          "default": false,
+          "title": "Followup Pending",
+          "type": "boolean"
         },
         "forecast_id": {
           "anyOf": [

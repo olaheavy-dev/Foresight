@@ -9,7 +9,13 @@ import operator
 from typing import Annotated, Any, Literal, TypedDict
 
 Workflow = Literal[
-    "ingestion", "risk_detection", "scenario", "recommendation", "conversation", "digest"
+    "ingestion",
+    "risk_detection",
+    "scenario",
+    "recommendation",
+    "conversation",
+    "digest",
+    "advice_followup",
 ]
 Trigger = Literal["user", "event", "cron", "eval"]
 
@@ -66,6 +72,10 @@ class ForesightState(TypedDict, total=False):
     revision_round: int
     approved_recs: list[str]
     withdrawn: list[str]
+    # A question whose rejected round had no time left for a revision: the answer goes out and a
+    # follow-up run (`advice_followup`) carries on the loop (docs/06 §13).
+    followup_pending: bool
+    follow_up_of: str | None  # in the follow-up run: the answer it follows up
 
     # output
     block_plan: dict[str, Any] | None

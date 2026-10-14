@@ -79,6 +79,10 @@ class AgentResponse(Contract):
     follow_ups: Annotated[list[FollowUpAction], Field(max_length=4)] = []
     verification: ResponseVerification | None = None
     provenance: ResponseProvenance
+    # The advice loop ran out of question time: a checked recommendation follows in this thread
+    # (docs/06 §13). The follow-up answer names the answer it follows up.
+    followup_pending: bool = False
+    follow_up_of: ResponseId | None = None
 
 
 # --- Engine-only API (API-00): the same hydrated shapes, without an agent run ------------------
