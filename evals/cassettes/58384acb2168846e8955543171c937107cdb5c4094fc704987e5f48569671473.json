@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T18:48:01+00:00",
+  "recorded_at": "2026-10-14T15:44:46+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -52,8 +52,10 @@
   "request_hash": "58384acb2168846e8955543171c937107cdb5c4094fc704987e5f48569671473",
   "response": {
     "content": "{\"verdict\":\"The forecast shows your likely lowest balance before payday is {{R2}}, on {{R3}}. The transfer may be moved to keep more cash available during that pre-payday dip.\",\"key_numbers\":[\"R2\",\"R3\"],\"main_visual\":\"EvidencePanel\"}",
-    "mesh_response_id": "chatcmpl-EYbpTRGzBy9hgNKcyLUMXQuwqUfFf",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.000267,
+    "latency_ms": 1497,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHCSVZJDHA211RHPS5A32Z",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 393,

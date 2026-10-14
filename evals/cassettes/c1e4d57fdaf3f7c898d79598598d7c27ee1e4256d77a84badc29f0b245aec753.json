@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T18:43:02+00:00",
+  "recorded_at": "2026-10-14T15:44:28+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -52,8 +52,10 @@
   "request_hash": "c1e4d57fdaf3f7c898d79598598d7c27ee1e4256d77a84badc29f0b245aec753",
   "response": {
     "content": "{\"verdict\":\"I can\u2019t determine how much you\u2019ll have saved by March from the available figures. The forecast only shows your lowest balance over the forecast, {{R5}}, and when it occurs, {{R6}}.\",\"key_numbers\":[\"R5\",\"R6\"],\"main_visual\":\"FinancialMetricGroup\"}",
-    "mesh_response_id": "chatcmpl-EYbkhpQlHkBHEL5sXQDYqQmeJTddb",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0001491,
+    "latency_ms": 441,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHC82BVGVZNMAB0PJ8VHHM",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 157,

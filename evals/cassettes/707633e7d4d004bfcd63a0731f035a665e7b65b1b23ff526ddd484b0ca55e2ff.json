@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:33:18+00:00",
+  "recorded_at": "2026-10-14T15:43:55+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "707633e7d4d004bfcd63a0731f035a665e7b65b1b23ff526ddd484b0ca55e2ff",
   "response": {
     "content": "{\"standalone_question\":\"What subscriptions do I have?\",\"intent\":\"subscription_review\",\"slots\":{},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdTQyqY2p2Aii5e3XyLpW0FhJ0fM",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002463,
+    "latency_ms": 458,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHB7QH1YKR41DEAWWV9HES",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 102,

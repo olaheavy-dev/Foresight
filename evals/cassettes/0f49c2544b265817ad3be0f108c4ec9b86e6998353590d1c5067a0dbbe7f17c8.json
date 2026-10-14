@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:41:26+00:00",
+  "recorded_at": "2026-10-14T15:43:50+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "0f49c2544b265817ad3be0f108c4ec9b86e6998353590d1c5067a0dbbe7f17c8",
   "response": {
     "content": "{\"standalone_question\":\"Is that a lot?\",\"intent\":\"smalltalk_or_out_of_scope\",\"slots\":{},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.2,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdbIsmHYv81JmWFp9DpHZjyl3exZ",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002597,
+    "latency_ms": 528,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHB2RMWAWD3J2DE9HB4W1V",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 129,

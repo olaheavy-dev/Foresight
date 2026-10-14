@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:40:48+00:00",
+  "recorded_at": "2026-10-14T15:43:43+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "b8fc3fbbfb3492728713dc3a2999aa46a592f52545a4e369fbc7b3289455f67d",
   "response": {
     "content": "{\"standalone_question\":\"How much will I have saved by March?\",\"intent\":\"goal_status\",\"slots\":{},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.82,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdacmXGG6W1mDIvOMqm3J1XRkm5e",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0004141,
+    "latency_ms": 498,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHAW32TB4H2J6KJKAVANRK",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 437,

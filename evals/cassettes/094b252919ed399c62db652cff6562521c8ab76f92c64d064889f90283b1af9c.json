@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T18:41:02+00:00",
+  "recorded_at": "2026-10-14T15:44:17+00:00",
   "request": {
     "max_tokens": 900,
     "messages": [
@@ -381,8 +381,10 @@
   "request_hash": "094b252919ed399c62db652cff6562521c8ab76f92c64d064889f90283b1af9c",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Pay 10 days late\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"income_delay\",\"income_stream_id\":\"inc_acme_analytics\",\"days\":10,\"occurrences\":1}],\"assumptions\":[]}, \"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYbimzwf8W5kzJBZMbSiBOk3yoWBx",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002631,
+    "latency_ms": 1543,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHBXRFSQ0ENF6VVB22NGZ4",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 120,

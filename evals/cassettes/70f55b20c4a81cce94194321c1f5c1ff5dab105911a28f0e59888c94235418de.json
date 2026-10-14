@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:40:18+00:00",
+  "recorded_at": "2026-10-14T15:43:36+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "70f55b20c4a81cce94194321c1f5c1ff5dab105911a28f0e59888c94235418de",
   "response": {
     "content": "{\"standalone_question\":\"Show my spending by merchant for food delivery\",\"intent\":\"spending_breakdown\",\"slots\":{\"category_key\":\"food.delivery\",\"group_by\":\"merchant\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdaCpPTypkXVUHWFUIB4bgeJFVUC",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002535,
+    "latency_ms": 483,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHANK706PE7BJZAX7V4SA7",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 116,

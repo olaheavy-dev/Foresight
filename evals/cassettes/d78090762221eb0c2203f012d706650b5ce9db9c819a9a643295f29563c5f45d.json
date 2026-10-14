@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:41:07+00:00",
+  "recorded_at": "2026-10-14T15:43:47+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "d78090762221eb0c2203f012d706650b5ce9db9c819a9a643295f29563c5f45d",
   "response": {
     "content": "{\"standalone_question\":\"How was the \u00a3604 low figure worked out?\",\"intent\":\"explain_recommendation\",\"slots\":{\"amount_minor\":60400,\"subject\":\"number\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.96,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdaxoGMwVzbpnCAnDq0CWEYNpYze",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0003176,
+    "latency_ms": 555,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHAZY3QNRCYWDXTKF2YPT0",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 244,

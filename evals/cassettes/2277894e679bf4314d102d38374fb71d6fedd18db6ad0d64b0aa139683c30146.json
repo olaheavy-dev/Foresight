@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:41:30+00:00",
+  "recorded_at": "2026-10-14T15:43:50+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "2277894e679bf4314d102d38374fb71d6fedd18db6ad0d64b0aa139683c30146",
   "response": {
     "content": "{\"standalone_question\":\"Is a \u00a31,200 trip on 6 November 2026 okay?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":120000,\"date\":\"2026-11-06\",\"purpose\":\"trip\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdbLga1uERnUCjo6nvrdiwkp1y2C",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.000292,
+    "latency_ms": 488,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHB39E6HVS4ZSJKPMNJKST",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 192,

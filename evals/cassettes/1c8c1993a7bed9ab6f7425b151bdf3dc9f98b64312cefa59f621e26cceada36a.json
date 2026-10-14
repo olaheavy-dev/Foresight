@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:40:24+00:00",
+  "recorded_at": "2026-10-14T15:43:37+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "1c8c1993a7bed9ab6f7425b151bdf3dc9f98b64312cefa59f621e26cceada36a",
   "response": {
     "content": "{\"standalone_question\":\"Has my eating out gone up?\",\"intent\":\"trend_or_change\",\"slots\":{\"category_key\":\"food.eating_out\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdaIJWz5MsNfnZdPlPevyxrel41E",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002524,
+    "latency_ms": 508,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHAPK4KCV3W3BK5XGF5EBE",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 114,

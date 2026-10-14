@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:41:52+00:00",
+  "recorded_at": "2026-10-14T15:43:53+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "8579f8478b12b7d19780254b38a1655708d2524e75c025f41a8f441be4bfd61f",
   "response": {
     "content": "{\"standalone_question\":\"Food delivery seems high; why?\",\"intent\":\"trend_or_change\",\"slots\":{\"category_key\":\"food.delivery\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.76,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdbhFg8HsfC3wIXrbWKkGq3ISOi1",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0003149,
+    "latency_ms": 502,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHB69AB80AVM9SG1M9F332",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 239,

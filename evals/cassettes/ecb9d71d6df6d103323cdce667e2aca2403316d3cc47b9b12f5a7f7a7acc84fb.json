@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:40:04+00:00",
+  "recorded_at": "2026-10-14T15:43:29+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "ecb9d71d6df6d103323cdce667e2aca2403316d3cc47b9b12f5a7f7a7acc84fb",
   "response": {
     "content": "{\"standalone_question\":\"Could I spend \u00a32,000 on a sofa in November?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":200000,\"date\":\"2026-11-01\",\"purpose\":\"sofa\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdZxlC8fa3warOxaIU9MFR3HHcRl",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002735,
+    "latency_ms": 500,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHAESET5Q5W9HB45GHD4BG",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 155,

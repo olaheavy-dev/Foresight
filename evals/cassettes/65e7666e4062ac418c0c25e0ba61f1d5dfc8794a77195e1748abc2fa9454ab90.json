@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:42:40+00:00",
+  "recorded_at": "2026-10-14T15:46:55+00:00",
   "request": {
     "max_tokens": 900,
     "messages": [
@@ -381,12 +381,14 @@
   "request_hash": "65e7666e4062ac418c0c25e0ba61f1d5dfc8794a77195e1748abc2fa9454ab90",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-ff41558696353a281858",
+    "cost_estimate_usd": 0.010726,
+    "latency_ms": 3744,
+    "mesh_response_id": "chatcmpl-09c7ed818b16944f8b05",
     "model": "anthropic/claude-sonnet-5.5",
-    "tool_arguments": "{\"status\": \"parsed\", \"spec\": {\"name\": \"Rent rise to \\u00a31,300\", \"currency\": \"GBP\", \"scope\": \"mine\", \"modifiers\": [{\"type\": \"recurring_change\", \"recurring_id\": \"rob_northside_lettings\", \"amount_minor\": 130000, \"from_date\": \"2027-02-01\"}], \"assumptions\": [\"Rent is paid to Northside Lettings\", \"New rent of \\u00a31,300 applies from 1 February 2027\"]}}",
+    "tool_arguments": "{\"status\": \"parsed\", \"spec\": {\"name\": \"Rent rises to \\u00a31,300\", \"currency\": \"GBP\", \"scope\": \"mine\", \"modifiers\": [{\"type\": \"recurring_change\", \"recurring_id\": \"rob_northside_lettings\", \"amount_minor\": 130000, \"from_date\": \"2027-02-01\"}], \"assumptions\": [\"Rent is the Northside Lettings recurring payment\", \"New rent of \\u00a31,300 per month applies from 1 February 2027\"]}}",
     "usage": {
-      "completion_tokens": 214,
-      "prompt_tokens": 4017
+      "completion_tokens": 267,
+      "prompt_tokens": 4028
     }
   }
 }

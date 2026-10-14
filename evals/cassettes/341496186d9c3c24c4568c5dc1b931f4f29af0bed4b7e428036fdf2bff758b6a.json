@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:27:33+00:00",
+  "recorded_at": "2026-10-14T15:43:42+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "341496186d9c3c24c4568c5dc1b931f4f29af0bed4b7e428036fdf2bff758b6a",
   "response": {
     "content": "{\"standalone_question\":\"Did Spotify get more expensive?\",\"intent\":\"subscription_review\",\"slots\":{\"focus\":\"price_change\",\"merchant\":\"Spotify\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdNrZvbvmyqpO8Jz8yWRBp1wmNeh",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002523,
+    "latency_ms": 497,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHAV349DJQJFC7SZEBP666",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 114,

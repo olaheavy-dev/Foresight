@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:30:11+00:00",
+  "recorded_at": "2026-10-14T15:43:30+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "f8294978b580bdcc78af2bcea69c5341f1ad02979fb3b45cc0750f1ea1d4d04e",
   "response": {
     "content": "{\"standalone_question\":\"Can I afford Christmas presents of \u00a3400?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":40000,\"purpose\":\"christmas_present\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdQOo2gxrggDJvDJfUx9Cell5IYG",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002786,
+    "latency_ms": 502,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHAF9GT7WA6Z6QETT7P1AP",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 166,

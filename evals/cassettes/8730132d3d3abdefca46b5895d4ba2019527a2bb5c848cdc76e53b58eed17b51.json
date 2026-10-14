@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:41:59+00:00",
+  "recorded_at": "2026-10-14T15:43:56+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "8730132d3d3abdefca46b5895d4ba2019527a2bb5c848cdc76e53b58eed17b51",
   "response": {
     "content": "{\"standalone_question\":\"Will I drop under \u00a3500?\",\"intent\":\"risk_check\",\"slots\":{\"threshold_minor\":50000},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.82,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdboJnmTQ2LRjnNlfPaCM6jpuXTm",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002694,
+    "latency_ms": 603,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHB9663TAV7Z3Y1HPHZS8E",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 148,

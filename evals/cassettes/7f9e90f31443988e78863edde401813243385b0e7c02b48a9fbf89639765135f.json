@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:39:59+00:00",
+  "recorded_at": "2026-10-14T15:43:29+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "7f9e90f31443988e78863edde401813243385b0e7c02b48a9fbf89639765135f",
   "response": {
     "content": "{\"standalone_question\":\"Can I buy a \u00a3350 phone this month?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":35000,\"date\":\"2026-10-01\",\"purpose\":\"phone\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdZrshawIglCl3FA3z4vfPjg4XNI",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0003252,
+    "latency_ms": 486,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHAEA05DRJC8WS0P0N5F1B",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 259,

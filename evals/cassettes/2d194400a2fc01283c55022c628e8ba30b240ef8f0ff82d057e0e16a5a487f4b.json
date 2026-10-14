@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T18:41:19+00:00",
+  "recorded_at": "2026-10-14T15:44:21+00:00",
   "request": {
     "max_tokens": 900,
     "messages": [
@@ -381,8 +381,10 @@
   "request_hash": "2d194400a2fc01283c55022c628e8ba30b240ef8f0ff82d057e0e16a5a487f4b",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Two-month job loss\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"income_change_pct\",\"income_stream_id\":\"inc_acme_analytics\",\"pct\":-100,\"from_date\":\"2026-10-11\",\"to_date\":\"2026-12-11\"}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYbizt5K8O6Bby46z1X0QlLnX37kg",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0004846,
+    "latency_ms": 1511,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHC1BBNXBJM6X9TZJRXA3N",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 563,

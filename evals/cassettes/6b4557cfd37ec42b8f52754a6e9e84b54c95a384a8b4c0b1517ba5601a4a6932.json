@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:40:41+00:00",
+  "recorded_at": "2026-10-14T15:43:40+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "6b4557cfd37ec42b8f52754a6e9e84b54c95a384a8b4c0b1517ba5601a4a6932",
   "response": {
     "content": "{\"standalone_question\":\"Find my Amazon purchases in September.\",\"intent\":\"transaction_lookup\",\"slots\":{\"period\":\"2026-09\",\"merchant\":\"Amazon\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdaZgZNGN7erhr4F0XSEmSkDMBqD",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002598,
+    "latency_ms": 508,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHASMJ4E8RTV914BW0MA2G",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 129,

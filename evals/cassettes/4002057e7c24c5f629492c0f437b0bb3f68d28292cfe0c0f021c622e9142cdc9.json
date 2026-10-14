@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:40:12+00:00",
+  "recorded_at": "2026-10-14T15:43:34+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "4002057e7c24c5f629492c0f437b0bb3f68d28292cfe0c0f021c622e9142cdc9",
   "response": {
     "content": "{\"standalone_question\":\"What if I pay for a laptop in 3 Klarna instalments?\",\"intent\":\"affordability\",\"slots\":{\"purpose\":\"laptop\",\"instalments\":3,\"modifier\":\"split_outflow\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.5,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYda5SsLhzkWgd6h5YrWkornzQko6",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002827,
+    "latency_ms": 1529,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHAKBS40B2C6HN1QCZ4P4N",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 173,

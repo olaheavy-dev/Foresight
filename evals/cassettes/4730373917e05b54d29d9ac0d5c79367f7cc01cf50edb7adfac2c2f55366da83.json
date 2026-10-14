@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:40:51+00:00",
+  "recorded_at": "2026-10-14T15:43:45+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "4730373917e05b54d29d9ac0d5c79367f7cc01cf50edb7adfac2c2f55366da83",
   "response": {
     "content": "{\"standalone_question\":\"Is my balance going to dip below \u00a3500?\",\"intent\":\"risk_check\",\"slots\":{\"threshold_minor\":50000},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.97,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdajZ28yXMlCMtXJThS4A1jGNO6c",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002547,
+    "latency_ms": 510,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHAXJNHVP2FVNEDMX8R5W5",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 118,

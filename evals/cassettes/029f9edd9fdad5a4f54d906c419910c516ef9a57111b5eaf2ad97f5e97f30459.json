@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T18:45:56+00:00",
+  "recorded_at": "2026-10-14T15:44:41+00:00",
   "request": {
     "max_tokens": 900,
     "messages": [
@@ -381,8 +381,10 @@
   "request_hash": "029f9edd9fdad5a4f54d906c419910c516ef9a57111b5eaf2ad97f5e97f30459",
   "response": {
     "content": "{\"status\":\"needs_clarification\",\"spec\":null,\"clarification\":{\"question\":\"When would you be out of work for two months?\",\"slot\":\"from_date\",\"options\":[]}}",
-    "mesh_response_id": "chatcmpl-EYbnVOPWz6uaMPNscbhuHoGS2IZt6",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002976,
+    "latency_ms": 450,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHCN6NVQK7W7QF34FN6CF2",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 189,

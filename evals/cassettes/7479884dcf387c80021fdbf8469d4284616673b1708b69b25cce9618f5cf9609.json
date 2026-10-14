@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T18:45:49+00:00",
+  "recorded_at": "2026-10-14T15:44:40+00:00",
   "request": {
     "max_tokens": 900,
     "messages": [
@@ -381,8 +381,10 @@
   "request_hash": "7479884dcf387c80021fdbf8469d4284616673b1708b69b25cce9618f5cf9609",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Salary 10 days late\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"income_delay\",\"income_stream_id\":\"inc_acme_analytics\",\"days\":10,\"occurrences\":1}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYbnPqVPx6JfkArm8azwqN3GjOjRt",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002586,
+    "latency_ms": 1580,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHCKKE38N8Y6AWGF658120",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 111,

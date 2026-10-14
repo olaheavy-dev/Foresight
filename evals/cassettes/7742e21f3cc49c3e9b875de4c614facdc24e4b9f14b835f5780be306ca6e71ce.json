@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:40:38+00:00",
+  "recorded_at": "2026-10-14T15:43:39+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "7742e21f3cc49c3e9b875de4c614facdc24e4b9f14b835f5780be306ca6e71ce",
   "response": {
     "content": "{\"standalone_question\":\"When did I last pay rent?\",\"intent\":\"transaction_lookup\",\"slots\":{\"category_key\":\"housing.rent\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdaVPql9GUSC2KHS166ucMnLVrkw",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002559,
+    "latency_ms": 452,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHARPA221M37KXVDP20CCB",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 121,

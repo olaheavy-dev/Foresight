@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:41:45+00:00",
+  "recorded_at": "2026-10-14T15:43:52+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "b69cc8d74bb748434d27cb30d265abc5de71b5fa24a40551e34d74002893e8de",
   "response": {
     "content": "{\"standalone_question\":\"What if I'm out of work for two months?\",\"intent\":\"scenario\",\"slots\":{\"modifier\":\"income_change_pct\",\"pct\":-100,\"months\":2},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.91,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdba0QvNW1tafAHaj4QIzMCHJ094",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002906,
+    "latency_ms": 502,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHB59EVZEKD2J42T1AZZ4K",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 190,

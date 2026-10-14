@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T18:44:19+00:00",
+  "recorded_at": "2026-10-14T15:44:32+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -52,8 +52,10 @@
   "request_hash": "bce3d4a5e0cd5aa0d104489e8615dae51187d62e6afefcbeee2a55645390420d",
   "response": {
     "content": "{\"verdict\":\"The {{R2}} figure is the forecast lowest balance before your next payday, found by projecting your balance across that period. It\u2019s expected to reach that low on {{R3}}.\",\"key_numbers\":[\"R2\",\"R3\"],\"main_visual\":\"EvidencePanel\"}",
-    "mesh_response_id": "chatcmpl-EYblv9r2cdnhE8fQnpeDib65BeYv3",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002099,
+    "latency_ms": 402,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHCC0CZSRWHJWJ081VPEGJ",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 278,

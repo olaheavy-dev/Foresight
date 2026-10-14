@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:41:10+00:00",
+  "recorded_at": "2026-10-14T15:43:47+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "ca8beb03972df826ba931ff3d3754f51e77680969754e1edbd668bc4582ec944",
   "response": {
     "content": "{\"standalone_question\":\"Why was the first draft rejected?\",\"intent\":\"smalltalk_or_out_of_scope\",\"slots\":{},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":true,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdb2bJorrtIDfbSOjRsGKXwNdFBZ",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002549,
+    "latency_ms": 413,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHB0FZT4AX2BXWM7G2ABHH",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 119,

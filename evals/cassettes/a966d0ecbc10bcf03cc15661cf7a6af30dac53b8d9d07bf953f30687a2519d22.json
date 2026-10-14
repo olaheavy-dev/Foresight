@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:41:48+00:00",
+  "recorded_at": "2026-10-14T15:43:53+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "a966d0ecbc10bcf03cc15661cf7a6af30dac53b8d9d07bf953f30687a2519d22",
   "response": {
     "content": "{\"standalone_question\":\"Where is all my money going?\",\"intent\":\"spending_breakdown\",\"slots\":{},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.95,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdbeW55YxtLTVLhV00YwPGOZzXFB",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002483,
+    "latency_ms": 502,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHB5SDNE79RNYPB0PWTKX8",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 106,

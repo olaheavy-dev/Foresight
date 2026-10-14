@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T18:44:14+00:00",
+  "recorded_at": "2026-10-14T15:44:31+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -52,8 +52,10 @@
   "request_hash": "aacfdb39707b61d7ae5b472f48ea42ed234bb45c25fac249bbdb00342a06b69a",
   "response": {
     "content": "{\"verdict\":\"I can\u2019t verify why the transfer was recommended from the information available. The forecast shows a low balance of {{R2}} before payday and a {{R4}} chance of going below your buffer.\",\"key_numbers\":[\"R2\",\"R4\"],\"main_visual\":\"EvidencePanel\"}",
-    "mesh_response_id": "chatcmpl-EYblqfHyNLr07DXa2gKkGDCVetojW",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0001983,
+    "latency_ms": 477,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHCBD96GK3J43J6X3HJEPT",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 255,

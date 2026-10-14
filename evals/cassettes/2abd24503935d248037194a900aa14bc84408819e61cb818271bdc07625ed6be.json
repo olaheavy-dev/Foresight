@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:27:22+00:00",
+  "recorded_at": "2026-10-14T15:43:41+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -103,8 +103,10 @@
   "request_hash": "2abd24503935d248037194a900aa14bc84408819e61cb818271bdc07625ed6be",
   "response": {
     "content": "{\"standalone_question\":\"Do any of my subscriptions overlap?\",\"intent\":\"subscription_review\",\"slots\":{\"focus\":\"overlap\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdNglwu9dcd6hEBkePQd6meErjTd",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0002464,
+    "latency_ms": 523,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHATJDSM1EY17A1KG2PWWP",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 102,

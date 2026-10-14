@@ -1,7 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T20:43:06+00:00",
+  "recorded_at": "2026-10-14T15:44:26+00:00",
   "request": {
     "max_tokens": 1000,
     "messages": [
@@ -52,8 +52,10 @@
   "request_hash": "390fa8fe89331afbdcdff05930b3fadfe3c1dcd308ed3bfe759a086bf7d01a33",
   "response": {
     "content": "{\"verdict\":\"Here are your Amazon purchases.\",\"key_numbers\":[],\"main_visual\":\"TransactionTable\"}",
-    "mesh_response_id": "chatcmpl-EYdctBN5aEfk1WsYrnv80iAhMi56i",
-    "model": "gpt-6-luna",
+    "cost_estimate_usd": 0.0001228,
+    "latency_ms": 433,
+    "mesh_response_id": "chatcmpl-cached-req_01M4XHC6HXP09D6BZTV683R148",
+    "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {
       "completion_tokens": 105,
