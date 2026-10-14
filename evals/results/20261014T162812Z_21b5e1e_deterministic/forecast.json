@@ -1,0 +1,1083 @@
+{
+  "duration_s": 10.32,
+  "error": null,
+  "metrics": {
+    "arms": {
+      "no_confirmation": {
+        "coverage_by_dataset": {
+          "P1-base": 0.7849,
+          "P2-base": 0.7251,
+          "S4-shock": 0.7683
+        },
+        "mae30_gbp_by_dataset": {
+          "P1-base": 443.19,
+          "P2-base": 6981.71,
+          "S4-shock": 5924.6
+        },
+        "mase30_by_dataset": {
+          "P1-base": 0.4954,
+          "P2-base": 1.7149,
+          "S4-shock": 1.7426
+        },
+        "note": "detection only: no user answers",
+        "pinball_gbp_by_dataset": {
+          "P1-base": 128.08,
+          "P2-base": 2560.56,
+          "S4-shock": 2050.59
+        }
+      },
+      "with_onboarding_confirmation": {
+        "coverage_by_dataset": {
+          "P1-base": 0.7849,
+          "P2-base": 0.8655,
+          "S4-shock": 0.7624
+        },
+        "mae30_gbp_by_dataset": {
+          "P1-base": 443.19,
+          "P2-base": 5650.98,
+          "S4-shock": 5023.44
+        },
+        "mase30_by_dataset": {
+          "P1-base": 0.4954,
+          "P2-base": 1.4032,
+          "S4-shock": 1.4805
+        },
+        "note": "simulates the user confirming detected income at onboarding (06 H8): the top 3 unconfirmed payers at each origin are asked about and answered from the truth labels",
+        "pinball_gbp_by_dataset": {
+          "P1-base": 128.08,
+          "P2-base": 1712.02,
+          "S4-shock": 1724.96
+        }
+      }
+    },
+    "best_baseline_mae30_gbp_by_dataset": {
+      "P1-base": 643.36,
+      "P2-base": 4849.15,
+      "S4-shock": 4592.07
+    },
+    "best_baseline_mase30_by_dataset": {
+      "P1-base": 0.7259,
+      "P2-base": 1.2052,
+      "S4-shock": 1.3461
+    },
+    "breach_brier": null,
+    "by_dataset": {
+      "P1-base": {
+        "account": "acct_main",
+        "baselines": {
+          "B0": {
+            "mae_minor": {
+              "30": 64335.5161,
+              "60": 81623.4516,
+              "7": 162326.871
+            },
+            "mase": {
+              "30": 0.7259,
+              "60": 0.8627,
+              "7": 1.0936
+            }
+          },
+          "B1": {
+            "mae_minor": {
+              "30": 123627.4516,
+              "60": 187442.4194,
+              "7": 75764.6129
+            },
+            "mase": {
+              "30": 1.3453,
+              "60": 1.8953,
+              "7": 0.5074
+            }
+          },
+          "B2": {
+            "mae_minor": {
+              "30": 123627.4516,
+              "60": 187442.4194,
+              "7": 167432.6452
+            },
+            "mase": {
+              "30": 1.3453,
+              "60": 1.8953,
+              "7": 1.1288
+            }
+          },
+          "B3": {
+            "mae_minor": {
+              "30": 207088.129,
+              "60": 394257.5806,
+              "7": 50610.3226
+            },
+            "mase": {
+              "30": 2.3199,
+              "60": 4.0751,
+              "7": 0.3384
+            }
+          }
+        },
+        "best_baseline": {
+          "30": {
+            "baseline": "B0",
+            "mae_minor": 64335.5161
+          },
+          "60": {
+            "baseline": "B0",
+            "mae_minor": 81623.4516
+          },
+          "7": {
+            "baseline": "B3",
+            "mae_minor": 50610.3226
+          }
+        },
+        "best_baseline_mase": {
+          "30": {
+            "baseline": "B0",
+            "mase": 0.7259
+          },
+          "60": {
+            "baseline": "B0",
+            "mase": 0.8627
+          },
+          "7": {
+            "baseline": "B3",
+            "mase": 0.3384
+          }
+        },
+        "calibration_origins": 9,
+        "currency": "GBP",
+        "first_origin": "2026-01-10",
+        "foresight": {
+          "calibrated_origins": 31,
+          "coverage_p10_p90": 0.7849,
+          "mae_minor": {
+            "30": 44319.0,
+            "60": 61247.6774,
+            "7": 22461.5484
+          },
+          "mape": {
+            "30": 0.4377,
+            "60": 0.5361,
+            "7": 0.0954
+          },
+          "mase": {
+            "30": 0.4954,
+            "60": 0.6397,
+            "7": 0.1498
+          },
+          "pay_cycle_low_mae_minor": 35450.85,
+          "pinball_minor": 12807.51
+        },
+        "horizons": [
+          7,
+          30,
+          60
+        ],
+        "last_origin": "2026-08-08",
+        "leaked_rows": 0,
+        "n_origins": 31,
+        "skill_vs_B1": {
+          "30": 0.6415,
+          "60": 0.6732,
+          "7": 0.7035
+        },
+        "skill_vs_B2": {
+          "30": 0.6415,
+          "60": 0.6732,
+          "7": 0.8658
+        },
+        "skill_vs_best_baseline": {
+          "30": 0.3111,
+          "60": 0.2496,
+          "7": 0.5562
+        },
+        "splits": {
+          "dev": {
+            "baselines": {
+              "B0": {
+                "mae_minor": {
+                  "30": 62342.2778,
+                  "60": 72049.1667,
+                  "7": 157759.4444
+                },
+                "mase": {
+                  "30": 0.6114,
+                  "60": 0.7069,
+                  "7": 1.0628
+                }
+              },
+              "B1": {
+                "mae_minor": {
+                  "30": 150206.6111,
+                  "60": 231591.9444,
+                  "7": 107359.3889
+                },
+                "mase": {
+                  "30": 1.486,
+                  "60": 2.2136,
+                  "7": 0.7192
+                }
+              },
+              "B2": {
+                "mae_minor": {
+                  "30": 150206.6111,
+                  "60": 231591.9444,
+                  "7": 167469.3889
+                },
+                "mase": {
+                  "30": 1.486,
+                  "60": 2.2136,
+                  "7": 1.1294
+                }
+              },
+              "B3": {
+                "mae_minor": {
+                  "30": 203203.3889,
+                  "60": 393218.1667,
+                  "7": 45623.2222
+                },
+                "mase": {
+                  "30": 2.009,
+                  "60": 3.7799,
+                  "7": 0.3048
+                }
+              }
+            },
+            "coverage_p10_p90": 0.8417,
+            "mae_minor": {
+              "30": 43234.8333,
+              "60": 55681.3889,
+              "7": 15502.8889
+            },
+            "mape": {
+              "30": 0.1762,
+              "60": 0.2473,
+              "7": 0.0621
+            },
+            "mase": {
+              "30": 0.4224,
+              "60": 0.5428,
+              "7": 0.1032
+            },
+            "n_origins": 18,
+            "pinball_minor": 11749.12
+          },
+          "test": {
+            "baselines": {
+              "B0": {
+                "mae_minor": {
+                  "30": 67095.3846,
+                  "60": 94880.1538,
+                  "7": 168651.0
+                },
+                "mase": {
+                  "30": 0.8844,
+                  "60": 1.0784,
+                  "7": 1.1362
+                }
+              },
+              "B1": {
+                "mae_minor": {
+                  "30": 86825.5385,
+                  "60": 126312.3077,
+                  "7": 32018.0
+                },
+                "mase": {
+                  "30": 1.1504,
+                  "60": 1.4546,
+                  "7": 0.214
+                }
+              },
+              "B2": {
+                "mae_minor": {
+                  "30": 86825.5385,
+                  "60": 126312.3077,
+                  "7": 167381.7692
+                },
+                "mase": {
+                  "30": 1.1504,
+                  "60": 1.4546,
+                  "7": 1.1279
+                }
+              },
+              "B3": {
+                "mae_minor": {
+                  "30": 212467.0,
+                  "60": 395696.7692,
+                  "7": 57515.5385
+                },
+                "mase": {
+                  "30": 2.7504,
+                  "60": 4.4839,
+                  "7": 0.3849
+                }
+              }
+            },
+            "coverage_p10_p90": 0.7064,
+            "mae_minor": {
+              "30": 45820.1538,
+              "60": 68954.8462,
+              "7": 32096.6154
+            },
+            "mape": {
+              "30": 0.7997,
+              "60": 0.9359,
+              "7": 0.1415
+            },
+            "mase": {
+              "30": 0.5965,
+              "60": 0.7738,
+              "7": 0.2144
+            },
+            "n_origins": 13,
+            "pinball_minor": 14272.98
+          }
+        }
+      },
+      "P2-base": {
+        "account": "acct_main",
+        "baselines": {
+          "B0": {
+            "mae_minor": {
+              "30": 484915.0,
+              "60": 351133.4386,
+              "7": 299537.2982
+            },
+            "mase": {
+              "30": 1.2052,
+              "60": 0.7649,
+              "7": 1.1542
+            }
+          },
+          "B1": {
+            "mae_minor": {
+              "30": 875942.5965,
+              "60": 1146667.193,
+              "7": 381180.3333
+            },
+            "mase": {
+              "30": 2.1533,
+              "60": 2.5361,
+              "7": 1.4439
+            }
+          },
+          "B2": {
+            "mae_minor": {
+              "30": 875942.5965,
+              "60": 1146667.193,
+              "7": 362218.3684
+            },
+            "mase": {
+              "30": 2.1533,
+              "60": 2.5361,
+              "7": 1.3834
+            }
+          },
+          "B3": {
+            "mae_minor": {
+              "30": 847031.6316,
+              "60": 1427685.0175,
+              "7": 368935.4912
+            },
+            "mase": {
+              "30": 2.0293,
+              "60": 3.0749,
+              "7": 1.4111
+            }
+          }
+        },
+        "best_baseline": {
+          "30": {
+            "baseline": "B0",
+            "mae_minor": 484915.0
+          },
+          "60": {
+            "baseline": "B0",
+            "mae_minor": 351133.4386
+          },
+          "7": {
+            "baseline": "B0",
+            "mae_minor": 299537.2982
+          }
+        },
+        "best_baseline_mase": {
+          "30": {
+            "baseline": "B0",
+            "mase": 1.2052
+          },
+          "60": {
+            "baseline": "B0",
+            "mase": 0.7649
+          },
+          "7": {
+            "baseline": "B0",
+            "mase": 1.1542
+          }
+        },
+        "calibration_origins": 9,
+        "currency": "GBP",
+        "first_origin": "2025-07-11",
+        "foresight": {
+          "calibrated_origins": 44,
+          "coverage_p10_p90": 0.8655,
+          "mae_minor": {
+            "30": 565097.9474,
+            "60": 463868.9474,
+            "7": 279640.9474
+          },
+          "mape": {
+            "30": 0.6525,
+            "60": 0.5535,
+            "7": 0.3934
+          },
+          "mase": {
+            "30": 1.4032,
+            "60": 0.9653,
+            "7": 1.0774
+          },
+          "pay_cycle_low_mae_minor": 417061.72,
+          "pinball_minor": 171201.94
+        },
+        "horizons": [
+          7,
+          30,
+          60
+        ],
+        "last_origin": "2026-08-07",
+        "leaked_rows": 0,
+        "n_origins": 57,
+        "skill_vs_B1": {
+          "30": 0.3549,
+          "60": 0.5955,
+          "7": 0.2664
+        },
+        "skill_vs_B2": {
+          "30": 0.3549,
+          "60": 0.5955,
+          "7": 0.228
+        },
+        "skill_vs_best_baseline": {
+          "30": -0.1654,
+          "60": -0.3211,
+          "7": 0.0664
+        },
+        "splits": {
+          "dev": {
+            "baselines": {
+              "B0": {
+                "mae_minor": {
+                  "30": 463307.4318,
+                  "60": 351631.5227,
+                  "7": 297127.5455
+                },
+                "mase": {
+                  "30": 1.1935,
+                  "60": 0.7384,
+                  "7": 1.1695
+                }
+              },
+              "B1": {
+                "mae_minor": {
+                  "30": 873442.7727,
+                  "60": 1134839.7045,
+                  "7": 381910.7045
+                },
+                "mase": {
+                  "30": 2.207,
+                  "60": 2.4264,
+                  "7": 1.4704
+                }
+              },
+              "B2": {
+                "mae_minor": {
+                  "30": 873442.7727,
+                  "60": 1134839.7045,
+                  "7": 365414.7955
+                },
+                "mase": {
+                  "30": 2.207,
+                  "60": 2.4264,
+                  "7": 1.4206
+                }
+              },
+              "B3": {
+                "mae_minor": {
+                  "30": 820719.1591,
+                  "60": 1434880.8182,
+                  "7": 355436.2727
+                },
+                "mase": {
+                  "30": 2.0188,
+                  "60": 2.9678,
+                  "7": 1.3901
+                }
+              }
+            },
+            "coverage_p10_p90": 0.8955,
+            "mae_minor": {
+              "30": 541823.7045,
+              "60": 464102.5,
+              "7": 271676.1591
+            },
+            "mape": {
+              "30": 0.6642,
+              "60": 0.5857,
+              "7": 0.4228
+            },
+            "mase": {
+              "30": 1.3936,
+              "60": 0.9152,
+              "7": 1.0711
+            },
+            "n_origins": 44,
+            "pinball_minor": 176809.81
+          },
+          "test": {
+            "baselines": {
+              "B0": {
+                "mae_minor": {
+                  "30": 558048.3077,
+                  "60": 349447.6154,
+                  "7": 307693.3846
+                },
+                "mase": {
+                  "30": 1.2447,
+                  "60": 0.8545,
+                  "7": 1.1024
+                }
+              },
+              "B1": {
+                "mae_minor": {
+                  "30": 884403.5385,
+                  "60": 1186698.6923,
+                  "7": 378708.3077
+                },
+                "mase": {
+                  "30": 1.9713,
+                  "60": 2.9073,
+                  "7": 1.3541
+                }
+              },
+              "B2": {
+                "mae_minor": {
+                  "30": 884403.5385,
+                  "60": 1186698.6923,
+                  "7": 351399.6923
+                },
+                "mase": {
+                  "30": 1.9713,
+                  "60": 2.9073,
+                  "7": 1.2578
+                }
+              },
+              "B3": {
+                "mae_minor": {
+                  "30": 936089.2308,
+                  "60": 1403330.0,
+                  "7": 414625.1538
+                },
+                "mase": {
+                  "30": 2.0648,
+                  "60": 3.4372,
+                  "7": 1.4824
+                }
+              }
+            },
+            "coverage_p10_p90": 0.7641,
+            "mae_minor": {
+              "30": 643872.3077,
+              "60": 463078.4615,
+              "7": 306598.6923
+            },
+            "mape": {
+              "30": 0.6131,
+              "60": 0.4445,
+              "7": 0.2938
+            },
+            "mase": {
+              "30": 1.4358,
+              "60": 1.1347,
+              "7": 1.0986
+            },
+            "n_origins": 13,
+            "pinball_minor": 152221.44
+          }
+        }
+      },
+      "S4-shock": {
+        "account": "acct_main",
+        "baselines": {
+          "B0": {
+            "mae_minor": {
+              "30": 459207.3226,
+              "60": 477740.2258,
+              "7": 268982.8065
+            },
+            "mase": {
+              "30": 1.3461,
+              "60": 1.0939,
+              "7": 0.9578
+            }
+          },
+          "B1": {
+            "mae_minor": {
+              "30": 816831.2581,
+              "60": 1258358.1613,
+              "7": 325487.6452
+            },
+            "mase": {
+              "30": 2.3828,
+              "60": 2.8734,
+              "7": 1.1327
+            }
+          },
+          "B2": {
+            "mae_minor": {
+              "30": 816831.2581,
+              "60": 1258358.1613,
+              "7": 285931.7742
+            },
+            "mase": {
+              "30": 2.3828,
+              "60": 2.8734,
+              "7": 1.0193
+            }
+          },
+          "B3": {
+            "mae_minor": {
+              "30": 828093.3871,
+              "60": 1275539.0323,
+              "7": 347111.0968
+            },
+            "mase": {
+              "30": 2.3748,
+              "60": 2.9263,
+              "7": 1.2458
+            }
+          }
+        },
+        "best_baseline": {
+          "30": {
+            "baseline": "B0",
+            "mae_minor": 459207.3226
+          },
+          "60": {
+            "baseline": "B0",
+            "mae_minor": 477740.2258
+          },
+          "7": {
+            "baseline": "B0",
+            "mae_minor": 268982.8065
+          }
+        },
+        "best_baseline_mase": {
+          "30": {
+            "baseline": "B0",
+            "mase": 1.3461
+          },
+          "60": {
+            "baseline": "B0",
+            "mase": 1.0939
+          },
+          "7": {
+            "baseline": "B0",
+            "mase": 0.9578
+          }
+        },
+        "calibration_origins": 9,
+        "currency": "GBP",
+        "first_origin": "2026-01-10",
+        "foresight": {
+          "calibrated_origins": 31,
+          "coverage_p10_p90": 0.7624,
+          "mae_minor": {
+            "30": 502344.2903,
+            "60": 601948.4839,
+            "7": 257804.2258
+          },
+          "mape": {
+            "30": 1.3725,
+            "60": 2.0429,
+            "7": 0.5758
+          },
+          "mase": {
+            "30": 1.4805,
+            "60": 1.3783,
+            "7": 0.9184
+          },
+          "pay_cycle_low_mae_minor": 456446.27,
+          "pinball_minor": 172496.03
+        },
+        "horizons": [
+          7,
+          30,
+          60
+        ],
+        "last_origin": "2026-08-08",
+        "leaked_rows": 0,
+        "n_origins": 31,
+        "skill_vs_B1": {
+          "30": 0.385,
+          "60": 0.5216,
+          "7": 0.2079
+        },
+        "skill_vs_B2": {
+          "30": 0.385,
+          "60": 0.5216,
+          "7": 0.0984
+        },
+        "skill_vs_best_baseline": {
+          "30": -0.0939,
+          "60": -0.26,
+          "7": 0.0416
+        },
+        "splits": {
+          "dev": {
+            "baselines": {
+              "B0": {
+                "mae_minor": {
+                  "30": 434896.1667,
+                  "60": 378137.7778,
+                  "7": 323107.9444
+                },
+                "mase": {
+                  "30": 1.3935,
+                  "60": 0.8075,
+                  "7": 1.1765
+                }
+              },
+              "B1": {
+                "mae_minor": {
+                  "30": 762108.6111,
+                  "60": 1103233.0,
+                  "7": 347933.6667
+                },
+                "mase": {
+                  "30": 2.4295,
+                  "60": 2.386,
+                  "7": 1.2414
+                }
+              },
+              "B2": {
+                "mae_minor": {
+                  "30": 762108.6111,
+                  "60": 1103233.0,
+                  "7": 339677.0
+                },
+                "mase": {
+                  "30": 2.4295,
+                  "60": 2.386,
+                  "7": 1.2395
+                }
+              },
+              "B3": {
+                "mae_minor": {
+                  "30": 631417.2222,
+                  "60": 1027044.6111,
+                  "7": 418313.0556
+                },
+                "mase": {
+                  "30": 2.0419,
+                  "60": 2.2003,
+                  "7": 1.5359
+                }
+              }
+            },
+            "coverage_p10_p90": 0.8222,
+            "mae_minor": {
+              "30": 475088.2222,
+              "60": 402440.8889,
+              "7": 301361.9444
+            },
+            "mape": {
+              "30": 0.6316,
+              "60": 0.4473,
+              "7": 0.6681
+            },
+            "mase": {
+              "30": 1.5379,
+              "60": 0.8327,
+              "7": 1.1007
+            },
+            "n_origins": 18,
+            "pinball_minor": 166776.33
+          },
+          "test": {
+            "baselines": {
+              "B0": {
+                "mae_minor": {
+                  "30": 492868.9231,
+                  "60": 615651.3077,
+                  "7": 194040.3077
+                },
+                "mase": {
+                  "30": 1.2805,
+                  "60": 1.4905,
+                  "7": 0.655
+                }
+              },
+              "B1": {
+                "mae_minor": {
+                  "30": 892601.0769,
+                  "60": 1473146.8462,
+                  "7": 294408.5385
+                },
+                "mase": {
+                  "30": 2.3183,
+                  "60": 3.5484,
+                  "7": 0.9822
+                }
+              },
+              "B2": {
+                "mae_minor": {
+                  "30": 892601.0769,
+                  "60": 1473146.8462,
+                  "7": 211515.3077
+                },
+                "mase": {
+                  "30": 2.3183,
+                  "60": 3.5484,
+                  "7": 0.7144
+                }
+              },
+              "B3": {
+                "mae_minor": {
+                  "30": 1100414.2308,
+                  "60": 1619608.2308,
+                  "7": 248523.7692
+                },
+                "mase": {
+                  "30": 2.8357,
+                  "60": 3.9315,
+                  "7": 0.8442
+                }
+              }
+            },
+            "coverage_p10_p90": 0.6795,
+            "mae_minor": {
+              "30": 540083.4615,
+              "60": 878189.7692,
+              "7": 197493.5385
+            },
+            "mape": {
+              "30": 2.3984,
+              "60": 4.2524,
+              "7": 0.4479
+            },
+            "mase": {
+              "30": 1.401,
+              "60": 2.1339,
+              "7": 0.6659
+            },
+            "n_origins": 13,
+            "pinball_minor": 180415.6
+          }
+        }
+      }
+    },
+    "by_horizon": {
+      "30": {
+        "best_baseline": "B0",
+        "best_baseline_mae_gbp": 643.36,
+        "best_baseline_mase": 0.7259,
+        "coverage_p10_p90": 0.7849,
+        "mae_gbp": 443.19,
+        "mape": 0.4377,
+        "mase": 0.4954
+      },
+      "60": {
+        "best_baseline": "B0",
+        "best_baseline_mae_gbp": 816.23,
+        "best_baseline_mase": 0.8627,
+        "coverage_p10_p90": 0.7849,
+        "mae_gbp": 612.48,
+        "mape": 0.5361,
+        "mase": 0.6397
+      },
+      "7": {
+        "best_baseline": "B3",
+        "best_baseline_mae_gbp": 506.1,
+        "best_baseline_mase": 0.3384,
+        "coverage_p10_p90": 0.7849,
+        "mae_gbp": 224.62,
+        "mape": 0.0954,
+        "mase": 0.1498
+      }
+    },
+    "by_split": {
+      "P1-base": {
+        "dev": {
+          "coverage_p10_p90": 0.8417,
+          "mae30_gbp": 432.35,
+          "mape30": 0.1762,
+          "mase30": 0.4224,
+          "n_origins": 18,
+          "pinball_gbp": 117.49
+        },
+        "test": {
+          "coverage_p10_p90": 0.7064,
+          "mae30_gbp": 458.2,
+          "mape30": 0.7997,
+          "mase30": 0.5965,
+          "n_origins": 13,
+          "pinball_gbp": 142.73
+        }
+      },
+      "P2-base": {
+        "dev": {
+          "coverage_p10_p90": 0.8955,
+          "mae30_gbp": 5418.24,
+          "mape30": 0.6642,
+          "mase30": 1.3936,
+          "n_origins": 44,
+          "pinball_gbp": 1768.1
+        },
+        "test": {
+          "coverage_p10_p90": 0.7641,
+          "mae30_gbp": 6438.72,
+          "mape30": 0.6131,
+          "mase30": 1.4358,
+          "n_origins": 13,
+          "pinball_gbp": 1522.21
+        }
+      },
+      "S4-shock": {
+        "dev": {
+          "coverage_p10_p90": 0.8222,
+          "mae30_gbp": 4750.88,
+          "mape30": 0.6316,
+          "mase30": 1.5379,
+          "n_origins": 18,
+          "pinball_gbp": 1667.76
+        },
+        "test": {
+          "coverage_p10_p90": 0.6795,
+          "mae30_gbp": 5400.83,
+          "mape30": 2.3984,
+          "mase30": 1.401,
+          "n_origins": 13,
+          "pinball_gbp": 1804.16
+        }
+      }
+    },
+    "calibration_version": "cal-1",
+    "coverage_by_dataset": {
+      "P1-base": 0.7849,
+      "P2-base": 0.8655,
+      "S4-shock": 0.7624
+    },
+    "engine_version": "fc-1.3.0",
+    "headline_arm": "with_onboarding_confirmation",
+    "headline_dataset": "P1-base",
+    "mae30_gbp_by_dataset": {
+      "P1-base": 443.19,
+      "P2-base": 5650.98,
+      "S4-shock": 5023.44
+    },
+    "mase30_by_dataset": {
+      "P1-base": 0.4954,
+      "P2-base": 1.4032,
+      "S4-shock": 1.4805
+    },
+    "method": {
+      "anchor": "truth balance at the origin",
+      "calibration": "cal-1: tail scales from raw forecasts at earlier weekly origins (from day 28), scored up to the origin",
+      "dev_test": "dev = origin + 60 d \u2264 last day \u2212 3 months",
+      "inputs": "detected (import \u2192 rules \u2192 detect), truncated at each origin",
+      "mape": "reported, not a target: |error| / |actual| explodes near \u00a30, exactly the pre-payday lows that matter (target replaced by MASE on 13 Oct 2026)",
+      "mase": "MAE \u00f7 the in-sample mean absolute h-step change before each origin (Hyndman & Koehler 2006); below 1 beats in-sample naive",
+      "n_paths": 500,
+      "origins": "every 7 days from day 90 to end \u2212 60"
+    },
+    "pay_cycle_low_mae_gbp": 354.51,
+    "pinball_gbp_by_dataset": {
+      "P1-base": 128.08,
+      "P2-base": 1712.02,
+      "S4-shock": 1724.96
+    },
+    "prior": "ONS Family spending workbook 1, FYE 2025, Table A1",
+    "simulated_user_step": "simulates the user confirming detected income at onboarding (06 H8): the top 3 unconfirmed payers at each origin are asked about and answered from the truth labels",
+    "skill_vs": {
+      "B1-repeat30": {
+        "30": 0.6415,
+        "60": 0.6732,
+        "7": 0.7035
+      },
+      "B2-meanflow": {
+        "30": 0.6415,
+        "60": 0.6732,
+        "7": 0.8658
+      },
+      "best_baseline": {
+        "30": 0.3111,
+        "60": 0.2496,
+        "7": 0.5562
+      }
+    }
+  },
+  "name": "forecast",
+  "notes": [
+    "Inputs are built from detected data with finance_core only; truth is used for the anchor balance at each origin and for scoring.",
+    "Discretionary history passed to the engine covers up to 365 days before each origin and every unscheduled outflow (not only spending); the engine bootstraps everyday outflows from the last 90 days and models one-offs over the span.",
+    "Headline numbers simulate the user confirming detected income at onboarding (06 H8): the top 3 unconfirmed payers at each origin are answered from the truth labels. The no-confirmation arm (detection only) is reported alongside in forecast.arms.",
+    "S4-shock coverage after the shift is expected to miss (docs/09 \u00a77.4) and is not gated.",
+    "Every forecast carries the ONS FYE 2025 irregular-expense prior (docs/07 \u00a76.2b) and is calibrated from the engine's own earlier forecasts, scored only up to the origin (docs/07 \u00a76.8a). Dev/test splits are in forecast.by_split.",
+    "MAPE is reported but no longer a target (owner decision 13 Oct 2026): it divides by a balance that is near \u00a30 at the pre-payday lows. FC-mase replaces FC-mape.",
+    "Breach Brier and the long-January check are not computed yet."
+  ],
+  "suite": "E-FC",
+  "targets": [
+    {
+      "dataset": "P1",
+      "id": "FC-skill-B1",
+      "label": "Skill vs B1-repeat30, MAE(30)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 0.2",
+      "value": 0.6415
+    },
+    {
+      "dataset": "P1",
+      "id": "FC-skill-B2",
+      "label": "Skill vs B2-meanflow, MAE(30)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 0.15",
+      "value": 0.6415
+    },
+    {
+      "dataset": "P1",
+      "id": "FC-mase",
+      "label": "MASE(30)",
+      "met": true,
+      "stage1": true,
+      "target": "< 1.0",
+      "value": 0.4954
+    },
+    {
+      "dataset": "P1",
+      "id": "FC-mase-vs-best",
+      "label": "MASE(30) \u00f7 best naive baseline MASE(30)",
+      "met": true,
+      "stage1": true,
+      "target": "< 1.0",
+      "value": 0.6825
+    },
+    {
+      "dataset": "P1-base",
+      "id": "FC-coverage-P1",
+      "label": "P10\u2013P90 coverage (all h)",
+      "met": true,
+      "stage1": true,
+      "target": "0.72\u20130.88",
+      "value": 0.7849
+    },
+    {
+      "dataset": "P2-base",
+      "id": "FC-coverage-P2",
+      "label": "P10\u2013P90 coverage (all h)",
+      "met": true,
+      "stage1": true,
+      "target": "0.72\u20130.88",
+      "value": 0.8655
+    }
+  ]
+}

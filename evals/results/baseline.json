@@ -1,22 +1,22 @@
 {
   "durations_s": {
-    "E-ANOM": 0.87,
-    "E-AUD": 8.53,
+    "E-ANOM": 0.83,
+    "E-AUD": 8.48,
     "E-CAT": 0.44,
-    "E-CTX": 1.09,
+    "E-CTX": 0.55,
     "E-EFF": 0.0,
-    "E-FC": 10.43,
-    "E-GRD": 6.77,
-    "E-INC": 0.86,
-    "E-ING": 0.89,
-    "E-LOC": 0.35,
-    "E-ORC": 36.14,
-    "E-REC": 0.43,
-    "E-SCN": 0.65,
-    "E-SEC": 0.34,
-    "E-SIM": 16.04,
-    "E-UI": 34.52,
-    "E-VER": 16.95
+    "E-FC": 10.32,
+    "E-GRD": 6.68,
+    "E-INC": 0.83,
+    "E-ING": 0.7,
+    "E-LOC": 0.32,
+    "E-ORC": 34.32,
+    "E-REC": 0.42,
+    "E-SCN": 0.25,
+    "E-SEC": 0.28,
+    "E-SIM": 15.87,
+    "E-UI": 34.32,
+    "E-VER": 16.69
   },
   "engine_version": "fc-1.3.0",
   "errors": {},
@@ -177,7 +177,7 @@
   },
   "generator_version": "gen-1.1.0",
   "git_dirty": false,
-  "git_sha": "4a6b8f1c88b0d1a5a05bf073ab8938b16d939e3f",
+  "git_sha": "21b5e1e0d61c5298770da5dbe54f02c6e24485ec",
   "holdout_version": null,
   "home_currency_primary": "GBP",
   "layout_set_version": null,
@@ -196,7 +196,7 @@
     "null = not run. Gates: a suite that did not run is 'fail'; see gate_detail.rule."
   ],
   "prompt_versions": {},
-  "run_id": "evalrun_20261014T155025Z_4a6b8f1",
+  "run_id": "evalrun_20261014T162812Z_21b5e1e",
   "schema_version": "1.1",
   "seeds": [
     1729
@@ -354,7 +354,7 @@
         "model_calls_per_cache_hit_after_understand": 0,
         "model_calls_per_cache_miss": 1,
         "recorded_tokens_total": 447216,
-        "replay_seconds": 1.09
+        "replay_seconds": 0.55
       },
       "followup_turns_scored": 45,
       "mode": "replay",
@@ -1107,12 +1107,12 @@
           "count": 13,
           "degraded_left_out": 0,
           "first_step_p95_s": 0.02,
-          "latency_estimated_p50_s": 19.07,
-          "latency_estimated_p95_s": 41.86,
+          "latency_estimated_p50_s": 19.12,
+          "latency_estimated_p95_s": 41.84,
           "latency_measured": 13,
-          "latency_p50_s": 19.07,
-          "latency_p50_s_measured_only": 19.07,
-          "latency_p95_s": 41.86
+          "latency_p50_s": 19.12,
+          "latency_p50_s_measured_only": 19.12,
+          "latency_p95_s": 41.84
         },
         "all": {
           "cost_mean_usd": 0.00993,
@@ -1120,12 +1120,12 @@
           "count": 60,
           "degraded_left_out": 0,
           "first_step_p95_s": 0.02,
-          "latency_estimated_p50_s": 3.41,
-          "latency_estimated_p95_s": 35.02,
+          "latency_estimated_p50_s": 3.43,
+          "latency_estimated_p95_s": 35.01,
           "latency_measured": 60,
-          "latency_p50_s": 3.41,
-          "latency_p50_s_measured_only": 3.41,
-          "latency_p95_s": 35.02
+          "latency_p50_s": 3.43,
+          "latency_p50_s_measured_only": 3.43,
+          "latency_p95_s": 35.01
         },
         "simple": {
           "cost_mean_usd": 0.00061,
@@ -1134,11 +1134,11 @@
           "degraded_left_out": 0,
           "first_step_p95_s": 0.02,
           "latency_estimated_p50_s": 2.21,
-          "latency_estimated_p95_s": 7.31,
+          "latency_estimated_p95_s": 7.3,
           "latency_measured": 47,
           "latency_p50_s": 2.21,
           "latency_p50_s_measured_only": 2.21,
-          "latency_p95_s": 7.31
+          "latency_p95_s": 7.3
         }
       },
       "by_tier": {
@@ -1622,7 +1622,7 @@
         "tool_calls_outside_allow_list": []
       },
       "mode": "replay",
-      "seconds": 36.1
+      "seconds": 34.3
     },
     "recurring": {
       "council_tax_months_exact": true,
@@ -2125,7 +2125,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 35.0",
-        "value": 19.07
+        "value": 19.12
       },
       {
         "dataset": "13 advice answers",
@@ -2134,7 +2134,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 60.0",
-        "value": 41.86
+        "value": 41.84
       }
     ],
     "E-FC": [
@@ -2767,5 +2767,5 @@
       }
     ]
   },
-  "timestamp_utc": "2026-10-14T15:50:25Z"
+  "timestamp_utc": "2026-10-14T16:28:12Z"
 }
