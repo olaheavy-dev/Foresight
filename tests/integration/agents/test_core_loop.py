@@ -27,6 +27,7 @@ from sqlalchemy.orm import sessionmaker
 from backend.agents.runner import run_workflow
 from backend.agents.runtime import NodeOutput, NodeSpec, RunContext
 from backend.agents.state import ForesightState
+from backend.pipeline.forecast import verify_simulation
 from backend.pipeline.seed_demo import seed_all
 from backend.storage import models as m
 from backend.storage.agent_repo import AgentStore
@@ -156,6 +157,16 @@ def test_orc4_bad_draft_rejected_then_revised_and_approved(p1: AgentStore) -> No
     assert "£" in card["title"]
     assert card["verification"]["revisions"] == 1
     assert card["impact"]["monthly_saving"]["minor"] > 0
+    # Audit chain (docs/06 §10.2, docs/09 §11): the impact is a stored simulation that rebuilds
+    # identically, and the approval is an audit event.
+    sims = [p1.ctx.calculation(c) for c in rec.impact_calc_refs]
+    sims = [c for c in sims if c is not None and c.kind == "simulation"]
+    assert len(sims) == 1
+    assert sims[0].params["purpose"] == "recommendation_impact"
+    assert verify_simulation(p1.ctx, sims[0].id) is True
+    actions = [e.action for e in p1.ctx.all(m.AuditEvent) if e.subject_id == rec.id]
+    assert "recommendation_approved" in actions
+    assert p1.ctx.audit_chain_valid()
 
 
 def test_orc5_permanently_bad_advisor_is_withdrawn_after_two_revisions(p1: AgentStore) -> None:
@@ -433,3 +444,26 @@ def test_a_rejected_draft_the_advisor_drops_is_withdrawn(p1: AgentStore) -> None
     first = next(s for s in p1.steps(out.run_id) if s.node == "verify")
     assert first.output["rejected_drafts"] == 1
     assert first.output["verdict"] == "reject"
+
+
+def test_concurrent_judge_calls_share_the_run_budget_in_order(p1: AgentStore) -> None:
+    """ORC-10: with one call left after the Advisor, only the first draft reaches the judge,
+    though a round's judge calls run concurrently; the run stops as partial, the call is paid."""
+    from backend.agents.budget import Budget
+
+    def two_drafts(kwargs: dict[str, Any]) -> Any:
+        first = _proposal(_data(kwargs), feasible=True)
+        second = {**first, "proposal_id": "prp_delivery_2"}
+        return json_ok({"proposals": [first, second]})
+
+    completions = ScriptedCompletions(two_drafts, default=lambda _: JUDGE_PASS)
+    out = run_workflow(
+        p1, workflow="risk_detection", trigger="event", event="data_version_changed",
+        mesh=client(completions), nodes=STAND_INS, budget=Budget(max_calls=2),
+    )  # fmt: skip
+    assert len(completions.calls) == 2  # the Advisor and one judge, never the second judge
+    verify = next(s for s in p1.steps(out.run_id) if s.node == "verify")
+    assert verify.status == "skipped"
+    assert verify.output["reason"] == "budget"
+    assert verify.llm_calls == 1
+    assert out.partial is True

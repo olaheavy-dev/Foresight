@@ -9,10 +9,14 @@ at two revisions (docs/06 §1 rule 4, W4).
 from __future__ import annotations
 
 from backend.agents import ledger_nodes
-from backend.agents.runtime import NodeOutput, NodeSpec, RunContext
+from backend.agents.runtime import DEADLINES, NodeOutput, NodeSpec, RunContext
 from backend.agents.state import ForesightState
 
 MAX_REVISIONS = 2  # initial proposal + 2 revisions = 3 Verifier rounds (docs/06 W4)
+# docs/06 §13 latency budget for a question (60 s deadline): one revision round is an Advisor
+# call plus its concurrent judge calls; composing and saving the answer follows the loop.
+REVISION_ROUND_MS = 25_000
+ANSWER_TAIL_MS = 5_000
 
 
 def not_built(task: str, what: str) -> NodeOutput:
@@ -63,8 +67,19 @@ def withdraw(state: ForesightState, ctx: RunContext) -> NodeOutput:
     )
 
 
-def decide_after_verify(state: ForesightState) -> str:
-    """W4 edge: approve/none → leave the loop; reject → revise (≤ 2) or withdraw."""
+def revision_fits(ctx: RunContext | None) -> bool:
+    """A question's revision round starts only if it can finish inside the run deadline: the
+    model wait so far plus one Advisor call and its judge calls, plus composing the answer.
+    Uses recorded model wait, not the wall clock, so live, record and replay take one path."""
+    if ctx is None or ctx.workflow != "conversation":
+        return True
+    deadline_ms = DEADLINES["conversation"].total_seconds() * 1000
+    return ctx.waited_ms + REVISION_ROUND_MS + ANSWER_TAIL_MS <= deadline_ms
+
+
+def decide_after_verify(state: ForesightState, ctx: RunContext | None = None) -> str:
+    """W4 edge: approve/none → leave the loop; reject → revise (≤ 2, and only while a round
+    still fits in the question deadline) or withdraw."""
     if state.get("partial") and state.get("proposals"):
         # Out of time (or budget) with drafts still unchecked: withdraw them, never leave them
         # in review and never loop.
@@ -75,7 +90,7 @@ def decide_after_verify(state: ForesightState) -> str:
         # The run deadline or budget stopped work: nodes are being skipped, so a revision round
         # would never complete. Withdraw instead of looping (nothing unchecked is shown).
         return "withdraw"
-    if int(state.get("revision_round") or 0) < MAX_REVISIONS:
+    if int(state.get("revision_round") or 0) < MAX_REVISIONS and revision_fits(ctx):
         return "revise"
     return "withdraw"
 

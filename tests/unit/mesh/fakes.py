@@ -63,6 +63,11 @@ def status_error(
     return cls("mesh error", response=response, body=body)
 
 
+def service_unavailable() -> APIStatusError:
+    """A transient Mesh 503 (retried with backoff, docs/06 §10.1)."""
+    return status_error(APIStatusError, 503)
+
+
 def spend_limit() -> APIStatusError:
     body = {"error": {"code": "spend_limit_exceeded", "message": "Insufficient balance."}}
     return status_error(APIStatusError, 402, body)
@@ -103,6 +108,7 @@ def settings(**overrides: Any) -> Settings:
         "mesh_model_reasoning_fallback": "google/gemini-3.1-pro",
         "mesh_model_verifier": "openai/gpt-6.1-sol",
         "mesh_model_verifier_fallback": "google/gemini-3.1-pro",
+        "mesh_daily_budget_usd": 0.0,  # the daily guard has its own tests (test_spend_guard.py)
     }
     base.update(overrides)
     return Settings(**base)

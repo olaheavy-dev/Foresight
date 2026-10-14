@@ -276,3 +276,54 @@ def test_orc15_unseen_csv_proposal_confirmation_and_reuse(session: Session) -> N
     assert ln.tables_needing_columns(
         ctx2, "later.csv", shorter.encode()
     )  # other profiles unaffected
+
+
+def _question_ctx(store: AgentStore, mesh: Any) -> RunContext:
+    return RunContext(
+        store=store, run_id="run_question", workflow="conversation",
+        deadline_at=deadline_for("conversation"), mesh=mesh,
+    )  # fmt: skip
+
+
+def test_questions_reuse_the_ranking_from_the_last_refresh(session: Session) -> None:
+    """The Analyst ranks once per data change: a question never calls the model (docs/06 §6.1)."""
+    ctx, acct = workspace_with_account(session)
+    ds = load_dataset("P1-base")
+    file = next(iter(ds.layout))
+    assert ingest_file(ctx, "monzo.csv", ds.file_bytes(file), account_id=acct).status == "committed"
+    session.commit()
+    store = AgentStore(ctx)
+    state: Any = {"workflow": "conversation"}
+
+    # Nothing ranked yet (as straight after seeding): deterministic salience, no model call.
+    never = ScriptedCompletions()
+    first = ln.analyst_node(state, _question_ctx(store, client(never)))
+    assert never.calls == []
+    assert not first.llm
+    assert first.update["findings"]
+    assert {f.wording_source for f in ctx.all(m.Finding) if f.status == "open"} == {"template"}
+
+    # A refresh ranks with the model; the next question reuses that order, still with no call.
+    def respond(kwargs: dict[str, Any]) -> Any:
+        found = json.loads(kwargs["messages"][-1]["content"])["findings"]
+        return json_ok({"findings": [
+            {"finding_id": f["id"], "salience": 5 - min(i, 4), "headline": "Worth a look",
+             "explanation": "Compared with your usual months."}
+            for i, f in enumerate(reversed(found))
+        ], "discarded": []})  # fmt: skip
+
+    run_workflow(
+        store, workflow="risk_detection", trigger="cron", event="daily_refresh",
+        mesh=client(ScriptedCompletions(default=respond)), nodes={"analyst": ln.nodes()["analyst"]},
+    )  # fmt: skip
+    ranked = ln.stored_ranking(ctx)
+    assert {f.wording_source for f in ranked} == {"llm"}
+    again = ln.analyst_node(state, _question_ctx(store, client(never)))
+    assert never.calls == []
+    assert again.cached
+    assert again.update["findings"] == [f.id for f in ranked]
+
+    # New data: the stored ranking is for an older data version, so it is not reused.
+    ctx.workspace.data_version = int(ctx.workspace.data_version or 0) + 1
+    session.flush()
+    assert ln.stored_ranking(ctx) == []

@@ -44,6 +44,27 @@ def eval_mode() -> str:
     return mode
 
 
+HOLD_ENV = "FORESIGHT_EVAL_HOLD"  # e.g. "advisor,verifier_judge": answered from recordings only
+
+
+class HoldMesh:
+    """Record mode, except the structured calls named in FORESIGHT_EVAL_HOLD: those are answered
+    only from what is already recorded (a miss stays a miss, never a live call). Used to record
+    everything else while a model choice for the held roles is pending."""
+
+    def __init__(self, inner: MeshClient, replay: MeshClient, hold: frozenset[str]) -> None:
+        self._inner = inner
+        self._replay = replay
+        self._hold = hold
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._inner, name)
+
+    def structured(self, **kwargs: Any) -> Any:
+        client = self._replay if kwargs.get("name") in self._hold else self._inner
+        return client.structured(**kwargs)
+
+
 def eval_mesh() -> MeshClient:
     """The product's Mesh client in replay or record mode, on the committed cassettes.
 
@@ -53,7 +74,12 @@ def eval_mesh() -> MeshClient:
     settings = get_settings().model_copy(
         update={"mesh_cassette_mode": eval_mode(), "mesh_cassette_dir": str(CASSETTES)}
     )
-    return MeshClient(settings=settings)
+    client = MeshClient(settings=settings)
+    hold = frozenset(n.strip() for n in os.environ.get(HOLD_ENV, "").split(",") if n.strip())
+    if hold and eval_mode() == "record":
+        replay = MeshClient(settings=settings.model_copy(update={"mesh_cassette_mode": "replay"}))
+        return HoldMesh(client, replay, hold)  # type: ignore[return-value]
+    return client
 
 
 USAGE: dict[str, int] = {"calls": 0, "tokens": 0}  # recorded usage of the requests answered
@@ -61,6 +87,16 @@ USAGE: dict[str, int] = {"calls": 0, "tokens": 0}  # recorded usage of the reque
 
 class NotRecorded(LookupError):
     """Replay met a request that has no cassette."""
+
+
+def fresh_breaker(mesh: Any) -> None:
+    """Each eval case starts with a closed circuit breaker: a transient Mesh error while recording
+    one case must not pause AI for the next ones, or recording and replay take different paths."""
+    from backend.mesh.breaker import CircuitBreaker
+
+    inner = getattr(mesh, "_inner", mesh)
+    if hasattr(inner, "breaker"):
+        inner.breaker = CircuitBreaker()
 
 
 def understand(
@@ -127,6 +163,7 @@ def seeded_database() -> Iterator[sessionmaker[Session] | None]:
     from alembic.config import Config
 
     from backend.pipeline.seed_demo import seed_all
+    from backend.storage.ids import reproducible_ids
 
     server = make_url(server_url)
     name = f"foresight_eval_{uuid.uuid4().hex[:12]}"
@@ -140,9 +177,12 @@ def seeded_database() -> Iterator[sessionmaker[Session] | None]:
         config.set_main_option("sqlalchemy.url", url.replace("%", "%%"))
         command.upgrade(config, "head")
         factory = sessionmaker(bind=engine, expire_on_commit=False)
-        with factory() as session:
-            seed_all(session)
-        yield factory
+        # Reproducible ids for the whole database's life (seed and every run on it), so recorded
+        # model requests that cite ids replay on the next fresh seed.
+        with reproducible_ids():
+            with factory() as session:
+                seed_all(session)
+            yield factory
     finally:
         engine.dispose()
         with admin.connect() as conn:
@@ -159,6 +199,7 @@ __all__ = [
     "canonical",
     "eval_mesh",
     "eval_mode",
+    "fresh_breaker",
     "seeded_database",
     "slots_match",
     "understand",

@@ -1,0 +1,36 @@
+# The models Foresight may call through Mesh, as data (docs/06 §13): what each accepts and what it
+# costs. Choosing or swapping a model is configuration: set MESH_MODEL_<TIER> (and _FALLBACK), and
+# add the model here if it is new; MESH_MODELS_FILE can point at another copy of this file.
+#
+# Capabilities were observed in live probes through Mesh (13 Oct 2026):
+# - Anthropic models (Bedrock upstream) reject `temperature` and a forced `tool_choice`; they
+#   accept json_schema with temperature omitted, and tool_choice "auto".
+# - google/gemini-3.1-pro returned unparseable content for json_schema; its tool calls work.
+# - The OpenAI models and gemini-3.8-flash accept json_schema (strict) and a forced tool choice.
+# Prices: USD per million tokens (input, output), from Mesh's catalogue (GET /v1/models, 13 Oct).
+# Prompt caching: Mesh reports cache writes but no cached reads (probed 13 Oct 2026), so no
+# cache discount is assumed.
+defaults:
+  # An unlisted model: the conservative shape, and no cost estimate (never a guessed price).
+  supports_temperature: false
+  supports_forced_tool_choice: false
+  structured_mode: json_schema
+provider_defaults:
+  anthropic: {supports_temperature: false, supports_forced_tool_choice: false, structured_mode: json_schema}
+models:
+  openai/gpt-6-luna:
+    {supports_temperature: true, supports_forced_tool_choice: true, structured_mode: json_schema, price_in: 0.10, price_out: 0.50}
+  openai/gpt-6.1-sol:
+    {supports_temperature: true, supports_forced_tool_choice: true, structured_mode: json_schema, price_in: 2.00, price_out: 10.00}
+  openai/gpt-5.6-luna-pro:  # probed 13 Oct 2026 (Advisor model trial): json_schema, forced tools, temperature
+    {supports_temperature: true, supports_forced_tool_choice: true, structured_mode: json_schema, price_in: 0.25, price_out: 1.50}
+  anthropic/claude-sonnet-5.5:
+    {supports_temperature: false, supports_forced_tool_choice: false, structured_mode: json_schema, price_in: 2.00, price_out: 10.00}
+  # Judge trial 13 Oct 2026: under json_schema Haiku returned `{}` on about half of first attempts
+  # (a repair call each); tool calls with tool_choice "auto" are used instead.
+  anthropic/claude-haiku-5.5:
+    {supports_temperature: false, supports_forced_tool_choice: false, structured_mode: tools, price_in: 0.10, price_out: 0.50}
+  google/gemini-3.1-pro:
+    {supports_temperature: true, supports_forced_tool_choice: true, structured_mode: tools, price_in: 2.00, price_out: 12.00}
+  google/gemini-3.8-flash:
+    {supports_temperature: true, supports_forced_tool_choice: true, structured_mode: json_schema, price_in: 0.75, price_out: 3.75}

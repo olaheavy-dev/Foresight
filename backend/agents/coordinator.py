@@ -110,10 +110,25 @@ def prompt_text(name: str) -> str:
     return (PROMPTS_DIR / f"{name}.md").read_text(encoding="utf-8")
 
 
+_PACK_COUNTRY = {"uk": "GB", "in": "IN"}
+
+
+def _category_keys(locale_pack: str) -> list[str]:
+    from backend.pipeline import packs
+
+    try:
+        return sorted(packs.categorisation_pack(_PACK_COUNTRY.get(locale_pack, "GB")).categories)
+    except packs.UnsupportedCountry:
+        return []
+
+
 def _understand_messages(state: ForesightState) -> list[dict[str, str]]:
     # The user's words travel only inside a JSON data field, never as instructions (docs/06 rule 6).
     payload = {
         "today": str(state.get("as_of") or ""),
+        # The profile's own category keys (the Forecaster gets the same list), so a category slot
+        # is always a key the engine knows, and paraphrases meet on one key.
+        "categories": _category_keys(str(state.get("locale_pack") or "uk")),
         "history": state.get("history") or [],
         "message": state.get("user_message") or "",
     }

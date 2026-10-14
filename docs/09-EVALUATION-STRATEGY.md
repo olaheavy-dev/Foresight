@@ -40,6 +40,7 @@ Judges reward self-evaluation "heavily" and penalise "a test set that doesn't ex
 | Audit completeness | `E-AUD` | unbroken evidence chains, recomputability | F | no |
 | Prompt injection | `E-SEC` | attack success rate (chat and imported data), canary leaks, false refusals, which layer stopped each attack | trust (#7), H | yes (or recorded) |
 | Follow-ups and answer cache | `E-CTX` | follow-up intent and slot accuracy, standalone-rewrite adequacy, cache hit rate, false cache hits | conversational, A | yes (or recorded) |
+| Cost and latency | `E-EFF` | cost per answer (mean, p95) and end-to-end latency (p50, p95) per answer type and per model tier, time to first progress step, from recorded live latencies | core metrics (owner, 13 Oct 2026), H | reuses E-UI's recorded answers |
 | Wording quality | `E-WRD` | human ratings (1–5) on five rubric dimensions, inter-rater agreement; an LLM judge only if it agrees with people (ρ ≥ 0.7) | trust, self-evaluation (#6) | optional (judge arm only) |
 | Ablation | `E-ABL` | each component's measured effect on its headline metric | evidence for all criteria | reuses the suites above |
 
@@ -242,7 +243,7 @@ Ten ambiguous prompts have gold `needs_clarification` with the expected slot.
 
 ### 3.6 Adversarial recommendation set — `bad_proposals.jsonl`
 
-62 flawed `InterventionProposal`s (expected `REJECT`) and 38 good ones (expected `APPROVE`; 2 relabelled on 13 Oct 2026, see `evals/CHANGELOG.md`):
+62 flawed `InterventionProposal`s (expected `REJECT`) and 34 good ones (expected `APPROVE`; 2 relabelled and 4 removed on 13 Oct 2026, see `evals/CHANGELOG.md`):
 
 | Defect type | Count | Example |
 |---|---|---|
@@ -642,7 +643,7 @@ Uses the real LangGraph graph (live or replay). Assertions read the persisted `A
 | ORC-14 | PDF LayoutProfile path | an `L5` PDF → Ledger Agent `propose_layout_profile` step → reconciliation gate → first-use H11 confirmation (simulated) → accepted, with the LayoutProfile saved. A second `L5` file → 0 layout-proposal LLM steps |
 | ORC-15 | CSV FormatProfile path | a `C1` CSV → no built-in match → Ledger Agent `propose_format_profile` step → user confirmation (simulated) → parse with P/R 1.000 → profile saved. A second `C1` file → 0 format-proposal LLM steps |
 
-Metric: **case pass rate** (TARGET 100%) plus the agent coverage table.
+Metric: **case pass rate** (TARGET 100%) plus the agent coverage table. The gate is `ORC-pass-built`: every case whose feature is built must pass, and a case that was not recorded counts as unmet. `ORC-pass`, over all 30 cases, is always reported; cases for features of later stages (the scheduled digest, the PDF importer) count as unmet there, so it is not gated until those features ship (owner decision, 13 Oct 2026).
 
 ---
 
@@ -739,6 +740,28 @@ Every other suite checks that text is grounded (no model-written numbers, real e
 - WRD-3 (optional, model judge): a judge prompt on the verifier tier scores the same 30 answers with the same rubric. It may be used to score larger sets **only if** its agreement with the mean human score reaches Spearman ρ ≥ 0.7 on every dimension it is used for; otherwise it is reported as "not validated" and never used. The judge's known bias toward model-written text is stated next to its numbers.
 
 **Cost.** Human rating: about 1–1.5 hours per rater. Model judge (optional): 30 calls, about $0.15. Runs once on the final build (EVL-14); results in `summary.json → suites.wording`, README row "Wording quality (human-rated)".
+
+## 10f. Suite `E-EFF`: cost and latency (owner decision 13 Oct 2026)
+
+Cost, accuracy and latency are the three core metrics; accuracy is every other suite's gates, and `E-EFF` measures the other two on the E-UI test questions answered through the real graph (the same 60 answers E-UI scores).
+
+**Measurement.** Every cassette stores the live call's wall time (`latency_ms`, retries included) and its cost estimate; a replayed call reports the recorded latency, so latency is only ever measured from real calls and nothing is recorded for timing alone. Each step stores its model wait (`AgentStep.model_ms`): the sum of its calls' latencies, or for the Verifier's concurrent judge calls the time the busiest worker was busy. An answer's end-to-end time is the local time measured in replay plus the model wait of every step, less the overlap of the two opening branches (Understand runs while the forecast is prefetched). Time to first step is until the first progress step is written (what the SSE stream shows first). Answers with a failed or unrecorded model step are counted and left out; a call recorded before latency was kept leaves latency "not measured". Network and server time outside Mesh calls are not included.
+
+**Breakdowns.** Per answer type: *advice* (the Advisor ran) and *simple* (everything else, including cache hits, refusals and clarifications). Per tier (fast, reasoning, verifier): models used, calls, per-call latency p50/p95, cost per call and per answer, and the suites whose gates are that tier's accuracy (fast: E-CTX, E-UI, E-SCN, E-CAT; reasoning: E-ORC, E-GRD; verifier: E-VER).
+
+**Targets (TARGETS, not results).**
+
+| ID | Metric | Target |
+|---|---|---|
+| EFF-1 | Mean cost per answer | ≤ $0.03 |
+| EFF-2 | Mean cost per advice answer | ≤ $0.05 |
+| EFF-3 | p95 cost per answer | ≤ $0.10 |
+| EFF-4 | Time to first progress step, p95 | ≤ 2 s |
+| EFF-5 | Simple answers, latency p50 | ≤ 10 s |
+| EFF-6 | Advice answers, latency p50 | ≤ 35 s |
+| EFF-7 | Advice answers, latency p95 | ≤ 60 s (the question deadline, not raised) |
+
+**Model selection rule** (docs/00 §8, docs/06 §13): drop any model that fails its tier's accuracy gates; drop any model that breaks the end-to-end latency targets; of what is left, pick the cheapest, and choose the faster one when costs are within 10%. A model change is accepted only with E-EFF and the tier's accuracy suites re-run on new recordings. The README's results block and /quality open with a "Core metrics: cost · accuracy · latency" table generated from this suite.
 
 ## 11. Suite `E-AUD`: audit completeness
 
@@ -879,7 +902,7 @@ Evidence from the live run: `evals/results/<run>/audit_chain_example.json` (one 
 | Categorisation | Accuracy · macro-F1 | UK holdout (n=—) | — · — | rules-only — | ≥ 0.85 · ≥ 0.80 | — |
 | Forecast | MAE @30d (£) | P1 | — | repeat-30 — | skill ≥ 0.20 | — |
 | Forecast | P10–P90 coverage | all | — | — | 0.72–0.88 | — |
-| Verifier | Bad caught · good falsely rejected | 60 / 40 | — · — | — | ≥ 0.95 · ≤ 0.10 | — |
+| Verifier | Bad caught · good falsely rejected | 62 / 34 | — · — | — | ≥ 0.95 · ≤ 0.10 | — |
 
 **All suites**
 

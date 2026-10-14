@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     # judge uses a different provider from the Advisor so the check is independent.
     mesh_model_fast: str = "openai/gpt-6-luna"
     mesh_model_fast_fallback: str = "anthropic/claude-haiku-5.5"
+    # Owner decision 13 Oct 2026 under the core-metrics rule (docs/00 §8): GPT-5.6 Luna Pro was
+    # tried on the reasoning tier and failed accuracy and latency (evals/CHANGELOG.md), so the
+    # Advisor/Analyst stay on Claude Sonnet 5.5 and the judge on GPT-6.1 Sol (another provider).
     mesh_model_reasoning: str = "anthropic/claude-sonnet-5.5"
     mesh_model_reasoning_fallback: str = "google/gemini-3.1-pro"
     mesh_model_verifier: str = "openai/gpt-6.1-sol"
@@ -43,6 +46,8 @@ class Settings(BaseSettings):
     # below the per-question worst case, AI answers pause. Figures never reach users or logs.
     mesh_low_balance_usd: float = 2.00
     mesh_question_worst_case_usd: float = 0.30
+    # Project-wide cap on model spend per UTC day (backend/mesh/spend_guard.py); 0 disables it.
+    mesh_daily_budget_usd: float = 0.50
 
     database_url: str = ""
     # Baked into the image at build time (backend/Dockerfile). Deliberately a name that no

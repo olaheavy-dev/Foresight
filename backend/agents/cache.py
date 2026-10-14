@@ -29,15 +29,31 @@ def prompt_bundle_version() -> str:
     return digest.hexdigest()[:12]
 
 
+# Slots that only label a question and never enter a calculation ("a £1,200 holiday" and
+# "a £1,200 trip" run the same simulation). They stay out of the cache key so paraphrases meet;
+# every slot that changes a number (amount, date, period, category, merchant, …) stays in it.
+DESCRIPTIVE_SLOTS = frozenset({"purpose"})
+
+
+def _canonical_value(value: Any) -> Any:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, float) and value.is_integer():
+        return int(value)
+    if isinstance(value, str):
+        text = " ".join(value.lower().split())
+        return int(text) if text.lstrip("-").isdigit() else text
+    if isinstance(value, list):
+        return sorted((_canonical_value(v) for v in value), key=str)
+    return value
+
+
 def canonical_slots(slots: dict[str, Any]) -> dict[str, Any]:
     out: dict[str, Any] = {}
     for key in sorted(slots):
-        value = slots[key]
-        if isinstance(value, str):
-            value = " ".join(value.lower().split())
-        elif isinstance(value, list):
-            value = sorted(" ".join(str(v).lower().split()) for v in value)
-        out[key.lower()] = value
+        if key.lower() in DESCRIPTIVE_SLOTS:
+            continue
+        out[key.lower()] = _canonical_value(slots[key])
     return out
 
 

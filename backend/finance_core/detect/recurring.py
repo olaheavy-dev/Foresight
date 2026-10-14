@@ -169,7 +169,7 @@ def detect_recurring(
         groups[(t.counterparty or t.normalised, c.category_key)].append(t)
 
     obligations: list[RecurringObligation] = []
-    changes: list[PriceChange] = []
+    changes: list[tuple[int, PriceChange]] = []  # (index of its obligation, change)
     assumptions: list[str] = []
     for (counterparty, category), rows in groups.items():
         rows = sorted(rows, key=lambda t: t.posted_on)
@@ -219,14 +219,35 @@ def detect_recurring(
         latest = -rows[-1].amount_minor
         stable_before = previous and (max(earlier) - min(earlier)) <= STABLE_PRICE * previous
         if stable_before and abs(latest - previous) / previous >= PRICE_CHANGE:
-            changes.append(PriceChange(key, int(previous), latest, rows[-1].posted_on))
+            changes.append(
+                (len(obligations) - 1, PriceChange(key, int(previous), latest, rows[-1].posted_on))
+            )
             obligations[-1] = replace(obligations[-1], amount_minor=-latest)
+    obligations = _unique_keys(obligations)
     return RecurringReport(
         obligations=tuple(obligations),
-        price_changes=tuple(changes),
+        price_changes=tuple(replace(c, obligation_key=obligations[i].key) for i, c in changes),
         overlaps=detect_overlaps(obligations, pack),
         assumptions=tuple(assumptions),
     )
+
+
+def _unique_keys(obligations: list[RecurringObligation]) -> list[RecurringObligation]:
+    """Keys are unique per workspace. One payee can be recurring in two categories (rent and a
+    parking space with the same landlord, or rows a user or the model recategorised): the group
+    with the most payments keeps `rob_<payee>`, the others become `rob_<payee>_<category>`."""
+    by_key: dict[str, list[int]] = defaultdict(list)
+    for i, o in enumerate(obligations):
+        by_key[o.key].append(i)
+    out = list(obligations)
+    for key, idx in by_key.items():
+        if len(idx) < 2:
+            continue
+        keep = max(idx, key=lambda i: (len(out[i].member_ids), out[i].category_key))
+        for i in idx:
+            if i != keep:
+                out[i] = replace(out[i], key=f"{key}_{_slug(out[i].category_key)}")
+    return out
 
 
 def detect_overlaps(

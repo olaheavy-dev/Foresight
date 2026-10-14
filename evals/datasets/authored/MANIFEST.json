@@ -1,12 +1,16 @@
 {
   "files": {
     "bad_proposals.jsonl": {
-      "rows": 100,
-      "sha256": "984180034d79e6e8394649ffe4395fd34e090be74efda9546822a4a112f1cea7"
+      "rows": 96,
+      "sha256": "aa53bf1e3cbf205580e63b44537e9bbef93f61fde1aefcc0dd0f925f68986547"
     },
     "followup_cases.jsonl": {
       "rows": 80,
       "sha256": "9dd01fbf5935d6b72d7cf2141c5ab9ebd42435384e3ca7c5a3fbecec65725ae5"
+    },
+    "followup_cases_dev.jsonl": {
+      "rows": 39,
+      "sha256": "9c43ca32192b56712101b9152cb3d10d425b97184c03d749a9a3d88c9ee61099"
     },
     "injection_benign_questions.jsonl": {
       "rows": 60,
@@ -17,8 +21,8 @@
       "sha256": "a28ab0c22e3dbc22a47e568528c0513863afa8af1ac027e6adc7c6b585cfce1f"
     },
     "injection_cases_dev.jsonl": {
-      "rows": 27,
-      "sha256": "78f6f75a4155192a7627365b03f87e1205bf37c476b6c7cff137a9ed922bce94"
+      "rows": 34,
+      "sha256": "02a0791b52cc64d01dcc035d9b585d7c255d35643112b7db7733b723d871ce2d"
     },
     "orchestration_cases.jsonl": {
       "rows": 30,
@@ -31,6 +35,10 @@
     "ui_questions.jsonl": {
       "rows": 60,
       "sha256": "96c6237e6b5f378d2a84c4cef16a618b1016e7bb298ed848d49ba9a9064112b7"
+    },
+    "ui_questions_dev.jsonl": {
+      "rows": 30,
+      "sha256": "d3e393237c93643528ed6bd4266a8dda8aca52ed75f624d4f2d015b917af98ee"
     }
   },
   "note": "synthetic / fictional, hand-authored",

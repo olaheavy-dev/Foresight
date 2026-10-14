@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import dataclasses
 from concurrent.futures import ThreadPoolExecutor
-from datetime import date
+from datetime import date, timedelta
 from typing import Any
 
 from backend.agents.advice.advisor import advise as run_advisor
@@ -25,13 +25,22 @@ from backend.agents.advice.impact import Impact
 from backend.agents.advice.models import InterventionProposal
 from backend.agents.advice.verifier import verification_record, verify
 from backend.agents.advice.world import AdviceWorld, Finding, SpendRow
+from backend.agents.budget import BudgetExceeded
+from backend.agents.contracts import PAY_TODAY
 from backend.agents.forecaster import drivers, parse_scenario, to_engine_spec
-from backend.agents.runtime import NodeOutput, NodeSpec, RunContext
+from backend.agents.runtime import NodeOutput, NodeSpec, RunContext, concurrent_ms
 from backend.agents.state import ForesightState
 from backend.finance_core.simulate import ScenarioError
-from backend.finance_core.types import ForecastInputs, ScenarioModifier
+from backend.finance_core.types import ForecastInputs, ScenarioModifier, ScenarioSpec
 from backend.pipeline import ledger, packs
-from backend.pipeline.forecast import NoLedgerData, forecast_inputs, run_forecast, run_simulation
+from backend.pipeline.forecast import (
+    HISTORY_DAYS,
+    NoLedgerData,
+    forecast_inputs,
+    run_forecast,
+    run_simulation,
+    store_impact_simulation,
+)
 from backend.storage import models as m
 
 MAX_REVISIONS = 2  # docs/06 W4: initial + 2 revisions (same cap as the graph)
@@ -204,8 +213,23 @@ def forecaster_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
             tool_calls=[{"name": "build_forecast", "result_refs": [forecast_id]}],
             label="Building your forecast",
         )
-    mesh = ctx.require_mesh()
     inputs = stored.inputs
+    default = _pay_today_spec(intent, inputs)
+    if default is not None:
+        # Owner decision (13 Oct 2026): an affordability question with an amount but no date
+        # assumes the payment is made today (the as_of financial date), the most cautious
+        # choice, and answers straight away; the answer says so and offers "Change date".
+        spec, assumptions = default, [PAY_TODAY]
+        try:
+            with ctx.lock:
+                sim = run_simulation(ctx.store.ctx, spec, assumptions=assumptions)
+        except ScenarioError as exc:
+            return NodeOutput(
+                update=update, output={"forecast_id": forecast_id, "scenario_error": str(exc)},
+                status="failed", error=str(exc), label="The what-if couldn't be simulated",
+            )  # fmt: skip
+        return _simulated(state, update, forecast_id, spec, sim, assumptions, [], None)
+    mesh = ctx.require_mesh()
     with ctx.lock:
         recurring = [
             {"recurring_id": o.key, "label": o.label}
@@ -228,6 +252,19 @@ def forecaster_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
         before_llm=ctx.before_llm,
     )
     ctx.charge(parsed.llm)
+    dated = _dated_purchase_spec(intent, inputs)
+    if (parsed.parse.status == "needs_clarification" or parsed.parse.spec is None) and dated:
+        # The parse asked for something Understand already has (one purchase, its amount and
+        # date): never ask again what the question answered; simulate that one payment.
+        try:
+            with ctx.lock:
+                sim = run_simulation(ctx.store.ctx, dated)
+        except ScenarioError:
+            pass
+        else:
+            return _simulated(
+                state, update, forecast_id, dated, sim, [], parsed.llm, parsed.prompt_version
+            )
     if parsed.parse.status == "needs_clarification" or parsed.parse.spec is None:
         clar = parsed.parse.clarification
         return NodeOutput(
@@ -251,8 +288,37 @@ def forecaster_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
             llm=parsed.llm,
             prompt_version=parsed.prompt_version,
         )
+    return _simulated(state, update, forecast_id, spec, sim, [], parsed.llm, parsed.prompt_version)
+
+
+def _simulated(
+    state: ForesightState,
+    update: dict[str, Any],
+    forecast_id: str,
+    spec: ScenarioSpec,
+    sim: Any,
+    assumptions: list[str],
+    llm: Any,
+    prompt: str | None,
+) -> NodeOutput:
     modifiers = [modifier_json(mod) for mod in spec.modifiers]
     spec_dict: dict[str, Any] = {"name": spec.name, "modifiers": modifiers}
+    if assumptions:
+        spec_dict["assumptions"] = list(assumptions)
+    # docs/06 W3: a what-if that takes a pay cycle below the buffer asks the Advisor ⇄ Verifier
+    # loop for advice (the scenario workflow has no separate risk check).
+    breach = [
+        {
+            "kind": "scenario_buffer_breach",
+            "payday": c.payday.isoformat(),
+            "chance": c.chance_below_buffer,
+            "simulation_id": sim.calculation.id,
+        }
+        for c in sim.result.simulated.pay_cycles
+        if c.chance_below_buffer is not None and c.chance_below_buffer >= RISK_CHANCE
+    ]
+    if breach and state.get("workflow") == "scenario":
+        update["risk_flags"] = breach
     return NodeOutput(
         update={**update, "simulation_ids": [sim.calculation.id], "scenario_spec": spec_dict},
         output={
@@ -260,12 +326,53 @@ def forecaster_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
             "simulation_id": sim.calculation.id,
             "modifiers": [mod["type"] for mod in modifiers],
             "drivers": drivers(sim.result.delta_lows),
+            "assumptions": list(assumptions),
         },
         tool_calls=[{"name": "simulate", "result_refs": [sim.calculation.id]}],
         label="Simulating your what-if on the same forecast",
-        llm=parsed.llm,
-        prompt_version=parsed.prompt_version,
+        llm=llm or [],
+        prompt_version=prompt,
     )
+
+
+def _pay_today_spec(intent: dict[str, Any], inputs: ForecastInputs) -> ScenarioSpec | None:
+    """An affordability question with an amount and no date: one payment today."""
+    slots = intent.get("slots") or {}
+    if intent.get("intent") != "affordability" or slots.get("date"):
+        return None
+    try:
+        amount = int(slots.get("amount_minor") or 0)
+    except (TypeError, ValueError):
+        return None
+    if amount <= 0:
+        return None  # a missing amount still gets the clarifying question
+    label = str(slots.get("purpose") or "Payment").replace("_", " ").capitalize()
+    # The forecast's `as_of` is the day of the latest known balance; a payment made "today" has
+    # not left it yet, so it lands on the forecast's first day, the earliest it can fall.
+    first_day = inputs.as_of + timedelta(days=1)
+    payment = ScenarioModifier(
+        type="one_off_outflow", date=first_day, amount_minor=amount, label=label
+    )
+    return ScenarioSpec(f"{label} today", inputs.currency, (payment,))
+
+
+def _dated_purchase_spec(intent: dict[str, Any], inputs: ForecastInputs) -> ScenarioSpec | None:
+    """An affordability question whose Understand slots give an amount and a date: one payment
+    on that date (never before the forecast's first day)."""
+    slots = intent.get("slots") or {}
+    if intent.get("intent") != "affordability" or not slots.get("date"):
+        return None
+    try:
+        amount = int(slots.get("amount_minor") or 0)
+        on = date.fromisoformat(str(slots["date"]))
+    except (TypeError, ValueError):
+        return None
+    if amount <= 0:
+        return None
+    label = str(slots.get("purpose") or "Payment").replace("_", " ").capitalize()
+    on = max(on, inputs.as_of + timedelta(days=1))
+    payment = ScenarioModifier(type="one_off_outflow", date=on, amount_minor=amount, label=label)
+    return ScenarioSpec(label, inputs.currency, (payment,))
 
 
 def risk_check_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
@@ -384,6 +491,24 @@ def _impact_json(impact: Impact) -> dict[str, Any]:
     }
 
 
+def _store_impact(
+    ctx: RunContext, world: AdviceWorld, inputs: ForecastInputs | None, impact: Impact
+) -> list[str]:
+    """Persist the simulation the Verifier recomputed this proposal's impact with, so the audit
+    chain runs `rec_ → impact calc_ → sim_ (seed, spec, engine version)` (docs/06 §10.2).
+    Caller holds `ctx.lock`."""
+    if inputs is None or not impact.scenario:
+        return []
+    spec = ScenarioSpec(
+        "recommendation_impact", inputs.currency, (*world.pending_scenario, *impact.scenario)
+    )
+    try:
+        stored = store_impact_simulation(ctx.store.ctx, inputs, spec, window_days=HISTORY_DAYS)
+    except ScenarioError:
+        return []
+    return [stored.calculation.id]
+
+
 def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
     proposals = list(state.get("proposals") or [])
     if not proposals:
@@ -404,18 +529,41 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
     with ctx.lock:
         locale = ctx.store.ctx.workspace.locale
 
-    def guarded() -> None:
-        with ctx.lock:
-            ctx.before_llm()
+    # The round's judge calls run concurrently, so the budget is shared out before they start, in
+    # proposal order: the i-th proposal may call the judge only if i calls are still allowed. A
+    # check made inside each thread would let every concurrent call through (docs/09 ORC-10).
+    with ctx.lock:
+        free = ctx.budget.calls_left()
 
-    def check(raw: dict[str, Any]) -> tuple[dict[str, Any], InterventionProposal, Any]:
+    def check(item: tuple[int, dict[str, Any]]) -> tuple[dict[str, Any], InterventionProposal, Any]:
+        index, raw = item
+
+        def guarded() -> None:
+            with ctx.lock:
+                if index >= free:
+                    raise BudgetExceeded("run budget used: no call left for this judge")
+                ctx.before_llm()
+
         p = InterventionProposal.model_validate(
             {k: v for k, v in raw.items() if k in InterventionProposal.model_fields}
         )
-        return raw, p, verify(p, world, round=round_, mesh=mesh, before_llm=guarded)
+        try:
+            return raw, p, verify(p, world, round=round_, mesh=mesh, before_llm=guarded)
+        except BudgetExceeded as exc:
+            return raw, p, exc
 
     with ThreadPoolExecutor(max_workers=JUDGE_POOL) as pool:
-        checked = list(pool.map(check, normalised))
+        checked = list(pool.map(check, enumerate(normalised)))
+    refused = [o for _, _, o in checked if isinstance(o, BudgetExceeded)]
+    if refused:
+        # The judge calls that did run were paid for: charge them, then stop like any node
+        # whose budget ran out (the instrument records a skipped step with these calls).
+        with ctx.lock:
+            for _, _, o in checked:
+                if not isinstance(o, BudgetExceeded):
+                    ctx.charge(o.llm)
+            ctx.budget.exceeded = True
+        raise refused[0]
     not_approved = 0
     for raw, p, outcome in checked:
         with ctx.lock:
@@ -427,6 +575,7 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
             v.verdict, "withdrawn" if last_round else "in_review"
         )
         with ctx.lock:
+            impact_refs = [*world.forecast_ids, *_store_impact(ctx, world, inputs, outcome.impact)]
             rec_id = raw.get("rec_id")
             if rec_id is None:
                 rec = ctx.store.add_recommendation(
@@ -435,7 +584,7 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
                     status=status,
                     proposal=p.model_dump(),
                     trigger_refs=[r.model_dump() for r in p.trigger_refs],
-                    impact_calc_refs=[i for i in world.forecast_ids],
+                    impact_calc_refs=impact_refs,
                     revision_count=round_ - 1,
                 )
                 rec_id = rec.id
@@ -443,6 +592,7 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
                 rec = ctx.store.set_recommendation_status(rec_id, status)
                 rec.proposal = p.model_dump()
                 rec.revision_count = round_ - 1
+                rec.impact_calc_refs = impact_refs
             ver = ctx.store.add_verification(
                 run_id=ctx.run_id,
                 recommendation_id=rec_id,
@@ -454,6 +604,15 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
         verifications.append(ver.id)
         not_approved += v.verdict != "APPROVE"
         if v.verdict == "APPROVE":
+            with ctx.lock:
+                ctx.store.ctx.append_audit(
+                    "recommendation_approved",
+                    "recommendation",
+                    rec_id,
+                    actor="agent:verifier",
+                    after={"round": round_, "verification_id": ver.id},
+                    run_id=ctx.run_id,
+                )
             card = build_card(
                 p,
                 outcome.impact,
@@ -499,6 +658,7 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
         llm=llm,
         prompt_version=prompt,
         label=label,
+        model_ms=concurrent_ms([outcome.llm for _, _, outcome in checked], JUDGE_POOL),
     )
 
 

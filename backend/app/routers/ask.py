@@ -49,7 +49,7 @@ router = APIRouter(prefix="/api", tags=["ask"])
 
 MAX_CONCURRENT_RUNS = 2  # per profile
 RATE_WINDOW = timedelta(minutes=10)
-RATE_MAX = 30  # questions per profile per window
+RATE_MAX = 10  # questions per profile per window (owner decision, 13 Oct 2026)
 RUN_START_TIMEOUT_S = 10.0
 POLL_S = 0.25
 HEARTBEAT_S = 15.0

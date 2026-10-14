@@ -31,6 +31,7 @@ ALL_SUITES = (
     "E-VER",
     "E-ORC",
     "E-UI",
+    "E-EFF",
     "E-AUD",
     "E-SEC",
     "E-CTX",

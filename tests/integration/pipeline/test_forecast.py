@@ -9,7 +9,15 @@ from sqlalchemy.orm import Session
 
 from backend.finance_core.calc import content_hash
 from backend.finance_core.types import ScenarioModifier, ScenarioSpec
-from backend.pipeline.forecast import forecast_inputs, run_forecast, run_simulation, verify
+from backend.pipeline.forecast import (
+    HISTORY_DAYS,
+    forecast_inputs,
+    run_forecast,
+    run_simulation,
+    store_impact_simulation,
+    verify,
+    verify_simulation,
+)
 from backend.pipeline.ingest import declare_balance, ingest_file
 from backend.storage import models as m
 from backend.storage.repositories import WorkspaceContext
@@ -108,4 +116,38 @@ def test_without_any_balance_the_forecast_is_relative(session: Session) -> None:
     assert inputs.starting_balance_provenance == "relative"
     assert inputs.starting_balance_minor == 0
     assert inputs.buffer_minor is None
+    session.rollback()
+
+
+def test_forecast_params_state_balance_and_income_provenance(session: Session) -> None:
+    """The Evidence drawer shows a calculation's params: a declared balance must say so there
+    (docs/09 §11 provenance labels), and storing it must not stop the forecast recomputing."""
+    ctx, _, on, _ = _p1(session)
+    fc = run_forecast(ctx, as_of=on, n_paths=200)
+    params = fc.calculation.params
+    assert params["starting_balance_provenance"] == "declared"
+    assert isinstance(params["income_provenance"], dict)
+    assert params["income_provenance"]  # P1's salary is detected
+    assert verify(ctx, fc.calculation.id) is True
+    session.rollback()
+
+
+def test_any_stored_simulation_rebuilds_identically(session: Session) -> None:
+    ctx, _, on, _ = _p1(session)
+    spec = ScenarioSpec(
+        name="repair",
+        currency="GBP",
+        modifiers=(
+            ScenarioModifier(type="category_cap", category_key="food.delivery",
+                             monthly_cap_minor=8000, from_date=on + timedelta(days=1)),
+            ScenarioModifier(type="one_off_outflow", date=on + timedelta(days=5),
+                             amount_minor=50000),
+        ),
+    )  # fmt: skip
+    sim = run_simulation(ctx, spec, as_of=on, n_paths=200)
+    assert verify_simulation(ctx, sim.calculation.id) is True
+    inputs = forecast_inputs(ctx, as_of=on, n_paths=200)
+    impact = store_impact_simulation(ctx, inputs, spec, window_days=HISTORY_DAYS)
+    assert impact.calculation.params["purpose"] == "recommendation_impact"
+    assert verify_simulation(ctx, impact.calculation.id) is True
     session.rollback()

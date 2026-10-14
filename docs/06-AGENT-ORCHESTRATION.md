@@ -338,6 +338,8 @@ Rule versions are stored with each `RuleResult` (`rule_id@version`) so the audit
 | Advice needed (from W1/W2/W3/W5) | W4 Recommendation loop | Advisor → quantify → Verifier → loop ≤ 2 revisions |
 | Digest schedule | W6 Scheduled digest | Freshness check → [W2 if stale] → select insight + action → render → deliver |
 
+**The Analyst ranks once per data change (owner decision, 13 Oct 2026).** Only W1 and W2 call the model to rank and word findings. A question's Analyst step reuses the findings ranked for the current `data_version` and makes no model call; if nothing is ranked for it yet (straight after seeding, or before the first refresh), it ranks the deterministic candidates by their deterministic salience, also with no model call. This keeps a reasoning-tier call (several seconds to tens of seconds) out of every spending, trend, subscription and advice question.
+
 ### 6.2 User question (W5): intent → route
 
 | Intent | Specialists (in order) | Typical blocks |
@@ -353,6 +355,8 @@ Rule versions are stored with each `RuleResult` (`rule_id@version`) so the audit
 | `advice_request` | Analyst → Forecaster → Advisor ⇄ Verifier | InterventionCard ×1–3, EvidencePanel |
 | `explain_recommendation` | none (reads `rec_…` + `ver_…`) | EvidencePanel, AgentExecutionTimeline |
 | `smalltalk_or_out_of_scope` | none | Narrative (polite scope statement) |
+
+**Affordability with no date (owner decision, 13 Oct 2026):** an `affordability` question with an amount but no date is answered straight away as a payment made today, the most cautious choice. It is simulated as a one-off outflow on the forecast's first day (the earliest a payment can land after the latest known balance, as_of + 1). The answer says "Assuming you pay today", offers a "Change date" follow-up (paying on the next payday instead, a date from the forecast's own pay cycles), and the assumption is stored in the run's scenario spec (`assumptions`) and in the simulation's stored parameters (the evidence). A missing **amount** still gets a clarifying question. Any wording about one purchase or payment ("can I afford…", "is £800 ok?", "what happens if I pay £1,200 for…") is `affordability`. With a date too, the Forecaster's parse runs as usual; if it asks for something Understand already has (amount and date of the one purchase), the answer uses those slots as a one-off payment on that date instead of asking again.
 
 Rules: if intent confidence is below 0.6, return a clarifying-question block with 2–4 options and no routing. When findings or the forecast for the current `data_version` already exist, **reuse** them (cache hit recorded in the AgentStep as `cached=true`; forecast reuse also requires matching prefs_version, currency, scope/account, as_of, horizon and engine version) instead of recomputing. Every route ends in `compose`. A whole answer is reused through the exact answer cache (`05` §4.2 stage 3) when intent, slots and every version in its key match.
 
@@ -502,12 +506,14 @@ stateDiagram-v2
     verify_deterministic --> decide: any block rule fails
     verify_judge --> decide
     decide --> persist_approved: APPROVE
-    decide --> revise: REJECT and revision_round < 2
-    decide --> withdraw: REJECT and revision_round = 2
+    decide --> revise: REJECT and revision_round < 2 and a round still fits
+    decide --> withdraw: REJECT and (revision_round = 2 or no time for a round)
     revise --> advise: critique appended, revision_round++
     persist_approved --> [*]
     withdraw --> [*]
 ```
+
+**Latency budget (owner rule, 13 Oct 2026).** A question has 60 s (docs/05 §6.4), and the deadline is not raised. The Advisor drafts at most three proposals a round (two were tried while GPT-5.6 Luna Pro was on trial; with Sonnet the original three stay), all of a round's judge calls run concurrently (`JUDGE_POOL`, no sequential waits), and a revision round starts only if it can finish: model wait so far + one round (`REVISION_ROUND_MS`, 25 s: an Advisor call and its judge calls) + composing the answer (`ANSWER_TAIL_MS`, 5 s) must fit in the 60 s. The model wait is the recorded latency of the calls (`AgentStep.model_ms`), not the wall clock, so a live run, a recording and its replay take the same path. Otherwise the drafts are withdrawn and the answer says no recommendation passed the checks. E-EFF (docs/09 §10f) measures whether the answers meet the latency targets.
 
 Decisions are made per proposal: in one round, some proposals can be approved while others are sent back for revision. Each pass persists a `VerificationResult` with `round` (1..3; revision_round is separately 0..2). A proposal withdrawn at round 3 (initial + 2 revisions) is stored with its full critique history and surfaced only in the audit trail. If *nothing* is approved, the response says plainly "No recommendation passed verification", together with the risk itself. That is an honest outcome, not a failure.
 
@@ -588,7 +594,7 @@ Content selection is deterministic: highest-severity active risk, else highest-s
 | H2 Low-confidence categorisation review | After W1 | Review queue, sorted by amount × (1 − confidence) | No: forecast runs; corrections trigger W2 |
 | H3 Transfer/duplicate confirmation | After W1 | Inline "these look like the same / a transfer" prompts | No |
 | H4 Scenario spec confirmation | W3 | `interrupt()` after parse; user edits typed chips | Yes |
-| H5 Clarifying question | W3/W5 | Response = options block | Yes |
+| H5 Clarifying question | W3/W5 | Response = options block. Not for an affordability question that has an amount but no date: that assumes payment today (§6.2, owner decision 13 Oct 2026) | Yes |
 | H6 Recommendation accept/dismiss/snooze | After W4 | InterventionCard actions → AuditEvent; dismissal reason feeds Advisor context (no repeat for 30 days) | No |
 | H7 Balance anchor when missing/stale | Anytime | "Add today's balance" prompt | No: relative mode until then |
 | H8 Confirm detected money map | After W1 | "Confirm, don't type" cards: detected income streams (amount, payday rule, account), recurring bills, own-account and card-settlement transfers, likely partner contributions and reimbursements. Confirm/correct/skip; provenance becomes `confirmed` | No: forecast uses detected values (badged "detected") until confirmed |
@@ -700,13 +706,16 @@ Test: freeze the same accepted ledger interpretations, forecast inputs and typed
 | Coordinator Understand (standalone rewrite + intent) and block plan | fast | Short classification, high volume; one call does both rewrite and intent | 0 |
 | Ledger categorisation | fast | Batched, constrained taxonomy; quality measured in evals | 0 |
 | Ledger format/layout profile proposal (CSV and PDF) | fast → reasoning on second attempt | Rare (new bank formats only); output checked by reconciliation and/or user preview | 0 |
-| Analyst ranking & wording | reasoning | Judgement about salience; one call per refresh | model default* |
+| Analyst ranking & wording | reasoning | Judgement about salience; one call per refresh (questions reuse it, §6.1) | model default* |
 | Forecaster scenario parse | fast → reasoning if multi-modifier or low confidence | Most scenarios are simple | 0 |
 | Advisor | reasoning | Hardest judgement task | model default* |
 | Verifier judge | verifier tier: a different provider from the Advisor | Independence | 0 |
 | Digest headline | fast | ≤ 20 words | 0.3 |
 
-Model IDs are configuration (settings `MESH_MODEL_<TIER>` and `MESH_MODEL_<TIER>_FALLBACK`), chosen from Mesh's catalogue and confirmed by a live probe on 13 Oct 2026:
+Model IDs are configuration (settings `MESH_MODEL_<TIER>` and `MESH_MODEL_<TIER>_FALLBACK`); each model's capabilities and price are data in `backend/mesh/models.yaml` (or the file named by `MESH_MODELS_FILE`), so switching a model needs no code change. Chosen from Mesh's catalogue, probed live on 13 Oct 2026. The reasoning tier also serves the Analyst's ranking and the Forecaster's multi-modifier parse. **Selection rule** (docs/00 §8): drop any model that fails its tier's accuracy gates; drop any model that breaks the end-to-end latency targets; of what is left, pick the cheapest, and choose the faster one when costs are within 10%. Applied 13 Oct 2026 (owner decision; `evals/results/20261013T2200Z_advisor_model_trial/`, evals/CHANGELOG.md):
+
+- **Reasoning tier stays on Claude Sonnet 5.5.** GPT-5.6 Luna Pro matched it on the Advisor's 18 dev cases at about 37% lower cost, then failed on whole answers: *accuracy*, the Analyst's ranking broke its output check even after the repair (explanations over the 240-character limit), so 21 of the 60 E-UI answers lost their Analyst step; *latency*, Advisor calls took 17–57 s, putting advice answers at about 44 s median and 62 s at worst (targets 35 s and 60 s). Gemini 3.8 Flash failed the Advisor schema.
+- **Verifier judge stays on GPT-6.1 Sol** (a different provider from the Advisor). Haiku 5.5 failed the E-VER accuracy gate as judge on the dev trial (52% repairs with json_schema; with tool calls, one correct fix withdrawn).
 
 | Tier | Primary | Fallback |
 |---|---|---|
@@ -714,4 +723,4 @@ Model IDs are configuration (settings `MESH_MODEL_<TIER>` and `MESH_MODEL_<TIER>
 | reasoning | `anthropic/claude-sonnet-5.5` | `google/gemini-3.1-pro` |
 | verifier | `openai/gpt-6.1-sol` | `google/gemini-3.1-pro` |
 
-\* **Anthropic-tier temperatures are the model default.** Through Mesh, Anthropic models reject a `temperature` parameter and a forced `tool_choice`, so the client never sends either to them (`backend/mesh/capabilities.py`); their structured output uses `json_schema`, or tool calls with `tool_choice: "auto"`. `google/gemini-3.1-pro` uses the tool-call path because its `json_schema` output didn't parse. Each `AgentStep` records the temperature actually sent, with `null` meaning "model default". The eval suite records which models produced each result, so swapping a model shows up as a measurable change.
+\* **Anthropic-tier temperatures are the model default.** Through Mesh, Anthropic models reject a `temperature` parameter and a forced `tool_choice`, so the client never sends either to them (`backend/mesh/models.yaml`); their structured output uses `json_schema`, or tool calls with `tool_choice: "auto"`. `google/gemini-3.1-pro` uses the tool-call path because its `json_schema` output didn't parse. Each `AgentStep` records the temperature actually sent, with `null` meaning "model default". The eval suite records which models produced each result, so swapping a model shows up as a measurable change.

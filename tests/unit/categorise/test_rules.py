@@ -73,7 +73,7 @@ def test_bank_category_key_is_canonical() -> None:
 
 
 def test_bank_category_is_only_a_weak_prior() -> None:
-    row = txn("ZZQX BISTRO", -1800, bank_category="eating_out")
+    row = txn("ZZQX KOSMOS", -1800, bank_category="eating_out")
     result = categorise(row, uk_pack(), CategoriseContext(bank="monzo"))
     assert result.category_key == "food.eating_out"
     assert result.confidence == pytest.approx(0.6)
@@ -132,3 +132,32 @@ def test_memory_overrides_rules_and_user_wins() -> None:
     assert categorise(row, uk_pack(), CategoriseContext(memory=learned)).method == (
         CategorisationMethod.MEMORY
     )
+
+
+@pytest.mark.parametrize(
+    ("description", "category"),
+    [
+        # Pack phrases and narrations compare the same way: "-" is a space, "&" is AND.
+        ("CO-OP GROUP 6767", "groceries"),
+        ("TONI AND GUY LEEDS", "personal_care"),
+        ("TONI & GUY LEEDS", "personal_care"),
+        # General UK merchants and keywords (13 Oct 2026, from the dev split).
+        ("FIRST WEST YORKSHIRE", "transport.public"),
+        ("WILKO 6772", "shopping.general"),
+        ("THE ROYAL OAK PUB", "food.eating_out"),
+        ("SKY", "utilities.broadband_tv"),
+        ("NOW", "subscriptions.streaming"),
+    ],
+)
+def test_general_merchant_matching(description: str, category: str) -> None:
+    assert categorise(txn(description, -1234), uk_pack()).category_key == category
+
+
+def test_bare_sky_does_not_swallow_sky_bet_and_first_direct_is_not_a_bus() -> None:
+    assert categorise(txn("SKY BET", -1000), uk_pack()).category_key == "betting"
+    assert categorise(txn("FIRST DIRECT", -1000), uk_pack()).category_key != "transport.public"
+
+
+def test_standing_order_to_a_housing_company_is_rent_but_a_card_spend_is_not() -> None:
+    assert categorise(txn("SO HARBOURSIDE HOMES", -95000), uk_pack()).category_key == "housing.rent"
+    assert categorise(txn("DEB DUNELM HOMES", -4000), uk_pack()).category_key != "housing.rent"

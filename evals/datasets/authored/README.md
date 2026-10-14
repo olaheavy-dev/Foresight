@@ -4,7 +4,7 @@ Synthetic / fictional. Written before any prompt or Verifier rule is tuned, then
 
 | File | Rows | Spec |
 |---|---|---|
-| `bad_proposals.jsonl` | 62 `REJECT` + 38 `APPROVE` (2 relabelled 13 Oct 2026, see `evals/CHANGELOG.md`) | docs/09 §3.6, suite E-VER / E-GRD |
+| `bad_proposals.jsonl` | 62 `REJECT` + 34 `APPROVE` (2 relabelled and 4 removed 13 Oct 2026, see `evals/CHANGELOG.md`) | docs/09 §3.6, suite E-VER / E-GRD |
 | `scenario_prompts.jsonl` | 70 with a gold `ScenarioSpec` + 10 `needs_clarification` | docs/09 §3.5, suite E-SCN |
 | `orchestration_cases.jsonl` | 30 | docs/09 §3.7 and §10, suite E-ORC |
 | `ui_questions.jsonl` | 40 questions + 20 paraphrases | docs/09 §10a, suite E-UI |
@@ -12,6 +12,10 @@ Synthetic / fictional. Written before any prompt or Verifier rule is tuned, then
 | `injection_cases.jsonl` | 40 chat + 40 data-plane attacks (narrations, CSV headers, filenames, PDF lines) | docs/09 §3.9, suite E-SEC |
 | `injection_cases_dev.jsonl` | 20 + 7 dev cases (the only set the guard rule pack may be tuned on) | docs/09 §3.9 |
 | `injection_benign_questions.jsonl` | 60 benign questions (false-refusal control, with the E-UI/E-SCN/E-CTX questions) | docs/09 §10b SEC-5 |
+| `ui_questions_dev.jsonl` | 30 practice questions (P1, P2), written separately from `ui_questions.jsonl`; expected blocks follow the docs/08 §7a slot table | the only E-UI set the composer and the Understand prompt may be tuned on |
+| `followup_cases_dev.jsonl` | 25 practice conversations + 6 paraphrase pairs + 6 near-miss pairs, written separately from `followup_cases.jsonl` | the only E-CTX set the Understand prompt and the cache key may be tuned on |
+
+**Practice-set slot conventions** (written with the practice sets, 13 Oct 2026, before any tuning): amounts in minor units; a single day as `YYYY-MM-DD`, the next such day after `as_of`; a month with no day is the 1st of that month (the Forecaster's rule, docs/06 §4.3 prompt); a follow-up keeps the earlier turn's intent and every slot it doesn't change; `purpose` is the user's own noun, labels the question and doesn't enter the answer-cache key; spending periods use `period` (`last_30d`, `last_month`, `this_month`, `next_30d`, or `YYYY-MM`); a `category_key` is a key of the uk pack (one practice label, CTXD-C022, said `food.coffee`, which is not a pack key, and was corrected to `food.eating_out`). Added to the practice sets on 13 Oct 2026: near-miss pairs CTXD-N007/N008 (a named month's pay cycle vs "until payday") and injection practice cases SEC-DEV-28…34 (output-format override requests, and benign requests to see exact figures).
 
 ## Conventions the runners rely on
 

@@ -1,4 +1,4 @@
-"""E-VER: Verifier efficacy (docs/09 §9.3) on the 62 bad + 38 good authored proposals.
+"""E-VER: Verifier efficacy (docs/09 §9.3) on the 62 bad + 34 good authored proposals.
 
 Each proposal is injected at the Verifier with its persona's world (`evals.advice_world`):
 

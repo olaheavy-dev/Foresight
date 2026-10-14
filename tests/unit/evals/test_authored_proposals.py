@@ -28,7 +28,7 @@ def _refs(row: dict[str, Any]) -> list[EvidenceRef]:
 
 def test_set_is_frozen_and_counted() -> None:
     assert verify_manifest() == []
-    assert (len(ROWS), len(GOOD)) == (100, 38)
+    assert (len(ROWS), len(GOOD)) == (96, 34)
 
 
 @pytest.mark.parametrize("row", GOOD, ids=lambda r: r["id"])
@@ -38,13 +38,20 @@ def test_every_good_ref_resolves(row: dict[str, Any]) -> None:
 
 
 def test_added_finding_refs_resolve_to_detector_spikes() -> None:
-    added = {**{f"GP-0{n:02d}": "food.eating_out" for n in range(8, 13)},
-             **{f"GP-0{n:02d}": "transport.taxi" for n in range(17, 21)}}  # fmt: skip
+    added = {f"GP-0{n:02d}": "food.eating_out" for n in range(8, 13)}
     for case_id, category in added.items():
         row = BY_ID[case_id]
         fid = f"fnd:category_spike:{category}"
         assert fid in [ref.id for ref in _refs(row)]
         assert case_world(row).resolve(EvidenceRef(kind="finding", id=fid, role="trigger"))
+
+
+def test_removed_taxi_proposals_stay_removed_and_their_evidence_is_gone() -> None:
+    """GP-017–GP-020 cited a P1 taxi spike that is not a planted anomaly; with the
+    regular-behaviour rule (docs/07 §6.6) the detector no longer reports it (CHANGELOG 13 Oct)."""
+    assert not {"GP-017", "GP-018", "GP-019", "GP-020"} & set(BY_ID)
+    taxi = EvidenceRef(kind="finding", id="fnd:category_spike:transport.taxi", role="trigger")
+    assert not case_world(BY_ID["GP-008"]).resolve(taxi)
 
 
 def test_dangling_evidence_cases_still_dangle() -> None:

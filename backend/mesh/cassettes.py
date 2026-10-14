@@ -12,10 +12,15 @@ Entry format (`<request_hash>.json`):
       "request_hash": "<sha256>",
       "request": {"tier", "model", "messages", "temperature", "max_tokens",
                   "schema_name", "schema", "strategy"},
-      "response": {"mesh_response_id", "model", "content", "tool_arguments", "usage": {...}},
+      "response": {"mesh_response_id", "model", "content", "tool_arguments", "usage": {...},
+                   "latency_ms", "cost_estimate_usd"},
       "recorded_at": "<ISO 8601 UTC>",
       "live_run_sha": "<git sha of the recording run>"
     }
+
+`latency_ms` is the wall time of the live call (retries included) and `cost_estimate_usd` its
+usage × the price table when recorded. Replay reports the recorded latency, so latency is only ever
+measured from real calls; entries recorded before latency was kept have none ("not measured").
 """
 
 from __future__ import annotations
@@ -47,6 +52,8 @@ class RecordedResponse:
     tool_arguments: str | None
     prompt_tokens: int
     completion_tokens: int
+    latency_ms: int | None = None  # wall time of the live call; None = not recorded
+    cost_estimate_usd: float | None = None
 
     def as_json(self) -> dict[str, Any]:
         return {
@@ -58,6 +65,8 @@ class RecordedResponse:
                 "prompt_tokens": self.prompt_tokens,
                 "completion_tokens": self.completion_tokens,
             },
+            "latency_ms": self.latency_ms,
+            "cost_estimate_usd": self.cost_estimate_usd,
         }
 
     @classmethod
@@ -70,6 +79,8 @@ class RecordedResponse:
             tool_arguments=data.get("tool_arguments"),
             prompt_tokens=int(usage.get("prompt_tokens", 0)),
             completion_tokens=int(usage.get("completion_tokens", 0)),
+            latency_ms=None if data.get("latency_ms") is None else int(data["latency_ms"]),
+            cost_estimate_usd=data.get("cost_estimate_usd"),
         )
 
 

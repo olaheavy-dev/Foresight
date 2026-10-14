@@ -16,6 +16,7 @@ brand-new stream; the eval backtest (E-FC) re-runs detection at every origin.
 
 from __future__ import annotations
 
+import dataclasses
 import hashlib
 import time
 from collections import defaultdict
@@ -52,6 +53,7 @@ from backend.finance_core.types import (
     ForecastResult,
     KnownFlow,
     ParsedRow,
+    ScenarioModifier,
     ScenarioSpec,
     SimulationResult,
 )
@@ -289,9 +291,15 @@ def _model_params(prior: IrregularPrior | None, calibration: Calibration | None)
 
 def _params(ctx: WorkspaceContext, inputs: ForecastInputs, window_days: int) -> dict[str, Any]:
     # The workspace id keeps calculation ids distinct between workspaces with identical data.
+    # Provenance is stored with the calculation so the Evidence drawer can say which figures
+    # were declared by the user rather than read from a statement (docs/09 §11).
     return {
         "workspace_id": ctx.workspace_id,
         "scope": SCOPE,
+        "starting_balance_provenance": inputs.starting_balance_provenance,
+        "income_provenance": {
+            s.key: str(getattr(s.provenance, "value", s.provenance)) for s in inputs.income_streams
+        },
         "as_of": inputs.as_of.isoformat(),
         "horizon_days": inputs.horizon_days,
         "n_paths": inputs.n_paths,
@@ -365,6 +373,7 @@ def run_simulation(
     horizon_days: int = 90,
     n_paths: int = 500,
     window_days: int = HISTORY_DAYS,
+    assumptions: Sequence[str] = (),
 ) -> StoredSimulation:
     """Baseline from stored data plus the scenario; the simulation reuses the baseline seed."""
     inputs = forecast_inputs(
@@ -380,19 +389,75 @@ def run_simulation(
         **_model_params(prior, calibration),
         "spec": spec,
     }
+    if assumptions:  # e.g. an owner-decided default date, stated with the evidence
+        params["assumptions"] = list(assumptions)
     rec = record("simulation", inputs, params, result, result.simulated.engine_version)
     row, created = _store(ctx, rec, elapsed)
     return StoredSimulation(row, result, created)
 
 
-def verify(ctx: WorkspaceContext, calc_id: str) -> bool:
-    """Rebuild a stored forecast from today's stored data and check that both the inputs hash and
-    the result are identical. Raises ValueError when the stored data has changed since (stale)."""
-    row = ctx.calculation(calc_id)
-    if row is None or row.kind != "forecast":
-        raise LookupError(calc_id)
-    p = row.params
-    inputs = forecast_inputs(
+_MODIFIER_DATES = ("date", "from_date", "to_date")
+
+
+def _spec_json(spec: ScenarioSpec) -> dict[str, Any]:
+    """A ScenarioSpec as JSON, every modifier field kept, so it can be rebuilt exactly."""
+    mods = []
+    for mod in spec.modifiers:
+        out: dict[str, Any] = {}
+        for key, value in dataclasses.asdict(mod).items():
+            if value in (None, ""):
+                continue
+            out[key] = value.isoformat() if key in _MODIFIER_DATES else value
+        mods.append(out)
+    return {
+        "name": spec.name,
+        "currency": spec.currency,
+        "modifiers": mods,
+        "horizon_days": spec.horizon_days,
+    }
+
+
+def spec_from_json(raw: dict[str, Any]) -> ScenarioSpec:
+    """A stored ScenarioSpec (from `_spec_json` or the engine's own JSON) back as the dataclass."""
+    mods: list[ScenarioModifier] = []
+    for mod in raw.get("modifiers") or []:
+        fields: dict[str, Any] = {
+            k: date.fromisoformat(v) if k in _MODIFIER_DATES and isinstance(v, str) else v
+            for k, v in mod.items()
+        }
+        mods.append(ScenarioModifier(**fields))
+    return ScenarioSpec(
+        name=str(raw["name"]),
+        currency=str(raw["currency"]),
+        modifiers=tuple(mods),
+        horizon_days=raw.get("horizon_days"),
+    )
+
+
+def store_impact_simulation(
+    ctx: WorkspaceContext, inputs: ForecastInputs, spec: ScenarioSpec, *, window_days: int
+) -> StoredSimulation:
+    """Persist the simulation behind a recommendation's checked impact (docs/06 §10.2:
+    `rec_ → impact calc_ → sim_`). It is exactly the computation the Verifier recomputed the
+    impact with (`agents.advice.impact.recompute_impact`: the same inputs, `simulate` with no
+    prior or calibration), so the stored figures are the ones the card shows and `verify_simulation`
+    can rebuild them."""
+    started = time.perf_counter()
+    result = simulate(inputs, spec)
+    elapsed = int((time.perf_counter() - started) * 1000)
+    params = {
+        **_params(ctx, inputs, window_days),
+        **_model_params(None, None),
+        "spec": _spec_json(spec),
+        "purpose": "recommendation_impact",
+    }
+    rec = record("simulation", inputs, params, result, result.simulated.engine_version)
+    row, created = _store(ctx, rec, elapsed)
+    return StoredSimulation(row, result, created)
+
+
+def _inputs_from_params(ctx: WorkspaceContext, p: dict[str, Any]) -> ForecastInputs:
+    return forecast_inputs(
         ctx,
         as_of=date.fromisoformat(p["as_of"]),
         horizon_days=p["horizon_days"],
@@ -403,6 +468,39 @@ def verify(ctx: WorkspaceContext, calc_id: str) -> bool:
             for k in p["known_flows"]
         ],
     )
+
+
+def verify_simulation(ctx: WorkspaceContext, calc_id: str) -> bool:
+    """Rebuild a stored simulation from the stored data and its stored spec, prior and
+    calibration; True when the inputs hash and the result are identical (raises ValueError when
+    the stored data has changed since, like `verify`)."""
+    row = ctx.calculation(calc_id)
+    if row is None or row.kind != "simulation":
+        raise LookupError(calc_id)
+    p = row.params
+    inputs = _inputs_from_params(ctx, p)
+    spec = spec_from_json(p["spec"])
+    prior = irregular_prior(inputs.currency) if p.get("prior") is not None else None
+    calibration = (
+        calibration_from_json(p["calibration"]) if p.get("calibration") is not None else None
+    )
+    stored = CalcRecord(
+        row.id, row.kind, row.inputs_hash, row.params, row.result, row.engine_version
+    )
+    _, same = recompute(
+        stored, inputs, lambda i: simulate(i, spec, prior=prior, calibration=calibration)
+    )
+    return same
+
+
+def verify(ctx: WorkspaceContext, calc_id: str) -> bool:
+    """Rebuild a stored forecast from today's stored data and check that both the inputs hash and
+    the result are identical. Raises ValueError when the stored data has changed since (stale)."""
+    row = ctx.calculation(calc_id)
+    if row is None or row.kind != "forecast":
+        raise LookupError(calc_id)
+    p = row.params
+    inputs = _inputs_from_params(ctx, p)
     stored = CalcRecord(
         row.id, row.kind, row.inputs_hash, row.params, row.result, row.engine_version
     )

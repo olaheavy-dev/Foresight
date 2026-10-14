@@ -21,11 +21,14 @@ What a call goes through (docs/05 §6.4, docs/06 §10.1):
 
 from __future__ import annotations
 
+import dataclasses
 import json
 import re
+import threading
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import date
 from enum import Enum
 from typing import Any, Generic, TypeVar
 
@@ -45,6 +48,7 @@ from backend.mesh.breaker import BreakerState, CircuitBreaker
 from backend.mesh.capabilities import capabilities_for
 from backend.mesh.cassettes import CassetteMiss, CassetteStore, RecordedResponse, request_hash
 from backend.mesh.prices import cost_estimate
+from backend.mesh.spend_guard import DailySpendGuard
 from backend.settings import Settings, get_settings
 
 # Fixed, not configurable: the hackathon requires every model call to go through Mesh, so no
@@ -124,6 +128,8 @@ class MeshResult:
     # The temperature actually sent, or None when the model rejects it ("model default").
     temperature: float | None = None
     strategy: str | None = None  # json_schema | tools | json_object for structured calls
+    # False when a replayed call has no recorded live latency (latency_ms is then local time).
+    latency_measured: bool = True
 
 
 T = TypeVar("T", bound=BaseModel)
@@ -364,9 +370,11 @@ class MeshClient:
         cassettes: CassetteStore | None = None,
         breaker: CircuitBreaker | None = None,
         sleep: Callable[[float], None] = time.sleep,
+        spend_guard: DailySpendGuard | None = None,
     ) -> None:
         self._settings = settings or get_settings()
         self._mode = self._settings.mesh_cassette_mode
+        self._local = threading.local()  # per-thread replay pass in record mode
         if self._mode not in {"live", "record", "replay"}:
             raise MeshConfigError(f"unknown MESH_CASSETTE_MODE '{self._mode}'")
         if client is None and self._mode != "replay":
@@ -386,12 +394,27 @@ class MeshClient:
         )
         self.breaker = breaker or CircuitBreaker()
         self._sleep = sleep
+        # Live calls only: recordings for evals are capped by their own spend checks.
+        self.spend_guard = spend_guard or (
+            DailySpendGuard(self._spent_on, budget_usd=self._settings.mesh_daily_budget_usd)
+            if self._mode == "live"
+            else None
+        )
         self.availability = AiAvailability(
             self._available_usd,
             lambda: self.breaker.state is BreakerState.OPEN,
             low_usd=self._settings.mesh_low_balance_usd,
             worst_case_usd=self._settings.mesh_question_worst_case_usd,
+            budget_used=lambda: self.spend_guard is not None and self.spend_guard.exhausted(),
         )
+
+    def _spent_on(self, day: date) -> float | None:
+        """Model spend recorded for `day` (UTC) across every workspace; None without a database."""
+        if not self._settings.database_url:
+            return None
+        from backend.storage.spend import spent_on
+
+        return spent_on(self._settings.database_url, day)
 
     def _available_usd(self) -> float | None:
         """Mesh `GET /v1/balance` (costs no credit). None when it can't be read (replay mode,
@@ -475,6 +498,14 @@ class MeshClient:
         primary, _ = self.models_for(tier)
         preferred = capabilities_for(primary).structured_mode
         order = [preferred, *(s for s in ("json_schema", "tools") if s != preferred), "json_object"]
+        if self._mode == "record":
+            # Record mode takes the path replay will take: if this request is already recorded
+            # under any strategy, use that answer (replay falls through to it); only a request
+            # recorded under none goes live. Otherwise record and replay diverge.
+            recorded = self._replay_pass(order, name, schema, tier, safe, output, max_tokens,
+                                         temperature)  # fmt: skip
+            if recorded is not None:
+                return recorded
         last_unsupported: Exception | None = None
         first_miss: CassetteMiss | None = None
         for strategy in order:
@@ -502,6 +533,32 @@ class MeshClient:
         raise MeshCallError(
             f"no structured-output strategy was accepted for tier '{tier.value}'"
         ) from last_unsupported
+
+    def _replay_pass(
+        self,
+        order: list[str],
+        name: str,
+        schema: dict[str, Any],
+        tier: ModelTier,
+        safe: list[dict[str, str]],
+        output: type[T],
+        max_tokens: int,
+        temperature: float,
+    ) -> StructuredResult[T] | None:
+        """The answer replay would give (first recorded strategy in order), or None."""
+        self._local.replay_only = True
+        try:
+            for strategy in order:
+                try:
+                    return self._structured_with(
+                        _Structured(name=name, schema=schema, strategy=strategy),
+                        tier, safe, output, max_tokens, temperature,
+                    )  # fmt: skip
+                except (CassetteMiss, _UnsupportedRequest):
+                    continue
+            return None
+        finally:
+            self._local.replay_only = False
 
     def check(self) -> bool:
         """Metadata call that spends no credits: confirms the key and base URL work."""
@@ -592,9 +649,14 @@ class MeshClient:
         key = request_hash(request)
         started = time.monotonic()
 
-        replayable = self._mode == "replay" or (
-            self._mode == "record" and self._cassettes is not None and self._cassettes.has(request)
-        )
+        if getattr(self._local, "replay_only", False):
+            replayable = True  # record mode's replay pass (per thread): never call live here
+        else:
+            replayable = self._mode == "replay" or (
+                self._mode == "record"
+                and self._cassettes is not None
+                and self._cassettes.has(request)
+            )
         if replayable:
             # Record mode re-uses what is already recorded, so re-running a recording session
             # only pays for requests that are new or changed.
@@ -613,6 +675,8 @@ class MeshClient:
 
         if not self.breaker.allow():
             raise MeshUnavailableError("Mesh circuit breaker is open")
+        if self.spend_guard is not None and self.spend_guard.exhausted():
+            raise MeshUnavailableError("today's model budget is used")
 
         assert self._client is not None
         attempts = 0
@@ -667,7 +731,16 @@ class MeshClient:
                         self._sleep(_RETRY_BACKOFF_SECONDS[min(attempt, 1)])
                     continue
                 self.breaker.record(True)
-                recorded = _normalise(response)
+                answer = _normalise(response)
+                recorded = dataclasses.replace(
+                    answer,
+                    latency_ms=int((time.monotonic() - started) * 1000),
+                    cost_estimate_usd=cost_estimate(
+                        answer.model, answer.prompt_tokens, answer.completion_tokens
+                    ),
+                )
+                if self.spend_guard is not None:
+                    self.spend_guard.charge(recorded.cost_estimate_usd)
                 if self._mode == "record":
                     assert self._cassettes is not None
                     self._cassettes.save(request, recorded)
@@ -699,6 +772,11 @@ class MeshClient:
         strategy: str | None,
     ) -> MeshResult:
         text = recorded.content if recorded.content is not None else recorded.tool_arguments
+        # A replay reports the live call's recorded latency, never the time to read a file.
+        latency_ms = int((time.monotonic() - started) * 1000)
+        measured = not replayed or recorded.latency_ms is not None
+        if replayed and recorded.latency_ms is not None:
+            latency_ms = recorded.latency_ms
         return MeshResult(
             text=text or "",
             model=recorded.model,
@@ -708,7 +786,8 @@ class MeshClient:
                 completion_tokens=recorded.completion_tokens,
                 total_tokens=recorded.prompt_tokens + recorded.completion_tokens,
             ),
-            latency_ms=int((time.monotonic() - started) * 1000),
+            latency_ms=latency_ms,
+            latency_measured=measured,
             used_fallback=used_fallback,
             attempts=attempts,
             replayed=replayed,
