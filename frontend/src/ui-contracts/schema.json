@@ -63,6 +63,136 @@
       "title": "AcceptRecommendationPlan",
       "type": "object"
     },
+    "AccountBalance": {
+      "additionalProperties": false,
+      "description": "The latest known balance of an account and where it came from (docs/01 F-10).",
+      "properties": {
+        "as_of": {
+          "format": "date",
+          "title": "As Of",
+          "type": "string"
+        },
+        "money": {
+          "$ref": "#/$defs/MoneyValue"
+        },
+        "provenance": {
+          "enum": [
+            "statement_column",
+            "declared"
+          ],
+          "title": "Provenance",
+          "type": "string"
+        }
+      },
+      "required": [
+        "money",
+        "as_of",
+        "provenance"
+      ],
+      "title": "AccountBalance",
+      "type": "object"
+    },
+    "AccountList": {
+      "additionalProperties": false,
+      "properties": {
+        "accounts": {
+          "items": {
+            "$ref": "#/$defs/AccountView"
+          },
+          "title": "Accounts",
+          "type": "array"
+        },
+        "workspace_id": {
+          "pattern": "^wsp_[0-9A-HJKMNP-TV-Z]{26}$",
+          "title": "Workspace Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "accounts"
+      ],
+      "title": "AccountList",
+      "type": "object"
+    },
+    "AccountView": {
+      "additionalProperties": false,
+      "properties": {
+        "account_id": {
+          "pattern": "^acct_[0-9A-HJKMNP-TV-Z]{26}$",
+          "title": "Account Id",
+          "type": "string"
+        },
+        "balance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AccountBalance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "institution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Institution"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "period": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DateRange"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "tracked": {
+          "title": "Tracked",
+          "type": "boolean"
+        },
+        "transactions": {
+          "minimum": 0,
+          "title": "Transactions",
+          "type": "integer"
+        },
+        "type": {
+          "minLength": 1,
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "account_id",
+        "name",
+        "type",
+        "currency",
+        "tracked",
+        "transactions"
+      ],
+      "title": "AccountView",
+      "type": "object"
+    },
     "AdjustScenarioAction": {
       "additionalProperties": false,
       "properties": {
@@ -2153,6 +2283,37 @@
       "title": "DaysValue",
       "type": "object"
     },
+    "DetectedFlows": {
+      "additionalProperties": false,
+      "properties": {
+        "income": {
+          "items": {
+            "$ref": "#/$defs/IncomeStreamView"
+          },
+          "title": "Income",
+          "type": "array"
+        },
+        "recurring": {
+          "items": {
+            "$ref": "#/$defs/RecurringView"
+          },
+          "title": "Recurring",
+          "type": "array"
+        },
+        "workspace_id": {
+          "pattern": "^wsp_[0-9A-HJKMNP-TV-Z]{26}$",
+          "title": "Workspace Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "income",
+        "recurring"
+      ],
+      "title": "DetectedFlows",
+      "type": "object"
+    },
     "DismissRecommendationAction": {
       "additionalProperties": false,
       "properties": {
@@ -3907,6 +4068,66 @@
       "title": "ImportedFile",
       "type": "object"
     },
+    "IncomeStreamView": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "$ref": "#/$defs/MoneyValue"
+        },
+        "cadence": {
+          "minLength": 1,
+          "title": "Cadence",
+          "type": "string"
+        },
+        "income_stream_id": {
+          "pattern": "^inc_[0-9A-HJKMNP-TV-Z]{26}$",
+          "title": "Income Stream Id",
+          "type": "string"
+        },
+        "last_paid": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Last Paid"
+        },
+        "payments": {
+          "minimum": 0,
+          "title": "Payments",
+          "type": "integer"
+        },
+        "provenance": {
+          "enum": [
+            "detected",
+            "confirmed",
+            "declared"
+          ],
+          "title": "Provenance",
+          "type": "string"
+        },
+        "source": {
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "income_stream_id",
+        "source",
+        "amount",
+        "cadence",
+        "provenance",
+        "payments"
+      ],
+      "title": "IncomeStreamView",
+      "type": "object"
+    },
     "InterventionCard": {
       "additionalProperties": false,
       "properties": {
@@ -5282,6 +5503,87 @@
         "revisions"
       ],
       "title": "RecommendationVerdict",
+      "type": "object"
+    },
+    "RecurringView": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "$ref": "#/$defs/MoneyValue"
+        },
+        "cadence": {
+          "minLength": 1,
+          "title": "Cadence",
+          "type": "string"
+        },
+        "category_key": {
+          "minLength": 1,
+          "title": "Category Key",
+          "type": "string"
+        },
+        "day_of_month": {
+          "anyOf": [
+            {
+              "maximum": 31,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Day Of Month"
+        },
+        "is_commitment": {
+          "title": "Is Commitment",
+          "type": "boolean"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "last_paid": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Last Paid"
+        },
+        "payments": {
+          "minimum": 0,
+          "title": "Payments",
+          "type": "integer"
+        },
+        "provenance": {
+          "minLength": 1,
+          "title": "Provenance",
+          "type": "string"
+        },
+        "recurring_id": {
+          "pattern": "^rob_[0-9A-HJKMNP-TV-Z]{26}$",
+          "title": "Recurring Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "recurring_id",
+        "label",
+        "category_key",
+        "amount",
+        "cadence",
+        "is_commitment",
+        "provenance",
+        "payments"
+      ],
+      "title": "RecurringView",
       "type": "object"
     },
     "Reproducible": {
@@ -8318,6 +8620,9 @@
     "SimulationView",
     "ProfileView",
     "TransactionPage",
-    "CalculationView"
+    "CalculationView",
+    "AccountList",
+    "AccountView",
+    "DetectedFlows"
   ]
 }

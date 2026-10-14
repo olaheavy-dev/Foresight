@@ -99,6 +99,9 @@ export interface UiContracts {
   ProfileView?: ProfileView;
   TransactionPage?: TransactionPage;
   CalculationView?: CalculationView;
+  AccountList?: AccountList;
+  AccountView?: AccountView;
+  DetectedFlows?: DetectedFlows;
 }
 /**
  * This interface was referenced by `UiContracts`'s JSON-Schema
@@ -1863,4 +1866,74 @@ export interface CalculationView {
   result: {};
   result_hash: string;
   workspace_id: string;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "AccountList".
+ */
+export interface AccountList {
+  accounts: AccountView[];
+  workspace_id: string;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "AccountView".
+ */
+export interface AccountView {
+  account_id: string;
+  balance?: AccountBalance | null;
+  currency: string;
+  institution?: string | null;
+  name: string;
+  period?: DateRange | null;
+  tracked: boolean;
+  transactions: number;
+  type: string;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "AccountBalance".
+ */
+export interface AccountBalance {
+  as_of: string;
+  money: MoneyValue;
+  provenance: "statement_column" | "declared";
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "DetectedFlows".
+ */
+export interface DetectedFlows {
+  income: IncomeStreamView[];
+  recurring: RecurringView[];
+  workspace_id: string;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "IncomeStreamView".
+ */
+export interface IncomeStreamView {
+  amount: MoneyValue;
+  cadence: string;
+  income_stream_id: string;
+  last_paid?: string | null;
+  payments: number;
+  provenance: "detected" | "confirmed" | "declared";
+  source: string;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "RecurringView".
+ */
+export interface RecurringView {
+  amount: MoneyValue;
+  cadence: string;
+  category_key: string;
+  day_of_month?: number | null;
+  is_commitment: boolean;
+  label: string;
+  last_paid?: string | null;
+  payments: number;
+  provenance: string;
+  recurring_id: string;
 }
