@@ -47,7 +47,11 @@ function describe(data: CashFlowForecastData, currency: string, locale: string, 
     const first = lows[0];
     const buffer = data.buffer_minor;
     const rel =
-      buffer === null ? "" : first.value < buffer ? `, below the ${money(buffer)} buffer` : `, above the ${money(buffer)} buffer`;
+      buffer === null
+        ? ""
+        : first.value < buffer
+          ? `, below the ${money(buffer)} buffer`
+          : `, above the ${money(buffer)} buffer`;
     parts.push(`The first low is ${money(first.value)} on ${formatShortDate(first.date, locale)}${rel}.`);
   } else {
     parts.push("No pay-cycle lows are forecast yet.");
@@ -189,7 +193,9 @@ export function CashFlowChart({
           {ticks.map((iso) =>
             x(iso) < m.l + 14 ? null : (
               <text key={iso} x={x(iso)} y={H - m.b + 18} textAnchor="middle">
-                {new Intl.DateTimeFormat(locale, { month: "short", timeZone: "UTC" }).format(new Date(`${iso}T00:00:00Z`))}
+                {new Intl.DateTimeFormat(locale, { month: "short", timeZone: "UTC" }).format(
+                  new Date(`${iso}T00:00:00Z`),
+                )}
                 {iso.slice(5, 7) === "01" ? ` ${iso.slice(2, 4)}` : ""}
               </text>
             ),
@@ -238,22 +244,27 @@ export function CashFlowChart({
           </g>
         ))}
 
-        {first ? (
-          (() => {
-            const cx = x(first.date);
-            const cy = y(first.value);
-            const right = cx < W / 2;
-            const ly = y(scale.lo + (scale.hi - scale.lo) * 0.62);
-            return (
-              <g>
-                <line className="cf-leader" x1={cx} x2={cx} y1={ly + 6} y2={cy - 9} />
-                <text className="lbl strong halo" x={cx + (right ? 4 : -4)} y={ly} textAnchor={right ? "start" : "end"}>
-                  {`Lowest · ${formatDayDate(first.date, locale)} · ${money(first.value)}`}
-                </text>
-              </g>
-            );
-          })()
-        ) : null}
+        {first
+          ? (() => {
+              const cx = x(first.date);
+              const cy = y(first.value);
+              const right = cx < W / 2;
+              const ly = y(scale.lo + (scale.hi - scale.lo) * 0.62);
+              return (
+                <g>
+                  <line className="cf-leader" x1={cx} x2={cx} y1={ly + 6} y2={cy - 9} />
+                  <text
+                    className="lbl strong halo"
+                    x={cx + (right ? 4 : -4)}
+                    y={ly}
+                    textAnchor={right ? "start" : "end"}
+                  >
+                    {`Lowest · ${formatDayDate(first.date, locale)} · ${money(first.value)}`}
+                  </text>
+                </g>
+              );
+            })()
+          : null}
 
         {hover ? <line className="cf-cross" x1={hover.x} x2={hover.x} y1={m.t} y2={H - m.b} /> : null}
       </svg>
@@ -274,35 +285,35 @@ export function CashFlowChart({
       </div>
 
       <div className="sr-only">
-      <table>
-        <caption>{title}: data</caption>
-        <thead>
-          <tr>
-            <th scope="col">Date</th>
-            <th scope="col">Balance</th>
-            <th scope="col">Likely range</th>
-            <th scope="col">Note</th>
-          </tr>
-        </thead>
-        <tbody>
-          {hist.map((p) => (
-            <tr key={`h${p.date}`}>
-              <td>{formatShortDate(p.date, locale)}</td>
-              <td>{money(p.value)}</td>
-              <td>—</td>
-              <td>Observed</td>
+        <table>
+          <caption>{title}: data</caption>
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Balance</th>
+              <th scope="col">Likely range</th>
+              <th scope="col">Note</th>
             </tr>
-          ))}
-          {lows.map((p) => (
-            <tr key={`l${p.date}`}>
-              <td>{formatShortDate(p.date, locale)}</td>
-              <td>{money(p.value)}</td>
-              <td>{`${money(p.p10)} to ${money(p.p90)}`}</td>
-              <td>{`Lowest before payday${p.chance ? `, ${p.chance} chance below buffer` : ""}`}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {hist.map((p) => (
+              <tr key={`h${p.date}`}>
+                <td>{formatShortDate(p.date, locale)}</td>
+                <td>{money(p.value)}</td>
+                <td>—</td>
+                <td>Observed</td>
+              </tr>
+            ))}
+            {lows.map((p) => (
+              <tr key={`l${p.date}`}>
+                <td>{formatShortDate(p.date, locale)}</td>
+                <td>{money(p.value)}</td>
+                <td>{`${money(p.p10)} to ${money(p.p90)}`}</td>
+                <td>{`Lowest before payday${p.chance ? `, ${p.chance} chance below buffer` : ""}`}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

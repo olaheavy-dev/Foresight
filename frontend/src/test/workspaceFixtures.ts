@@ -53,7 +53,14 @@ const gbpExact = new Intl.NumberFormat("en-GB", { style: "currency", currency: "
 
 export function money(minor: number, { exact = false, ref }: { exact?: boolean; ref?: string } = {}): MoneyValue {
   const display = (exact ? gbpExact : gbpFmt).format(minor / 100).replace("-", "−");
-  return { kind: "money", minor, currency: "GBP", display, precision: exact ? "exact" : "rounded", ...(ref ? { ref } : {}) };
+  return {
+    kind: "money",
+    minor,
+    currency: "GBP",
+    display,
+    precision: exact ? "exact" : "rounded",
+    ...(ref ? { ref } : {}),
+  };
 }
 
 export function percent(value: number, ref?: string): PercentValue {
@@ -61,8 +68,14 @@ export function percent(value: number, ref?: string): PercentValue {
 }
 
 const ref = (path: string) => `calc_${CALC}#${path}`;
-const overview = (slot: "verdict" | "key_numbers" | "main_visual" | "what_to_do"): Placement => ({ area: "overview", slot });
-const tab = (name: "details" | "recommendation" | "transactions" | "checked"): Placement => ({ area: "tab", tab: name });
+const overview = (slot: "verdict" | "key_numbers" | "main_visual" | "what_to_do"): Placement => ({
+  area: "overview",
+  slot,
+});
+const tab = (name: "details" | "recommendation" | "transactions" | "checked"): Placement => ({
+  area: "tab",
+  tab: name,
+});
 const text = (t: string): Segment => ({ kind: "text", text: t });
 
 function addDays(iso: string, n: number): string {
@@ -105,12 +118,33 @@ export const forecastChart = (placement: Placement = tab("details")): CashFlowFo
   },
   events: [],
   pay_cycles: [
-    { payday: "2026-10-28", low_date: "2026-10-27", low: money(balanceOn("2026-10-27"), { ref: ref("pay_cycles.0.low.p50") }), below_buffer: false, chance_below_buffer: percent(0.06) },
-    { payday: "2026-11-27", low_date: "2026-11-26", low: money(balanceOn("2026-11-26"), { ref: ref("pay_cycles.1.low.p50") }), below_buffer: false, chance_below_buffer: percent(0.09) },
-    { payday: "2026-12-24", low_date: "2026-12-23", low: money(balanceOn("2026-12-23"), { ref: ref("pay_cycles.2.low.p50") }), below_buffer: false, chance_below_buffer: percent(0.04) },
+    {
+      payday: "2026-10-28",
+      low_date: "2026-10-27",
+      low: money(balanceOn("2026-10-27"), { ref: ref("pay_cycles.0.low.p50") }),
+      below_buffer: false,
+      chance_below_buffer: percent(0.06),
+    },
+    {
+      payday: "2026-11-27",
+      low_date: "2026-11-26",
+      low: money(balanceOn("2026-11-26"), { ref: ref("pay_cycles.1.low.p50") }),
+      below_buffer: false,
+      chance_below_buffer: percent(0.09),
+    },
+    {
+      payday: "2026-12-24",
+      low_date: "2026-12-23",
+      low: money(balanceOn("2026-12-23"), { ref: ref("pay_cycles.2.low.p50") }),
+      below_buffer: false,
+      chance_below_buffer: percent(0.04),
+    },
   ],
   summary: {
-    starting_balance: { money: money(HISTORY_DAYS.length ? balanceOn(AS_OF) : 0, { exact: true }), provenance: "observed" },
+    starting_balance: {
+      money: money(HISTORY_DAYS.length ? balanceOn(AS_OF) : 0, { exact: true }),
+      provenance: "observed",
+    },
     min_balance: money(balanceOn("2026-11-26"), { ref: ref("min_balance_p50_minor") }),
     min_date: { kind: "date", value: "2026-11-26", display: "26 Nov", ref: ref("min_balance_date") },
     p_breach_buffer: percent(0.09, ref("p_breach_buffer")),
@@ -124,8 +158,7 @@ const SIM_A = `sim_${"1b2c3d4e5f60718293a4b5c6"}`;
 const SIM_B = `sim_${"2c3d4e5f60718293a4b5c6d7"}`;
 const TRIP = 30_000;
 const WEEKS = Array.from({ length: 13 }, (_, i) => addDays(AS_OF, 7 * (i + 1)));
-const weekly = (shift: number, from: string) =>
-  WEEKS.map((d) => balanceOn(d) - (d >= from ? shift : 0));
+const weekly = (shift: number, from: string) => WEEKS.map((d) => balanceOn(d) - (d >= from ? shift : 0));
 const REC_ID = uid("rec", 1);
 
 const verdict = (title: string, segments: Segment[], id = "b1"): Narrative => ({
@@ -149,13 +182,82 @@ export const affordabilityTimeline: AgentExecutionTimeline = {
   duration_ms: 6_400,
   cost: { tokens: 18_240, model_calls: 7, usd_estimate: 0.046, cached: false },
   steps: [
-    { step_id: uid("step", 1), agent: "coordinator", node: "understand", label: "Read the question as a one-off trip payment in December", status: "ok", started_at: "2026-10-12T09:14:02Z", duration_ms: 900, model: "openai/gpt-6-luna", tokens: 1_420 },
-    { step_id: uid("step", 2), agent: "ledger", node: "ledger_query", label: "Used your categorised transactions, data to 11 Oct", status: "ok", started_at: "2026-10-12T09:14:03Z", duration_ms: 300, tokens: null },
-    { step_id: uid("step", 3), agent: "analyst", node: "analyst_step", label: "Checked your usual spending, bills and paydays", status: "ok", started_at: "2026-10-12T09:14:03Z", duration_ms: 700, model: "anthropic/claude-sonnet-5.5", tokens: 3_980 },
-    { step_id: uid("step", 4), agent: "forecaster", node: "forecaster_step", label: "Simulated each timing against the same forecast paths", status: "ok", started_at: "2026-10-12T09:14:04Z", duration_ms: 1_100, tokens: null },
-    { step_id: uid("step", 5), agent: "advisor", node: "advise", label: "Drafted two ways to pay for the trip", status: "ok", started_at: "2026-10-12T09:14:05Z", duration_ms: 1_300, model: "anthropic/claude-sonnet-5.5", tokens: 6_210 },
-    { step_id: uid("step", 6), agent: "verifier", node: "verify", label: "Verifier rejected a draft", status: "rejected", started_at: "2026-10-12T09:14:06Z", duration_ms: 900, model: "openai/gpt-6.1-sol", tokens: 3_150, note: "“Pay on 4 Dec”: below your buffer before the next payday" },
-    { step_id: uid("step", 7), agent: "verifier", node: "verify", label: "Checked the revised answer", status: "ok", started_at: "2026-10-12T09:14:08Z", duration_ms: 700, model: "openai/gpt-6.1-sol", tokens: 3_480 },
+    {
+      step_id: uid("step", 1),
+      agent: "coordinator",
+      node: "understand",
+      label: "Read the question as a one-off trip payment in December",
+      status: "ok",
+      started_at: "2026-10-12T09:14:02Z",
+      duration_ms: 900,
+      model: "openai/gpt-6-luna",
+      tokens: 1_420,
+    },
+    {
+      step_id: uid("step", 2),
+      agent: "ledger",
+      node: "ledger_query",
+      label: "Used your categorised transactions, data to 11 Oct",
+      status: "ok",
+      started_at: "2026-10-12T09:14:03Z",
+      duration_ms: 300,
+      tokens: null,
+    },
+    {
+      step_id: uid("step", 3),
+      agent: "analyst",
+      node: "analyst_step",
+      label: "Checked your usual spending, bills and paydays",
+      status: "ok",
+      started_at: "2026-10-12T09:14:03Z",
+      duration_ms: 700,
+      model: "anthropic/claude-sonnet-5.5",
+      tokens: 3_980,
+    },
+    {
+      step_id: uid("step", 4),
+      agent: "forecaster",
+      node: "forecaster_step",
+      label: "Simulated each timing against the same forecast paths",
+      status: "ok",
+      started_at: "2026-10-12T09:14:04Z",
+      duration_ms: 1_100,
+      tokens: null,
+    },
+    {
+      step_id: uid("step", 5),
+      agent: "advisor",
+      node: "advise",
+      label: "Drafted two ways to pay for the trip",
+      status: "ok",
+      started_at: "2026-10-12T09:14:05Z",
+      duration_ms: 1_300,
+      model: "anthropic/claude-sonnet-5.5",
+      tokens: 6_210,
+    },
+    {
+      step_id: uid("step", 6),
+      agent: "verifier",
+      node: "verify",
+      label: "Verifier rejected a draft",
+      status: "rejected",
+      started_at: "2026-10-12T09:14:06Z",
+      duration_ms: 900,
+      model: "openai/gpt-6.1-sol",
+      tokens: 3_150,
+      note: "“Pay on 4 Dec”: below your buffer before the next payday",
+    },
+    {
+      step_id: uid("step", 7),
+      agent: "verifier",
+      node: "verify",
+      label: "Checked the revised answer",
+      status: "ok",
+      started_at: "2026-10-12T09:14:08Z",
+      duration_ms: 700,
+      model: "openai/gpt-6.1-sol",
+      tokens: 3_480,
+    },
   ],
   loops: [
     {
@@ -180,7 +282,12 @@ const tripScenario = (): ScenarioComparison => ({
   scope: { kind: "account", label: "Everyday current account", account_ids: [uid("acct", 1)], switchable: false },
   baseline: {
     label: "Without the trip",
-    series: { dates: WEEKS, p50: weekly(0, "9999"), p10: weekly(0, "9999").map((v) => v - 12_000), p90: weekly(0, "9999").map((v) => v + 12_000) },
+    series: {
+      dates: WEEKS,
+      p50: weekly(0, "9999"),
+      p10: weekly(0, "9999").map((v) => v - 12_000),
+      p90: weekly(0, "9999").map((v) => v + 12_000),
+    },
   },
   scenarios: [
     {
@@ -260,9 +367,21 @@ const tripCard = (): InterventionCard => ({
     p_breach_before: percent(0.14),
     p_breach_after: percent(0.09),
     p_breach_window: { from: "2026-11-28", to: "2026-12-23" },
-    low_deltas: [{ cycle_label: "December", before: money(balanceOn("2026-12-23") - TRIP - 31_000), after: money(balanceOn("2026-12-23") - TRIP) }],
+    low_deltas: [
+      {
+        cycle_label: "December",
+        before: money(balanceOn("2026-12-23") - TRIP - 31_000),
+        after: money(balanceOn("2026-12-23") - TRIP),
+      },
+    ],
   },
-  verification: { verdict: "approved", revisions: 1, checks_passed: 9, checks_total: 9, verification_id: uid("ver", 2) },
+  verification: {
+    verdict: "approved",
+    revisions: 1,
+    checks_passed: 9,
+    checks_total: 9,
+    verification_id: uid("ver", 2),
+  },
   triggered_by: [FC],
 });
 
@@ -278,7 +397,9 @@ const evidencePanel = (): EvidencePanel => ({
       ref: uid("ver", 1),
       title: "“Pay for the trip on 4 December”",
       provenance: "detected",
-      summary_lines: ["Rejected by the Verifier: in some paths the balance goes below your buffer before the next payday."],
+      summary_lines: [
+        "Rejected by the Verifier: in some paths the balance goes below your buffer before the next payday.",
+      ],
       critique: "Below the buffer before payday",
       checks: [
         { name: "Impact recomputed", passed: true, kind: "deterministic" },
@@ -288,7 +409,10 @@ const evidencePanel = (): EvidencePanel => ({
   ],
 });
 
-const txnTable = (placement: Placement = tab("transactions"), title = "Transactions behind this answer"): TransactionTable => ({
+const txnTable = (
+  placement: Placement = tab("transactions"),
+  title = "Transactions behind this answer",
+): TransactionTable => ({
   block_id: "b8",
   type: "TransactionTable",
   title,
@@ -301,10 +425,34 @@ const txnTable = (placement: Placement = tab("transactions"), title = "Transacti
   has_more: false,
   query: { date_from: "2026-10-01", date_to: AS_OF, direction: "out", sort: "date_desc", limit: 20 },
   rows: [
-    { txn_id: uid("txn", 1), date: "2026-10-09", narration_display: "Broadband", category: { key: "bills.broadband", label: "Bills" }, amount: money(-2_900, { exact: true }) },
-    { txn_id: uid("txn", 2), date: "2026-10-05", narration_display: "Weekly shop", category: { key: "food.groceries", label: "Groceries" }, amount: money(-6_420, { exact: true }) },
-    { txn_id: uid("txn", 3), date: "2026-10-02", narration_display: "Rent · Hillside Lettings", category: { key: "housing.rent", label: "Housing" }, amount: money(-118_000, { exact: true }) },
-    { txn_id: uid("txn", 4), date: "2026-10-01", narration_display: "Savings transfer", category: { key: "savings.transfer", label: "Savings" }, amount: money(-70_000, { exact: true }) },
+    {
+      txn_id: uid("txn", 1),
+      date: "2026-10-09",
+      narration_display: "Broadband",
+      category: { key: "bills.broadband", label: "Bills" },
+      amount: money(-2_900, { exact: true }),
+    },
+    {
+      txn_id: uid("txn", 2),
+      date: "2026-10-05",
+      narration_display: "Weekly shop",
+      category: { key: "food.groceries", label: "Groceries" },
+      amount: money(-6_420, { exact: true }),
+    },
+    {
+      txn_id: uid("txn", 3),
+      date: "2026-10-02",
+      narration_display: "Rent · Hillside Lettings",
+      category: { key: "housing.rent", label: "Housing" },
+      amount: money(-118_000, { exact: true }),
+    },
+    {
+      txn_id: uid("txn", 4),
+      date: "2026-10-01",
+      narration_display: "Savings transfer",
+      category: { key: "savings.transfer", label: "Savings" },
+      amount: money(-70_000, { exact: true }),
+    },
   ],
 });
 
@@ -316,7 +464,9 @@ const askFollowUp = (n: number, label: string, question: string): FollowUpAction
   payload: { question, context_refs: [] },
 });
 
-function envelope(over: Partial<AgentResponse> & Pick<AgentResponse, "blocks" | "response_id" | "run_id">): AgentResponse {
+function envelope(
+  over: Partial<AgentResponse> & Pick<AgentResponse, "blocks" | "response_id" | "run_id">,
+): AgentResponse {
   return {
     schema_version: "agent_response/1",
     surface: "workspace",
@@ -358,9 +508,24 @@ export const affordabilityResponse = (): AgentResponse =>
         evidence: [SIM_A],
         currency: "GBP",
         metrics: [
-          { label: "Lowest after paying", value: money(balanceOn("2026-12-23") - TRIP, { ref: `calc_${CALC}#scenario_low` }), emphasis: "primary", tone: "neutral" },
-          { label: "Above your buffer", value: money(balanceOn("2026-12-23") - TRIP - BUFFER), emphasis: "secondary", tone: "positive" },
-          { label: "Paths below the buffer", value: percent(0.09, ref("p_breach_buffer")), emphasis: "secondary", tone: "neutral" },
+          {
+            label: "Lowest after paying",
+            value: money(balanceOn("2026-12-23") - TRIP, { ref: `calc_${CALC}#scenario_low` }),
+            emphasis: "primary",
+            tone: "neutral",
+          },
+          {
+            label: "Above your buffer",
+            value: money(balanceOn("2026-12-23") - TRIP - BUFFER),
+            emphasis: "secondary",
+            tone: "positive",
+          },
+          {
+            label: "Paths below the buffer",
+            value: percent(0.09, ref("p_breach_buffer")),
+            emphasis: "secondary",
+            tone: "neutral",
+          },
         ],
       } satisfies FinancialMetricGroup,
       tripScenario(),
@@ -374,7 +539,13 @@ export const affordabilityResponse = (): AgentResponse =>
     follow_ups: [
       askFollowUp(1, "What if it costs more?", "What if the trip costs a bit more?"),
       askFollowUp(2, "What if my salary is late?", "What if my salary is a week late?"),
-      { action_id: "fu_3", kind: "open_evidence", label: "See the forecast inputs", requires_confirmation: false, payload: { ref: `calc_${CALC}` } },
+      {
+        action_id: "fu_3",
+        kind: "open_evidence",
+        label: "See the forecast inputs",
+        requires_confirmation: false,
+        payload: { ref: `calc_${CALC}` },
+      },
     ],
   });
 
@@ -392,7 +563,9 @@ const spendingOverTime = (): SpendingOverTime => ({
   currency: "GBP",
   period: { from: "2026-08-17", to: AS_OF },
   x: ["17 Aug", "24 Aug", "31 Aug", "7 Sep", "14 Sep", "21 Sep", "28 Sep", "5 Oct"],
-  series: [{ key: "food.eating_out", label: "Eating out", values: [3_900, 4_200, 3_600, 4_100, 5_800, 6_900, 7_400, 8_100] }],
+  series: [
+    { key: "food.eating_out", label: "Eating out", values: [3_900, 4_200, 3_600, 4_100, 5_800, 6_900, 7_400, 8_100] },
+  ],
   baseline: money(4_000, { exact: true, ref: `calc_${CALC}#usual_week` }),
   total: money(44_000, { exact: true }),
   highlight_keys: ["food.eating_out"],
@@ -410,9 +583,30 @@ const spendingByMerchant = (): SpendingByCategory => ({
   period: { from: "2026-09-12", to: AS_OF },
   total: money(27_300, { exact: true }),
   series: [
-    { key: "m1", label: "Corner Café", nature: "discretionary", tone: "accent", value: money(11_900, { exact: true }), share: percent(0.44) },
-    { key: "m2", label: "Noodle Bar", nature: "discretionary", tone: "neutral", value: money(8_400, { exact: true }), share: percent(0.31) },
-    { key: "m3", label: "Pizza Place", nature: "discretionary", tone: "neutral", value: money(7_000, { exact: true }), share: percent(0.25) },
+    {
+      key: "m1",
+      label: "Corner Café",
+      nature: "discretionary",
+      tone: "accent",
+      value: money(11_900, { exact: true }),
+      share: percent(0.44),
+    },
+    {
+      key: "m2",
+      label: "Noodle Bar",
+      nature: "discretionary",
+      tone: "neutral",
+      value: money(8_400, { exact: true }),
+      share: percent(0.31),
+    },
+    {
+      key: "m3",
+      label: "Pizza Place",
+      nature: "discretionary",
+      tone: "neutral",
+      value: money(7_000, { exact: true }),
+      share: percent(0.25),
+    },
   ],
 });
 
@@ -442,7 +636,12 @@ export const spendingResponse = (): AgentResponse =>
         metrics: [
           { label: "Last 30 days", value: money(27_300, { exact: true }), emphasis: "primary", tone: "neutral" },
           { label: "A usual month", value: money(17_400, { exact: true }), emphasis: "secondary", tone: "neutral" },
-          { label: "Above usual", value: { kind: "pct_change", value: 0.57, display: "+57%" }, emphasis: "secondary", tone: "negative" },
+          {
+            label: "Above usual",
+            value: { kind: "pct_change", value: 0.57, display: "+57%" },
+            emphasis: "secondary",
+            tone: "negative",
+          },
         ],
       },
       spendingOverTime(),
@@ -479,7 +678,9 @@ export const refusalResponse = (): AgentResponse =>
         evidence: [],
         title: "I can’t recommend investments.",
         segments: [
-          text("Foresight looks at your own transactions and forecast. Ask about a decision, a change in your spending or the months ahead."),
+          text(
+            "Foresight looks at your own transactions and forecast. Ask about a decision, a change in your spending or the months ahead.",
+          ),
         ],
       },
     ],
@@ -498,7 +699,18 @@ export const clarifyingBlock: ClarifyingQuestion = {
   type: "ClarifyingQuestion",
   placement: overview("verdict"),
   question: "Which trip did you mean?",
-  options: [askFollowUp(1, "A one-off trip", "Can I afford a one-off trip in December?") as ClarifyingQuestion["options"][number], askFollowUp(2, "A monthly getaway", "Can I afford a short trip every month?") as ClarifyingQuestion["options"][number]],
+  options: [
+    askFollowUp(
+      1,
+      "A one-off trip",
+      "Can I afford a one-off trip in December?",
+    ) as ClarifyingQuestion["options"][number],
+    askFollowUp(
+      2,
+      "A monthly getaway",
+      "Can I afford a short trip every month?",
+    ) as ClarifyingQuestion["options"][number],
+  ],
 };
 
 export const riskBlock: RiskAssessment = {
@@ -530,9 +742,21 @@ export const goalBlock: GoalProjection = {
   evidence: [`calc_${CALC}#goal`],
   currency: "GBP",
   scope: { kind: "mine", label: "Your accounts", account_ids: [], switchable: false },
-  goal: { goal_id: uid("goal", 1), name: "Emergency fund", funding_rule: "residual", target: money(300_000), target_date: { kind: "date", value: "2027-03-31", display: "31 Mar 2027" } },
+  goal: {
+    goal_id: uid("goal", 1),
+    name: "Emergency fund",
+    funding_rule: "residual",
+    target: money(300_000),
+    target_date: { kind: "date", value: "2027-03-31", display: "31 Mar 2027" },
+  },
   progress_now: money(110_000),
-  projection: { p10: money(240_000), p50: money(282_000), p90: money(321_000), p_achieve: percent(0.41), status_band: "at_risk" },
+  projection: {
+    p10: money(240_000),
+    p50: money(282_000),
+    p90: money(321_000),
+    p_achieve: percent(0.41),
+    status_band: "at_risk",
+  },
   required_monthly_change: money(5_000),
   trajectory: {
     dates: WEEKS,
@@ -590,14 +814,29 @@ export function answerScript(response: AgentResponse, standalone: string): Scrip
   const rejected = (response.evidence_line?.rejected_drafts ?? 0) > 0;
   return [
     { event: "run.started", data: { standalone_question: standalone, at: t(2) }, delayMs: 150 },
-    { event: "step", data: step(1, "coordinator", "Understanding your question", "started", { at: t(2) }), delayMs: 250 },
+    {
+      event: "step",
+      data: step(1, "coordinator", "Understanding your question", "started", { at: t(2) }),
+      delayMs: 250,
+    },
     { event: "step", data: step(1, "coordinator", "Understood your question", "done", { at: t(2) }), delayMs: 350 },
     { event: "step", data: step(2, "ledger", "Read your transactions", "done", { at: t(3) }), delayMs: 350 },
     { event: "step", data: step(3, "forecaster", "Built your forecast", "done", { at: t(4) }), delayMs: 450 },
     ...(rejected
       ? [
-          { event: "step", data: step(4, "verifier", "Verifier rejected a draft", "rejected", { reason: "“Pay on 4 Dec”: below your buffer before payday", at: t(6) }), delayMs: 450 },
-          { event: "step", data: step(5, "advisor", "Revised: pay after 27 Nov", "revised", { at: t(6) }), delayMs: 350 },
+          {
+            event: "step",
+            data: step(4, "verifier", "Verifier rejected a draft", "rejected", {
+              reason: "“Pay on 4 Dec”: below your buffer before payday",
+              at: t(6),
+            }),
+            delayMs: 450,
+          },
+          {
+            event: "step",
+            data: step(5, "advisor", "Revised: pay after 27 Nov", "revised", { at: t(6) }),
+            delayMs: 350,
+          },
         ]
       : []),
     { event: "step", data: step(6, "verifier", "Checked", "done", { at: t(8) }), delayMs: 400 },

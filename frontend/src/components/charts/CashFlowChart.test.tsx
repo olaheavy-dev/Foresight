@@ -39,7 +39,11 @@ describe("CashFlowChart", () => {
   });
 
   it("shows an honest empty state when there is nothing to draw", () => {
-    const view = forecastView({ history: { dates: [], balance_minor: [] }, forecast: { dates: [], p10: [], p50: [], p90: [] }, pay_cycles: [] });
+    const view = forecastView({
+      history: { dates: [], balance_minor: [] },
+      forecast: { dates: [], p10: [], p50: [], p90: [] },
+      pay_cycles: [],
+    });
     render(<CashFlowChart data={view.chart} currency="GBP" />);
     expect(screen.getByRole("status")).toHaveTextContent(/isn’t enough data/i);
   });

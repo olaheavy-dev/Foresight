@@ -5,8 +5,7 @@
  */
 
 function minorDigits(currency: string): number {
-  return new Intl.NumberFormat("en", { style: "currency", currency }).resolvedOptions()
-    .maximumFractionDigits ?? 2;
+  return new Intl.NumberFormat("en", { style: "currency", currency }).resolvedOptions().maximumFractionDigits ?? 2;
 }
 
 export function toMajor(minor: number, currency: string): number {
@@ -34,7 +33,9 @@ export function formatMoney(
 export function formatMoneyCompact(minor: number, currency: string, locale = "en-GB"): string {
   const major = toMajor(minor, currency);
   const abs = Math.abs(major);
-  const parts = new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: 0 }).formatToParts(0);
+  const parts = new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: 0 }).formatToParts(
+    0,
+  );
   const symbol = parts.find((p) => p.type === "currency")?.value ?? currency;
   const symbolFirst = parts.findIndex((p) => p.type === "currency") < parts.findIndex((p) => p.type === "integer");
   const [n, unit] = abs >= 1e6 ? [abs / 1e6, "M"] : abs >= 1e3 ? [abs / 1e3, "K"] : [abs, ""];

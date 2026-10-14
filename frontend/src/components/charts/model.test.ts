@@ -31,7 +31,7 @@ describe("niceScale", () => {
     const s = niceScale(-15_438, 154_561);
     expect(s.lo).toBeLessThanOrEqual(-15_438);
     expect(s.hi).toBeGreaterThanOrEqual(154_561);
-    expect([1, 2, 2.5, 5].some((m) => (s.step / 10 ** Math.floor(Math.log10(s.step))) === m)).toBe(true);
+    expect([1, 2, 2.5, 5].some((m) => s.step / 10 ** Math.floor(Math.log10(s.step)) === m)).toBe(true);
     expect(s.ticks.every(Number.isFinite)).toBe(true);
   });
 
@@ -52,7 +52,9 @@ describe("layout", () => {
   });
 
   it("returns null when there is nothing to draw", () => {
-    expect(layout({ history: [], today: null, points: [] }, { width: 600, height: 300, buffer: null, narrow: false })).toBeNull();
+    expect(
+      layout({ history: [], today: null, points: [] }, { width: 600, height: 300, buffer: null, narrow: false }),
+    ).toBeNull();
   });
 });
 

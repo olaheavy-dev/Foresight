@@ -1,0 +1,13 @@
+# Generated: the codegen staleness check compares these byte for byte.
+src/ui-contracts/types.ts
+src/ui-contracts/guards.ts
+src/ui-contracts/schema.json
+src/generated/
+# Stylesheets keep their one-rule-per-line layout.
+*.css
+.next/
+node_modules/
+test-results/
+playwright-report/
+package-lock.json
+next-env.d.ts

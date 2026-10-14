@@ -28,7 +28,13 @@ export function ForecastCard({ forecast, compact = false }: { forecast: Forecast
             : c.scope.label
         }
       />
-      <CashFlowChart data={c} currency={cur} locale={loc} height={compact ? 230 : 300} heightNarrow={compact ? 210 : 230} />
+      <CashFlowChart
+        data={c}
+        currency={cur}
+        locale={loc}
+        height={compact ? 230 : 300}
+        heightNarrow={compact ? 210 : 230}
+      />
       <div className="legend">
         <span>
           <svg viewBox="0 0 26 10" aria-hidden="true">

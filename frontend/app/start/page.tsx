@@ -12,8 +12,8 @@ export default function StartPage() {
         <p className="kicker">Import</p>
         <h1 className="serif">Drop your statements</h1>
         <p className="sub">
-          CSV exports from your bank: Foresight finds the table, checks it against the running balance and shows you what it
-          found before anything is used.
+          CSV exports from your bank: Foresight finds the table, checks it against the running balance and shows you
+          what it found before anything is used.
         </p>
         <NotShipped title="Statement import" />
         <p className="sub" style={{ marginTop: "var(--space-6)" }}>

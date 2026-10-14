@@ -84,25 +84,45 @@ export function workspaceReducer(state: State, action: Action): State {
       const known = new Set(state.threads.map((t) => t.threadId));
       const added = action.threads
         .filter((t) => !known.has(t.threadId))
-        .map((t): Thread => ({ key: t.threadId, threadId: t.threadId, title: t.title || "Conversation", createdAt: t.createdAt, turns: [] }));
+        .map((t): Thread => ({
+          key: t.threadId,
+          threadId: t.threadId,
+          title: t.title || "Conversation",
+          createdAt: t.createdAt,
+          turns: [],
+        }));
       const threads = [...state.threads, ...added].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
       return { ...state, threads };
     }
     case "turns":
-      return { ...state, threads: state.threads.map((t) => (t.key === action.key && t.turns.length === 0 ? { ...t, turns: action.turns } : t)) };
+      return {
+        ...state,
+        threads: state.threads.map((t) =>
+          t.key === action.key && t.turns.length === 0 ? { ...t, turns: action.turns } : t,
+        ),
+      };
     case "select":
       return { ...state, selected: action.key };
     case "start": {
       const exists = state.threads.some((t) => t.key === action.key);
       const threads = exists
         ? state.threads.map((t) => (t.key === action.key ? { ...t, turns: [...t.turns, action.turn] } : t))
-        : [{ key: action.key, threadId: null, title: action.title, createdAt: action.now, turns: [action.turn] }, ...state.threads];
+        : [
+            { key: action.key, threadId: null, title: action.title, createdAt: action.now, turns: [action.turn] },
+            ...state.threads,
+          ];
       return { threads, selected: action.key };
     }
     case "thread_id":
-      return { ...state, threads: state.threads.map((t) => (t.key === action.key ? { ...t, threadId: action.threadId } : t)) };
+      return {
+        ...state,
+        threads: state.threads.map((t) => (t.key === action.key ? { ...t, threadId: action.threadId } : t)),
+      };
     case "run_id":
-      return updateTurn(state, action.key, action.turnId, (t) => ({ ...t, run: { ...t.run, runId: action.runId, phase: "running" } }));
+      return updateTurn(state, action.key, action.turnId, (t) => ({
+        ...t,
+        run: { ...t.run, runId: action.runId, phase: "running" },
+      }));
     case "event":
       return updateTurn(state, action.key, action.turnId, (t) => ({ ...t, run: runReducer(t.run, action.event) }));
     case "response":
@@ -114,7 +134,11 @@ export function workspaceReducer(state: State, action: Action): State {
     case "fail":
       return updateTurn(state, action.key, action.turnId, (t) => ({
         ...t,
-        run: { ...t.run, phase: "error", error: { code: action.code, retryable: action.retryable, partialResponseId: null } },
+        run: {
+          ...t.run,
+          phase: "error",
+          error: { code: action.code, retryable: action.retryable, partialResponseId: null },
+        },
       }));
   }
 }
@@ -150,7 +174,10 @@ const storageKey = (workspaceId: string) => `foresight.workspace.threads.${works
 function toStored(threads: Thread[]): StoredThread[] {
   return threads.slice(0, 20).map((th) => ({
     ...th,
-    turns: th.turns.map(({ partial: _partial, run: { answer, ...run }, ...t }) => ({ ...t, run: { ...run, responseId: answer?.responseId ?? null } })),
+    turns: th.turns.map(({ partial: _partial, run: { answer, ...run }, ...t }) => ({
+      ...t,
+      run: { ...run, responseId: answer?.responseId ?? null },
+    })),
   }));
 }
 
@@ -210,7 +237,15 @@ export type WorkspaceProps = {
   flags: { auditTrail: boolean; checkedAdvice: boolean; anomalyDetection: boolean };
 };
 
-export function Workspace({ workspaceId, firstName, locale, timeZone, currency, initialQuestion, flags }: WorkspaceProps) {
+export function Workspace({
+  workspaceId,
+  firstName,
+  locale,
+  timeZone,
+  currency,
+  initialQuestion,
+  flags,
+}: WorkspaceProps) {
   const [state, dispatch] = useReducer(workspaceReducer, { threads: [], selected: null });
   const [hydrated, setHydrated] = useState(false);
   const [draft, setDraft] = useState("");
@@ -235,14 +270,18 @@ export function Workspace({ workspaceId, firstName, locale, timeZone, currency, 
         dispatch({ type: "event", key, turnId, event });
         if (event.type === "answer" && !parseAgentResponse(event.snapshot)) {
           fetchResponse(event.responseId).then((r) =>
-            r ? dispatch({ type: "response", key, turnId, response: r }) : dispatch({ type: "fail", key, turnId, code: "unavailable", retryable: true }),
+            r
+              ? dispatch({ type: "response", key, turnId, response: r })
+              : dispatch({ type: "fail", key, turnId, code: "unavailable", retryable: true }),
           );
         }
         if (event.type === "error" && event.code === "ai_unavailable") {
           setAi({ status: "unavailable", message: null });
         }
         if (event.type === "error" && event.partialResponseId) {
-          fetchResponse(event.partialResponseId).then((r) => (r ? dispatch({ type: "partial", key, turnId, response: r }) : null));
+          fetchResponse(event.partialResponseId).then((r) =>
+            r ? dispatch({ type: "partial", key, turnId, response: r }) : null,
+          );
         }
       },
       { onLost: () => dispatch({ type: "fail", key, turnId, code: "connection_lost", retryable: true }) },
@@ -290,7 +329,9 @@ export function Workspace({ workspaceId, firstName, locale, timeZone, currency, 
       for (const t of th.turns) {
         if (t.run.answer && !t.run.answer.response) {
           const id = t.run.answer.responseId;
-          fetchResponse(id).then((r) => (r ? dispatch({ type: "response", key: th.key, turnId: t.id, response: r }) : null));
+          fetchResponse(id).then((r) =>
+            r ? dispatch({ type: "response", key: th.key, turnId: t.id, response: r }) : null,
+          );
         } else if (t.run.runId && !isTerminal(t.run)) {
           follow(th.key, t.id, t.run.runId);
         }
@@ -299,7 +340,11 @@ export function Workspace({ workspaceId, firstName, locale, timeZone, currency, 
     setHydrated(true);
     // Conversations from earlier sessions come from the server; their answers load when opened.
     fetchThreads().then((list) => {
-      if (list) dispatch({ type: "remote", threads: list.map((t) => ({ threadId: t.thread_id, title: t.title, createdAt: t.created_at })) });
+      if (list)
+        dispatch({
+          type: "remote",
+          threads: list.map((t) => ({ threadId: t.thread_id, title: t.title, createdAt: t.created_at })),
+        });
     });
   }, [workspaceId, follow]);
 
@@ -315,7 +360,9 @@ export function Workspace({ workspaceId, firstName, locale, timeZone, currency, 
       dispatch({ type: "turns", key, turns });
       for (const t of turns) {
         if (t.run.answer) {
-          fetchResponse(t.run.answer.responseId).then((r) => (r ? dispatch({ type: "response", key, turnId: t.id, response: r }) : null));
+          fetchResponse(t.run.answer.responseId).then((r) =>
+            r ? dispatch({ type: "response", key, turnId: t.id, response: r }) : null,
+          );
         } else if (t.run.runId) {
           follow(key, t.id, t.run.runId);
         }
@@ -405,14 +452,24 @@ export function Workspace({ workspaceId, firstName, locale, timeZone, currency, 
   );
   const jump: { id: string; label: string; icon: IconName }[] = laid
     ? [
-        ...(laid.tabs.recommendation.length ? [{ id: "recommendation", label: "Compare", icon: "scale" as IconName }] : []),
+        ...(laid.tabs.recommendation.length
+          ? [{ id: "recommendation", label: "Compare", icon: "scale" as IconName }]
+          : []),
         ...(laid.tabs.details.length ? [{ id: "details", label: "Details", icon: "pulse" as IconName }] : []),
         { id: "checked", label: "Checks", icon: "checkcircle" as IconName },
-        ...(laid.tabs.transactions.length ? [{ id: "transactions", label: "Transactions", icon: "list" as IconName }] : []),
+        ...(laid.tabs.transactions.length
+          ? [{ id: "transactions", label: "Transactions", icon: "list" as IconName }]
+          : []),
       ]
     : [];
 
-  const env = { currency: answer?.currency ?? currency, locale, timeZone, ask: (q: string) => void ask(q), checkedAdvice: flags.checkedAdvice };
+  const env = {
+    currency: answer?.currency ?? currency,
+    locale,
+    timeZone,
+    ask: (q: string) => void ask(q),
+    checkedAdvice: flags.checkedAdvice,
+  };
 
   return (
     <BlockEnvProvider value={env}>
@@ -498,8 +555,8 @@ export function Workspace({ workspaceId, firstName, locale, timeZone, currency, 
                   <BotAvatar mini />
                   <div className="bubble">
                     <p>
-                      Hi {firstName}. Ask about a decision, a change in your spending or the months ahead. I’ll show you what was checked
-                      before you see the answer.
+                      Hi {firstName}. Ask about a decision, a change in your spending or the months ahead. I’ll show you
+                      what was checked before you see the answer.
                     </p>
                   </div>
                 </div>
@@ -554,7 +611,12 @@ export function Workspace({ workspaceId, firstName, locale, timeZone, currency, 
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
             />
-            <button className="send" type="submit" aria-label={busy ? "Working on your last question" : "Send"} disabled={busy || !draft.trim()}>
+            <button
+              className="send"
+              type="submit"
+              aria-label={busy ? "Working on your last question" : "Send"}
+              disabled={busy || !draft.trim()}
+            >
               <Icon name="send" />
             </button>
           </form>
@@ -595,7 +657,11 @@ export function Workspace({ workspaceId, firstName, locale, timeZone, currency, 
           ) : turn.run.phase === "clarify" && turn.run.clarify ? (
             <div className="analysis">
               <CanvasTop question={turn.question} />
-              <ClarifyCard question={turn.run.clarify.question} options={turn.run.clarify.options} onPick={(q) => void ask(q)} />
+              <ClarifyCard
+                question={turn.run.clarify.question}
+                options={turn.run.clarify.options}
+                onPick={(q) => void ask(q)}
+              />
             </div>
           ) : turn.run.phase === "error" && turn.run.error ? (
             <div className="analysis">
@@ -616,7 +682,12 @@ export function Workspace({ workspaceId, firstName, locale, timeZone, currency, 
                     </p>
                   </div>
                 </div>
-                <StepChecklist steps={turn.run.steps} locale={locale} timeZone={timeZone} label="Steps before it stopped" />
+                <StepChecklist
+                  steps={turn.run.steps}
+                  locale={locale}
+                  timeZone={timeZone}
+                  label="Steps before it stopped"
+                />
                 {turn.run.error.retryable ? (
                   <div className="btns">
                     <button type="button" className="btn primary" onClick={() => void ask(turn.question)}>
@@ -644,7 +715,13 @@ export function Workspace({ workspaceId, firstName, locale, timeZone, currency, 
       </div>
 
       {evidence && flags.auditTrail ? (
-        <EvidenceDrawer refId={evidence} response={answer ?? turn?.partial ?? null} locale={locale} timeZone={timeZone} onClose={() => setEvidence(null)} />
+        <EvidenceDrawer
+          refId={evidence}
+          response={answer ?? turn?.partial ?? null}
+          locale={locale}
+          timeZone={timeZone}
+          onClose={() => setEvidence(null)}
+        />
       ) : null}
     </BlockEnvProvider>
   );
@@ -683,7 +760,10 @@ function TurnBubbles({ turn, locale, timeZone }: { turn: Turn; locale: string; t
   let stamp = "";
   if (r.phase === "answered") {
     bot = (r.answer?.response && verdictText(r.answer.response)) ?? "Here’s what I found.";
-    stamp = r.answer?.response && !isRefusal(r.answer.response) ? "numbers from the forecast engine, checked before you saw them" : "";
+    stamp =
+      r.answer?.response && !isRefusal(r.answer.response)
+        ? "numbers from the forecast engine, checked before you saw them"
+        : "";
   } else if (r.phase === "clarify") bot = r.clarify?.question ?? "Which did you mean?";
   else if (r.phase === "error") bot = errorText(r.error?.code ?? "");
   else bot = r.standaloneQuestion ? `Checking: ${r.standaloneQuestion}` : "Working on it…";
@@ -706,7 +786,17 @@ function TurnBubbles({ turn, locale, timeZone }: { turn: Turn; locale: string; t
   );
 }
 
-function Working({ turn, locale, timeZone, fetching = false }: { turn: Turn; locale: string; timeZone: string; fetching?: boolean }) {
+function Working({
+  turn,
+  locale,
+  timeZone,
+  fetching = false,
+}: {
+  turn: Turn;
+  locale: string;
+  timeZone: string;
+  fetching?: boolean;
+}) {
   const r = turn.run;
   return (
     <div className="analysis loading-view">
@@ -741,7 +831,9 @@ function Welcome({ onAsk, paused, onEarlier }: { onAsk: (q: string) => void; pau
       <div className="welcome-inner">
         <BotAvatar />
         <h1 className="welcome-h serif">Ask anything about your money.</h1>
-        <p className="welcome-sub">Answers come from your transactions and the forecast engine — every number is computed, then checked.</p>
+        <p className="welcome-sub">
+          Answers come from your transactions and the forecast engine — every number is computed, then checked.
+        </p>
         {paused ? <p className="welcome-paused">{PAUSED}</p> : null}
         <ul className="starters" aria-label={paused ? "What still works" : "Start with a question"}>
           {paused
@@ -769,17 +861,17 @@ function Welcome({ onAsk, paused, onEarlier }: { onAsk: (q: string) => void; pau
                 </li>
               ))
             : STARTERS.map((s) => (
-            <li key={s.q}>
-              <button type="button" className="starter" onClick={() => onAsk(s.q)}>
-                <span className="icon-chip sm">
-                  <Icon name={s.icon} />
-                </span>
-                <span className="s-q">{s.q}</span>
-                <span className="s-n">{s.note}</span>
-                <Icon name="arrowright" className="s-go" />
-              </button>
-            </li>
-          ))}
+                <li key={s.q}>
+                  <button type="button" className="starter" onClick={() => onAsk(s.q)}>
+                    <span className="icon-chip sm">
+                      <Icon name={s.icon} />
+                    </span>
+                    <span className="s-q">{s.q}</span>
+                    <span className="s-n">{s.note}</span>
+                    <Icon name="arrowright" className="s-go" />
+                  </button>
+                </li>
+              ))}
         </ul>
         <p className="disclaimer">
           <Icon name="info" />

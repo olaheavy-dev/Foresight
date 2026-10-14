@@ -18,7 +18,14 @@ function show(raw: AgentResponse, { auditTrail = true, open = vi.fn() } = {}) {
   const response = parseAgentResponse(raw)!;
   render(
     <BlockEnvProvider value={env}>
-      <AnswerCanvas response={response} liveSteps={[]} locale="en-GB" timeZone="Europe/London" auditTrail={auditTrail} openEvidence={open} />
+      <AnswerCanvas
+        response={response}
+        liveSteps={[]}
+        locale="en-GB"
+        timeZone="Europe/London"
+        auditTrail={auditTrail}
+        openEvidence={open}
+      />
     </BlockEnvProvider>,
   );
   return { response, open };
@@ -28,7 +35,13 @@ describe("answer skeleton (docs/08 §7a)", () => {
   it("uses the fixed tab names in the fixed order", () => {
     show(affordabilityResponse());
     const tabs = within(screen.getByRole("tablist", { name: "Analysis sections" })).getAllByRole("tab");
-    expect(tabs.map((t) => t.textContent)).toEqual(["Overview", "Details", "Recommendation", "Transactions", "How it was checked"]);
+    expect(tabs.map((t) => t.textContent)).toEqual([
+      "Overview",
+      "Details",
+      "Recommendation",
+      "Transactions",
+      "How it was checked",
+    ]);
   });
 
   it("hides an empty tab instead of reordering the rest", () => {
@@ -42,7 +55,9 @@ describe("answer skeleton (docs/08 §7a)", () => {
     const laid = layoutAnswer(response);
     expect(laid.overview.verdict).toHaveLength(1);
     expect(laid.overview.main_visual).toHaveLength(1);
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Yes, if you pay for it after your 27 November payday.");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+      "Yes, if you pay for it after your 27 November payday.",
+    );
     expect(screen.getByRole("button", { name: /Checked by 6 agents · 1 draft rejected/ })).toBeInTheDocument();
     expect(screen.getByText("Pay for the trip after your 27 November payday")).toBeInTheDocument();
   });
@@ -92,7 +107,9 @@ describe("other answer states", () => {
 
   it("a degraded answer says AI explanations were unavailable and keeps the numbers", () => {
     show(degradedResponse());
-    expect(screen.getByRole("status")).toHaveTextContent("AI explanations unavailable for part of this answer. The numbers are unaffected.");
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "AI explanations unavailable for part of this answer. The numbers are unaffected.",
+    );
     expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
   });
 });

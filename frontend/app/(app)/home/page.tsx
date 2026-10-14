@@ -43,14 +43,15 @@ export default async function HomePage() {
         <blockquote className="quote serif">
           “A calm mind
           <br />
-          builds a richer future.”<span />
+          builds a richer future.”
+          <span />
         </blockquote>
         <p className="date">{date}</p>
         <p className="greet">{`${part}, ${firstName(profile.name)}`}</p>
         <h1 className="serif">Your money, a few steps ahead.</h1>
         <p className="lede">
-          A clearer today, a calmer month. Foresight reads your transactions, forecasts what’s next and checks its advice before
-          it reaches you.
+          A clearer today, a calmer month. Foresight reads your transactions, forecasts what’s next and checks its
+          advice before it reaches you.
         </p>
       </section>
 
@@ -71,7 +72,12 @@ export default async function HomePage() {
 
       <section className="card insights" aria-labelledby="ins-h">
         <div className="ins-head">
-          <CardHead icon="sparkles" title="Proactive insights" titleId="ins-h" sub="Things we’ve noticed, and suggested next steps." />
+          <CardHead
+            icon="sparkles"
+            title="Proactive insights"
+            titleId="ins-h"
+            sub="Things we’ve noticed, and suggested next steps."
+          />
         </div>
         <NotShipped title="Proactive insights" compact detail="Each insight will come with one checked action." />
       </section>

@@ -26,12 +26,15 @@ function renderBlock(block: Block, overrides: Partial<typeof env> = {}) {
 }
 
 describe("block renderers", () => {
-  it.each(everyBlock().map((b) => [`${b.type} ${b.block_id}`, b] as const))("%s renders from its contract without NaN", (_n, block) => {
-    const { container } = renderBlock(block);
-    expect(container.textContent).not.toMatch(/NaN|undefined|\[object Object\]/);
-    for (const path of container.querySelectorAll("path")) expect(path.getAttribute("d") ?? "").not.toMatch(/NaN/);
-    expect(container.firstChild).not.toBeNull();
-  });
+  it.each(everyBlock().map((b) => [`${b.type} ${b.block_id}`, b] as const))(
+    "%s renders from its contract without NaN",
+    (_n, block) => {
+      const { container } = renderBlock(block);
+      expect(container.textContent).not.toMatch(/NaN|undefined|\[object Object\]/);
+      for (const path of container.querySelectorAll("path")) expect(path.getAttribute("d") ?? "").not.toMatch(/NaN/);
+      expect(container.firstChild).not.toBeNull();
+    },
+  );
 
   it("shows the server's display strings, never re-formatted figures", () => {
     const blocks = everyBlock();
@@ -76,7 +79,11 @@ describe("cost line (How it was checked only)", () => {
   });
 
   it("says a cached answer used no model calls", () => {
-    const cached = { ...affordabilityTimeline, duration_ms: 400, cost: { tokens: 0, model_calls: 0, usd_estimate: 0, cached: true } };
+    const cached = {
+      ...affordabilityTimeline,
+      duration_ms: 400,
+      cost: { tokens: 0, model_calls: 0, usd_estimate: 0, cached: true },
+    };
     expect(costLine(cached)).toBe("0 model calls · reused your earlier answer · 0.4 s");
   });
 });

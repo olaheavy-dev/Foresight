@@ -8,7 +8,9 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "next": "16.4.0",
@@ -26,6 +28,7 @@
     "@vitejs/plugin-react": "6.1.2",
     "jsdom": "26.1.0",
     "json-schema-to-typescript": "16.0.0",
+    "prettier": "3.9.10",
     "typescript": "5.9.3",
     "vite": "8.3.4",
     "vitest": "5.0.4"

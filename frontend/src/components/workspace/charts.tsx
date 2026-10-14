@@ -94,7 +94,8 @@ export function LineChart({
     );
   }
   const { usable, scale, m, x, y } = geo;
-  const path = (dates: string[], vals: number[]) => dates.map((d, i) => `${i ? "L" : "M"}${x(d).toFixed(1)},${y(vals[i]).toFixed(1)}`).join("");
+  const path = (dates: string[], vals: number[]) =>
+    dates.map((d, i) => `${i ? "L" : "M"}${x(d).toFixed(1)},${y(vals[i]).toFixed(1)}`).join("");
   const ticks = monthTicks(geo.start, geo.end, narrow ? 3 : 6);
   const first = usable[0];
 
@@ -144,7 +145,11 @@ export function LineChart({
           </>
         ) : null}
         {usable.map((l) => (
-          <path key={l.key} d={path(l.dates, l.values)} className={l.kind === "scenario" ? "ws-scenario" : "cf-forecast"} />
+          <path
+            key={l.key}
+            d={path(l.dates, l.values)}
+            className={l.kind === "scenario" ? "ws-scenario" : "cf-forecast"}
+          />
         ))}
         {usable.map((l) => {
           const last = l.dates.length - 1;
@@ -234,7 +239,9 @@ export function HBars({ rows, label }: { rows: BarRow[]; label: string }) {
           <span className="hb-value num">{r.display}</span>
           <span className="hb-track" aria-hidden="true">
             <span className="hb-fill" style={{ width: `${(Math.abs(r.minor) / max) * 100}%` }} />
-            {r.baselineMinor != null ? <span className="hb-base" style={{ left: `${(Math.abs(r.baselineMinor) / max) * 100}%` }} /> : null}
+            {r.baselineMinor != null ? (
+              <span className="hb-base" style={{ left: `${(Math.abs(r.baselineMinor) / max) * 100}%` }} />
+            ) : null}
           </span>
           {r.note || r.baselineDisplay ? (
             <span className="hb-note">
@@ -313,7 +320,9 @@ export function Columns({
             </g>
           );
         })}
-        {baseline !== null ? <line x1={m.l} x2={width - m.r} y1={y(baseline)} y2={y(baseline)} className="ws-usual" /> : null}
+        {baseline !== null ? (
+          <line x1={m.l} x2={width - m.r} y1={y(baseline)} y2={y(baseline)} className="ws-usual" />
+        ) : null}
       </svg>
       <ul className="legend" aria-hidden="true">
         <li>

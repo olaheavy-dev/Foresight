@@ -23,15 +23,7 @@ export function IconChip({
 }
 
 /** Status label: Checked / Rejected / Below buffer / Upcoming / Not shipped yet. */
-export function Badge({
-  tone = "blue",
-  icon,
-  children,
-}: {
-  tone?: Tone;
-  icon?: IconName;
-  children: ReactNode;
-}) {
+export function Badge({ tone = "blue", icon, children }: { tone?: Tone; icon?: IconName; children: ReactNode }) {
   return (
     <span className={`badge ${tone}`}>
       {icon ? <Icon name={icon} /> : null}

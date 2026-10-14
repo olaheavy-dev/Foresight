@@ -26,7 +26,9 @@ export default async function Landing() {
         <h1 id="auth-h" className="serif">
           Start with your own statements
         </h1>
-        <p className="sub">Turn your transactions into a clear view of what’s next, with advice that’s checked before you see it.</p>
+        <p className="sub">
+          Turn your transactions into a clear view of what’s next, with advice that’s checked before you see it.
+        </p>
 
         <div className="primary-actions">
           <DemoButton />
@@ -67,8 +69,8 @@ export default async function Landing() {
         <p className="privacy">
           <Icon name="shield" />
           <span>
-            Your statements stay private. Every model call goes through one gateway, account numbers are masked first, and we
-            never ask for bank logins.
+            Your statements stay private. Every model call goes through one gateway, account numbers are masked first,
+            and we never ask for bank logins.
           </span>
         </p>
         <div className="theme-footer">
@@ -84,7 +86,8 @@ export default async function Landing() {
         <blockquote className="quote serif">
           “A calm mind
           <br />
-          builds a richer future.”<span />
+          builds a richer future.”
+          <span />
         </blockquote>
         <p className="kicker">From data to a calmer month</p>
         <div className="market-top">
@@ -94,8 +97,8 @@ export default async function Landing() {
               <br />a few steps ahead.
             </h2>
             <p className="lede">
-              Foresight reads your transactions, forecasts what’s next and tests your decisions before you make them, so you can
-              stay in control today and plan for tomorrow.
+              Foresight reads your transactions, forecasts what’s next and tests your decisions before you make them, so
+              you can stay in control today and plan for tomorrow.
             </p>
           </div>
           <ul className="features">

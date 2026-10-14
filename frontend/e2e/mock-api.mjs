@@ -36,7 +36,8 @@ const FEATURES = ["forecast", "agents", "checked_advice", "audit_trail", "ask", 
 }));
 
 const responses = new Map();
-for (const r of [fx.affordabilityResponse(), fx.spendingResponse(), fx.refusalResponse(), fx.degradedResponse()]) responses.set(r.response_id, r);
+for (const r of [fx.affordabilityResponse(), fx.spendingResponse(), fx.refusalResponse(), fx.degradedResponse()])
+  responses.set(r.response_id, r);
 
 const runs = new Map(); // run_id → script
 const threads = new Map(); // thread_id → { title, created_at, messages[] }
@@ -47,12 +48,17 @@ const nextId = (prefix) => fx.uid(prefix, seq++);
 
 function scriptFor(text) {
   const t = text.toLowerCase();
-  if (/invest|shares|crypto/.test(t)) return fx.answerScript(fx.refusalResponse(), text).filter((e) => e.event !== "step" || e.data.agent === "coordinator");
-  if (aiStatus === "unavailable") return [{ event: "error", data: { code: "ai_unavailable", retryable: true }, delayMs: 300 }];
+  if (/invest|shares|crypto/.test(t))
+    return fx
+      .answerScript(fx.refusalResponse(), text)
+      .filter((e) => e.event !== "step" || e.data.agent === "coordinator");
+  if (aiStatus === "unavailable")
+    return [{ event: "error", data: { code: "ai_unavailable", retryable: true }, delayMs: 300 }];
   if (/^which/.test(t) || /trip\?$/.test(t)) return fx.clarifyScript();
   if (/next month/.test(t)) return fx.errorScript();
   if (/degraded/.test(t)) return fx.answerScript(fx.degradedResponse(), text);
-  if (/spend|eat|delivery/.test(t)) return fx.answerScript(fx.spendingResponse(), "Why is my eating-out spending higher than usual?");
+  if (/spend|eat|delivery/.test(t))
+    return fx.answerScript(fx.spendingResponse(), "Why is my eating-out spending higher than usual?");
   return fx.answerScript(fx.affordabilityResponse(), "Can I afford a one-off trip in December?");
 }
 
@@ -84,7 +90,15 @@ createServer(async (req, res) => {
   if (path === "/api/session/demo" && req.method === "POST") return json(res, 200, profile, { "set-cookie": cookie });
   if (path === "/api/forecast") {
     const chart = fx.forecastChart();
-    return json(res, 200, { forecast_id: `fc_${"0a1b2c3d4e5f60718293a4b5"}`, workspace_id: fx.WORKSPACE_ID, currency: "GBP", locale: "en-GB", engine_version: "fc-test", data_version: 2, chart });
+    return json(res, 200, {
+      forecast_id: `fc_${"0a1b2c3d4e5f60718293a4b5"}`,
+      workspace_id: fx.WORKSPACE_ID,
+      currency: "GBP",
+      locale: "en-GB",
+      engine_version: "fc-test",
+      data_version: 2,
+      chart,
+    });
   }
   if (path === "/api/ai-status") {
     const message = aiStatus === "ok" ? null : aiStatus === "degraded" ? "Slower than usual" : "Paused";
@@ -109,7 +123,9 @@ createServer(async (req, res) => {
   const one = /^\/api\/threads\/(thr_[0-9A-Z]{26})$/.exec(path);
   if (one && req.method === "GET") {
     const t = threads.get(one[1]);
-    return t ? json(res, 200, { thread_id: one[1], title: t.title, messages: t.messages }) : json(res, 404, { detail: "Not found" });
+    return t
+      ? json(res, 200, { thread_id: one[1], title: t.title, messages: t.messages })
+      : json(res, 404, { detail: "Not found" });
   }
 
   const msg = /^\/api\/threads\/(thr_[0-9A-Z]{26})\/messages$/.exec(path);
@@ -122,9 +138,26 @@ createServer(async (req, res) => {
     const thread = threads.get(msg[1]) ?? { title: "", created_at: new Date().toISOString(), messages: [] };
     if (!thread.title) thread.title = text.slice(0, 60);
     const now = new Date().toISOString();
-    thread.messages.push({ message_id: nextId("msg"), role: "user", text, standalone_question: null, run_id: runId, response_id: null, created_at: now });
+    thread.messages.push({
+      message_id: nextId("msg"),
+      role: "user",
+      text,
+      standalone_question: null,
+      run_id: runId,
+      response_id: null,
+      created_at: now,
+    });
     const answer = script.find((e) => e.event === "answer");
-    if (answer) thread.messages.push({ message_id: nextId("msg"), role: "assistant", text: "", standalone_question: null, run_id: runId, response_id: answer.data.rsp_id, created_at: now });
+    if (answer)
+      thread.messages.push({
+        message_id: nextId("msg"),
+        role: "assistant",
+        text: "",
+        standalone_question: null,
+        run_id: runId,
+        response_id: answer.data.rsp_id,
+        created_at: now,
+      });
     threads.set(msg[1], thread);
     return json(res, 202, { run_id: runId, thread_id: msg[1] });
   }
@@ -136,7 +169,12 @@ createServer(async (req, res) => {
     const after = Number(req.headers["last-event-id"] ?? url.searchParams.get("last_event_id") ?? 0);
     // Sent like the real backend (no-store, no no-transform): the Next route handler for this
     // path must keep the stream unbuffered on its own.
-    res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-store", "x-accel-buffering": "no", connection: "keep-alive" });
+    res.writeHead(200, {
+      "content-type": "text/event-stream",
+      "cache-control": "no-store",
+      "x-accel-buffering": "no",
+      connection: "keep-alive",
+    });
     res.write(": stream open\n\n");
     for (let i = after; i < script.length; i += 1) {
       const e = script[i];
@@ -148,10 +186,14 @@ createServer(async (req, res) => {
   }
 
   const rsp = /^\/api\/responses\/(rsp_[0-9A-Z]{26})$/.exec(path);
-  if (rsp) return responses.has(rsp[1]) ? json(res, 200, responses.get(rsp[1])) : json(res, 404, { detail: "Not found" });
+  if (rsp)
+    return responses.has(rsp[1]) ? json(res, 200, responses.get(rsp[1])) : json(res, 404, { detail: "Not found" });
 
   const calc = /^\/api\/calculations\/(calc_[0-9a-zA-Z]+)$/.exec(path);
-  if (calc) return calc[1] === fx.calculation().calc_id ? json(res, 200, fx.calculation()) : json(res, 404, { detail: "Not found" });
+  if (calc)
+    return calc[1] === fx.calculation().calc_id
+      ? json(res, 200, fx.calculation())
+      : json(res, 404, { detail: "Not found" });
 
   return json(res, 404, { detail: "Not found" });
 }).listen(PORT, () => console.log(`mock api on :${PORT} (flags ${FLAGS_ON ? "on" : "off"})`));

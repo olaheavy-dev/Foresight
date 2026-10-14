@@ -22,9 +22,7 @@ export function Tabs({
 }) {
   const base = useId();
   const ids = items.map((t) => t.id);
-  const [selected, setSelected] = useState<string>(
-    initial && ids.includes(initial) ? initial : (ids[0] ?? ""),
-  );
+  const [selected, setSelected] = useState<string>(initial && ids.includes(initial) ? initial : (ids[0] ?? ""));
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   useEffect(() => {

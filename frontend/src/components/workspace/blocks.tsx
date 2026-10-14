@@ -10,7 +10,14 @@ import { CashFlowChart } from "@/components/charts/CashFlowChart";
 import { Icon, type IconName } from "@/components/icons/Icon";
 import { NotShipped } from "@/components/ui/NotShipped";
 import type { BlockResult } from "@/lib/api";
-import { formatClock, formatCount, formatDuration, formatLongDate, formatShortDate, formatUsdEstimate } from "@/lib/format";
+import {
+  formatClock,
+  formatCount,
+  formatDuration,
+  formatLongDate,
+  formatShortDate,
+  formatUsdEstimate,
+} from "@/lib/format";
 import type {
   AgentExecutionTimeline,
   Block,
@@ -82,7 +89,8 @@ function Head({
   );
 }
 
-const toneClass = (tone: string) => (tone === "positive" ? "pos" : tone === "negative" ? "neg" : tone === "caution" ? "warn" : "");
+const toneClass = (tone: string) =>
+  tone === "positive" ? "pos" : tone === "negative" ? "neg" : tone === "caution" ? "warn" : "";
 
 // ---------------------------------------------------------------------------------------------
 
@@ -100,7 +108,13 @@ export function NarrativeBlock({ block }: { block: Narrative }) {
 
 export function ClarifyBlock({ block }: { block: ClarifyingQuestion }) {
   const { ask } = useEnv();
-  return <ClarifyCard question={block.question} options={block.options.map((o) => ({ label: o.label, question: o.payload.question }))} onPick={ask} />;
+  return (
+    <ClarifyCard
+      question={block.question}
+      options={block.options.map((o) => ({ label: o.label, question: o.payload.question }))}
+      onPick={ask}
+    />
+  );
 }
 
 export function ClarifyCard({
@@ -210,7 +224,13 @@ export function CashFlowBlock({ block }: { block: CashFlowForecastChart }) {
   return (
     <article className="card ws-card">
       <Head icon="pulse" title={block.title ?? "Cash-flow forecast"} sub={block.caption ?? block.scope.label} />
-      <CashFlowChart data={block} currency={block.currency ?? currency} locale={locale} title={block.title ?? "Cash-flow forecast"} calloutFirstLow={false} />
+      <CashFlowChart
+        data={block}
+        currency={block.currency ?? currency}
+        locale={locale}
+        title={block.title ?? "Cash-flow forecast"}
+        calloutFirstLow={false}
+      />
       <Sources refs={block.evidence} />
     </article>
   );
@@ -297,7 +317,11 @@ export function ScenarioBlock({ block }: { block: ScenarioComparison }) {
                     <Cite refId={r.baseline.ref} />
                   </td>
                   {r.scenarios.map((v, i) => (
-                    <td key={i} className={`r num ${toneClass(r.tone[i] ?? "neutral")}`} data-label={block.scenarios[i]?.label ?? ""}>
+                    <td
+                      key={i}
+                      className={`r num ${toneClass(r.tone[i] ?? "neutral")}`}
+                      data-label={block.scenarios[i]?.label ?? ""}
+                    >
                       {v.display}
                       {r.delta[i] ? <span className="d2">{r.delta[i].display}</span> : null}
                     </td>
@@ -444,7 +468,9 @@ export function RiskBlock({ block }: { block: RiskAssessment }) {
                   <Cite refId={r.probability.ref} />
                 </>
               ) : null}
-              {r.window ? ` · ${formatShortDate(r.window.from, locale)} – ${formatShortDate(r.window.to, locale)}` : null}
+              {r.window
+                ? ` · ${formatShortDate(r.window.from, locale)} – ${formatShortDate(r.window.to, locale)}`
+                : null}
               {r.impact ? (
                 <>
                   {" · "}
@@ -475,7 +501,11 @@ export function InterventionBlock({ block, compact = false }: { block: Intervent
   if (!checkedAdvice) {
     return (
       <article className="card ws-card rec">
-        <NotShipped title="Checked advice" compact detail="Recommendations appear here once the Advisor and Verifier loop passes its evaluation." />
+        <NotShipped
+          title="Checked advice"
+          compact
+          detail="Recommendations appear here once the Advisor and Verifier loop passes its evaluation."
+        />
       </article>
     );
   }
@@ -506,7 +536,8 @@ export function InterventionBlock({ block, compact = false }: { block: Intervent
             <dd className="num">
               {impact.p_breach_before.display} → {impact.p_breach_after.display}
               <span>
-                {formatShortDate(impact.p_breach_window.from, locale)} – {formatShortDate(impact.p_breach_window.to, locale)}
+                {formatShortDate(impact.p_breach_window.from, locale)} –{" "}
+                {formatShortDate(impact.p_breach_window.to, locale)}
               </span>
             </dd>
           </div>
@@ -598,7 +629,9 @@ export function GoalBlock({ block }: { block: GoalProjection }) {
         <div>
           <dt>Chance of reaching it</dt>
           <dd className="v num">{block.projection.p_achieve.display}</dd>
-          {block.required_monthly_change ? <dd className="n">{block.required_monthly_change.display} more a month would close the gap</dd> : null}
+          {block.required_monthly_change ? (
+            <dd className="n">{block.required_monthly_change.display} more a month would close the gap</dd>
+          ) : null}
         </div>
       </dl>
       <LineChart
@@ -634,7 +667,9 @@ const PROVENANCE: Record<string, string> = {
 
 export function EvidenceBlock({ block }: { block: EvidencePanel }) {
   return (
-    <article className={`card ws-card ${block.items.every((i) => i.kind === "verification" && i.critique) ? "rejected" : ""}`}>
+    <article
+      className={`card ws-card ${block.items.every((i) => i.kind === "verification" && i.critique) ? "rejected" : ""}`}
+    >
       <Head
         icon={block.items.some((i) => i.critique) ? "xcircle" : "filetext"}
         chip={block.items.some((i) => i.critique) ? "red" : undefined}
@@ -704,7 +739,11 @@ export function TimelineBlock({ block }: { block: AgentExecutionTimeline }) {
   const agents = new Set(block.steps.map((s) => s.agent)).size;
   return (
     <article className="card ws-card">
-      <Head icon="shuffle" title={block.title ?? "How it was checked"} sub={`${agents} ${agents === 1 ? "agent" : "agents"} · each step is logged and can be inspected`} />
+      <Head
+        icon="shuffle"
+        title={block.title ?? "How it was checked"}
+        sub={`${agents} ${agents === 1 ? "agent" : "agents"} · each step is logged and can be inspected`}
+      />
       <ol className="timeline">
         {block.steps.map((s) => {
           const rejected = s.status === "rejected" || s.status === "error";
@@ -727,7 +766,11 @@ export function TimelineBlock({ block }: { block: AgentExecutionTimeline }) {
                 {extra}
               </span>
               <span className="time">{formatClock(s.started_at, locale, timeZone)}</span>
-              <Icon name={rejected ? "xcircle" : "checkcircle"} className={rejected ? "no" : "ok"} label={rejected ? "Rejected" : "Done"} />
+              <Icon
+                name={rejected ? "xcircle" : "checkcircle"}
+                className={rejected ? "no" : "ok"}
+                label={rejected ? "Rejected" : "Done"}
+              />
               <span className="d">
                 {s.label}
                 {s.note ? ` — ${s.note}` : ""}
@@ -748,7 +791,10 @@ export function TimelineBlock({ block }: { block: AgentExecutionTimeline }) {
             <p key={l.recommendation_id}>
               <strong>Verification loop:</strong>{" "}
               {l.attempts
-                .map((a) => `draft ${a.version_id} ${a.verdict === "approve" ? "approved" : a.verdict === "reject" ? `rejected${a.failed_checks?.length ? ` (${a.failed_checks.join(", ")})` : ""}` : "sent back for revision"}`)
+                .map(
+                  (a) =>
+                    `draft ${a.version_id} ${a.verdict === "approve" ? "approved" : a.verdict === "reject" ? `rejected${a.failed_checks?.length ? ` (${a.failed_checks.join(", ")})` : ""}` : "sent back for revision"}`,
+                )
                 .join(" → ")}
             </p>
           ))}
@@ -763,8 +809,9 @@ export function TimelineBlock({ block }: { block: AgentExecutionTimeline }) {
       <p className="method">
         <Icon name="info" />
         <span>
-          Every number here comes from the forecast engine and your categorised transactions, not written by AI. The AI chose which views
-          to show and wrote the sentences around them. Costs are estimated from the tokens each step used.
+          Every number here comes from the forecast engine and your categorised transactions, not written by AI. The AI
+          chose which views to show and wrote the sentences around them. Costs are estimated from the tokens each step
+          used.
         </span>
       </p>
     </article>
@@ -782,8 +829,10 @@ export function BlockError({ type }: { type: string | null }) {
         <div>
           <h2 className="card-title">This part of the answer couldn’t be shown</h2>
           <p className="card-sub">
-            {type ? `The ${type.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase()} didn’t pass our checks` : "A view didn’t pass our checks"}, so
-            we left it out rather than show figures we couldn’t verify. The rest of the answer is unaffected.
+            {type
+              ? `The ${type.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase()} didn’t pass our checks`
+              : "A view didn’t pass our checks"}
+            , so we left it out rather than show figures we couldn’t verify. The rest of the answer is unaffected.
           </p>
         </div>
       </div>
