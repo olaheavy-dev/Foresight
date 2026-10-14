@@ -341,6 +341,7 @@ class SalariedConfig:
     target_opening_minor: int = 150000
     min_balance_minor: int = 15000  # calibration floor for the lowest end-of-row balance
     disc_scale: float | None = None  # fixed discretionary scale (skips calibration)
+    steady: float | None = None  # steady_months(max_dev) on discretionary spend (P1 twins)
     closing_free: bool = False  # with disc_scale: fix the opening, let the closing follow
     stream_key: str | None = None  # share random streams with another dataset
     salary_minor: int = 405000
@@ -717,6 +718,43 @@ def _food(cfg: SalariedConfig, s: Streams) -> tuple[list[Txn], dict[str, Any]]:
     return out, finding
 
 
+STEADY_WINDOW_DAYS = 30
+
+
+def steady_months(
+    base: list[tuple[Txn, float]], end: date, max_dev: float
+) -> list[tuple[Txn, float]]:
+    """Scale each category's amounts window by window (30-day windows ending at `end`) so every
+    full window's total lies within ±max_dev of that category's median window total. A clean
+    persona then holds no chance month far from its usual spending, so any category spike in it
+    is a detector false positive, and the base twin's only spikes are the injected ones
+    (gen-1.1.0, owner-approved 14 Oct 2026). Counts and dates are unchanged."""
+    windows: dict[tuple[str, int], float] = {}
+    first = min((t.day for t, _a in base), default=end)
+    full = ((end - first).days + 1) // STEADY_WINDOW_DAYS
+    for t, a in base:
+        k = (end - t.day).days // STEADY_WINDOW_DAYS
+        if k < full:
+            windows[(t.category or "", k)] = windows.get((t.category or "", k), 0.0) + a
+    factor: dict[tuple[str, int], float] = {}
+    for cat in {c for c, _k in windows}:
+        totals = sorted(v for (c, _k), v in windows.items() if c == cat)
+        if len(totals) < 3:
+            continue
+        mid = len(totals) // 2
+        median = totals[mid] if len(totals) % 2 else (totals[mid - 1] + totals[mid]) / 2
+        lo, hi = median * (1 - max_dev), median * (1 + max_dev)
+        for k in range(full):
+            total = windows.get((cat, k), 0.0)
+            if total and not lo <= total <= hi:
+                factor[(cat, k)] = min(max(total, lo), hi) / total
+    out = []
+    for t, a in base:
+        k = (end - t.day).days // STEADY_WINDOW_DAYS
+        out.append((t, a * factor.get((t.category or "", k), 1.0)))
+    return out
+
+
 def discretionary_base(
     s: Streams, start: date, end: date, paydays: list[date], city: str = "LEEDS"
 ) -> list[tuple[Txn, float]]:
@@ -1018,6 +1056,8 @@ def build_salaried(cfg: SalariedConfig, seed: int) -> PersonaOutput:
         date.fromisoformat(d) for d in streams[0]["paydays"]
     ]
     base = discretionary_base(s, cfg.start, cfg.end, paydays)
+    if cfg.steady is not None:
+        base = steady_months(base, cfg.end, cfg.steady)
     if cfg.unconfirmed_inflows:
         recurring.append(
             {

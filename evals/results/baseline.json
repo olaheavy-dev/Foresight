@@ -1,22 +1,22 @@
 {
   "durations_s": {
     "E-ANOM": 0.82,
-    "E-AUD": 11.57,
-    "E-CAT": 0.53,
+    "E-AUD": 8.77,
+    "E-CAT": 0.43,
     "E-CTX": 0.56,
     "E-EFF": 0.0,
-    "E-FC": 10.32,
-    "E-GRD": 7.24,
+    "E-FC": 10.26,
+    "E-GRD": 6.88,
     "E-INC": 0.81,
-    "E-ING": 0.73,
-    "E-LOC": 0.33,
-    "E-ORC": 67.65,
-    "E-REC": 0.43,
-    "E-SCN": 0.28,
+    "E-ING": 0.72,
+    "E-LOC": 0.32,
+    "E-ORC": 41.76,
+    "E-REC": 0.42,
+    "E-SCN": 0.25,
     "E-SEC": 0.28,
-    "E-SIM": 15.95,
-    "E-UI": 85.66,
-    "E-VER": 18.47
+    "E-SIM": 15.87,
+    "E-UI": 40.76,
+    "E-VER": 17.62
   },
   "engine_version": "fc-1.3.0",
   "errors": {},
@@ -35,12 +35,9 @@
       "unmeasured": []
     },
     "E-ANOM": {
-      "failed": [
-        "ANOM-precision",
-        "ANOM-fp"
-      ],
+      "failed": [],
       "rule": "docs/09 targets (4 measured)",
-      "status": "fail",
+      "status": "pass",
       "unmeasured": []
     },
     "E-AUD": {
@@ -70,9 +67,11 @@
       "unmeasured": []
     },
     "E-EFF": {
-      "failed": [],
+      "failed": [
+        "EFF-2"
+      ],
       "rule": "docs/09 targets (4 measured)",
-      "status": "pass",
+      "status": "fail",
       "unmeasured": [
         "EFF-5",
         "EFF-6",
@@ -163,11 +162,11 @@
   "gates": {
     "E-ACCT": "fail",
     "E-ALIAS": "fail",
-    "E-ANOM": "fail",
+    "E-ANOM": "pass",
     "E-AUD": "pass",
     "E-CAT": "pass",
     "E-CTX": "fail",
-    "E-EFF": "pass",
+    "E-EFF": "fail",
     "E-FC": "pass",
     "E-GRD": "pass",
     "E-INC": "pass",
@@ -182,9 +181,9 @@
     "E-VER": "pass",
     "E-XFER": "fail"
   },
-  "generator_version": "gen-1.0.0",
+  "generator_version": "gen-1.1.0",
   "git_dirty": false,
-  "git_sha": "adfe6120123e5c6f87b0035f89369dc25c9f8874",
+  "git_sha": "e5f656cafec7f61d350e079ba6868838f5d1e1ea",
   "holdout_version": null,
   "home_currency_primary": "GBP",
   "layout_set_version": null,
@@ -203,16 +202,17 @@
     "null = not run. Gates: a suite that did not run is 'fail'; see gate_detail.rule."
   ],
   "prompt_versions": {},
-  "run_id": "evalrun_20261013T230650Z_adfe612",
+  "run_id": "evalrun_20261014T104932Z_e5f656c",
   "schema_version": "1.1",
   "seeds": [
     1729
   ],
   "suites": {
     "anomalies": {
-      "fp_per_persona_month_clean": 1.0,
-      "magnitude_error_pp": 0.0,
-      "precision": 0.5,
+      "clean_persona_months": 18,
+      "fp_per_persona_month_clean": 0.0556,
+      "magnitude_error_pp": 2.2,
+      "precision": 1.0,
       "recall": 1.0,
       "scope": "category_trend findings only"
     },
@@ -231,9 +231,9 @@
       },
       "recommendations": 9,
       "recomputed": {
-        "identical": 11,
+        "identical": 10,
         "not_rebuildable": 0,
-        "sampled": 11
+        "sampled": 10
       },
       "rejections": {
         "total": 12,
@@ -249,7 +249,7 @@
             0.9176,
             0.9592
           ],
-          "amount_weighted_accuracy": 0.4342,
+          "amount_weighted_accuracy": 0.4314,
           "coverage": {
             "0.5": {
               "coverage": 1.0,
@@ -291,53 +291,11 @@
           "weighted_f1": 0.9403
         },
         "llm_only": {
-          "abstention_rate": 0.006,
-          "accuracy": 0.7871,
-          "accuracy_ci95": [
-            0.7491,
-            0.8208
-          ],
-          "amount_weighted_accuracy": 0.3385,
-          "coverage": {
-            "0.5": {
-              "coverage": 0.9739,
-              "selective_accuracy": 0.8082
-            },
-            "0.7": {
-              "coverage": 0.9378,
-              "selective_accuracy": 0.8351
-            },
-            "0.85": {
-              "coverage": 0.7871,
-              "selective_accuracy": 0.8367
-            },
-            "0.95": {
-              "coverage": 0.5964,
-              "selective_accuracy": 0.8485
-            }
-          },
-          "ece": 0.1225,
-          "flow_class_accuracy": 0.9398,
-          "llm": {
-            "batches": 34,
-            "calls": 34,
-            "failed_batches": 0,
-            "invalid_or_missing_items": 0,
-            "models": [
-              "gpt-6-luna",
-              "openai/gpt-6-luna"
-            ],
-            "prompt_version": "46aa0e745f08",
-            "replayed": true,
-            "rows_sent": 498,
-            "rows_withheld_suspicious": 0,
-            "tokens": 99888,
-            "usd_estimate": 0.0156
-          },
-          "llm_call_rate": 1.0,
-          "macro_f1": 0.7169,
-          "n": 498,
-          "weighted_f1": 0.7951
+          "accuracy": null,
+          "flow_class_accuracy": null,
+          "llm_call_rate": null,
+          "macro_f1": null,
+          "note": "not measured: no recorded Mesh response (CassetteMiss); re-record with MESH_CASSETTE_MODE=record"
         },
         "majority_class": {
           "accuracy": 0.2048,
@@ -357,7 +315,7 @@
             0.9176,
             0.9592
           ],
-          "amount_weighted_accuracy": 0.4062,
+          "amount_weighted_accuracy": 0.4035,
           "coverage": {
             "0.5": {
               "coverage": 0.992,
@@ -1150,26 +1108,26 @@
     "efficiency": {
       "by_answer_type": {
         "advice": {
-          "cost_mean_usd": 0.04919,
-          "cost_p95_usd": 0.06971,
+          "cost_mean_usd": 0.05047,
+          "cost_p95_usd": 0.06898,
           "count": 13,
           "degraded_left_out": 0,
           "first_step_p95_s": 0.02,
-          "latency_estimated_p50_s": 28.28,
-          "latency_estimated_p95_s": 40.58,
+          "latency_estimated_p50_s": 28.32,
+          "latency_estimated_p95_s": 39.0,
           "latency_measured": 0,
           "latency_p50_s": null,
           "latency_p50_s_measured_only": null,
           "latency_p95_s": null
         },
         "all": {
-          "cost_mean_usd": 0.01113,
-          "cost_p95_usd": 0.06889,
+          "cost_mean_usd": 0.01141,
+          "cost_p95_usd": 0.06074,
           "count": 60,
           "degraded_left_out": 0,
           "first_step_p95_s": 0.02,
-          "latency_estimated_p50_s": 4.51,
-          "latency_estimated_p95_s": 38.59,
+          "latency_estimated_p50_s": 6.36,
+          "latency_estimated_p95_s": 36.13,
           "latency_measured": 3,
           "latency_p50_s": null,
           "latency_p50_s_measured_only": 0.03,
@@ -1181,8 +1139,8 @@
           "count": 47,
           "degraded_left_out": 0,
           "first_step_p95_s": 0.02,
-          "latency_estimated_p50_s": 4.5,
-          "latency_estimated_p95_s": 6.67,
+          "latency_estimated_p50_s": 6.31,
+          "latency_estimated_p95_s": 10.49,
           "latency_measured": 3,
           "latency_p50_s": null,
           "latency_p50_s_measured_only": 0.03,
@@ -1197,12 +1155,12 @@
             "E-SCN",
             "E-CAT"
           ],
-          "call_latency_p50_s": 1.97,
-          "call_latency_p95_s": 4.53,
+          "call_latency_p50_s": 3.11,
+          "call_latency_p95_s": 7.32,
           "calls": 100,
           "cost_per_answer_usd": 0.00041,
           "cost_per_call_usd": 0.00024,
-          "latency_measured": 8,
+          "latency_measured": 24,
           "models": [
             "gpt-6-luna",
             "openai/gpt-6-luna"
@@ -1213,12 +1171,12 @@
             "E-ORC",
             "E-GRD"
           ],
-          "call_latency_p50_s": 10.55,
-          "call_latency_p95_s": 12.06,
-          "calls": 29,
-          "cost_per_answer_usd": 0.01044,
-          "cost_per_call_usd": 0.02159,
-          "latency_measured": 28,
+          "call_latency_p50_s": 10.24,
+          "call_latency_p95_s": 11.95,
+          "calls": 30,
+          "cost_per_answer_usd": 0.01071,
+          "cost_per_call_usd": 0.02141,
+          "latency_measured": 29,
           "models": [
             "anthropic/claude-sonnet-5.5"
           ]
@@ -1227,14 +1185,15 @@
           "accuracy_gates": [
             "E-VER"
           ],
-          "call_latency_p50_s": 5.62,
-          "call_latency_p95_s": 7.58,
+          "call_latency_p50_s": 4.14,
+          "call_latency_p95_s": 5.41,
           "calls": 5,
           "cost_per_answer_usd": 0.00029,
-          "cost_per_call_usd": 0.00345,
+          "cost_per_call_usd": 0.00354,
           "latency_measured": 5,
           "models": [
-            "gpt-6.1-sol"
+            "gpt-6.1-sol",
+            "openai/gpt-6.1-sol"
           ]
         }
       },
@@ -1244,126 +1203,126 @@
       "arms": {
         "no_confirmation": {
           "coverage_by_dataset": {
-            "P1-base": 0.8108,
-            "P2-base": 0.7249,
+            "P1-base": 0.7849,
+            "P2-base": 0.7251,
             "S4-shock": 0.7683
           },
           "mae30_gbp_by_dataset": {
-            "P1-base": 536.59,
-            "P2-base": 6926.65,
+            "P1-base": 443.19,
+            "P2-base": 6981.71,
             "S4-shock": 5924.6
           },
           "mase30_by_dataset": {
-            "P1-base": 0.5333,
-            "P2-base": 1.7008,
+            "P1-base": 0.4954,
+            "P2-base": 1.7149,
             "S4-shock": 1.7426
           },
           "note": "detection only: no user answers",
           "pinball_gbp_by_dataset": {
-            "P1-base": 154.32,
-            "P2-base": 2566.6,
+            "P1-base": 128.08,
+            "P2-base": 2560.56,
             "S4-shock": 2050.59
           }
         },
         "with_onboarding_confirmation": {
           "coverage_by_dataset": {
-            "P1-base": 0.8108,
-            "P2-base": 0.8749,
+            "P1-base": 0.7849,
+            "P2-base": 0.8655,
             "S4-shock": 0.7624
           },
           "mae30_gbp_by_dataset": {
-            "P1-base": 536.59,
-            "P2-base": 5687.19,
+            "P1-base": 443.19,
+            "P2-base": 5650.98,
             "S4-shock": 5023.44
           },
           "mase30_by_dataset": {
-            "P1-base": 0.5333,
-            "P2-base": 1.4138,
+            "P1-base": 0.4954,
+            "P2-base": 1.4032,
             "S4-shock": 1.4805
           },
           "note": "simulates the user confirming detected income at onboarding (06 H8): the top 3 unconfirmed payers at each origin are asked about and answered from the truth labels",
           "pinball_gbp_by_dataset": {
-            "P1-base": 154.32,
-            "P2-base": 1702.96,
+            "P1-base": 128.08,
+            "P2-base": 1712.02,
             "S4-shock": 1724.96
           }
         }
       },
       "best_baseline_mae30_gbp_by_dataset": {
-        "P1-base": 765.73,
-        "P2-base": 4877.24,
+        "P1-base": 643.36,
+        "P2-base": 4849.15,
         "S4-shock": 4592.07
       },
       "best_baseline_mase30_by_dataset": {
-        "P1-base": 0.7746,
-        "P2-base": 1.213,
+        "P1-base": 0.7259,
+        "P2-base": 1.2052,
         "S4-shock": 1.3461
       },
       "breach_brier": null,
       "by_horizon": {
         "30": {
           "best_baseline": "B0",
-          "best_baseline_mae_gbp": 765.73,
-          "best_baseline_mase": 0.7746,
-          "coverage_p10_p90": 0.8108,
-          "mae_gbp": 536.59,
-          "mape": 0.4749,
-          "mase": 0.5333
+          "best_baseline_mae_gbp": 643.36,
+          "best_baseline_mase": 0.7259,
+          "coverage_p10_p90": 0.7849,
+          "mae_gbp": 443.19,
+          "mape": 0.4377,
+          "mase": 0.4954
         },
         "60": {
           "best_baseline": "B0",
-          "best_baseline_mae_gbp": 942.86,
-          "best_baseline_mase": 0.8658,
-          "coverage_p10_p90": 0.8108,
-          "mae_gbp": 784.36,
-          "mape": 0.5615,
-          "mase": 0.7073
+          "best_baseline_mae_gbp": 816.23,
+          "best_baseline_mase": 0.8627,
+          "coverage_p10_p90": 0.7849,
+          "mae_gbp": 612.48,
+          "mape": 0.5361,
+          "mase": 0.6397
         },
         "7": {
           "best_baseline": "B3",
-          "best_baseline_mae_gbp": 510.28,
-          "best_baseline_mase": 0.3412,
-          "coverage_p10_p90": 0.8108,
-          "mae_gbp": 229.17,
-          "mape": 0.106,
-          "mase": 0.1528
+          "best_baseline_mae_gbp": 506.1,
+          "best_baseline_mase": 0.3384,
+          "coverage_p10_p90": 0.7849,
+          "mae_gbp": 224.62,
+          "mape": 0.0954,
+          "mase": 0.1498
         }
       },
       "by_split": {
         "P1-base": {
           "dev": {
-            "coverage_p10_p90": 0.7741,
-            "mae30_gbp": 625.81,
-            "mape30": 0.3331,
-            "mase30": 0.5733,
+            "coverage_p10_p90": 0.8417,
+            "mae30_gbp": 432.35,
+            "mape30": 0.1762,
+            "mase30": 0.4224,
             "n_origins": 18,
-            "pinball_gbp": 169.07
+            "pinball_gbp": 117.49
           },
           "test": {
-            "coverage_p10_p90": 0.8615,
-            "mae30_gbp": 413.04,
-            "mape30": 0.6713,
-            "mase30": 0.4779,
+            "coverage_p10_p90": 0.7064,
+            "mae30_gbp": 458.2,
+            "mape30": 0.7997,
+            "mase30": 0.5965,
             "n_origins": 13,
-            "pinball_gbp": 133.89
+            "pinball_gbp": 142.73
           }
         },
         "P2-base": {
           "dev": {
-            "coverage_p10_p90": 0.8958,
-            "mae30_gbp": 5489.11,
-            "mape30": 0.6818,
-            "mase30": 1.4158,
+            "coverage_p10_p90": 0.8955,
+            "mae30_gbp": 5418.24,
+            "mape30": 0.6642,
+            "mase30": 1.3936,
             "n_origins": 44,
-            "pinball_gbp": 1764.8
+            "pinball_gbp": 1768.1
           },
           "test": {
-            "coverage_p10_p90": 0.8038,
-            "mae30_gbp": 6357.65,
-            "mape30": 0.6142,
-            "mase30": 1.4069,
+            "coverage_p10_p90": 0.7641,
+            "mae30_gbp": 6438.72,
+            "mape30": 0.6131,
+            "mase30": 1.4358,
             "n_origins": 13,
-            "pinball_gbp": 1493.64
+            "pinball_gbp": 1522.21
           }
         },
         "S4-shock": {
@@ -1387,21 +1346,21 @@
       },
       "calibration_version": "cal-1",
       "coverage_by_dataset": {
-        "P1-base": 0.8108,
-        "P2-base": 0.8749,
+        "P1-base": 0.7849,
+        "P2-base": 0.8655,
         "S4-shock": 0.7624
       },
       "engine_version": "fc-1.3.0",
       "headline_arm": "with_onboarding_confirmation",
       "headline_dataset": "P1-base",
       "mae30_gbp_by_dataset": {
-        "P1-base": 536.59,
-        "P2-base": 5687.19,
+        "P1-base": 443.19,
+        "P2-base": 5650.98,
         "S4-shock": 5023.44
       },
       "mase30_by_dataset": {
-        "P1-base": 0.5333,
-        "P2-base": 1.4138,
+        "P1-base": 0.4954,
+        "P2-base": 1.4032,
         "S4-shock": 1.4805
       },
       "method": {
@@ -1414,34 +1373,34 @@
         "n_paths": 500,
         "origins": "every 7 days from day 90 to end \u2212 60"
       },
-      "pay_cycle_low_mae_gbp": 445.45,
+      "pay_cycle_low_mae_gbp": 354.51,
       "pinball_gbp_by_dataset": {
-        "P1-base": 154.32,
-        "P2-base": 1702.96,
+        "P1-base": 128.08,
+        "P2-base": 1712.02,
         "S4-shock": 1724.96
       },
       "prior": "ONS Family spending workbook 1, FYE 2025, Table A1",
       "simulated_user_step": "simulates the user confirming detected income at onboarding (06 H8): the top 3 unconfirmed payers at each origin are asked about and answered from the truth labels",
       "skill_vs": {
         "B1-repeat30": {
-          "30": 0.5718,
-          "60": 0.6108,
-          "7": 0.6991
+          "30": 0.6415,
+          "60": 0.6732,
+          "7": 0.7035
         },
         "B2-meanflow": {
-          "30": 0.5718,
-          "60": 0.6108,
-          "7": 0.8621
+          "30": 0.6415,
+          "60": 0.6732,
+          "7": 0.8658
         },
         "best_baseline": {
-          "30": 0.2992,
-          "60": 0.1681,
-          "7": 0.5509
+          "30": 0.3111,
+          "60": 0.2496,
+          "7": 0.5562
         }
       }
     },
     "grounding": {
-      "approved": 95,
+      "approved": 93,
       "commitment_cuts_unrequested": 0,
       "evidence_ref_validity": 1.0,
       "generic_advice_rate": 0.0,
@@ -1670,7 +1629,7 @@
         "tool_calls_outside_allow_list": []
       },
       "mode": "replay",
-      "seconds": 67.7
+      "seconds": 41.8
     },
     "recurring": {
       "council_tax_months_exact": true,
@@ -1909,13 +1868,13 @@
       "headline_arm": "full",
       "loop": {
         "outcomes": {
-          "1_revision(s)": 49,
-          "2_revision(s)": 12,
-          "withdrawn": 1
+          "1_revision(s)": 50,
+          "2_revision(s)": 9,
+          "withdrawn": 3
         },
         "rejected_in_round_1": 62,
         "revisable": 41,
-        "revision_success": 1.0,
+        "revision_success": 0.9756,
         "unrevisable": 21,
         "withdraw_correctness": 1.0
       }
@@ -1955,19 +1914,19 @@
         "dataset": "P1-base, P2-base",
         "id": "ANOM-precision",
         "label": "Precision (category trends)",
-        "met": false,
+        "met": true,
         "stage1": true,
         "target": ">= 0.75",
-        "value": 0.5
+        "value": 1.0
       },
       {
-        "dataset": "P1-clean, P2-clean",
+        "dataset": "P1-clean, P2-clean (18 months)",
         "id": "ANOM-fp",
         "label": "False positives per persona-month (clean)",
-        "met": false,
+        "met": true,
         "stage1": true,
         "target": "<= 0.5",
-        "value": 1.0
+        "value": 0.0556
       },
       {
         "dataset": "P1-base, P2-base",
@@ -1976,7 +1935,7 @@
         "met": true,
         "stage1": true,
         "target": "<= 5",
-        "value": 0.0
+        "value": 2.2
       }
     ],
     "E-AUD": [
@@ -1999,7 +1958,7 @@
         "value": 1.0
       },
       {
-        "dataset": "11 calculations",
+        "dataset": "10 calculations",
         "id": "AUD-recompute",
         "label": "Recomputability (identical result hash)",
         "met": true,
@@ -2128,16 +2087,16 @@
         "met": true,
         "stage1": false,
         "target": "<= 0.03",
-        "value": 0.01113
+        "value": 0.01141
       },
       {
         "dataset": "13 advice answers",
         "id": "EFF-2",
         "label": "Mean cost per advice answer (USD)",
-        "met": true,
+        "met": false,
         "stage1": false,
         "target": "<= 0.05",
-        "value": 0.04919
+        "value": 0.05047
       },
       {
         "dataset": "60 E-UI answers",
@@ -2146,7 +2105,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 0.1",
-        "value": 0.06889
+        "value": 0.06074
       },
       {
         "dataset": "60 E-UI answers",
@@ -2193,7 +2152,7 @@
         "met": true,
         "stage1": true,
         "target": ">= 0.2",
-        "value": 0.5718
+        "value": 0.6415
       },
       {
         "dataset": "P1",
@@ -2202,7 +2161,7 @@
         "met": true,
         "stage1": true,
         "target": ">= 0.15",
-        "value": 0.5718
+        "value": 0.6415
       },
       {
         "dataset": "P1",
@@ -2211,7 +2170,7 @@
         "met": true,
         "stage1": true,
         "target": "< 1.0",
-        "value": 0.5333
+        "value": 0.4954
       },
       {
         "dataset": "P1",
@@ -2220,7 +2179,7 @@
         "met": true,
         "stage1": true,
         "target": "< 1.0",
-        "value": 0.6885
+        "value": 0.6825
       },
       {
         "dataset": "P1-base",
@@ -2229,7 +2188,7 @@
         "met": true,
         "stage1": true,
         "target": "0.72\u20130.88",
-        "value": 0.8108
+        "value": 0.7849
       },
       {
         "dataset": "P2-base",
@@ -2238,7 +2197,7 @@
         "met": true,
         "stage1": true,
         "target": "0.72\u20130.88",
-        "value": 0.8749
+        "value": 0.8655
       }
     ],
     "E-GRD": [
@@ -2815,5 +2774,5 @@
       }
     ]
   },
-  "timestamp_utc": "2026-10-13T23:06:50Z"
+  "timestamp_utc": "2026-10-14T10:49:32Z"
 }

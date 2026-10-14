@@ -1,0 +1,199 @@
+{
+  "duration_s": 0.32,
+  "error": null,
+  "metrics": {
+    "ambiguous_symbol_asked": true,
+    "cross_currency_violations": null,
+    "currency_detection_acc": 1.0,
+    "date_order_acc": 1.0,
+    "detail": {
+      "currency": {
+        "accuracy": 1.0,
+        "n": 4,
+        "tables": [
+          {
+            "dataset": "P1-base",
+            "detected": "GBP",
+            "expected": "GBP",
+            "ok": true,
+            "table": "acct_main"
+          },
+          {
+            "dataset": "G1-eur",
+            "detected": "EUR",
+            "expected": "EUR",
+            "ok": true,
+            "table": "acct_main"
+          },
+          {
+            "dataset": "S14-side-account",
+            "detected": "GBP",
+            "expected": "GBP",
+            "ok": true,
+            "table": "acct_gbp"
+          },
+          {
+            "dataset": "S14-side-account",
+            "detected": "EUR",
+            "expected": "EUR",
+            "ok": true,
+            "table": "acct_eur"
+          }
+        ]
+      },
+      "formats": {
+        "date_order_acc": 1.0,
+        "files": [
+          {
+            "dataset": "P1-base",
+            "exact": true,
+            "exponents": [
+              2
+            ],
+            "file": "exports/monzo.csv",
+            "has_day_over_12": true,
+            "row_precision": 1.0,
+            "row_recall": 1.0
+          },
+          {
+            "dataset": "P2-base",
+            "exact": true,
+            "exponents": [
+              2
+            ],
+            "file": "exports/statement.csv",
+            "has_day_over_12": true,
+            "row_precision": 1.0,
+            "row_recall": 1.0
+          },
+          {
+            "dataset": "G1-eur",
+            "exact": true,
+            "exponents": [
+              2
+            ],
+            "file": "exports/statement.csv",
+            "has_day_over_12": true,
+            "row_precision": 1.0,
+            "row_recall": 1.0
+          },
+          {
+            "dataset": "S14-side-account",
+            "exact": true,
+            "exponents": [
+              2
+            ],
+            "file": "exports/revolut_consolidated.csv",
+            "has_day_over_12": true,
+            "row_precision": 1.0,
+            "row_recall": 1.0
+          }
+        ],
+        "minor_unit_exact": true,
+        "number_format_acc": 1.0
+      },
+      "h13": {
+        "G3-dollar": {
+          "answer": "USD",
+          "expected_question": "currency",
+          "ok": true,
+          "questions_raised": [
+            "currency"
+          ],
+          "repeat_questions_with_saved_profile": 0,
+          "row_precision_after_answer": 1.0,
+          "row_recall_after_answer": 1.0,
+          "rows_committed_before_answer": 0
+        },
+        "G5-ambiguous-date": {
+          "answer": "DMY",
+          "expected_question": "date_order",
+          "ok": true,
+          "questions_raised": [
+            "date_order"
+          ],
+          "repeat_questions_with_saved_profile": 0,
+          "row_precision_after_answer": 1.0,
+          "row_recall_after_answer": 1.0,
+          "rows_committed_before_answer": 0
+        }
+      }
+    },
+    "h13": {
+      "all_clauses_ok": true,
+      "llm_calls": 0,
+      "repeat_questions": 0,
+      "uncommitted_until_answered": true
+    },
+    "minor_unit_exact": true,
+    "not_run": {
+      "E-LOC-6": "G4 (EUR pocket forecast) not generated yet",
+      "E-LOC-7": "XLS/XLSX exports not generated yet (Tier 1 XLSX is a later task)"
+    },
+    "number_format_acc": 1.0,
+    "xls_csv_parity": null
+  },
+  "name": "locales",
+  "notes": [
+    "E-LOC-6 and E-LOC-7 are null: G4 and the XLS/XLSX exports are not generated yet.",
+    "E-LOC-13 answers with the truth value (USD for G3, the file's real date order for G5).",
+    "LLM calls are 0 by construction: finance_core has no model client."
+  ],
+  "suite": "E-LOC",
+  "targets": [
+    {
+      "dataset": "P1-base, G1-eur, S14-side-account",
+      "id": "E-LOC-1",
+      "label": "Currency detection",
+      "met": true,
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "G3",
+      "id": "E-LOC-2",
+      "label": "Ambiguous $ asked, nothing committed",
+      "met": true,
+      "stage1": true,
+      "target": "== 1",
+      "value": 1.0
+    },
+    {
+      "dataset": "P1-base, P2-base, G1-eur, S14-side-account",
+      "id": "E-LOC-3",
+      "label": "Number format inference",
+      "met": true,
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "P1-base, P2-base, G1-eur, S14-side-account",
+      "id": "E-LOC-4",
+      "label": "Date order inference (files with day > 12)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "P1-base, P2-base, G1-eur, S14-side-account",
+      "id": "E-LOC-5",
+      "label": "Minor units exact",
+      "met": true,
+      "stage1": true,
+      "target": "== 1",
+      "value": 1.0
+    },
+    {
+      "dataset": "G3, G5",
+      "id": "E-LOC-13",
+      "label": "H13: uncommitted until answered \u00b7 0 LLM calls \u00b7 0 repeat questions",
+      "met": true,
+      "stage1": true,
+      "target": "== 1",
+      "value": 1.0
+    }
+  ]
+}

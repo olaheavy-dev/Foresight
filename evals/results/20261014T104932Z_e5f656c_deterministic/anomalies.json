@@ -1,0 +1,167 @@
+{
+  "duration_s": 0.82,
+  "error": null,
+  "metrics": {
+    "by_dataset": {
+      "P1-base": {
+        "spikes": [
+          {
+            "change_pct": 38.8,
+            "count": 23,
+            "recent_minor": 28640,
+            "robust_z": 8.5,
+            "subject": "food.delivery",
+            "usual_minor": 20635
+          }
+        ],
+        "truth": [
+          {
+            "expected_findings": [
+              "category_spike"
+            ],
+            "key": "food_delivery_spike",
+            "magnitude_pct": 41,
+            "subject": "food.delivery",
+            "type": "category_trend"
+          }
+        ]
+      },
+      "P1-clean": {
+        "months": [
+          {
+            "as_of": "2026-10-11",
+            "spikes": []
+          },
+          {
+            "as_of": "2026-09-11",
+            "spikes": []
+          },
+          {
+            "as_of": "2026-08-12",
+            "spikes": []
+          },
+          {
+            "as_of": "2026-07-13",
+            "spikes": []
+          },
+          {
+            "as_of": "2026-06-13",
+            "spikes": []
+          },
+          {
+            "as_of": "2026-05-14",
+            "spikes": []
+          }
+        ]
+      },
+      "P2-base": {
+        "spikes": [],
+        "truth": []
+      },
+      "P2-clean": {
+        "months": [
+          {
+            "as_of": "2026-10-11",
+            "spikes": [
+              "shopping.general"
+            ]
+          },
+          {
+            "as_of": "2026-09-11",
+            "spikes": []
+          },
+          {
+            "as_of": "2026-08-12",
+            "spikes": []
+          },
+          {
+            "as_of": "2026-07-13",
+            "spikes": []
+          },
+          {
+            "as_of": "2026-06-13",
+            "spikes": []
+          },
+          {
+            "as_of": "2026-05-14",
+            "spikes": []
+          },
+          {
+            "as_of": "2026-04-14",
+            "spikes": []
+          },
+          {
+            "as_of": "2026-03-15",
+            "spikes": []
+          },
+          {
+            "as_of": "2026-02-13",
+            "spikes": []
+          },
+          {
+            "as_of": "2026-01-14",
+            "spikes": []
+          },
+          {
+            "as_of": "2025-12-15",
+            "spikes": []
+          },
+          {
+            "as_of": "2025-11-15",
+            "spikes": []
+          }
+        ]
+      }
+    },
+    "clean_persona_months": 18,
+    "fp_per_persona_month_clean": 0.0556,
+    "magnitude_error_pp": 2.2,
+    "precision": 1.0,
+    "recall": 1.0,
+    "scope": "category_trend findings only"
+  },
+  "name": "anomalies",
+  "notes": [
+    "Trend part only. Recall and precision: one 30-day window at as_of per base persona, where the anomalies are injected. False positives: every monthly origin of the clean twins with a full 6-window baseline behind it.",
+    "A spike matches an injected anomaly when its category equals the anomaly subject."
+  ],
+  "suite": "E-ANOM",
+  "targets": [
+    {
+      "dataset": "P1-base, P2-base",
+      "id": "ANOM-recall",
+      "label": "Recall (category trends)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 0.85",
+      "value": 1.0
+    },
+    {
+      "dataset": "P1-base, P2-base",
+      "id": "ANOM-precision",
+      "label": "Precision (category trends)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 0.75",
+      "value": 1.0
+    },
+    {
+      "dataset": "P1-clean, P2-clean (18 months)",
+      "id": "ANOM-fp",
+      "label": "False positives per persona-month (clean)",
+      "met": true,
+      "stage1": true,
+      "target": "<= 0.5",
+      "value": 0.0556
+    },
+    {
+      "dataset": "P1-base, P2-base",
+      "id": "ANOM-magnitude",
+      "label": "Surge magnitude error (pp)",
+      "met": true,
+      "stage1": true,
+      "target": "<= 5",
+      "value": 2.2
+    }
+  ]
+}

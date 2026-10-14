@@ -1,14 +1,14 @@
 {
   "accounts": [
     {
-      "closing_balance_minor": 572733,
+      "closing_balance_minor": 554116,
       "currency": "GBP",
       "file": "exports/statement.csv",
       "has_balance_column": true,
       "id": "acct_main",
       "institution": "Generic bank",
       "label": "Current account",
-      "min_balance_minor": 78078,
+      "min_balance_minor": 69381,
       "n_transactions": 1235,
       "opening_balance_minor": 420000
     }

@@ -37,13 +37,14 @@ def test_every_good_ref_resolves(row: dict[str, Any]) -> None:
     assert all(world.resolve(ref) for ref in _refs(row))
 
 
-def test_added_finding_refs_resolve_to_detector_spikes() -> None:
-    added = {f"GP-0{n:02d}": "food.eating_out" for n in range(8, 13)}
-    for case_id, category in added.items():
-        row = BY_ID[case_id]
-        fid = f"fnd:category_spike:{category}"
-        assert fid in [ref.id for ref in _refs(row)]
-        assert case_world(row).resolve(EvidenceRef(kind="finding", id=fid, role="trigger"))
+def test_eating_out_proposals_no_longer_cite_a_spike_p1_does_not_have() -> None:
+    """gen-1.1.0 (owner-approved 14 Oct 2026): P1's chance eating-out month is gone, so
+    GP-008–GP-012 cite the forecast instead of a category spike, and no such finding exists."""
+    fid = "fnd:category_spike:food.eating_out"
+    for n in range(8, 13):
+        row = BY_ID[f"GP-0{n:02d}"]
+        assert fid not in [ref.id for ref in _refs(row)]
+        assert not case_world(row).resolve(EvidenceRef(kind="finding", id=fid, role="trigger"))
 
 
 def test_removed_taxi_proposals_stay_removed_and_their_evidence_is_gone() -> None:

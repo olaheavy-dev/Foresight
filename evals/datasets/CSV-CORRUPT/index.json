@@ -181,6 +181,6 @@
       "format": "monzo"
     }
   ],
-  "generator_version": "gen-1.0.0",
+  "generator_version": "gen-1.1.0",
   "seed": 1729
 }

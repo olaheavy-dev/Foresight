@@ -1,6 +1,6 @@
 {
-  "run_id": "evalrun_20261013T230650Z_adfe612",
-  "gate": "pass",
+  "run_id": "evalrun_20261014T104932Z_e5f656c",
+  "gate": "fail",
   "tiers": [
     {
       "tier": "fast",
@@ -16,8 +16,8 @@
       },
       "accuracy_pass": false,
       "cost_per_answer_usd": 0.00041,
-      "call_latency_p50_s": 1.97,
-      "call_latency_p95_s": 4.53
+      "call_latency_p50_s": 3.11,
+      "call_latency_p95_s": 7.32
     },
     {
       "tier": "reasoning",
@@ -29,22 +29,23 @@
         "E-GRD": "pass"
       },
       "accuracy_pass": true,
-      "cost_per_answer_usd": 0.01044,
-      "call_latency_p50_s": 10.55,
-      "call_latency_p95_s": 12.06
+      "cost_per_answer_usd": 0.01071,
+      "call_latency_p50_s": 10.24,
+      "call_latency_p95_s": 11.95
     },
     {
       "tier": "verifier",
       "models": [
-        "gpt-6.1-sol"
+        "gpt-6.1-sol",
+        "openai/gpt-6.1-sol"
       ],
       "accuracy_gates": {
         "E-VER": "pass"
       },
       "accuracy_pass": true,
       "cost_per_answer_usd": 0.00029,
-      "call_latency_p50_s": 5.62,
-      "call_latency_p95_s": 7.58
+      "call_latency_p50_s": 4.14,
+      "call_latency_p95_s": 5.41
     }
   ],
   "answers": [
@@ -56,51 +57,51 @@
       "cost_p95_usd": 0.00063,
       "latency_p50_s": null,
       "latency_p95_s": null,
-      "latency_estimated_p50_s": 4.5,
-      "latency_estimated_p95_s": 6.67
+      "latency_estimated_p50_s": 6.31,
+      "latency_estimated_p95_s": 10.49
     },
     {
       "type": "advice",
       "label": "Advice answers",
       "count": 13,
-      "cost_mean_usd": 0.04919,
-      "cost_p95_usd": 0.06971,
+      "cost_mean_usd": 0.05047,
+      "cost_p95_usd": 0.06898,
       "latency_p50_s": null,
       "latency_p95_s": null,
-      "latency_estimated_p50_s": 28.28,
-      "latency_estimated_p95_s": 40.58
+      "latency_estimated_p50_s": 28.32,
+      "latency_estimated_p95_s": 39.0
     },
     {
       "type": "all",
       "label": "All answers",
       "count": 60,
-      "cost_mean_usd": 0.01113,
-      "cost_p95_usd": 0.06889,
+      "cost_mean_usd": 0.01141,
+      "cost_p95_usd": 0.06074,
       "latency_p50_s": null,
       "latency_p95_s": null,
-      "latency_estimated_p50_s": 4.51,
-      "latency_estimated_p95_s": 38.59
+      "latency_estimated_p50_s": 6.36,
+      "latency_estimated_p95_s": 36.13
     }
   ],
   "targets": [
     {
       "id": "EFF-1",
       "label": "Mean cost per answer (USD)",
-      "value": 0.01113,
+      "value": 0.01141,
       "target": "<= 0.03",
       "met": true
     },
     {
       "id": "EFF-2",
       "label": "Mean cost per advice answer (USD)",
-      "value": 0.04919,
+      "value": 0.05047,
       "target": "<= 0.05",
-      "met": true
+      "met": false
     },
     {
       "id": "EFF-3",
       "label": "p95 cost per answer (USD)",
-      "value": 0.06889,
+      "value": 0.06074,
       "target": "<= 0.1",
       "met": true
     },
