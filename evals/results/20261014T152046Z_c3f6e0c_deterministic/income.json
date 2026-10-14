@@ -1,0 +1,271 @@
+{
+  "duration_s": 0.82,
+  "error": null,
+  "metrics": {
+    "amount_within_2pct": 1.0,
+    "by_dataset": {
+      "P1-base": {
+        "detected": [
+          {
+            "amount_minor": 405000,
+            "cadence": "monthly",
+            "key": "inc_acme_analytics",
+            "matched_truth": "inc_salary",
+            "members": 12,
+            "source": "ACME ANALYTICS"
+          }
+        ],
+        "precision_all": 1.0,
+        "truth": [
+          {
+            "amount_error": 0.0,
+            "amount_minor": 405000,
+            "amount_ok": true,
+            "cadence": "monthly",
+            "cadence_detected": "monthly",
+            "cadence_ok": true,
+            "detected": true,
+            "expected_next_payday": "2026-10-28",
+            "history_payday_misses": [],
+            "history_paydays_exact": true,
+            "history_paydays_match_rule": true,
+            "key": "inc_salary",
+            "next_payday": "2026-10-28",
+            "payday_ok": true,
+            "payday_rule": {
+              "day_of_month": 28,
+              "december_day": 18,
+              "kind": "fixed_day",
+              "shift": "pack default"
+            },
+            "salaried": true
+          }
+        ],
+        "valid_keys": [
+          "inc_salary"
+        ]
+      },
+      "P2-base": {
+        "detected": [
+          {
+            "amount_minor": 200000,
+            "cadence": "monthly",
+            "key": "inc_lumen_labs",
+            "matched_truth": "inc_client_lumen",
+            "members": 18,
+            "source": "LUMEN LABS"
+          }
+        ],
+        "precision_all": 1.0,
+        "truth": [
+          {
+            "cadence": "irregular",
+            "detected": false,
+            "key": "inc_client_brightwater",
+            "salaried": false
+          },
+          {
+            "cadence": "irregular",
+            "detected": false,
+            "key": "inc_client_kestrel",
+            "salaried": false
+          },
+          {
+            "cadence": "irregular",
+            "detected": false,
+            "key": "inc_client_severn",
+            "salaried": false
+          },
+          {
+            "cadence": "irregular",
+            "detected": false,
+            "key": "inc_client_oakfield",
+            "salaried": false
+          },
+          {
+            "amount_error": 0.0,
+            "amount_minor": 200000,
+            "amount_ok": true,
+            "cadence": "monthly",
+            "cadence_detected": "monthly",
+            "cadence_ok": true,
+            "detected": true,
+            "expected_next_payday": "2026-11-05",
+            "history_payday_misses": [
+              "2026-06-05",
+              "2026-07-20"
+            ],
+            "history_paydays_exact": false,
+            "history_paydays_match_rule": true,
+            "key": "inc_client_lumen",
+            "next_payday": "2026-11-05",
+            "payday_ok": true,
+            "payday_rule": {
+              "day_of_month": 5,
+              "december_day": null,
+              "kind": "fixed_day",
+              "shift": "next_working_day"
+            },
+            "salaried": true
+          }
+        ],
+        "valid_keys": [
+          "inc_client_brightwater",
+          "inc_client_kestrel",
+          "inc_client_lumen",
+          "inc_client_oakfield",
+          "inc_client_severn"
+        ]
+      },
+      "S11-fourweekly": {
+        "detected": [
+          {
+            "amount_minor": 373800,
+            "cadence": "four_weekly",
+            "key": "inc_acme_analytics",
+            "matched_truth": "inc_salary",
+            "members": 13,
+            "source": "ACME ANALYTICS"
+          }
+        ],
+        "precision_all": 1.0,
+        "truth": [
+          {
+            "amount_error": 0.0,
+            "amount_minor": 373800,
+            "amount_ok": true,
+            "cadence": "four_weekly",
+            "cadence_detected": "four_weekly",
+            "cadence_ok": true,
+            "detected": true,
+            "expected_next_payday": "2026-10-23",
+            "history_payday_misses": [],
+            "history_paydays_exact": true,
+            "history_paydays_match_rule": true,
+            "key": "inc_salary",
+            "next_payday": "2026-10-23",
+            "payday_ok": true,
+            "payday_rule": {
+              "day_of_month": null,
+              "december_day": null,
+              "kind": "four_weekly",
+              "shift": "pack default"
+            },
+            "salaried": true
+          }
+        ],
+        "valid_keys": [
+          "inc_salary"
+        ]
+      },
+      "S8-salary-split": {
+        "detected": [
+          {
+            "amount_minor": 283500,
+            "cadence": "monthly",
+            "key": "inc_acme_analytics",
+            "matched_truth": "inc_salary",
+            "members": 6,
+            "source": "ACME ANALYTICS"
+          },
+          {
+            "amount_minor": 121500,
+            "cadence": "monthly",
+            "key": "inc_acme_analytics_sal_pt2",
+            "matched_truth": "inc_salary",
+            "members": 6,
+            "source": "ACME ANALYTICS SAL PT2"
+          }
+        ],
+        "precision_all": 1.0,
+        "truth": [
+          {
+            "amount_error": 0.0,
+            "amount_minor": 405000,
+            "amount_ok": true,
+            "cadence": "monthly",
+            "cadence_detected": "monthly",
+            "cadence_ok": true,
+            "detected": true,
+            "expected_next_payday": "2026-10-28",
+            "history_payday_misses": [],
+            "history_paydays_exact": true,
+            "history_paydays_match_rule": true,
+            "key": "inc_salary",
+            "next_payday": "2026-10-28",
+            "payday_ok": true,
+            "payday_rule": {
+              "day_of_month": 28,
+              "december_day": null,
+              "kind": "fixed_day",
+              "shift": "pack default"
+            },
+            "salaried": true
+          }
+        ],
+        "valid_keys": [
+          "inc_salary"
+        ]
+      }
+    },
+    "four_weekly_cadence_ok": true,
+    "payday_rule_ok": 1.0,
+    "paydays_equal_credit_dates": 0.6667,
+    "salaried_precision": 1.0,
+    "salaried_recall": 1.0
+  },
+  "name": "income",
+  "notes": [
+    "Detected streams are matched to truth by the majority truth `income` key of their member transactions; a truth stream counts as found when \u2265 50% of its rows are members (of regular streams, for salaried truth streams).",
+    "INC-3 compares the detected rule's paydays over the history with the truth rule's paydays (a payer's late or missed credit is not a wrong rule), and the predicted next payday after as_of with the truth rule's next payday. paydays_equal_credit_dates reports how often the rule also matches every actual credit date (P2's client paid June late).",
+    "S8 split salary: amounts of the streams matched to one truth source are summed (INC-7)."
+  ],
+  "suite": "E-INC",
+  "targets": [
+    {
+      "dataset": "P1-base, P2-base, S8-salary-split, S11-fourweekly",
+      "id": "INC-1-P",
+      "label": "Salaried stream precision",
+      "met": true,
+      "stage1": true,
+      "target": ">= 0.95",
+      "value": 1.0
+    },
+    {
+      "dataset": "P1-base, P2-base, S8-salary-split, S11-fourweekly",
+      "id": "INC-1-R",
+      "label": "Salaried stream recall",
+      "met": true,
+      "stage1": true,
+      "target": ">= 0.95",
+      "value": 1.0
+    },
+    {
+      "dataset": "P1-base, P2-base, S8-salary-split, S11-fourweekly",
+      "id": "INC-2",
+      "label": "Amount within \u00b12% (matched salaried)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "P1-base, P2-base, S8-salary-split",
+      "id": "INC-3",
+      "label": "Payday rule and next payday exact (monthly)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "S11",
+      "id": "INC-4",
+      "label": "Four-weekly pay detected as 28-day cadence",
+      "met": true,
+      "stage1": true,
+      "target": "== 1",
+      "value": 1.0
+    }
+  ]
+}
