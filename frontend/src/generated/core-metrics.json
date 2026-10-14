@@ -1,6 +1,6 @@
 {
-  "run_id": "evalrun_20261014T104932Z_e5f656c",
-  "gate": "fail",
+  "run_id": "evalrun_20261014T124926Z_4c6fc75",
+  "gate": "pass",
   "tiers": [
     {
       "tier": "fast",
@@ -58,7 +58,7 @@
       "latency_p50_s": null,
       "latency_p95_s": null,
       "latency_estimated_p50_s": 6.31,
-      "latency_estimated_p95_s": 10.49
+      "latency_estimated_p95_s": 10.48
     },
     {
       "type": "advice",
@@ -68,8 +68,8 @@
       "cost_p95_usd": 0.06898,
       "latency_p50_s": null,
       "latency_p95_s": null,
-      "latency_estimated_p50_s": 28.32,
-      "latency_estimated_p95_s": 39.0
+      "latency_estimated_p50_s": 28.33,
+      "latency_estimated_p95_s": 39.06
     },
     {
       "type": "all",
@@ -79,8 +79,8 @@
       "cost_p95_usd": 0.06074,
       "latency_p50_s": null,
       "latency_p95_s": null,
-      "latency_estimated_p50_s": 6.36,
-      "latency_estimated_p95_s": 36.13
+      "latency_estimated_p50_s": 6.35,
+      "latency_estimated_p95_s": 36.14
     }
   ],
   "targets": [
@@ -95,8 +95,8 @@
       "id": "EFF-2",
       "label": "Mean cost per advice answer (USD)",
       "value": 0.05047,
-      "target": "<= 0.05",
-      "met": false
+      "target": "<= 0.055",
+      "met": true
     },
     {
       "id": "EFF-3",

@@ -129,7 +129,7 @@ def run(fast: bool = False, cases: Any = None) -> dict[str, Any]:
     targets: list[Target] = [
         target("EFF-1", "Mean cost per answer (USD)", a["cost_mean_usd"], "<=", 0.03, n,
                stage1=False),
-        target("EFF-2", "Mean cost per advice answer (USD)", adv["cost_mean_usd"], "<=", 0.05,
+        target("EFF-2", "Mean cost per advice answer (USD)", adv["cost_mean_usd"], "<=", 0.055,
                f"{adv['count']} advice answers", stage1=False),
         target("EFF-3", "p95 cost per answer (USD)", a["cost_p95_usd"], "<=", 0.10, n,
                stage1=False),

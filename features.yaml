@@ -37,27 +37,27 @@ features:
   agents:
     stage: 2
     title: Coordinator and five specialist agents (LangGraph, Mesh)
-    enabled: false
+    enabled: true
     suites: [E-ORC]
   anomaly_detection:
     stage: 2
     title: Behaviour trends and anomaly detection
-    enabled: false
+    enabled: true
     suites: [E-ANOM]
   checked_advice:
     stage: 2
     title: Advisor and Verifier loop (advice checked before you see it)
-    enabled: false
+    enabled: true
     suites: [E-VER, E-GRD, E-EFF]
   audit_trail:
     stage: 2
     title: Evidence and audit trail for every recommendation
-    enabled: false
+    enabled: true
     suites: [E-AUD]
   ask:
     stage: 2
     title: AI Workspace — conversational analysis with generated answers
-    enabled: false
+    enabled: true
     suites: [E-ORC, E-SCN, E-UI, E-SEC, E-EFF]
 
   # Stage 3 — experiences, proactive delivery, goals

@@ -1,0 +1,64 @@
+{
+  "duration_s": 6.6,
+  "error": null,
+  "metrics": {
+    "approved": 93,
+    "commitment_cuts_unrequested": 0,
+    "evidence_ref_validity": 1.0,
+    "generic_advice_rate": 0.0,
+    "numeric_claim_match": 1.0,
+    "swap_test_fail_rate": 1.0
+  },
+  "name": "grounding",
+  "notes": [
+    "mode: replay"
+  ],
+  "suite": "E-GRD",
+  "targets": [
+    {
+      "dataset": "approved",
+      "id": "GRD-refs",
+      "label": "Evidence refs resolve",
+      "met": true,
+      "stage1": true,
+      "target": "== 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "approved",
+      "id": "GRD-numbers",
+      "label": "No model-written numbers",
+      "met": true,
+      "stage1": true,
+      "target": ">= 0.98",
+      "value": 1.0
+    },
+    {
+      "dataset": "approved",
+      "id": "GRD-generic",
+      "label": "Generic advice among approved",
+      "met": true,
+      "stage1": true,
+      "target": "== 0.0",
+      "value": 0.0
+    },
+    {
+      "dataset": "approved",
+      "id": "GRD-commitment",
+      "label": "Unrequested cuts to protected categories",
+      "met": true,
+      "stage1": true,
+      "target": "== 0.0",
+      "value": 0.0
+    },
+    {
+      "dataset": "approved",
+      "id": "GRD-swap",
+      "label": "Swap test: other persona's advice fails",
+      "met": true,
+      "stage1": true,
+      "target": "== 1.0",
+      "value": 1.0
+    }
+  ]
+}
