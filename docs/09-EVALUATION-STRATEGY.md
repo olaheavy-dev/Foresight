@@ -754,7 +754,7 @@ Cost, accuracy and latency are the three core metrics; accuracy is every other s
 | ID | Metric | Target |
 |---|---|---|
 | EFF-1 | Mean cost per answer | ≤ $0.03 |
-| EFF-2 | Mean cost per advice answer | ≤ $0.05 |
+| EFF-2 | Mean cost per advice answer | ≤ $0.055 (was $0.05; owner, 14 Oct 2026) |
 | EFF-3 | p95 cost per answer | ≤ $0.10 |
 | EFF-4 | Time to first progress step, p95 | ≤ 2 s |
 | EFF-5 | Simple answers, latency p50 | ≤ 10 s |
