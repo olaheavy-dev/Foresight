@@ -96,6 +96,19 @@ def p1_scale(seed: int) -> float:
     return build_salaried(SalariedConfig(key="P1-base", start=months_back(12)), seed).disc_scale
 
 
+# P1/P2 twins: month totals per discretionary category within ±5% of the usual month (any two
+# months then differ by under the detector's 15% materiality floor, docs/00 §13), so
+# E-ANOM's clean twins hold no chance spikes (gen-1.1.0). Other datasets keep the raw noise.
+STEADY = 0.05
+
+
+@lru_cache(maxsize=4)
+def p1_steady_scale(seed: int) -> float:
+    """p1_scale for the steadied P1-base, shared by P1-clean."""
+    cfg = SalariedConfig(key="P1-base", start=months_back(12), steady=STEADY)
+    return build_salaried(cfg, seed).disc_scale
+
+
 def p1_clean(name: str, seed: int) -> Built:
     return _monzo_built(
         name,
@@ -107,7 +120,8 @@ def p1_clean(name: str, seed: int) -> Built:
             food_anomaly=False,
             known_car_repair=False,
             stream_key="P1-base",
-            disc_scale=p1_scale(seed),
+            disc_scale=p1_steady_scale(seed),
+            steady=STEADY,
         ),
         seed,
     )
@@ -128,7 +142,8 @@ def _freelance_built(name: str, cfg: FreelanceConfig, seed: int) -> Built:
 
 
 def p2(name: str, seed: int, anomalies: bool = True) -> Built:
-    return _freelance_built(name, FreelanceConfig(name, months_back(18), anomalies=anomalies), seed)
+    cfg = FreelanceConfig(name, months_back(18), anomalies=anomalies, steady=STEADY)
+    return _freelance_built(name, cfg, seed)
 
 
 def s4_shock(name: str, seed: int) -> Built:
@@ -466,7 +481,7 @@ def g5(name: str, seed: int) -> Built:
 
 
 DATASETS: dict[str, Callable[[str, int], Built]] = {
-    "P1-base": lambda n, s: p1(n, s),
+    "P1-base": lambda n, s: p1(n, s, steady=STEADY),
     "P1-clean": p1_clean,
     "P2-base": lambda n, s: p2(n, s),
     "P2-clean": lambda n, s: p2(n, s, anomalies=False),

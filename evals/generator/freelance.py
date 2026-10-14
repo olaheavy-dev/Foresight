@@ -11,7 +11,13 @@ from datetime import date, timedelta
 from typing import Any
 
 from evals.generator.model import Streams, Txn, sort_and_number
-from evals.generator.salaried import END, Bill, PersonaOutput, discretionary_base
+from evals.generator.salaried import (
+    END,
+    Bill,
+    PersonaOutput,
+    discretionary_base,
+    steady_months,
+)
 from evals.generator.ukcalendar import collection_date, months_between, previous_working_day
 
 P2_BILLS: tuple[Bill, ...] = (
@@ -89,6 +95,7 @@ class FreelanceConfig:
     end: date = END
     anomalies: bool = True
     shock_from: date | None = None  # S4: income −60% from this date
+    steady: float | None = None  # steady_months(max_dev) on discretionary spend (P2 twins)
     min_balance_minor: int = 60000
 
 
@@ -336,6 +343,8 @@ def build_freelance(cfg: FreelanceConfig, seed: int) -> PersonaOutput:
         )
 
     base = discretionary_base(s, cfg.start, cfg.end, retainer_days, city="BRISTOL")
+    if cfg.steady is not None:
+        base = steady_months(base, cfg.end, cfg.steady)
     disc = [
         replace(t, amount=-max(1, round(a * 100)), monzo_type="", monzo_cat="") for t, a in base
     ]

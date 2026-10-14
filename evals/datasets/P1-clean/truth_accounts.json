@@ -8,9 +8,9 @@
       "id": "acct_main",
       "institution": "Monzo",
       "label": "Monzo current account",
-      "min_balance_minor": 3570,
+      "min_balance_minor": 3573,
       "n_transactions": 1107,
-      "opening_balance_minor": 346949
+      "opening_balance_minor": 354102
     }
   ],
   "row_defaults": {

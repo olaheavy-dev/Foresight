@@ -5,5 +5,5 @@ random draw comes from numpy's PCG64, split per layer with SeedSequence so chang
 does not reshuffle the others. All people, banks and amounts are fictional.
 """
 
-GENERATOR_VERSION = "gen-1.0.0"
+GENERATOR_VERSION = "gen-1.1.0"
 PRIMARY_SEED = 1729
