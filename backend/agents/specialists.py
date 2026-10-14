@@ -35,12 +35,27 @@ def _slot(name: str, agent: str, kind: str, task: str, label: str) -> NodeSpec:
     return NodeSpec(name=name, agent=agent, kind=kind, fn=fn, label=label)
 
 
+WITHDRAW_LABELS = {
+    ("deadline", False): "No recommendation was checked in time",
+    ("deadline", True): "Out of time: the other drafts were not checked",
+    ("revision_cap", False): "No recommendation passed the checks",
+    ("revision_cap", True): "The other drafts didn't pass the checks",
+    ("answered_with_approved", True): "A checked recommendation is ready; other drafts dropped",
+}
+
+
 def withdraw(state: ForesightState, ctx: RunContext) -> NodeOutput:
     """The cap was reached, or the run ran out of time, with no approval: nothing is shown; history
     stays in the audit trail. Deterministic, so it also runs after the deadline."""
     proposals = list(state.get("proposals") or [])
     keys = [str(p.get("proposal_key", i)) for i, p in enumerate(proposals)]
-    reason = "deadline" if state.get("partial") else "revision_cap"
+    approved = bool(state.get("approved_recs"))
+    if state.get("partial"):
+        reason = "deadline"
+    elif approved and state.get("workflow") == "conversation":
+        reason = "answered_with_approved"
+    else:
+        reason = "revision_cap"
     with ctx.lock:
         for p in proposals:
             rec_id = p.get("rec_id")
@@ -61,9 +76,7 @@ def withdraw(state: ForesightState, ctx: RunContext) -> NodeOutput:
             "rounds": int(state.get("revision_round") or 0) + 1,
             "reason": reason,
         },
-        label="No recommendation was checked in time"
-        if reason == "deadline"
-        else "No recommendation passed the checks",
+        label=WITHDRAW_LABELS[(reason, approved)],
     )
 
 
@@ -103,6 +116,11 @@ def decide_after_verify(state: ForesightState, ctx: RunContext | None = None) ->
     if state.get("partial"):
         # The run deadline or budget stopped work: nodes are being skipped, so a revision round
         # would never complete. Withdraw instead of looping (nothing unchecked is shown).
+        return "withdraw"
+    if state.get("workflow") == "conversation" and state.get("approved_recs"):
+        # A question already has a checked recommendation: answer with it rather than spend
+        # another Advisor and judge round on the drafts that failed (owner, 14 Oct 2026; the
+        # first live run that kept revising took 82 s and $0.11).
         return "withdraw"
     if int(state.get("revision_round") or 0) < MAX_REVISIONS:
         if revision_fits(ctx):
