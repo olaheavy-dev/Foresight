@@ -504,3 +504,31 @@ def test_no_follow_up_when_the_question_finished_its_loop(session: Session) -> N
               mesh=_mesh(json_ok(_intent())), nodes=nodes)  # fmt: skip
     assert "defer" not in [s.node for s in _steps(store, out.run_id)]
     assert run_followup(store, out, mesh=_mesh(), nodes=nodes) is None
+
+
+def test_a_question_stops_revising_once_a_recommendation_is_approved(session: Session) -> None:
+    """A question that already has an approved recommendation answers with it: the drafts that
+    failed in the same round are withdrawn, not revised (owner, 14 Oct 2026)."""
+    store = _store(session)
+    thread = store.create_thread()
+    session.commit()
+
+    def advise(state: ForesightState, ctx: RunContext) -> NodeOutput:
+        return NodeOutput(update={"proposals": [{"proposal_key": "p1"}, {"proposal_key": "p2"}]})
+
+    def verify(state: ForesightState, ctx: RunContext) -> NodeOutput:
+        # One draft approved, the other sent back.
+        left = [{"proposal_key": "p2"}]
+        update = {"verdict": "reject", "approved_recs": ["rec_a"], "proposals": left}
+        return NodeOutput(update=update)
+
+    nodes = {
+        "advise": NodeSpec("advise", "advisor", "llm", advise, "Drafting"),
+        "verify": NodeSpec("verify", "verifier", "llm", verify, "Checking"),
+    }
+    out = ask(store, thread_id=thread.id, text="holiday?", client_msg_id="s1",
+              mesh=_mesh(json_ok(_intent())), nodes=nodes)  # fmt: skip
+    steps = {s.node: s for s in _steps(store, out.run_id)}
+    assert "revise" not in steps
+    assert steps["withdraw"].output["reason"] == "answered_with_approved"
+    assert out.state["withdrawn"] == ["p2"]

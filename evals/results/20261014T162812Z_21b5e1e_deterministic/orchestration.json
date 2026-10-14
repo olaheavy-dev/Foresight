@@ -1,0 +1,807 @@
+{
+  "duration_s": 34.32,
+  "error": null,
+  "metrics": {
+    "agent_coverage": {
+      "advisor": 20,
+      "analyst": 9,
+      "coordinator": 27,
+      "forecaster": 16,
+      "ledger": 5,
+      "verifier": 19
+    },
+    "by_status": {
+      "not_measured": 2,
+      "pass": 29
+    },
+    "case_count": 31,
+    "case_pass_rate_measured": 1.0,
+    "detail": [
+      {
+        "agents": [
+          "coordinator",
+          "ledger",
+          "analyst",
+          "forecaster",
+          "advisor",
+          "verifier"
+        ],
+        "assertions": {
+          "agent_order": true,
+          "briefing_step_reached": true,
+          "expected_agents_invoked": true,
+          "min_steps": true,
+          "route_table_workflow": true,
+          "routed_by_table_with_no_coordinator_llm_call": true,
+          "run_recorded": true,
+          "steps_follow_route_table": true
+        },
+        "case": "ORC-C001",
+        "checks": [
+          "ORC-1",
+          "ORC-2"
+        ],
+        "llm_calls": 7,
+        "note": "",
+        "status": "pass",
+        "steps": 8
+      },
+      {
+        "agents": [
+          "coordinator",
+          "ledger",
+          "analyst",
+          "forecaster",
+          "advisor",
+          "verifier"
+        ],
+        "assertions": {
+          "agent_order": true,
+          "briefing_step_reached": true,
+          "expected_agents_invoked": true,
+          "min_steps": true,
+          "route_table_workflow": true,
+          "routed_by_table_with_no_coordinator_llm_call": true,
+          "run_recorded": true,
+          "steps_follow_route_table": true
+        },
+        "case": "ORC-C002",
+        "checks": [
+          "ORC-1"
+        ],
+        "llm_calls": 7,
+        "note": "",
+        "status": "pass",
+        "steps": 11
+      },
+      {
+        "agents": [
+          "coordinator",
+          "analyst",
+          "forecaster",
+          "advisor",
+          "verifier"
+        ],
+        "assertions": {
+          "briefing_step_reached": true,
+          "expected_agents_invoked": true,
+          "min_steps": true,
+          "route_table_workflow": true,
+          "routed_by_table_with_no_coordinator_llm_call": true,
+          "run_recorded": true,
+          "steps_follow_route_table": true
+        },
+        "case": "ORC-C003",
+        "checks": [
+          "ORC-8"
+        ],
+        "llm_calls": 6,
+        "note": "",
+        "status": "pass",
+        "steps": 7
+      },
+      {
+        "agents": [
+          "coordinator",
+          "analyst",
+          "forecaster",
+          "advisor",
+          "verifier"
+        ],
+        "assertions": {
+          "briefing_step_reached": true,
+          "expected_agents_invoked": true,
+          "min_steps": true,
+          "route_table_workflow": true,
+          "routed_by_table_with_no_coordinator_llm_call": true,
+          "run_recorded": true,
+          "steps_follow_route_table": true
+        },
+        "case": "ORC-C004",
+        "checks": [
+          "ORC-8"
+        ],
+        "llm_calls": 6,
+        "note": "",
+        "status": "pass",
+        "steps": 7
+      },
+      {
+        "agents": [
+          "coordinator",
+          "analyst",
+          "forecaster",
+          "advisor",
+          "verifier"
+        ],
+        "assertions": {
+          "briefing_step_reached": true,
+          "expected_agents_invoked": true,
+          "min_steps": true,
+          "route_table_workflow": true,
+          "routed_by_table_with_no_coordinator_llm_call": true,
+          "run_recorded": true,
+          "steps_follow_route_table": true
+        },
+        "case": "ORC-C005",
+        "checks": [
+          "ORC-8"
+        ],
+        "llm_calls": 6,
+        "note": "",
+        "status": "pass",
+        "steps": 7
+      },
+      {
+        "agents": [
+          "coordinator",
+          "forecaster",
+          "advisor",
+          "verifier"
+        ],
+        "assertions": {
+          "expected_agents_invoked": true,
+          "forecaster_parsed_and_simulated": true,
+          "min_steps": true,
+          "response_composed": true,
+          "run_recorded": true
+        },
+        "case": "ORC-C006",
+        "checks": [
+          "ORC-9"
+        ],
+        "llm_calls": 8,
+        "note": "",
+        "status": "pass",
+        "steps": 12
+      },
+      {
+        "agents": [
+          "coordinator",
+          "forecaster",
+          "advisor",
+          "verifier"
+        ],
+        "assertions": {
+          "expected_agents_invoked": true,
+          "forecaster_parsed_and_simulated": true,
+          "min_steps": true,
+          "response_composed": true,
+          "run_recorded": true
+        },
+        "case": "ORC-C007",
+        "checks": [
+          "ORC-9"
+        ],
+        "llm_calls": 7,
+        "note": "",
+        "status": "pass",
+        "steps": 11
+      },
+      {
+        "agents": [
+          "coordinator",
+          "advisor",
+          "verifier"
+        ],
+        "assertions": {
+          "approved": true,
+          "expected_agents_invoked": true,
+          "loop_looped_reject_then_approve": true,
+          "min_steps": true,
+          "run_recorded": true,
+          "stub_labelled": true
+        },
+        "case": "ORC-C008",
+        "checks": [
+          "ORC-4"
+        ],
+        "llm_calls": 3,
+        "note": "",
+        "status": "pass",
+        "steps": 6
+      },
+      {
+        "agents": [
+          "coordinator",
+          "advisor",
+          "verifier"
+        ],
+        "assertions": {
+          "expected_agents_invoked": true,
+          "min_steps": true,
+          "run_recorded": true,
+          "stub_labelled": true,
+          "withdrawn_after_two_revisions": true
+        },
+        "case": "ORC-C009",
+        "checks": [
+          "ORC-5"
+        ],
+        "llm_calls": 3,
+        "note": "",
+        "status": "pass",
+        "steps": 10
+      },
+      {
+        "agents": [
+          "coordinator",
+          "advisor",
+          "verifier"
+        ],
+        "assertions": {
+          "approved": true,
+          "expected_agents_invoked": true,
+          "min_steps": true,
+          "run_recorded": true
+        },
+        "case": "ORC-C010",
+        "checks": [
+          "ORC-4"
+        ],
+        "llm_calls": 4,
+        "note": "",
+        "status": "pass",
+        "steps": 3
+      },
+      {
+        "agents": [
+          "coordinator",
+          "forecaster",
+          "advisor",
+          "verifier"
+        ],
+        "assertions": {
+          "answer_stored": true,
+          "expected_agents_invoked": true,
+          "forecaster_parsed_and_simulated": true,
+          "intent_affordability": true,
+          "min_steps": true,
+          "run_recorded": true,
+          "scenario_comparison_in_answer": true
+        },
+        "case": "ORC-C011",
+        "checks": [
+          "ORC-9"
+        ],
+        "llm_calls": 5,
+        "note": "",
+        "status": "pass",
+        "steps": 10
+      },
+      {
+        "agents": [
+          "coordinator",
+          "forecaster",
+          "advisor",
+          "verifier"
+        ],
+        "assertions": {
+          "answer_stored": true,
+          "expected_agents_invoked": true,
+          "forecaster_parsed_and_simulated": true,
+          "intent_affordability": true,
+          "min_steps": true,
+          "run_recorded": true,
+          "scenario_comparison_in_answer": true
+        },
+        "case": "ORC-C012",
+        "checks": [
+          "ORC-9"
+        ],
+        "llm_calls": 4,
+        "note": "",
+        "status": "pass",
+        "steps": 10
+      },
+      {
+        "agents": [
+          "coordinator",
+          "forecaster",
+          "advisor",
+          "verifier"
+        ],
+        "assertions": {
+          "answer_stored": true,
+          "expected_agents_invoked": true,
+          "forecaster_parsed_and_simulated": true,
+          "intent_affordability": true,
+          "min_steps": true,
+          "run_recorded": true,
+          "scenario_comparison_in_answer": true
+        },
+        "case": "ORC-C013",
+        "checks": [
+          "ORC-9"
+        ],
+        "llm_calls": 4,
+        "note": "",
+        "status": "pass",
+        "steps": 11
+      },
+      {
+        "agents": [
+          "coordinator",
+          "forecaster",
+          "advisor",
+          "verifier"
+        ],
+        "assertions": {
+          "answer_stored": true,
+          "expected_agents_invoked": true,
+          "forecaster_parsed_and_simulated": true,
+          "intent_affordability": true,
+          "min_steps": true,
+          "run_recorded": true,
+          "scenario_comparison_in_answer": true
+        },
+        "case": "ORC-C014",
+        "checks": [
+          "ORC-9"
+        ],
+        "llm_calls": 4,
+        "note": "",
+        "status": "pass",
+        "steps": 11
+      },
+      {
+        "agents": [
+          "coordinator",
+          "forecaster",
+          "advisor",
+          "verifier"
+        ],
+        "assertions": {
+          "answer_stored": true,
+          "expected_agents_invoked": true,
+          "forecaster_parsed_and_simulated": true,
+          "intent_affordability": true,
+          "min_steps": true,
+          "run_recorded": true,
+          "scenario_comparison_in_answer": true
+        },
+        "case": "ORC-C015",
+        "checks": [
+          "ORC-9"
+        ],
+        "llm_calls": 3,
+        "note": "",
+        "status": "pass",
+        "steps": 10
+      },
+      {
+        "agents": [
+          "coordinator",
+          "forecaster",
+          "advisor",
+          "verifier"
+        ],
+        "assertions": {
+          "answer_stored": true,
+          "expected_agents_invoked": true,
+          "forecaster_parsed_and_simulated": true,
+          "intent_affordability": true,
+          "min_steps": true,
+          "run_recorded": true,
+          "scenario_comparison_in_answer": true
+        },
+        "case": "ORC-C016",
+        "checks": [
+          "ORC-9"
+        ],
+        "llm_calls": 4,
+        "note": "",
+        "status": "pass",
+        "steps": 11
+      },
+      {
+        "agents": [
+          "coordinator",
+          "forecaster",
+          "advisor",
+          "verifier"
+        ],
+        "assertions": {
+          "answer_stored": true,
+          "expected_agents_invoked": true,
+          "forecaster_parsed_and_simulated": true,
+          "intent_affordability": true,
+          "min_steps": true,
+          "run_recorded": true,
+          "scenario_comparison_in_answer": true
+        },
+        "case": "ORC-C017",
+        "checks": [
+          "ORC-9"
+        ],
+        "llm_calls": 4,
+        "note": "",
+        "status": "pass",
+        "steps": 10
+      },
+      {
+        "agents": [
+          "coordinator"
+        ],
+        "assertions": {
+          "clarifying_question": true,
+          "expected_agents_invoked": true,
+          "min_steps": true,
+          "run_recorded": true
+        },
+        "case": "ORC-C018",
+        "checks": [
+          "ORC-9"
+        ],
+        "llm_calls": 1,
+        "note": "",
+        "status": "pass",
+        "steps": 6
+      },
+      {
+        "agents": [
+          "coordinator",
+          "analyst"
+        ],
+        "assertions": {
+          "answer_stored": true,
+          "expected_agents_invoked": true,
+          "min_steps": true,
+          "run_recorded": true
+        },
+        "case": "ORC-C019",
+        "checks": [
+          "ORC-2"
+        ],
+        "llm_calls": 2,
+        "note": "",
+        "status": "pass",
+        "steps": 8
+      },
+      {
+        "agents": [
+          "coordinator",
+          "ledger"
+        ],
+        "assertions": {
+          "answer_stored": true,
+          "expected_agents_invoked": true,
+          "min_steps": true,
+          "run_recorded": true
+        },
+        "case": "ORC-C020",
+        "checks": [
+          "ORC-2"
+        ],
+        "llm_calls": 2,
+        "note": "",
+        "status": "pass",
+        "steps": 8
+      },
+      {
+        "agents": [
+          "coordinator"
+        ],
+        "assertions": {
+          "expected_agents_invoked": true,
+          "min_steps": true,
+          "refused": true,
+          "run_recorded": true
+        },
+        "case": "ORC-C021",
+        "checks": [
+          "ORC-2"
+        ],
+        "llm_calls": 0,
+        "note": "",
+        "status": "pass",
+        "steps": 6
+      },
+      {
+        "agents": [
+          "coordinator",
+          "analyst"
+        ],
+        "assertions": {
+          "min_steps": true,
+          "retried_then_succeeded": true,
+          "run_completed_with_an_answer": true,
+          "run_recorded": true
+        },
+        "case": "ORC-C022",
+        "checks": [
+          "ORC-6"
+        ],
+        "llm_calls": 1,
+        "note": "scripted transport (fault injection)",
+        "status": "pass",
+        "steps": 8
+      },
+      {
+        "agents": [
+          "coordinator"
+        ],
+        "assertions": {
+          "min_steps": true,
+          "narrative_fallback": true,
+          "one_repair_then_degraded": true,
+          "run_completed_with_an_answer": true,
+          "run_recorded": true
+        },
+        "case": "ORC-C023",
+        "checks": [
+          "ORC-7"
+        ],
+        "llm_calls": 2,
+        "note": "scripted transport (fault injection)",
+        "status": "pass",
+        "steps": 5
+      },
+      {
+        "agents": [
+          "coordinator",
+          "analyst",
+          "forecaster",
+          "advisor"
+        ],
+        "assertions": {
+          "deterministic_answer_returned": true,
+          "min_steps": true,
+          "partial_with_audit": true,
+          "run_recorded": true,
+          "within_budget": true
+        },
+        "case": "ORC-C024",
+        "checks": [
+          "ORC-10"
+        ],
+        "llm_calls": 3,
+        "note": "ORC-10 checked as docs/09 defines it (agent list not asserted)",
+        "status": "pass",
+        "steps": 12
+      },
+      {
+        "agents": [],
+        "assertions": {},
+        "case": "ORC-C025",
+        "checks": [
+          "ORC-11"
+        ],
+        "llm_calls": 0,
+        "note": "the scheduled digest (PRO-01/PRO-03) is not built: its graph nodes are slots",
+        "status": "not_measured",
+        "steps": 0
+      },
+      {
+        "agents": [
+          "coordinator",
+          "ledger",
+          "analyst",
+          "forecaster",
+          "advisor",
+          "verifier"
+        ],
+        "assertions": {
+          "briefing_step_reached": true,
+          "expected_agents_invoked": true,
+          "full_run_inside_guard": true,
+          "min_steps": true,
+          "no_blocked_attempts_in_normal_run": true,
+          "other_host_fails_the_run": true,
+          "route_table_workflow": true,
+          "routed_by_table_with_no_coordinator_llm_call": true,
+          "run_recorded": true,
+          "steps_follow_route_table": true,
+          "tracing_off": true
+        },
+        "case": "ORC-C027",
+        "checks": [
+          "ORC-13"
+        ],
+        "llm_calls": 7,
+        "note": "",
+        "status": "pass",
+        "steps": 8
+      },
+      {
+        "agents": [
+          "ledger"
+        ],
+        "assertions": {
+          "committed_after_confirmation": true,
+          "ledger_proposed_profile": true,
+          "needs_user_input": true,
+          "reused_with_no_model_call": true
+        },
+        "case": "ORC-C028",
+        "checks": [
+          "ORC-15"
+        ],
+        "llm_calls": 1,
+        "note": "",
+        "status": "pass",
+        "steps": 1
+      },
+      {
+        "agents": [],
+        "assertions": {},
+        "case": "ORC-C029",
+        "checks": [
+          "ORC-14"
+        ],
+        "llm_calls": 0,
+        "note": "the PDF importer (Stage 4) is not built",
+        "status": "not_measured",
+        "steps": 0
+      },
+      {
+        "agents": [
+          "coordinator"
+        ],
+        "assertions": {
+          "answer_stored": true,
+          "expected_agents_invoked": true,
+          "min_steps": true,
+          "run_recorded": true
+        },
+        "case": "ORC-C030",
+        "checks": [
+          "ORC-2"
+        ],
+        "llm_calls": 2,
+        "note": "",
+        "status": "pass",
+        "steps": 7
+      },
+      {
+        "agents": [
+          "coordinator",
+          "advisor",
+          "verifier"
+        ],
+        "assertions": {
+          "answer_says_followup_pending": true,
+          "deferred_not_withdrawn": true,
+          "expected_agents_invoked": true,
+          "followup_answer_names_the_answer": true,
+          "followup_in_same_thread": true,
+          "followup_revised_and_verified": true,
+          "followup_run_succeeded": true,
+          "min_steps": true,
+          "pending_answer_not_cached": true,
+          "run_recorded": true
+        },
+        "case": "ORC-C031",
+        "checks": [
+          "ORC-16"
+        ],
+        "llm_calls": 6,
+        "note": "follow-up approved a recommendation (scripted judge: stub)",
+        "status": "pass",
+        "steps": 9
+      },
+      {
+        "agents": [],
+        "assertions": {
+          "snapshot_reloaded": true,
+          "zero_agent_steps": true
+        },
+        "case": "ORC-C026",
+        "checks": [
+          "ORC-12"
+        ],
+        "llm_calls": 0,
+        "note": "",
+        "status": "pass",
+        "steps": 0
+      }
+    ],
+    "distinctness": {
+      "prompt_versions_per_agent": {
+        "advisor": [
+          "4e10aa15a5eb"
+        ],
+        "analyst": [
+          "e926023d386c"
+        ],
+        "coordinator": [
+          "f5b3a20be4fc",
+          "ffef22763a24"
+        ],
+        "forecaster": [
+          "90898f2dafbb"
+        ],
+        "ledger": [
+          "46aa0e745f08",
+          "e6011cde953f"
+        ],
+        "verifier": [
+          "63cf6459f007"
+        ]
+      },
+      "prompts_shared_between_agents": [],
+      "steps_attributed_to_their_registered_agent": true,
+      "tool_calls_outside_allow_list": []
+    },
+    "mode": "replay",
+    "seconds": 34.3
+  },
+  "name": "orchestration",
+  "notes": [
+    "replay mode; 0 case(s) not recorded, 2 not measured (feature not built).",
+    "ORC-4/5 stub only the Advisor (steps carry the model `stub/advisor`); the Verifier, its judge and everything else are real. ORC-6/7 run on a scripted transport.",
+    "Ingestion cases run on the seeded demo (the export named in the case is already imported); the Home briefing slot is reached but the briefing is PRO-01 (not built).",
+    "`daily_0630` is the 06:30 cron slot, routed as the `daily_refresh` system event.",
+    "ORC-10 (budget, ORC-C024) is asserted as docs/09 defines it: the run stops gracefully with run_budget_exceeded, a partial flag and a deterministic answer. The case also lists all five agents, which a 3-call budget cannot always reach (a node may need a repair call); that list is not asserted, and the case file is unchanged."
+  ],
+  "suite": "E-ORC",
+  "targets": [
+    {
+      "dataset": "31 cases",
+      "gated": false,
+      "id": "ORC-pass",
+      "label": "Case pass rate (all 30; not recorded or not built count as unmet)",
+      "met": false,
+      "not_gated_because": "includes cases for features of later stages not built yet",
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 0.9355
+    },
+    {
+      "dataset": "29 cases",
+      "id": "ORC-pass-built",
+      "label": "Case pass rate (cases whose feature is built; not recorded counts as unmet)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "29 cases",
+      "id": "ORC-pass-measured",
+      "label": "Case pass rate (cases that ran)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "coverage table",
+      "id": "ORC-2",
+      "label": "All six node types reached",
+      "met": true,
+      "stage1": true,
+      "target": "== 1",
+      "value": 1
+    },
+    {
+      "dataset": "all runs",
+      "id": "ORC-3",
+      "label": "Agents distinct (prompts, tool allow-lists)",
+      "met": true,
+      "stage1": true,
+      "target": "== 1",
+      "value": 1
+    }
+  ]
+}

@@ -350,19 +350,24 @@ def _conversation(case: dict[str, Any], session: Any, mesh: Any, result: CaseRes
 
 
 def _deferred(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult) -> None:
-    """ORC-16 (docs/06 §13): a question whose rejected round has no time left for a revision is
-    deferred, not dropped. The stub makes "a revision fits" false (latency is not reproducible in
-    replay); everything else is the product path: the answer goes out with `followup_pending`
-    and is not cached, then the follow-up run (as the API starts it) revises, verifies and adds a
-    follow-up answer to the same thread."""
+    """ORC-16 (docs/06 §13): a question whose first round is wholly rejected and has no time left
+    for a revision is deferred, not dropped. Two stubs, both labelled: "a revision fits" is false
+    (latency is not reproducible in replay), and the judge fails every draft in the question and
+    passes them in the follow-up (with the better first drafts, a wholly rejected first round is
+    rare in recordings). Understand, the Forecaster and the Advisor are real. The answer goes out
+    with `followup_pending` and is not cached; the follow-up run (as the API starts it) revises,
+    verifies and adds a follow-up answer to the same thread."""
     from backend.agents import specialists
     from backend.agents.runner import run_followup
 
+    stubs = case.get("stubs") or {}
+    scripted = stubs.get("judge") == "reject_then_pass"
     saved = specialists.REVISION_ROUND_MS
-    if (case.get("stubs") or {}).get("revision_time") == "none":
+    if stubs.get("revision_time") == "none":
         specialists.REVISION_ROUND_MS = 10**9
     try:
-        store, out = _ask(case, session, mesh, result)
+        asked_mesh = StubMesh(mesh, judge_pass=False) if scripted else mesh
+        store, out = _ask(case, session, asked_mesh, result)
     finally:
         specialists.REVISION_ROUND_MS = saved
     steps = _common(result, case, store, out)
@@ -372,7 +377,7 @@ def _deferred(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult)
     result.assertions["answer_says_followup_pending"] = bool((first or {}).get("followup_pending"))
     key = out.state.get("cache_key")
     result.assertions["pending_answer_not_cached"] = not key or store.cache_get(str(key)) is None
-    follow = run_followup(store, out, mesh=mesh)
+    follow = run_followup(store, out, mesh=StubMesh(mesh, judge_pass=True) if scripted else mesh)
     ran = follow is not None and follow.status == "succeeded"
     result.assertions["followup_run_succeeded"] = ran
     if follow is None:
@@ -390,7 +395,8 @@ def _deferred(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult)
     replies = [msg.response_id for msg in store.messages(str(thread)) if msg.role == "assistant"]
     result.assertions["followup_in_same_thread"] = replies == [out.response_id, follow.response_id]
     approved = [s for s in after if s.node == "verify" and s.output.get("verdict") == "approve"]
-    result.note = "follow-up approved a recommendation" if approved else "follow-up: none passed"
+    outcome = "approved a recommendation" if approved else "none passed"
+    result.note = f"follow-up {outcome}" + (" (scripted judge: stub)" if scripted else "")
 
 
 def _scripted_mesh(mode: str) -> tuple[MeshClient, Any]:
