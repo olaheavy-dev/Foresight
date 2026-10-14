@@ -55,7 +55,9 @@ def test_candidates_are_deterministic() -> None:
 
 
 def _pairs() -> list[tuple[str, fd.CandidateSpec]]:
-    return [(f"fnd_{i}", s) for i, s in enumerate(_p1_specs()[:3])]
+    # P1 has two candidate findings; the third id (a repeat of the first spec) is the one discarded.
+    specs = _p1_specs()
+    return [(f"fnd_{i}", s) for i, s in enumerate((specs + specs)[:3])]
 
 
 def test_problems_flag_numerals_and_foreign_placeholders() -> None:

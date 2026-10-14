@@ -489,7 +489,7 @@ On P1, P2, P3, S8, S9, S10 and S11.
 **Matching rule:** a finding `f` matches an injected anomaly `a` iff `f.type ∈ a.expected_finding_types`, `f.subject = a.subject`, and the windows overlap ≥ 50%.
 
 - **Recall** on `*-base` and S4. **Precision** over findings with severity ≥ `watch`.
-- **False positives per persona-month on `*-clean`**: the headline "doesn't cry wolf" metric.
+- **False positives per persona-month on `*-clean`**: the headline "doesn't cry wolf" metric. Scored over every monthly origin of the clean twins with a full six-window baseline behind it (18 persona-months for P1 + P2), not only the last month. Since gen-1.1.0 (owner-approved 14 Oct 2026) the P1/P2 twins keep each discretionary category's 30-day totals within ±5% of its usual month, so any two months differ by less than the 15% materiality floor and every spike found in a clean twin is a detector false positive. This is smoother than real spending: the metric shows no false alarms on *stable* behaviour; realistic noise is measured on the gen-1.0.0 twins (`07` §6.6).
 - **Magnitude error** for surges (e.g. P1 food delivery: truth +41%) in percentage points.
 - **Detection latency** (day-by-day replay).
 - **One-offs are not anomalies of behaviour**: the £650 car repair (14 Oct) is shown as a one-off, never as a "spending surge" (hard test).

@@ -426,7 +426,7 @@ def test_a_rejected_draft_the_advisor_drops_is_withdrawn(p1: AgentStore) -> None
 
     def round2(kwargs: dict[str, Any]) -> Any:
         d = _data(kwargs)  # the rejected "out" draft is not revised; a new one replaces it
-        return json_ok({"proposals": [_cap(d, "transport.taxi", 0.9, "taxi")]})
+        return json_ok({"proposals": [_cap(d, "shopping.general", 0.7, "general")]})
 
     out, _ = _run(p1, round1, JUDGE_PASS, round2, JUDGE_PASS)
     recs = {
