@@ -64,6 +64,7 @@ from backend.app.ui_contracts.blocks import (
 )
 from backend.app.ui_contracts.money import money_value
 from backend.app.ui_contracts.primitives import (
+    ULID,
     AskAction,
     AskPayload,
     DateRange,
@@ -1283,6 +1284,31 @@ def evidence_line(store: Any, run_id: str) -> EvidenceLine:
 # --------------------------------------------------------------------------- envelopes
 
 
+_REF_ID = re.compile(rf"^(rec|fnd)_{ULID}$")
+
+
+def block_refs(blocks: Iterable[Any]) -> tuple[list[str], list[str]]:
+    """The recommendation and finding ids every block names (docs/08 §4.2: provenance is the
+    union of all refs): `recommendation_id` / `finding_id` fields and `rec_`/`fnd_` refs."""
+    found: dict[str, set[str]] = {"rec": set(), "fnd": set()}
+
+    def walk(value: Any) -> None:
+        if isinstance(value, dict):
+            for v in value.values():
+                walk(v)
+        elif isinstance(value, list):
+            for v in value:
+                walk(v)
+        elif isinstance(value, str):
+            ident = value.split("#", 1)[0]
+            if _REF_ID.match(ident):
+                found[ident[:3]].add(ident)
+
+    for block in blocks:
+        walk(block.model_dump(mode="json") if hasattr(block, "model_dump") else block)
+    return sorted(found["rec"]), sorted(found["fnd"])
+
+
 def envelope(
     *,
     ctx: WorkspaceContext,
@@ -1299,6 +1325,7 @@ def envelope(
     ws = ctx.workspace
     intent = (state.get("intent") or {}).get("intent")
     question = (state.get("intent") or {}).get("standalone_question") or state.get("user_message")
+    recommendations, findings = block_refs(blocks)
     return AgentResponse(
         schema_version="agent_response/1",
         response_id=response_id,
@@ -1320,7 +1347,11 @@ def envelope(
         blocks=blocks,
         evidence_line=evidence,
         follow_ups=follow_ups or [],
-        provenance=ResponseProvenance(calc_ids=sorted(set(calc_ids))),
+        provenance=ResponseProvenance(
+            calc_ids=sorted(set(calc_ids)),
+            recommendation_ids=recommendations,
+            finding_ids=findings,
+        ),
         followup_pending=bool(state.get("followup_pending"))
         and state.get("workflow", "conversation") == "conversation",
         follow_up_of=state.get("follow_up_of"),

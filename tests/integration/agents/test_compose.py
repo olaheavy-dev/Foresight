@@ -502,6 +502,8 @@ def test_a_card_that_narrows_but_does_not_close_the_gap_says_so_and_signposts_he
     )  # fmt: skip
     body = _body(p1, out.response_id)
     card = next(b for b in body["blocks"] if b["type"] == "InterventionCard")
+    # docs/08 §4.2: provenance is the union of every ref, so the shown recommendation is in it.
+    assert card["recommendation_id"] in body["provenance"]["recommendation_ids"]
     line = "".join(
         s.get("text") or s.get("value", {}).get("display", "") for s in card["rationale_segments"]
     )
