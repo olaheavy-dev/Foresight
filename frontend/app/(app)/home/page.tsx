@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import { firstName, greeting } from "@/components/home/greeting";
 import { ForecastCard } from "@/components/home/ForecastCard";
 import { HomeMetrics } from "@/components/home/HomeMetrics";
@@ -6,6 +8,8 @@ import { NotShipped, Unavailable } from "@/components/ui/NotShipped";
 import { fetchForecast } from "@/lib/api";
 import { isShipped } from "@/lib/flags";
 import { loadShell } from "@/lib/server";
+
+type Options = Awaited<ReturnType<typeof loadShell>>["options"];
 
 export const metadata = { title: "Home · Foresight" };
 export const dynamic = "force-dynamic";
@@ -30,7 +34,6 @@ export default async function HomePage() {
   }
 
   const forecastOn = isShipped(features, "forecast");
-  const forecast = forecastOn ? await fetchForecast("mine", options) : null;
   const { part, date } = greeting(new Date(), profile.timezone, profile.locale);
 
   return (
@@ -59,19 +62,11 @@ export default async function HomePage() {
             detail="The forecast is switched on once its backtest meets its accuracy targets. Until then no forecast figures are shown here."
           />
         </article>
-      ) : forecast ? (
-        <>
-          <HomeMetrics forecast={forecast} />
-          <section className="row-2">
-            <ForecastCard forecast={forecast} />
-            <article className="card briefing" aria-labelledby="brief-h">
-              <CardHead icon="filetext" title="Financial briefing" titleId="brief-h" />
-              <NotShipped title="Briefing" compact detail="Written from your data each morning once the agents ship." />
-            </article>
-          </section>
-        </>
       ) : (
-        <Unavailable what="Your forecast" />
+        // The page shell renders at once; the forecast streams in when it arrives (docs/05 A5).
+        <Suspense fallback={<ForecastLoading />}>
+          <HomeForecast options={options} />
+        </Suspense>
       )}
 
       <section className="card insights" aria-labelledby="ins-h">
@@ -81,5 +76,41 @@ export default async function HomePage() {
         <NotShipped title="Proactive insights" compact detail="Each insight will come with one checked action." />
       </section>
     </main>
+  );
+}
+
+async function HomeForecast({ options }: { options: Options }) {
+  const forecast = await fetchForecast("mine", options);
+  if (!forecast) return <Unavailable what="Your forecast" />;
+  return (
+    <>
+      <HomeMetrics forecast={forecast} />
+      <section className="row-2">
+        <ForecastCard forecast={forecast} />
+        <article className="card briefing" aria-labelledby="brief-h">
+          <CardHead icon="filetext" title="Financial briefing" titleId="brief-h" />
+          <NotShipped title="Briefing" compact detail="Written from your data each morning once the agents ship." />
+        </article>
+      </section>
+    </>
+  );
+}
+
+function ForecastLoading() {
+  return (
+    <div className="home-loading" aria-busy="true">
+      <p className="sr-only" role="status">
+        Loading your forecast
+      </p>
+      <div className="metrics" aria-hidden="true">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="card skel metric-skel" />
+        ))}
+      </div>
+      <div className="row-2" aria-hidden="true">
+        <div className="card skel forecast-skel" />
+        <div className="card skel forecast-skel" />
+      </div>
+    </div>
   );
 }
