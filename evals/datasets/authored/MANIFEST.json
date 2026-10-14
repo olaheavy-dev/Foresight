@@ -25,8 +25,8 @@
       "sha256": "02a0791b52cc64d01dcc035d9b585d7c255d35643112b7db7733b723d871ce2d"
     },
     "orchestration_cases.jsonl": {
-      "rows": 30,
-      "sha256": "c86017cad44ccdf121d0166f3691639c0a1fc6c3f7305e6dee2f72e957d7b019"
+      "rows": 31,
+      "sha256": "321a659cc433fdf1f223f663972dc8fa78d8c939b9fcef1fb4d138e79a725e8b"
     },
     "scenario_prompts.jsonl": {
       "rows": 80,

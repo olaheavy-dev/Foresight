@@ -349,6 +349,50 @@ def _conversation(case: dict[str, Any], session: Any, mesh: Any, result: CaseRes
         )
 
 
+def _deferred(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult) -> None:
+    """ORC-16 (docs/06 §13): a question whose rejected round has no time left for a revision is
+    deferred, not dropped. The stub makes "a revision fits" false (latency is not reproducible in
+    replay); everything else is the product path: the answer goes out with `followup_pending`
+    and is not cached, then the follow-up run (as the API starts it) revises, verifies and adds a
+    follow-up answer to the same thread."""
+    from backend.agents import specialists
+    from backend.agents.runner import run_followup
+
+    saved = specialists.REVISION_ROUND_MS
+    if (case.get("stubs") or {}).get("revision_time") == "none":
+        specialists.REVISION_ROUND_MS = 10**9
+    try:
+        store, out = _ask(case, session, mesh, result)
+    finally:
+        specialists.REVISION_ROUND_MS = saved
+    steps = _common(result, case, store, out)
+    nodes = [s.node for s in steps]
+    result.assertions["deferred_not_withdrawn"] = "defer" in nodes and "withdraw" not in nodes
+    first = store.response(out.response_id).body if out.response_id else {}  # type: ignore[union-attr]
+    result.assertions["answer_says_followup_pending"] = bool((first or {}).get("followup_pending"))
+    key = out.state.get("cache_key")
+    result.assertions["pending_answer_not_cached"] = not key or store.cache_get(str(key)) is None
+    follow = run_followup(store, out, mesh=mesh)
+    ran = follow is not None and follow.status == "succeeded"
+    result.assertions["followup_run_succeeded"] = ran
+    if follow is None:
+        return
+    after = _record(result, store, follow.run_id)
+    after_nodes = [s.node for s in after]
+    result.assertions["followup_revised_and_verified"] = (
+        "revise" in after_nodes and "advise" in after_nodes and "verify" in after_nodes
+    )
+    second = store.response(follow.response_id).body if follow.response_id else {}  # type: ignore[union-attr]
+    result.assertions["followup_answer_names_the_answer"] = (second or {}).get(
+        "follow_up_of"
+    ) == out.response_id
+    thread = out.state.get("thread_id")
+    replies = [msg.response_id for msg in store.messages(str(thread)) if msg.role == "assistant"]
+    result.assertions["followup_in_same_thread"] = replies == [out.response_id, follow.response_id]
+    approved = [s for s in after if s.node == "verify" and s.output.get("verdict") == "approve"]
+    result.note = "follow-up approved a recommendation" if approved else "follow-up: none passed"
+
+
 def _scripted_mesh(mode: str) -> tuple[MeshClient, Any]:
     """A Mesh client on a scripted transport (no network) for the fault-injection cases."""
     from tests.unit.mesh.fakes import (
@@ -516,6 +560,8 @@ def _run_case(case: dict[str, Any], factory: Any, mesh: Any) -> CaseResult:
                 _format_profile(case, session, mesh, result)
             elif "ORC-12" in case["checks"]:
                 _snapshot(case, session, result)
+            elif "ORC-16" in case["checks"]:
+                _deferred(case, session, mesh, result)
             elif (case.get("stubs") or {}).get("mesh"):
                 _fault(case, session, result)
             elif case["workflow"] in ("ingestion", "risk_detection"):
