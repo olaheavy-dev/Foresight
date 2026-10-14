@@ -117,7 +117,6 @@
 .ws-body .ai-notice .links { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); margin-top: var(--space-1); }
 .ws-body .ai-notice .links a { display: inline-flex; align-items: center; min-height: 32px; font-weight: var(--font-weight-medium); color: var(--color-text-link); }
 .ws-body .ai-notice.soft { padding: var(--space-2) var(--space-3); font-size: var(--font-size-xs); color: var(--color-text-secondary); background: var(--color-bg-tertiary); }
-.ws-body .welcome-paused { margin: 0 0 var(--space-4); padding: var(--space-2) var(--space-4); border-radius: var(--border-radius-full); background: var(--color-status-info-tint); font-size: var(--font-size-sm); }
 .ws-body a.starter { text-decoration: none; }
 
 /* ---- Analysis canvas ---- */

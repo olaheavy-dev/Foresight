@@ -70,16 +70,19 @@ export default async function HomePage() {
         </Suspense>
       )}
 
-      <section className="card insights" aria-labelledby="ins-h">
-        <div className="ins-head">
-          <CardHead
-            icon="sparkles"
-            title="Proactive insights"
-            titleId="ins-h"
-            sub="Things we’ve noticed, and suggested next steps."
-          />
+      {/* Until the briefing and insights ship, one compact card says what comes next (the
+          forecast keeps the full width instead of sharing it with an empty column). */}
+      <section className="card coming-next" aria-labelledby="next-h">
+        <CardHead
+          icon="sparkles"
+          title="Coming next"
+          titleId="next-h"
+          sub="Written from your data once each passes its evaluation."
+        />
+        <div className="coming-grid">
+          <NotShipped title="Financial briefing" compact detail="A short morning summary of what changed." />
+          <NotShipped title="Proactive insights" compact detail="Each insight will come with one checked action." />
         </div>
-        <NotShipped title="Proactive insights" compact detail="Each insight will come with one checked action." />
       </section>
     </main>
   );
@@ -91,12 +94,8 @@ async function HomeForecast({ options }: { options: Options }) {
   return (
     <>
       <HomeMetrics forecast={forecast} />
-      <section className="row-2">
+      <section className="row-1">
         <ForecastCard forecast={forecast} />
-        <article className="card briefing" aria-labelledby="brief-h">
-          <CardHead icon="filetext" title="Financial briefing" titleId="brief-h" />
-          <NotShipped title="Briefing" compact detail="Written from your data each morning once the agents ship." />
-        </article>
       </section>
     </>
   );
@@ -109,12 +108,11 @@ function ForecastLoading() {
         Loading your forecast
       </p>
       <div className="metrics" aria-hidden="true">
-        {[0, 1, 2, 3].map((i) => (
+        {[0, 1, 2].map((i) => (
           <div key={i} className="card skel metric-skel" />
         ))}
       </div>
-      <div className="row-2" aria-hidden="true">
-        <div className="card skel forecast-skel" />
+      <div className="row-1" aria-hidden="true">
         <div className="card skel forecast-skel" />
       </div>
     </div>
