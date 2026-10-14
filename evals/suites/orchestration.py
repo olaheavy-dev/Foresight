@@ -22,6 +22,8 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
 
+from sqlalchemy import delete
+
 from backend.agents.budget import Budget
 from backend.agents.graph import default_nodes
 from backend.agents.routes import SYSTEM_EVENTS, WORKFLOW_ROUTES
@@ -290,6 +292,11 @@ def _ask(
     budget: Budget | None = None,
 ) -> tuple[AgentStore, RunOutcome]:
     store = _store(session, PERSONA[case["dataset"]])
+    # Each case checks its own route: an earlier case's answer to the same intent and slots must
+    # not answer it from the exact answer cache (the cache is measured by E-CTX CTX-4/5).
+    session.execute(
+        delete(m.AnswerCacheEntry).where(m.AnswerCacheEntry.workspace_id == store.ctx.workspace_id)
+    )
     thread = store.create_thread()
     session.commit()
     out = ask(
