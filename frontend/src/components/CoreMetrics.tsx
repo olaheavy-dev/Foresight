@@ -34,7 +34,7 @@ const mark = (status: string) => (status === "pass" ? "passes" : status === "fai
 
 export function CoreMetrics({ data }: { data: CoreMetricsData }) {
   return (
-    <section aria-labelledby="core-heading">
+    <section className="core-metrics" aria-labelledby="core-heading">
       <h2 id="core-heading" className="kicker">
         Core metrics: cost · accuracy · latency
       </h2>
@@ -42,63 +42,67 @@ export function CoreMetrics({ data }: { data: CoreMetricsData }) {
         From evaluation run {data.run_id ?? "—"}. Latency comes from recorded live model calls. Cost and latency checks:{" "}
         {mark(data.gate)}.
       </p>
-      <table className="data">
-        <caption className="sr-only">Models by tier</caption>
-        <thead>
-          <tr>
-            <th scope="col">Tier</th>
-            <th scope="col">Model</th>
-            <th scope="col">Accuracy checks</th>
-            <th scope="col">Cost per answer</th>
-            <th scope="col">Call latency p50 / p95</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.tiers.map((t) => (
-            <tr key={t.tier}>
-              <td className="lead">{t.tier}</td>
-              <td data-label="Model">{t.models.join(", ") || "—"}</td>
-              <td data-label="Accuracy checks">
-                {Object.entries(t.accuracy_gates)
-                  .map(([suite, status]) => `${suite} ${mark(status)}`)
-                  .join(", ") || "—"}
-              </td>
-              <td data-label="Cost per answer">{usd(t.cost_per_answer_usd)}</td>
-              <td data-label="Call latency p50 / p95">
-                {sec(t.call_latency_p50_s)} / {sec(t.call_latency_p95_s)}
-              </td>
+      <div className="scroll-x" tabIndex={0} role="region" aria-label="Models by tier">
+        <table className="data">
+          <caption className="sr-only">Models by tier</caption>
+          <thead>
+            <tr>
+              <th scope="col">Tier</th>
+              <th scope="col">Model</th>
+              <th scope="col">Accuracy checks</th>
+              <th scope="col">Cost per answer</th>
+              <th scope="col">Call latency p50 / p95</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <table className="data">
-        <caption className="sr-only">Cost and latency per answer</caption>
-        <thead>
-          <tr>
-            <th scope="col">Answers</th>
-            <th scope="col">Count</th>
-            <th scope="col">Cost mean · p95</th>
-            <th scope="col">Latency p50 · p95</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.answers.map((a) => (
-            <tr key={a.type}>
-              <td className="lead">{a.label}</td>
-              <td data-label="Count">{a.count ?? "—"}</td>
-              <td data-label="Cost mean · p95">
-                {usd(a.cost_mean_usd)} · {usd(a.cost_p95_usd)}
-              </td>
-              <td data-label="Latency p50 · p95">
-                {sec(a.latency_p50_s)} · {sec(a.latency_p95_s)}
-                {a.latency_p50_s === null && a.latency_estimated_p50_s != null
-                  ? ` (estimate ${sec(a.latency_estimated_p50_s)} · ${sec(a.latency_estimated_p95_s ?? null)})`
-                  : ""}
-              </td>
+          </thead>
+          <tbody>
+            {data.tiers.map((t) => (
+              <tr key={t.tier}>
+                <td className="lead">{t.tier}</td>
+                <td data-label="Model">{t.models.join(", ") || "—"}</td>
+                <td data-label="Accuracy checks">
+                  {Object.entries(t.accuracy_gates)
+                    .map(([suite, status]) => `${suite} ${mark(status)}`)
+                    .join(", ") || "—"}
+                </td>
+                <td data-label="Cost per answer">{usd(t.cost_per_answer_usd)}</td>
+                <td data-label="Call latency p50 / p95">
+                  {sec(t.call_latency_p50_s)} / {sec(t.call_latency_p95_s)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="scroll-x" tabIndex={0} role="region" aria-label="Cost and latency per answer">
+        <table className="data">
+          <caption className="sr-only">Cost and latency per answer</caption>
+          <thead>
+            <tr>
+              <th scope="col">Answers</th>
+              <th scope="col">Count</th>
+              <th scope="col">Cost mean · p95</th>
+              <th scope="col">Latency p50 · p95</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.answers.map((a) => (
+              <tr key={a.type}>
+                <td className="lead">{a.label}</td>
+                <td data-label="Count">{a.count ?? "—"}</td>
+                <td data-label="Cost mean · p95">
+                  {usd(a.cost_mean_usd)} · {usd(a.cost_p95_usd)}
+                </td>
+                <td data-label="Latency p50 · p95">
+                  {sec(a.latency_p50_s)} · {sec(a.latency_p95_s)}
+                  {a.latency_p50_s === null && a.latency_estimated_p50_s != null
+                    ? ` (estimate ${sec(a.latency_estimated_p50_s)} · ${sec(a.latency_estimated_p95_s ?? null)})`
+                    : ""}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }

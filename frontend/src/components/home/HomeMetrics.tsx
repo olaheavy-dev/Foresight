@@ -86,15 +86,6 @@ export function HomeMetrics({ forecast }: { forecast: ForecastView }) {
           )}
         </div>
       </div>
-
-      <div className="card metric muted-card">
-        <IconChip icon="bulb" tone="grey" />
-        <div>
-          <p className="m-label">Insights to review</p>
-          <p className="m-value serif">Not shipped yet</p>
-          <p className="m-note">Arrives with proactive insights</p>
-        </div>
-      </div>
     </section>
   );
 }

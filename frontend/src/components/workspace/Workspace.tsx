@@ -967,7 +967,6 @@ function Welcome({ onAsk, paused, onEarlier }: { onAsk: (q: string) => void; pau
         <p className="welcome-sub">
           Answers come from your transactions and the forecast engine — every number is computed, then checked.
         </p>
-        {paused ? <p className="welcome-paused">{PAUSED}</p> : null}
         <ul className="starters" aria-label={paused ? "What still works" : "Start with a question"}>
           {paused
             ? STILL_WORKS.map((s) => (
