@@ -1,0 +1,2794 @@
+{
+  "duration_s": 0.0,
+  "error": null,
+  "metrics": {
+    "answers": [
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002656,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.000277,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.020388,
+            "latency_ms": 10447,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.003104,
+            "latency_ms": 4895,
+            "model": "gpt-6.1-sol",
+            "tier": "verifier"
+          },
+          {
+            "cost_usd": 0.004918,
+            "latency_ms": 411,
+            "model": "openai/gpt-6.1-sol",
+            "tier": "verifier"
+          },
+          {
+            "cost_usd": 0.024934,
+            "latency_ms": 11473,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.003382,
+            "latency_ms": 5538,
+            "model": "gpt-6.1-sol",
+            "tier": "verifier"
+          },
+          {
+            "cost_usd": 0.00308,
+            "latency_ms": 3799,
+            "model": "gpt-6.1-sol",
+            "tier": "verifier"
+          }
+        ],
+        "case": "UIQ-001",
+        "cost_usd": 0.060349,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 47,
+        "intent": "affordability",
+        "kind": "advice",
+        "model_calls": 8,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "forecaster",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 10447,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 2,
+            "model_ms": 4895,
+            "node": "verify",
+            "tier": "verifier"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 11473,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 2,
+            "model_ms": 5538,
+            "node": "verify",
+            "tier": "verifier"
+          }
+        ],
+        "wall_ms": 2517
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002852,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.020294,
+            "latency_ms": 8601,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.025072,
+            "latency_ms": 11136,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.022764,
+            "latency_ms": 10103,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          }
+        ],
+        "case": "UIQ-002",
+        "cost_usd": 0.068415,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "affordability",
+        "kind": "advice",
+        "model_calls": 4,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 8601,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 11136,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 10103,
+            "node": "advise",
+            "tier": "reasoning"
+          }
+        ],
+        "wall_ms": 3120
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0003252,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0003051,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.019936,
+            "latency_ms": 8773,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.025036,
+            "latency_ms": 11739,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.003196,
+            "latency_ms": 4145,
+            "model": "gpt-6.1-sol",
+            "tier": "verifier"
+          }
+        ],
+        "case": "UIQ-003",
+        "cost_usd": 0.048798,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "affordability",
+        "kind": "advice",
+        "model_calls": 5,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "forecaster",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 8773,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 11739,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 4145,
+            "node": "verify",
+            "tier": "verifier"
+          }
+        ],
+        "wall_ms": 2407
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002735,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0003779,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.021954,
+            "latency_ms": 10453,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.023946,
+            "latency_ms": 11508,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          }
+        ],
+        "case": "UIQ-004",
+        "cost_usd": 0.046551,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "affordability",
+        "kind": "advice",
+        "model_calls": 4,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "forecaster",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 10453,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 11508,
+            "node": "advise",
+            "tier": "reasoning"
+          }
+        ],
+        "wall_ms": 2449
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002786,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.021558,
+            "latency_ms": 9730,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.025094,
+            "latency_ms": 11343,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.022896,
+            "latency_ms": 10138,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          }
+        ],
+        "case": "UIQ-005",
+        "cost_usd": 0.069827,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "affordability",
+        "kind": "advice",
+        "model_calls": 4,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 9730,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 11343,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 10138,
+            "node": "advise",
+            "tier": "reasoning"
+          }
+        ],
+        "wall_ms": 3120
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002547,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0002631,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-006",
+        "cost_usd": 0.000518,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 17,
+        "intent": "scenario",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "forecaster",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 1095
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0003351,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.010174,
+            "latency_ms": null,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          }
+        ],
+        "case": "UIQ-007",
+        "cost_usd": 0.010509,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "scenario",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "forecaster",
+            "tier": "reasoning"
+          }
+        ],
+        "wall_ms": 1062
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0003337,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0004846,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-008",
+        "cost_usd": 0.000818,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "scenario",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "forecaster",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 1058
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002827,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-009",
+        "cost_usd": 0.000283,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 15,
+        "intent": "scenario",
+        "kind": "simple",
+        "model_calls": 1,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 33
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002453,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001322,
+            "latency_ms": 2576,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-010",
+        "cost_usd": 0.000378,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 15,
+        "intent": "spending_breakdown",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 2576,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 143
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002682,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001076,
+            "latency_ms": 1999,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-011",
+        "cost_usd": 0.000376,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 15,
+        "intent": "spending_breakdown",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 1999,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 81
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002626,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.000165,
+            "latency_ms": 10626,
+            "model": "openai/gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-012",
+        "cost_usd": 0.000428,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "spending_breakdown",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 10626,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 119
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002535,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.000133,
+            "latency_ms": 7144,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-013",
+        "cost_usd": 0.000387,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "spending_breakdown",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 7144,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 80
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002625,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001718,
+            "latency_ms": 3015,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-014",
+        "cost_usd": 0.000434,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "trend_or_change",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 3015,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 80
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002524,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001527,
+            "latency_ms": 2903,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-015",
+        "cost_usd": 0.000405,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "trend_or_change",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 2903,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 115
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002884,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001378,
+            "latency_ms": 2669,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-016",
+        "cost_usd": 0.000426,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "trend_or_change",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 2669,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 82
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002609,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001757,
+            "latency_ms": 4521,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-017",
+        "cost_usd": 0.000437,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 15,
+        "intent": "trend_or_change",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 4521,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 79
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002673,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001098,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-018",
+        "cost_usd": 0.000377,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 15,
+        "intent": "transaction_lookup",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 124
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002559,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001153,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-019",
+        "cost_usd": 0.000371,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "transaction_lookup",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 88
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002899,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001354,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-020",
+        "cost_usd": 0.000425,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "transaction_lookup",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 81
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002598,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001228,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-021",
+        "cost_usd": 0.000383,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 17,
+        "intent": "transaction_lookup",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 126
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002459,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001363,
+            "latency_ms": 7355,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-022",
+        "cost_usd": 0.000382,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "subscription_review",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 7355,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 80
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002464,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001353,
+            "latency_ms": 4029,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-023",
+        "cost_usd": 0.000382,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "subscription_review",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 4029,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 80
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002523,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001267,
+            "latency_ms": 2495,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-024",
+        "cost_usd": 0.000379,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 17,
+        "intent": "subscription_review",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 2495,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 119
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002766,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0002011,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-025",
+        "cost_usd": 0.000478,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "goal_status",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 91
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0004141,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001491,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-026",
+        "cost_usd": 0.000563,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "goal_status",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 129
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0003038,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-027",
+        "cost_usd": 0.000304,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "risk_check",
+        "kind": "simple",
+        "model_calls": 1,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 120
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002464,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-028",
+        "cost_usd": 0.000246,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "risk_check",
+        "kind": "simple",
+        "model_calls": 1,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 157
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002547,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-029",
+        "cost_usd": 0.000255,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "risk_check",
+        "kind": "simple",
+        "model_calls": 1,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 158
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002612,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.019084,
+            "latency_ms": 9011,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.022428,
+            "latency_ms": 10054,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.0001794,
+            "latency_ms": 4680,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-030",
+        "cost_usd": 0.041953,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "advice_request",
+        "kind": "advice",
+        "model_calls": 4,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 9011,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 10054,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 4680,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 1471
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0003965,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0183,
+            "latency_ms": 7712,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.023058,
+            "latency_ms": 10633,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.0001732,
+            "latency_ms": 456,
+            "model": "openai/gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-031",
+        "cost_usd": 0.041928,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 15,
+        "intent": "advice_request",
+        "kind": "advice",
+        "model_calls": 4,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 7712,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 10633,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 456,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 1525
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0003595,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.019278,
+            "latency_ms": 8396,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.023026,
+            "latency_ms": 12083,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.0001938,
+            "latency_ms": 443,
+            "model": "openai/gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-032",
+        "cost_usd": 0.042857,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "advice_request",
+        "kind": "advice",
+        "model_calls": 4,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 8396,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 12083,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 443,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 1469
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002736,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001983,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-033",
+        "cost_usd": 0.000472,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "explain_recommendation",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 70
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0003176,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0002099,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-034",
+        "cost_usd": 0.000527,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "explain_recommendation",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 105
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002549,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-035",
+        "cost_usd": 0.000255,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "explain_recommendation",
+        "kind": "simple",
+        "model_calls": 1,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 33
+      },
+      {
+        "calls": [],
+        "case": "UIQ-036",
+        "cost_usd": 0,
+        "degraded": false,
+        "e2e_ms": 29,
+        "failed_steps": [],
+        "first_step_ms": 17,
+        "intent": "smalltalk_or_out_of_scope",
+        "kind": "simple",
+        "model_calls": 0,
+        "overlap_ms": 0,
+        "steps": [],
+        "wall_ms": 29
+      },
+      {
+        "calls": [],
+        "case": "UIQ-037",
+        "cost_usd": 0,
+        "degraded": false,
+        "e2e_ms": 30,
+        "failed_steps": [],
+        "first_step_ms": 17,
+        "intent": "smalltalk_or_out_of_scope",
+        "kind": "simple",
+        "model_calls": 0,
+        "overlap_ms": 0,
+        "steps": [],
+        "wall_ms": 30
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002617,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-038",
+        "cost_usd": 0.000262,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 15,
+        "intent": "clarify",
+        "kind": "simple",
+        "model_calls": 1,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 32
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0003257,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-039",
+        "cost_usd": 0.000326,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 15,
+        "intent": "clarify",
+        "kind": "simple",
+        "model_calls": 1,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 31
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002597,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIQ-040",
+        "cost_usd": 0.00026,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "clarify",
+        "kind": "simple",
+        "model_calls": 1,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 33
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.000292,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0002742,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.018972,
+            "latency_ms": 7830,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.023002,
+            "latency_ms": 11162,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          }
+        ],
+        "case": "UIP-001",
+        "cost_usd": 0.04254,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "affordability",
+        "kind": "advice",
+        "model_calls": 4,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "forecaster",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 7830,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 11162,
+            "node": "advise",
+            "tier": "reasoning"
+          }
+        ],
+        "wall_ms": 2226
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002767,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.020018,
+            "latency_ms": 8805,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.025028,
+            "latency_ms": 12393,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.022908,
+            "latency_ms": 10239,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          }
+        ],
+        "case": "UIP-002",
+        "cost_usd": 0.068231,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "affordability",
+        "kind": "advice",
+        "model_calls": 4,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 8805,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 12393,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 10239,
+            "node": "advise",
+            "tier": "reasoning"
+          }
+        ],
+        "wall_ms": 3165
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002723,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0002656,
+            "latency_ms": null,
+            "model": "openai/gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.01987,
+            "latency_ms": 8498,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.022834,
+            "latency_ms": 11367,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          }
+        ],
+        "case": "UIP-003",
+        "cost_usd": 0.043242,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "affordability",
+        "kind": "advice",
+        "model_calls": 4,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "forecaster",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 8498,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 11367,
+            "node": "advise",
+            "tier": "reasoning"
+          }
+        ],
+        "wall_ms": 2223
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002741,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0002586,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIP-004",
+        "cost_usd": 0.000533,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "scenario",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "forecaster",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 1063
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002906,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0002976,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIP-005",
+        "cost_usd": 0.000588,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "scenario",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "forecaster",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 95
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002483,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0002073,
+            "latency_ms": 4492,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIP-006",
+        "cost_usd": 0.000456,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 15,
+        "intent": "spending_breakdown",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 4492,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 83
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0003149,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001612,
+            "latency_ms": 3208,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIP-007",
+        "cost_usd": 0.000476,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "trend_or_change",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 3208,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 123
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002574,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001637,
+            "latency_ms": 3828,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIP-008",
+        "cost_usd": 0.000421,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 17,
+        "intent": "trend_or_change",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 3828,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 90
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002542,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001037,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIP-009",
+        "cost_usd": 0.000358,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "transaction_lookup",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 97
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002463,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001412,
+            "latency_ms": 2945,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIP-010",
+        "cost_usd": 0.000388,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 18,
+        "intent": "subscription_review",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 2945,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 127
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002458,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001537,
+            "latency_ms": 3573,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIP-011",
+        "cost_usd": 0.0004,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "subscription_review",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 3573,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 88
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002655,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIP-012",
+        "cost_usd": 0.000266,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 17,
+        "intent": "risk_check",
+        "kind": "simple",
+        "model_calls": 1,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 160
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002694,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIP-013",
+        "cost_usd": 0.000269,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "risk_check",
+        "kind": "simple",
+        "model_calls": 1,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 156
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.000287,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.013984,
+            "latency_ms": 4708,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.023976,
+            "latency_ms": 10998,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.0001798,
+            "latency_ms": 1536,
+            "model": "openai/gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIP-014",
+        "cost_usd": 0.038427,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "advice_request",
+        "kind": "advice",
+        "model_calls": 4,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 4708,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 10998,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 1536,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 1235
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002831,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.019526,
+            "latency_ms": 9817,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.023016,
+            "latency_ms": 10648,
+            "model": "anthropic/claude-sonnet-5.5",
+            "tier": "reasoning"
+          },
+          {
+            "cost_usd": 0.0001563,
+            "latency_ms": 405,
+            "model": "openai/gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIP-015",
+        "cost_usd": 0.042981,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "advice_request",
+        "kind": "advice",
+        "model_calls": 4,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 9817,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 10648,
+            "node": "advise",
+            "tier": "reasoning"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 405,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 1476
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0003318,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.000267,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIP-016",
+        "cost_usd": 0.000599,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "explain_recommendation",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 69
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002733,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.000164,
+            "latency_ms": 3495,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIP-017",
+        "cost_usd": 0.000437,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "explain_recommendation",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 3495,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 106
+      },
+      {
+        "calls": [],
+        "case": "UIP-018",
+        "cost_usd": 0,
+        "degraded": false,
+        "e2e_ms": 31,
+        "failed_steps": [],
+        "first_step_ms": 17,
+        "intent": "smalltalk_or_out_of_scope",
+        "kind": "simple",
+        "model_calls": 0,
+        "overlap_ms": 0,
+        "steps": [],
+        "wall_ms": 31
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.000359,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.000279,
+            "latency_ms": 2412,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIP-019",
+        "cost_usd": 0.000638,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "scenario",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 2412,
+            "node": "forecaster",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 1073
+      },
+      {
+        "calls": [
+          {
+            "cost_usd": 0.0002565,
+            "latency_ms": null,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          },
+          {
+            "cost_usd": 0.0001683,
+            "latency_ms": 3220,
+            "model": "gpt-6-luna",
+            "tier": "fast"
+          }
+        ],
+        "case": "UIP-020",
+        "cost_usd": 0.000425,
+        "degraded": false,
+        "e2e_ms": null,
+        "failed_steps": [],
+        "first_step_ms": 16,
+        "intent": "trend_or_change",
+        "kind": "simple",
+        "model_calls": 2,
+        "overlap_ms": 0,
+        "steps": [
+          {
+            "llm_calls": 1,
+            "model_ms": null,
+            "node": "understand",
+            "tier": "fast"
+          },
+          {
+            "llm_calls": 1,
+            "model_ms": 3220,
+            "node": "compose",
+            "tier": "fast"
+          }
+        ],
+        "wall_ms": 90
+      }
+    ],
+    "by_answer_type": {
+      "advice": {
+        "cost_mean_usd": 0.05047,
+        "cost_p95_usd": 0.06898,
+        "count": 13,
+        "degraded_left_out": 0,
+        "first_step_p95_s": 0.03,
+        "latency_estimated_p50_s": 28.33,
+        "latency_estimated_p95_s": 39.06,
+        "latency_measured": 0,
+        "latency_p50_s": null,
+        "latency_p50_s_measured_only": null,
+        "latency_p95_s": null
+      },
+      "all": {
+        "cost_mean_usd": 0.01141,
+        "cost_p95_usd": 0.06074,
+        "count": 60,
+        "degraded_left_out": 0,
+        "first_step_p95_s": 0.02,
+        "latency_estimated_p50_s": 6.35,
+        "latency_estimated_p95_s": 36.14,
+        "latency_measured": 3,
+        "latency_p50_s": null,
+        "latency_p50_s_measured_only": 0.03,
+        "latency_p95_s": null
+      },
+      "simple": {
+        "cost_mean_usd": 0.0006,
+        "cost_p95_usd": 0.00063,
+        "count": 47,
+        "degraded_left_out": 0,
+        "first_step_p95_s": 0.02,
+        "latency_estimated_p50_s": 6.31,
+        "latency_estimated_p95_s": 10.48,
+        "latency_measured": 3,
+        "latency_p50_s": null,
+        "latency_p50_s_measured_only": 0.03,
+        "latency_p95_s": null
+      }
+    },
+    "by_tier": {
+      "fast": {
+        "accuracy_gates": [
+          "E-CTX",
+          "E-UI",
+          "E-SCN",
+          "E-CAT"
+        ],
+        "call_latency_p50_s": 3.11,
+        "call_latency_p95_s": 7.32,
+        "calls": 100,
+        "cost_per_answer_usd": 0.00041,
+        "cost_per_call_usd": 0.00024,
+        "latency_measured": 24,
+        "models": [
+          "gpt-6-luna",
+          "openai/gpt-6-luna"
+        ]
+      },
+      "reasoning": {
+        "accuracy_gates": [
+          "E-ORC",
+          "E-GRD"
+        ],
+        "call_latency_p50_s": 10.24,
+        "call_latency_p95_s": 11.95,
+        "calls": 30,
+        "cost_per_answer_usd": 0.01071,
+        "cost_per_call_usd": 0.02141,
+        "latency_measured": 29,
+        "models": [
+          "anthropic/claude-sonnet-5.5"
+        ]
+      },
+      "verifier": {
+        "accuracy_gates": [
+          "E-VER"
+        ],
+        "call_latency_p50_s": 4.14,
+        "call_latency_p95_s": 5.41,
+        "calls": 5,
+        "cost_per_answer_usd": 0.00029,
+        "cost_per_call_usd": 0.00354,
+        "latency_measured": 5,
+        "models": [
+          "gpt-6.1-sol",
+          "openai/gpt-6.1-sol"
+        ]
+      }
+    },
+    "mode": "replay"
+  },
+  "name": "efficiency",
+  "notes": [
+    "replay mode. Latency is measured only in replay, from the live latency each cassette stores; an answer with an older recording (no latency) leaves its group's latency not measured. Latency measured on 3 of 60 answers. 0 answers with a failed or unrecorded model step are left out of every statistic.",
+    "Where latency is not measured, `latency_estimated_*` counts each unmeasured call at its tier's measured median call latency; it is an estimate and decides no target.",
+    "End-to-end = local time in replay + each step's model wait (concurrent judge calls overlap) \u2212 the Understand/prefetch overlap. Network and server time outside Mesh calls are not included."
+  ],
+  "suite": "E-EFF",
+  "targets": [
+    {
+      "dataset": "60 E-UI answers",
+      "id": "EFF-1",
+      "label": "Mean cost per answer (USD)",
+      "met": true,
+      "stage1": false,
+      "target": "<= 0.03",
+      "value": 0.01141
+    },
+    {
+      "dataset": "13 advice answers",
+      "id": "EFF-2",
+      "label": "Mean cost per advice answer (USD)",
+      "met": true,
+      "stage1": false,
+      "target": "<= 0.055",
+      "value": 0.05047
+    },
+    {
+      "dataset": "60 E-UI answers",
+      "id": "EFF-3",
+      "label": "p95 cost per answer (USD)",
+      "met": true,
+      "stage1": false,
+      "target": "<= 0.1",
+      "value": 0.06074
+    },
+    {
+      "dataset": "60 E-UI answers",
+      "id": "EFF-4",
+      "label": "Time to first progress step, p95 (s)",
+      "met": true,
+      "stage1": false,
+      "target": "<= 2.0",
+      "value": 0.02
+    },
+    {
+      "dataset": "47 simple answers",
+      "id": "EFF-5",
+      "label": "Simple answer latency p50 (s)",
+      "met": null,
+      "stage1": false,
+      "target": "<= 10.0",
+      "value": null
+    },
+    {
+      "dataset": "13 advice answers",
+      "id": "EFF-6",
+      "label": "Advice answer latency p50 (s)",
+      "met": null,
+      "stage1": false,
+      "target": "<= 35.0",
+      "value": null
+    },
+    {
+      "dataset": "13 advice answers",
+      "id": "EFF-7",
+      "label": "Advice answer latency p95 (s)",
+      "met": null,
+      "stage1": false,
+      "target": "<= 60.0",
+      "value": null
+    }
+  ]
+}

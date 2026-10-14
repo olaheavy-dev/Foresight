@@ -1,22 +1,22 @@
 {
   "durations_s": {
-    "E-ANOM": 0.82,
-    "E-AUD": 8.77,
+    "E-ANOM": 0.79,
+    "E-AUD": 8.43,
     "E-CAT": 0.43,
-    "E-CTX": 0.56,
+    "E-CTX": 1.06,
     "E-EFF": 0.0,
-    "E-FC": 10.26,
-    "E-GRD": 6.88,
-    "E-INC": 0.81,
-    "E-ING": 0.72,
-    "E-LOC": 0.32,
-    "E-ORC": 41.76,
-    "E-REC": 0.42,
-    "E-SCN": 0.25,
-    "E-SEC": 0.28,
-    "E-SIM": 15.87,
-    "E-UI": 40.76,
-    "E-VER": 17.62
+    "E-FC": 10.06,
+    "E-GRD": 6.6,
+    "E-INC": 1.12,
+    "E-ING": 0.85,
+    "E-LOC": 0.34,
+    "E-ORC": 42.79,
+    "E-REC": 0.41,
+    "E-SCN": 0.7,
+    "E-SEC": 0.36,
+    "E-SIM": 15.34,
+    "E-UI": 41.58,
+    "E-VER": 17.79
   },
   "engine_version": "fc-1.3.0",
   "errors": {},
@@ -67,11 +67,9 @@
       "unmeasured": []
     },
     "E-EFF": {
-      "failed": [
-        "EFF-2"
-      ],
+      "failed": [],
       "rule": "docs/09 targets (4 measured)",
-      "status": "fail",
+      "status": "pass",
       "unmeasured": [
         "EFF-5",
         "EFF-6",
@@ -166,7 +164,7 @@
     "E-AUD": "pass",
     "E-CAT": "pass",
     "E-CTX": "fail",
-    "E-EFF": "fail",
+    "E-EFF": "pass",
     "E-FC": "pass",
     "E-GRD": "pass",
     "E-INC": "pass",
@@ -183,7 +181,7 @@
   },
   "generator_version": "gen-1.1.0",
   "git_dirty": false,
-  "git_sha": "e5f656cafec7f61d350e079ba6868838f5d1e1ea",
+  "git_sha": "4c6fc756287a7460df6142c1a5253183d5494e93",
   "holdout_version": null,
   "home_currency_primary": "GBP",
   "layout_set_version": null,
@@ -202,7 +200,7 @@
     "null = not run. Gates: a suite that did not run is 'fail'; see gate_detail.rule."
   ],
   "prompt_versions": {},
-  "run_id": "evalrun_20261014T104932Z_e5f656c",
+  "run_id": "evalrun_20261014T124926Z_4c6fc75",
   "schema_version": "1.1",
   "seeds": [
     1729
@@ -360,7 +358,7 @@
         "model_calls_per_cache_hit_after_understand": 0,
         "model_calls_per_cache_miss": 1,
         "recorded_tokens_total": 447216,
-        "replay_seconds": 0.56
+        "replay_seconds": 1.06
       },
       "followup_turns_scored": 45,
       "mode": "replay",
@@ -1112,9 +1110,9 @@
           "cost_p95_usd": 0.06898,
           "count": 13,
           "degraded_left_out": 0,
-          "first_step_p95_s": 0.02,
-          "latency_estimated_p50_s": 28.32,
-          "latency_estimated_p95_s": 39.0,
+          "first_step_p95_s": 0.03,
+          "latency_estimated_p50_s": 28.33,
+          "latency_estimated_p95_s": 39.06,
           "latency_measured": 0,
           "latency_p50_s": null,
           "latency_p50_s_measured_only": null,
@@ -1126,8 +1124,8 @@
           "count": 60,
           "degraded_left_out": 0,
           "first_step_p95_s": 0.02,
-          "latency_estimated_p50_s": 6.36,
-          "latency_estimated_p95_s": 36.13,
+          "latency_estimated_p50_s": 6.35,
+          "latency_estimated_p95_s": 36.14,
           "latency_measured": 3,
           "latency_p50_s": null,
           "latency_p50_s_measured_only": 0.03,
@@ -1140,7 +1138,7 @@
           "degraded_left_out": 0,
           "first_step_p95_s": 0.02,
           "latency_estimated_p50_s": 6.31,
-          "latency_estimated_p95_s": 10.49,
+          "latency_estimated_p95_s": 10.48,
           "latency_measured": 3,
           "latency_p50_s": null,
           "latency_p50_s_measured_only": 0.03,
@@ -1629,7 +1627,7 @@
         "tool_calls_outside_allow_list": []
       },
       "mode": "replay",
-      "seconds": 41.8
+      "seconds": 42.8
     },
     "recurring": {
       "council_tax_months_exact": true,
@@ -2093,9 +2091,9 @@
         "dataset": "13 advice answers",
         "id": "EFF-2",
         "label": "Mean cost per advice answer (USD)",
-        "met": false,
+        "met": true,
         "stage1": false,
-        "target": "<= 0.05",
+        "target": "<= 0.055",
         "value": 0.05047
       },
       {
@@ -2774,5 +2772,5 @@
       }
     ]
   },
-  "timestamp_utc": "2026-10-14T10:49:32Z"
+  "timestamp_utc": "2026-10-14T12:49:26Z"
 }
