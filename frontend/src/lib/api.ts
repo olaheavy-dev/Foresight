@@ -11,7 +11,10 @@
  * browser calls can *choose* a profile, because only the browser can store the new cookie.
  */
 import {
+  isAccountList,
+  isAccountView,
   isCalculationView,
+  isDetectedFlows,
   isFeaturesPayload,
   isForecastView,
   isHealthz,
@@ -21,7 +24,10 @@ import {
   isTransactionPage,
 } from "@/ui-contracts/guards";
 import type {
+  AccountList,
+  AccountView,
   AgentResponse,
+  DetectedFlows,
   Block,
   CalculationView,
   Feature,
@@ -99,11 +105,19 @@ export function fetchHealthz(options: ApiOptions = {}): Promise<Healthz | null> 
   );
 }
 
-/** Upload one or more statement files (multipart, field `files`). */
-export function importStatements(files: readonly Blob[], options: ApiOptions = {}): Promise<ImportSummary | null> {
+/** Answers to an import's questions, applied to every file sent with them (docs/06 H13). */
+export type ImportAnswers = Partial<Record<"currency" | "date_order" | "decimal_separator", string>>;
+
+/** Upload one or more statement files (multipart, field `files`), with any answers. */
+export function importStatements(
+  files: readonly Blob[],
+  options: ApiOptions = {},
+  answers?: ImportAnswers,
+): Promise<ImportSummary | null> {
   if (files.length === 0) return Promise.resolve(null);
   const form = new FormData();
   for (const file of files) form.append("files", file);
+  if (answers && Object.keys(answers).length) form.append("answers", JSON.stringify(answers));
   return request(
     "/api/imports",
     okAnd(isImportSummary),
@@ -254,4 +268,28 @@ export function fetchResponse(responseId: string, options: ApiOptions = {}): Pro
     (body, status) => (status === 200 ? parseAgentResponse(body) : null),
     options,
   );
+}
+
+/** The profile's accounts with their latest known balance (none until one is read or declared). */
+export function fetchAccounts(options: ApiOptions = {}): Promise<AccountList | null> {
+  return request("/api/accounts", okAnd(isAccountList), options);
+}
+
+/** Declare an account's balance on a day (browser; the demo profile is read-only). */
+export function declareBalance(
+  accountId: string,
+  asOf: string,
+  amountMinor: number,
+  options: ApiOptions = {},
+): Promise<AccountView | null> {
+  return request(`/api/accounts/${encodeURIComponent(accountId)}/balance`, okAnd(isAccountView), options, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ as_of: asOf, amount_minor: amountMinor }),
+  });
+}
+
+/** Income and recurring payments the detectors found. */
+export function fetchDetected(options: ApiOptions = {}): Promise<DetectedFlows | null> {
+  return request("/api/detected", okAnd(isDetectedFlows), options);
 }

@@ -16,6 +16,7 @@ Features ship behind flags ([`features.yaml`](features.yaml)). A feature is list
 
 ### Built
 
+- CSV statement import with reconciliation
 - 90-day cash-flow forecast with uncertainty band
 - Coordinator and five specialist agents (LangGraph, Mesh)
 - Behaviour trends and anomaly detection
@@ -25,7 +26,6 @@ Features ship behind flags ([`features.yaml`](features.yaml)). A feature is list
 
 ### Not shipped (planned)
 
-- Stage 1: CSV statement import with reconciliation
 - Stage 1: Transaction categorisation (rules + Ledger Agent)
 - Stage 1: Income and recurring-bill detection
 - Stage 1: What-if simulation against the same engine

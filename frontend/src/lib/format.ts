@@ -4,7 +4,7 @@
  * hardcoded table, and locale grouping follows the profile (en-GB "1,284.50", en-IN lakh).
  */
 
-function minorDigits(currency: string): number {
+export function minorDigits(currency: string): number {
   return new Intl.NumberFormat("en", { style: "currency", currency }).resolvedOptions().maximumFractionDigits ?? 2;
 }
 
@@ -114,4 +114,19 @@ export function formatUsdEstimate(usd: number, locale = "en-GB"): string {
     maximumFractionDigits: digits,
   }).format(usd);
   return `about ${body}`;
+}
+
+/**
+ * A typed amount ("1,234.56", "£1234.5", "-40") as integer minor units of `currency`, or null
+ * when it isn't a plain number. Grouping commas and the currency symbol are ignored; the decimal
+ * point is ".", as the en-GB inputs here use.
+ */
+export function parseAmountMinor(text: string, currency: string): number | null {
+  const cleaned = text.replace(/[\s,£$€₹¥]/g, "");
+  if (!/^-?\d+(\.\d+)?$/.test(cleaned)) return null;
+  const digits = minorDigits(currency);
+  const [whole, fraction = ""] = cleaned.replace("-", "").split(".");
+  if (fraction.length > digits) return null;
+  const minor = Number(whole) * 10 ** digits + Number(fraction.padEnd(digits, "0") || 0);
+  return cleaned.startsWith("-") ? -minor : minor;
 }
