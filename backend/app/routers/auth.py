@@ -52,7 +52,16 @@ def _redirect_uri() -> str:
 
 
 # Where a sign-in may return to: the app's own pages only, so `next` can never redirect off-site.
-RETURN_PAGES = ("/home", "/workspace", "/transactions", "/lab", "/quality", "/activity", "/settings", "/start")
+RETURN_PAGES = (
+    "/home",
+    "/workspace",
+    "/transactions",
+    "/lab",
+    "/quality",
+    "/activity",
+    "/settings",
+    "/start",
+)
 
 
 def _safe_next(value: str | None) -> str:
