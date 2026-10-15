@@ -39,9 +39,10 @@ function statusLine(insights: HomeInsights, demo: boolean): string {
     case "failed":
       return "The last check didn’t finish. The findings below come straight from your data.";
     default:
-      return demo
+      if (!demo) return "Findings and checked advice appear here after you import a statement or change a category.";
+      return insights.can_check
         ? "These findings come straight from the demo’s data. Run the proactive check to see advice the Verifier has checked."
-        : "Findings and checked advice appear here after you import a statement or change a category.";
+        : "These findings come straight from the demo’s data. Checked advice is paused right now.";
   }
 }
 

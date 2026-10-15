@@ -527,6 +527,8 @@ flowchart LR
 
 The briefing stores `{data_version, prefs_version, engine_version, as_of}`. It is stale if any version changes or `as_of` differs from the workspace-local financial date (`08` §10).
 
+**As built (15 Oct 2026, review R2).** A committed import with new rows, a category correction or a changed declared balance writes one `analysis_job` in the same transaction (migration 0008). Changes close together collapse into the profile's single queued job (a partial unique index), and an import's `ingestion` workflow wins over a later correction's `risk_detection`. One worker thread in the API process (`backend/app/proactive.py`) claims due jobs with `FOR UPDATE SKIP LOCKED` after a 30 s quiet period. On start-up, jobs left `running` by a stopped process are queued again. Each job refreshes the deterministic findings (no model), then runs the existing workflow (analyst → forecaster → risk check → Advisor ⇄ Verifier) when AI is available and the profile has runs left today: 2 per profile, 1 for a demo copy, whose run starts only from its "Run the proactive check" button. Spend therefore stays inside the Mesh client's own daily cap. A job that can't run advice is recorded as `skipped` with the reason. `GET /api/home/insights` serves Home: the open findings, with every figure filled from its stored calculation; the cards of recommendations the Verifier approved in the latest run; and the run's state (`checking`, `ready`, `paused` with a reason, `failed`, or `empty`). The 06:30 cron and the debounce for preference changes are not built.
+
 ### 6.4 Resilience (rev 7)
 
 | Concern | Mechanism |
