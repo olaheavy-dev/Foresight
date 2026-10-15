@@ -121,16 +121,37 @@ def columns_question(
             (c[idx].strip() for _, c in table.rows[:20] if idx < len(c) and c[idx].strip()), ""
         )
         examples.append(safe_example(headers[idx], cell))
+    # Options are opaque column positions; the labels shown are the headings with any long digit
+    # run masked, so an account number written into a heading never leaves the importer.
+    ids = [column_id(i) for i in range(len(headers))]
     proposed = tuple(
-        (role, names[0]) for role, names in recognised.items() if role in COLUMN_ROLES and names
+        (role, ids[headers.index(names[0])])
+        for role, names in recognised.items()
+        if role in COLUMN_ROLES and names and names[0] in headers
     )
     return Question(
         kind="columns",
         prompt=f"{note} {COLUMNS_PROMPT}" if note else COLUMNS_PROMPT,
-        options=tuple(headers),
+        options=tuple(ids),
+        labels=tuple(_DIGIT_RUN.sub(_mask_long, h)[:60] for h in headers),
         examples=tuple(examples),
         proposed=proposed,
+        table_id=table_key(table.headers),
     )
+
+
+def column_id(index: int) -> str:
+    return f"c{index}"
+
+
+def table_key(headers: Sequence[str]) -> str:
+    """A short, stable id for a table's heading row: a mapping answers exactly one table."""
+    sig = "|".join(normalise_header(h) for h in headers)
+    return hashlib.sha256(sig.encode()).hexdigest()[:10]
+
+
+def _mask_long(m: re.Match[str]) -> str:
+    return "•" * 4 if sum(ch.isdigit() for ch in m.group()) >= 6 else m.group()
 
 
 def manual_profile(
@@ -139,7 +160,18 @@ def manual_profile(
     """A profile from the person's column choice, or why it can't be used. Deterministic: the
     choice is checked against the file, never guessed."""
     norm = [normalise_header(h) for h in headers]
-    picked = {role: normalise_header(name) for role, name in chosen.items() if name}
+
+    def resolve(name: str) -> str:
+        ident = re.fullmatch(r"c(\d{1,3})", name)
+        return norm[int(ident.group(1))] if ident and int(ident.group(1)) < len(norm) else name
+
+    picked = {role: normalise_header(resolve(name)) for role, name in chosen.items() if name}
+    twice = sorted({n for n in picked.values() if norm.count(n) > 1})
+    if twice:
+        return None, (
+            f"This file has two columns called “{twice[0]}”, so we can’t tell them apart. "
+            "Rename one in the file and import it again."
+        )
     if not set(picked) <= set(COLUMN_ROLES):
         return None, "Those roles aren’t ones we can use."
     if any(name not in norm for name in picked.values()):
@@ -157,7 +189,16 @@ def manual_profile(
             profile_id="user." + hashlib.sha256("|".join(signature).encode()).hexdigest()[:12],
             label="Your column choice",
             header_signature=signature,
-            columns={role: (name,) for role, name in picked.items()},
+            # The person's choice, plus what the headings already say for roles the form doesn't
+            # ask about (a `Currency` column, the bank's own category or type, a time).
+            columns={
+                **{
+                    role: names
+                    for role, names in recognise(headers).items()
+                    if role not in COLUMN_ROLES and names[0] not in picked.values()
+                },
+                **{role: (name,) for role, name in picked.items()},
+            },
             sign_convention="in_out" if split else "signed",
             skip_zero_amount=True,
             origin="user_confirmed",
@@ -166,8 +207,8 @@ def manual_profile(
     )
 
 
-def heuristic_profile(headers: Sequence[str]) -> tuple[FormatProfile | None, Question | None]:
-    """Map unknown headers to roles. Confident ⇒ a heuristic profile; unsure ⇒ a Question."""
+def recognise(headers: Sequence[str]) -> dict[str, tuple[str, ...]]:
+    """The roles the synonym table recognises in these headings (first match per role)."""
     norm = [_strip_units(normalise_header(h)) for h in headers]
     columns: dict[str, tuple[str, ...]] = {}
     used: set[int] = set()
@@ -180,6 +221,13 @@ def heuristic_profile(headers: Sequence[str]) -> tuple[FormatProfile | None, Que
                 columns[role] = (normalise_header(headers[idx]),)
                 used.add(idx)
                 break
+    return columns
+
+
+def heuristic_profile(headers: Sequence[str]) -> tuple[FormatProfile | None, Question | None]:
+    """Map unknown headers to roles. Confident ⇒ a heuristic profile; unsure ⇒ a Question."""
+    norm = [_strip_units(normalise_header(h)) for h in headers]
+    columns = recognise(headers)
     has_amount = "amount" in columns or ("money_in" in columns and "money_out" in columns)
     confident = "date" in columns and "description" in columns and has_amount
     if not confident:
@@ -242,10 +290,21 @@ def import_table(
         # columns it actually has (a file can hold tables with different headings).
         parsed = json.loads(answers["columns"])
         mappings: list[dict[str, str]] = parsed if isinstance(parsed, list) else [parsed]
+        key = table_key(table.headers)
         present = {normalise_header(h) for h in table.headers}
-        chosen = next(
-            (c for c in mappings if {normalise_header(n) for n in c.values() if n} <= present), None
-        )
+
+        def fits(c: Mapping[str, str]) -> bool:
+            # A mapping that names its table answers that table only (tables can share
+            # headings); an unbound one fits any table that has all its columns.
+            if c.get("table"):
+                return c["table"] == key
+            names = [n for r, n in c.items() if n and r != "table"]
+            if names and all(re.fullmatch(r"c\d{1,3}", n) for n in names):
+                return all(int(n[1:]) < len(table.headers) for n in names)
+            return {normalise_header(n) for n in names} <= present
+
+        found = next((c for c in mappings if fits(c)), None)
+        chosen = {r: n for r, n in found.items() if r != "table"} if found else None
         if chosen is not None:
             profile, problem = manual_profile(table.headers, chosen)
             if profile is None:

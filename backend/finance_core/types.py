@@ -121,6 +121,8 @@ class Question:
     # "columns" only: an example value per option (same order) and the roles already recognised.
     examples: tuple[str, ...] = ()
     proposed: tuple[tuple[str, str], ...] = ()
+    labels: tuple[str, ...] = ()  # what to show for each option (options may be opaque ids)
+    table_id: str | None = None  # "columns": which table of the file this question is about
 
 
 @dataclass(frozen=True)

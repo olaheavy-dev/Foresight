@@ -4027,6 +4027,15 @@
           "title": "Kind",
           "type": "string"
         },
+        "labels": {
+          "default": [],
+          "items": {
+            "maxLength": 60,
+            "type": "string"
+          },
+          "title": "Labels",
+          "type": "array"
+        },
         "options": {
           "default": [],
           "items": {
@@ -4066,6 +4075,18 @@
           ],
           "default": null,
           "title": "Proposed"
+        },
+        "table_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Table Id"
         }
       },
       "required": [

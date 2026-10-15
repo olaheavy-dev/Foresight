@@ -104,6 +104,8 @@ def imported_file(ctx: WorkspaceContext, outcome: IngestOutcome) -> ImportedFile
                 preselected=q.preselected,
                 examples=list(q.examples),
                 proposed=dict(q.proposed) or None,
+                labels=list(q.labels),
+                table_id=q.table_id,
             )
             for q in outcome.questions
         ],  # fmt: skip
@@ -135,7 +137,7 @@ def _answers(raw: str | None) -> dict[str, str] | None:
                 0 < len(mappings) <= 10
                 and all(
                     isinstance(m, dict)
-                    and set(m) <= set(COLUMN_ROLES)
+                    and set(m) <= {*COLUMN_ROLES, "table"}
                     and all(isinstance(v, str) and 0 < len(v) <= 100 for v in m.values())
                     for m in mappings
                 )

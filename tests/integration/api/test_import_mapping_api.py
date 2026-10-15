@@ -42,7 +42,9 @@ def test_an_unrecognised_bank_is_mapped_once_then_imports_silently(api: TestClie
     (q,) = first["questions"]
     assert q["kind"] == "columns"
     assert q["examples"][1] == "SALARY ACME LTD"
-    assert q["proposed"]["amount"] == "value (gbp)"
+    assert q["proposed"]["amount"] == "c2"  # options are opaque column ids
+    assert q["labels"][2] == "value (gbp)"
+    assert q["table_id"]
 
     mapped = send(api, "odd.csv", {"columns": MAPPING})
     assert mapped["status"] == "imported"

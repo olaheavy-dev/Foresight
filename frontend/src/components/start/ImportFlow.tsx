@@ -27,6 +27,7 @@ import {
   fetchDetected,
   fetchProfile,
   type ColumnMapping,
+  type ColumnRole,
   type ImportAnswers,
   importStatements,
   startNewProfile,
@@ -407,12 +408,15 @@ function ColumnsForm({
 }) {
   const options = question.options ?? [];
   const examples = question.examples ?? [];
+  const labels = question.labels ?? [];
   const proposed = (question.proposed ?? {}) as ColumnMapping;
-  const [split, setSplit] = useState(Boolean(proposed.money_in && proposed.money_out && !proposed.amount));
+  // Recognised money in and money out columns win: dropping them for a single amount column could
+  // misread unsigned amounts.
+  const [split, setSplit] = useState(Boolean(proposed.money_in && proposed.money_out));
   const [picked, setPicked] = useState<ColumnMapping>(proposed);
   const [problem, setProblem] = useState<string | null>(null);
   const fieldId = useId();
-  const roles: (keyof ColumnMapping)[] = split
+  const roles: ColumnRole[] = split
     ? ["date", "description", "money_in", "money_out", "balance"]
     : ["date", "description", "amount", "balance"];
 
@@ -420,11 +424,11 @@ function ColumnsForm({
     e.preventDefault();
     const chosen: ColumnMapping = {};
     for (const role of roles) if (picked[role]) chosen[role] = picked[role];
-    const required = split ? ["date", "description", "money_in", "money_out"] : ["date", "description", "amount"];
-    if (required.some((role) => !chosen[role as keyof ColumnMapping])) {
-      setProblem(
-        `Choose a column for ${required.map((r) => ROLE_LABELS[r as keyof ColumnMapping].toLowerCase()).join(", ")}.`,
-      );
+    const required: ColumnRole[] = split
+      ? ["date", "description", "money_in", "money_out"]
+      : ["date", "description", "amount"];
+    if (required.some((role) => !chosen[role])) {
+      setProblem(`Choose a column for ${required.map((r) => ROLE_LABELS[r].toLowerCase()).join(", ")}.`);
       return;
     }
     const used = Object.values(chosen);
@@ -433,7 +437,7 @@ function ColumnsForm({
       return;
     }
     setProblem(null);
-    onSubmit(chosen);
+    onSubmit(question.table_id ? { ...chosen, table: question.table_id } : chosen);
   };
 
   return (
@@ -466,7 +470,7 @@ function ColumnsForm({
                 <option value="">{role === "balance" ? "No balance column" : "Choose a column"}</option>
                 {options.map((o, i) => (
                   <option key={o} value={o}>
-                    {examples[i] ? `${o} (e.g. ${examples[i]})` : o}
+                    {examples[i] ? `${labels[i] ?? o} (e.g. ${examples[i]})` : (labels[i] ?? o)}
                   </option>
                 ))}
               </select>

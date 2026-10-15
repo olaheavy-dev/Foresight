@@ -1737,12 +1737,14 @@ export interface ImportedFile {
 export interface ImportQuestion {
   examples?: string[];
   kind: string;
+  labels?: string[];
   options?: string[];
   preselected?: string | null;
   prompt: string;
   proposed?: {
     [k: string]: string;
   } | null;
+  table_id?: string | null;
 }
 /**
  * This interface was referenced by `UiContracts`'s JSON-Schema

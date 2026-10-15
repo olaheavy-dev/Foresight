@@ -79,7 +79,10 @@ test("an unrecognised bank's CSV is mapped column by column, then imports", asyn
   const form = page.getByRole("form", { name: "Columns in odd-bank.csv" });
   await expect(form).toContainText("We didn’t recognise this file’s columns");
   // Recognised columns are pre-filled; each choice shows an example from the file.
-  await expect(form.getByLabel("Amount", { exact: true })).toHaveValue("value (gbp)");
+  await expect(form.getByLabel("Amount", { exact: true })).toHaveValue("c2"); // options are opaque column ids, labelled with the heading
+  await expect(form.getByLabel("Amount", { exact: true }).locator("option:checked")).toHaveText(
+    "value (gbp) (e.g. 2100.00)",
+  );
   await expect(
     form.getByLabel("Description", { exact: true }).locator("option", { hasText: "SALARY ACME LTD" }),
   ).toHaveCount(1);
@@ -89,9 +92,9 @@ test("an unrecognised bank's CSV is mapped column by column, then imports", asyn
   await form.getByRole("button", { name: "Import with these columns" }).click();
   await expect(form.getByRole("alert")).toContainText("Choose a column for date, description, amount");
 
-  await form.getByLabel("Date", { exact: true }).selectOption("posted on");
-  await form.getByLabel("Description", { exact: true }).selectOption("payee text");
-  await form.getByLabel("Balance after each row (optional)").selectOption("running total");
+  await form.getByLabel("Date", { exact: true }).selectOption({ label: "posted on (e.g. 01/10/2026)" });
+  await form.getByLabel("Description", { exact: true }).selectOption({ label: "payee text (e.g. SALARY ACME LTD)" });
+  await form.getByLabel("Balance after each row (optional)").selectOption({ label: "running total (e.g. 2600.00)" });
   await form.getByRole("button", { name: "Import with these columns" }).click();
   await expect(result).toContainText("Imported", { timeout: 30_000 });
   await expect(result).toContainText("Every row adds up to the running balance");
