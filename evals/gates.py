@@ -62,15 +62,17 @@ def gate(result: dict[str, Any] | None) -> dict[str, Any]:
     gated = [t for t in result.get("targets", []) if is_gated(t)]
     measured = [t for t in gated if t.get("met") is not None]
     unmeasured = [t["id"] for t in gated if t.get("met") is None]
-    if measured:
-        failed = [t["id"] for t in measured if t["met"] is not True]
+    failed = [t["id"] for t in measured if t["met"] is not True]
+    if measured or unmeasured:
+        # A required target that wasn't measured is not a pass (review R7): it fails the suite
+        # unless the suite excludes it explicitly, with a stated reason (`not_gated_because`).
         return {
-            "status": "fail" if failed else "pass",
-            "rule": f"{RULE_TARGETS} ({len(measured)} measured)",
+            "status": "fail" if failed or unmeasured else "pass",
+            "rule": f"{RULE_TARGETS} ({len(measured)} measured, {len(unmeasured)} unmeasured)",
             "failed": failed,
             "unmeasured": unmeasured,
         }
-    return {"status": "pass", "rule": RULE_RAN, "failed": [], "unmeasured": unmeasured}
+    return {"status": "pass", "rule": RULE_RAN, "failed": [], "unmeasured": []}
 
 
 def gates(results: dict[str, dict[str, Any]]) -> tuple[dict[str, str], dict[str, Any]]:

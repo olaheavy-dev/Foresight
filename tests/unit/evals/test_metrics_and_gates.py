@@ -70,12 +70,22 @@ def test_gate_rules() -> None:
     later_stage = {"targets": [target("t1", "t", 0.1, ">=", 0.9, "d", stage1=False)], "error": None}
     assert gate(measured_fail)["status"] == "fail"
     assert gate(measured_fail)["failed"] == ["t1"]
+    # Review R7: an unmeasured required target is not a pass.
     assert gate(only_null) == {
-        "status": "pass",
-        "rule": "ran without errors",
+        "status": "fail",
+        "rule": "docs/09 targets (0 measured, 1 unmeasured)",
         "failed": [],
         "unmeasured": ["t1"],
     }
+    explained = {
+        "targets": [
+            {**target("t1", "t", None, ">=", 0.9, "d"), "gated": False,
+             "not_gated_because": "dataset doesn't exist yet"},
+            target("t2", "t", 0.95, ">=", 0.9, "d"),
+        ],
+        "error": None,
+    }  # fmt: skip
+    assert gate(explained)["status"] == "pass"  # excluded explicitly, the rest measured and met
     # Since Stage 2 every measured target gates, whatever stage it was written for.
     assert gate(later_stage)["status"] == "fail"
     opted_out = {

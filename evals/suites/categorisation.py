@@ -292,6 +292,14 @@ def run(fast: bool = False) -> dict[str, Any]:
             stage1=False,
         ),
     ]
+    for tgt in targets:
+        if tgt["dataset"] == "UK holdout" and tgt.get("met") is None:
+            # Review R7: excluded explicitly, never counted as a pass. Disclosed in the README.
+            tgt["gated"] = False
+            tgt["not_gated_because"] = (
+                "the independent, hand-labelled UK holdout doesn't exist yet; hybrid accuracy is "
+                "measured on the generated test split (CAT-hybrid-acc-generated)"
+            )
     notes = [
         "Hybrid and LLM-only arms replay recorded Mesh responses (evals/cassettes); the "
         "holdout targets stay null until the UK hand-labelled holdout exists.",
