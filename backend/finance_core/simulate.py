@@ -7,7 +7,8 @@ Modifiers and how each is applied:
 
 - `one_off_outflow` / `one_off_inflow`: one fixed flow on `date`, in every path.
 - `split_outflow`: `amount_minor` split into `instalments` equal flows (the remainder on the first),
-  starting on `start date` (`date`), every `cadence` (weekly | fortnightly | monthly).
+  starting on `start date` (`date`), every `cadence` (weekly | fortnightly | monthly); every
+  instalment must fall after `as_of` and inside the horizon, or the scenario is refused.
 - `income_delay`: the stream's next `occurrences` paydays (all if None) move `days` later, then to
   the next working day; pay pushed past the horizon leaves the forecast.
 - `income_change_pct`: the stream's paydays (or every stream for `all_income`) in
@@ -158,12 +159,22 @@ def _apply(
         if start is None or not mod.instalments or mod.instalments < 1:
             raise ScenarioError("split_outflow needs a start date and at least one instalment")
         n = mod.instalments
+        # Every instalment must land in the forecast: one dropped silently would show the plan
+        # costing less than it does.
+        if start <= inputs.as_of:
+            raise ScenarioError(
+                f"split_outflow first payment {start} is not after the forecast date {inputs.as_of}"
+            )
         due = list(_series_dates(start, mod.cadence or "monthly", dates[-1], n))
+        if len(due) < n or any(d not in index for d in due):
+            raise ScenarioError(
+                f"split_outflow's last payment falls after the forecast horizon; "
+                f"a longer horizon_days is needed for {n} payments"
+            )
         part, rest = divmod(amount, n)
         out = list(flows)
         for i, d in enumerate(due):
-            if d > inputs.as_of and d in index:
-                out.append(Flow(index[d], -(part + (rest if i == 0 else 0)), mod.label or mod.type))
+            out.append(Flow(index[d], -(part + (rest if i == 0 else 0)), mod.label or mod.type))
         return out
     if mod.type == "income_delay":
         if mod.income_stream_key is None or mod.days is None or mod.days <= 0:

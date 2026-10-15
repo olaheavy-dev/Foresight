@@ -86,3 +86,20 @@ def test_unknown_targets_are_rejected_not_guessed(base) -> None:  # type: ignore
         _sim(base, ScenarioModifier(type="category_cut_pct", category_key="no.such", pct=10))
     with pytest.raises(ScenarioError):
         _sim(base, ScenarioModifier(type="move_to_goal", amount_minor=100, date=date(2026, 11, 1)))
+
+
+def test_split_outflow_refuses_a_first_payment_on_or_before_the_forecast(base) -> None:  # type: ignore[no-untyped-def]
+    mod = ScenarioModifier(
+        type="split_outflow", date=base.as_of, amount_minor=30_000, instalments=3, cadence="monthly"
+    )
+    with pytest.raises(ScenarioError, match="not after the forecast date"):
+        _end_shift(base, mod)
+
+
+def test_split_outflow_refuses_instalments_past_the_horizon(base) -> None:  # type: ignore[no-untyped-def]
+    start = base.as_of + timedelta(days=5)
+    mod = ScenarioModifier(
+        type="split_outflow", date=start, amount_minor=60_000, instalments=12, cadence="monthly"
+    )
+    with pytest.raises(ScenarioError, match="after the forecast horizon"):
+        _end_shift(base, mod)

@@ -13,7 +13,7 @@ import { categoryName } from "@/components/transactions/Transactions";
 import { BlockEnvProvider, ScenarioBlock } from "@/components/workspace/blocks";
 // The blocks reused from the Workspace bring their styles with them.
 import "@/components/workspace/workspace.css";
-import { fetchCategories, fetchDetected, simulateWithReason } from "@/lib/api";
+import { fetchCategories, fetchDetected, fetchForecast, simulateWithReason } from "@/lib/api";
 import { parseAmountMinor } from "@/lib/format";
 import type {
   CategoryOption,
@@ -38,10 +38,15 @@ const DEFAULT_HORIZON = 90;
 const MAX_HORIZON = 365;
 const CADENCE_DAYS: Record<string, number> = { weekly: 7, fortnightly: 14, monthly: 31 };
 
-/** A forecast long enough to include a spread purchase's last payment; null past a year. */
-export function spreadHorizon(start: string, instalments: number, cadence: string, today = new Date()): number | null {
-  const first = new Date(`${start}T00:00:00`);
-  const days = Math.ceil((first.getTime() - today.getTime()) / 86_400_000);
+const dayNumber = (iso: string) => Date.parse(`${iso}T00:00:00Z`) / 86_400_000;
+
+/**
+ * A forecast long enough to include a spread purchase's last payment; null past a year. Measured
+ * from the forecast's own date (`asOf`, the last day of the statements), as the engine measures
+ * `horizon_days`, not from today.
+ */
+export function spreadHorizon(start: string, instalments: number, cadence: string, asOf: string): number | null {
+  const days = dayNumber(start) - dayNumber(asOf);
   const last = days + (instalments - 1) * (CADENCE_DAYS[cadence] ?? 31) + 7;
   if (last > MAX_HORIZON) return null;
   return Math.max(DEFAULT_HORIZON, last);
@@ -70,8 +75,10 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
   const [result, setResult] = useState<{ view: SimulationView; name: string } | null>(null);
+  const [asOf, setAsOf] = useState<string | null>(null);
 
   useEffect(() => {
+    void fetchForecast().then((f) => setAsOf(f?.chart.as_of ?? null));
     void fetchDetected().then((f) => {
       setFlows(f);
       setRecurring(f?.recurring[0]?.recurring_id ?? "");
@@ -96,9 +103,12 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
           name: "One-off purchase",
           modifier: { type: "one_off_outflow", date, amount_minor: minor, label: "Purchase" },
         };
-      case "spread":
+      case "spread": {
         if (!minor || minor <= 0) return "Enter the total amount, like 900.";
-        if (spreadHorizon(date, Number(instalments), cadence) === null)
+        const from = asOf ?? isoInDays(0);
+        if (date <= from) return `Choose a first payment after ${from}, the day your forecast starts from.`;
+        const horizon = spreadHorizon(date, Number(instalments), cadence, from);
+        if (horizon === null)
           return "That plan runs past the year the forecast covers. Choose fewer payments or a shorter gap.";
         return {
           name: `Spread over ${instalments} payments`,
@@ -110,8 +120,9 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
             cadence,
             label: "Purchase",
           },
-          horizon: spreadHorizon(date, Number(instalments), cadence) ?? undefined,
+          horizon,
         };
+      }
       case "cancel":
         if (!recurring) return "There are no regular payments to cancel yet.";
         return {
