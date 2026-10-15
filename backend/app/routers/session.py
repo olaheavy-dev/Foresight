@@ -13,7 +13,7 @@ from __future__ import annotations
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Request, Response, status
-from sqlalchemy import delete, or_, text
+from sqlalchemy import delete, or_, text, update
 
 from backend.app import demo_pool
 from backend.app import session as sess
@@ -126,9 +126,24 @@ def reset_demo(request: Request, db: Db) -> ProfileView:
             status.HTTP_503_SERVICE_UNAVAILABLE, "A fresh demo couldn't be prepared. Try again."
         )
     fresh.last_active_at = sess.utcnow()
+    # Every copy of this persona the owner has goes, not just the active one: an account can hold
+    # two (a guest copy moved in at sign-in), and /demo would reopen the older edited one.
+    stale = [
+        w
+        for w in sess.owned_workspaces(db, row)
+        if w.kind == "sample" and w.persona_key == persona and w.id != fresh.id
+    ]
+    gone = {w.id for w in stale}
+    # Other browsers of the same account that had a removed copy open move to the fresh one.
+    db.execute(
+        update(m.AuthSession)
+        .where(m.AuthSession.active_workspace_id.in_(gone))
+        .values(active_workspace_id=fresh.id)
+    )
     row.active_workspace_id = fresh.id
     allow_purge(db)
-    db.delete(ws)
+    for w in stale:
+        db.delete(w)
     db.commit()
     demo_pool.schedule_refill(persona)
     return profile_view(fresh, account_view(db, row))

@@ -237,3 +237,37 @@ def test_a_demo_correction_stays_private_and_reset_brings_a_fresh_copy(
         new = alice.post("/api/session/new")
         assert new.status_code == 201
         assert alice.post("/api/session/demo/reset").status_code == 409  # not a demo profile
+
+
+def test_reset_moves_every_browser_of_the_account_and_removes_duplicate_copies(
+    make_client: type[TestClient],
+) -> None:
+    """Codex review on #39: an account open in two browsers, holding two demo copies (one moved
+    in from a guest session at sign-in), ends up with exactly one fresh copy, open in both."""
+    with (
+        make_client(create_app(), base_url=BASE) as laptop,
+        make_client(create_app(), base_url=BASE) as phone,
+    ):
+        first = demo(laptop)["workspace_id"]
+        second = demo(phone)["workspace_id"]
+        with _db() as db:  # both browsers signed in as one user, each with its own demo copy
+            user = m.AppUser(id="usr_01M4ZZZZZZZZZZZZZZZZZZZZZZ", issuer="test", subject="one")
+            db.add(user)
+            db.flush()
+            for ws_id in (first, second):
+                ws = db.get(m.Workspace, ws_id)
+                assert ws is not None
+                ws.owner_user_id, ws.owner_session_id = user.id, None
+            for s in db.scalars(
+                select(m.AuthSession).where(m.AuthSession.active_workspace_id.in_((first, second)))
+            ):
+                s.user_id = user.id
+            db.commit()
+
+        fresh = laptop.post("/api/session/demo/reset").json()["workspace_id"]
+        assert fresh not in {first, second}
+        assert phone.get("/api/session").json()["workspace_id"] == fresh
+        assert demo(laptop)["workspace_id"] == fresh
+        with _db() as db:
+            assert db.get(m.Workspace, first) is None
+            assert db.get(m.Workspace, second) is None
