@@ -58,3 +58,42 @@ test("a Monzo CSV imports, asks for today's balance, then forecasts", async ({ p
   // The first forecast after an import is computed on demand.
   await expect(page.getByText("£1,234.56")).toBeVisible({ timeout: 15_000 });
 });
+
+// R5: a bank we don't recognise is a question the person can answer, not a dead end.
+const ODD_BANK = [
+  "Posted On,Payee Text,Value (GBP),Running Total,Ref",
+  "01/10/2026,SALARY ACME LTD,2100.00,2600.00,A1",
+  "02/10/2026,TESCO STORES,-42.10,2557.90,A2",
+  "03/10/2026,RENT OCTOBER,-950.00,1607.90,A3",
+  "15/10/2026,DELIVEROO,-18.40,1589.50,A4",
+].join("\n");
+
+test("an unrecognised bank's CSV is mapped column by column, then imports", async ({ page }, info) => {
+  await page.context().clearCookies();
+  await page.goto("/start");
+  await page
+    .getByLabel("Choose statement files")
+    .setInputFiles({ name: "odd-bank.csv", mimeType: "text/csv", buffer: Buffer.from(ODD_BANK) });
+  const result = page.getByRole("list", { name: "Your files" }).getByRole("listitem").first();
+  await expect(result).toContainText("Needs an answer", { timeout: 30_000 });
+  const form = page.getByRole("form", { name: "Columns in odd-bank.csv" });
+  await expect(form).toContainText("We didn’t recognise this file’s columns");
+  // Recognised columns are pre-filled; each choice shows an example from the file.
+  await expect(form.getByLabel("Amount", { exact: true })).toHaveValue("value (gbp)");
+  await expect(
+    form.getByLabel("Description", { exact: true }).locator("option", { hasText: "SALARY ACME LTD" }),
+  ).toHaveCount(1);
+  await noSeriousA11yIssues(page);
+  await shot(page, "columns", info.project.name);
+
+  await form.getByRole("button", { name: "Import with these columns" }).click();
+  await expect(form.getByRole("alert")).toContainText("Choose a column for date, description, amount");
+
+  await form.getByLabel("Date", { exact: true }).selectOption("posted on");
+  await form.getByLabel("Description", { exact: true }).selectOption("payee text");
+  await form.getByLabel("Balance after each row (optional)").selectOption("running total");
+  await form.getByRole("button", { name: "Import with these columns" }).click();
+  await expect(result).toContainText("Imported", { timeout: 30_000 });
+  await expect(result).toContainText("Every row adds up to the running balance");
+  await expect(result).toContainText("4 imported of 4 read");
+});

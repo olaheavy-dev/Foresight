@@ -118,6 +118,9 @@ class Question:
     prompt: str
     options: tuple[str, ...] = ()
     preselected: str | None = None
+    # "columns" only: an example value per option (same order) and the roles already recognised.
+    examples: tuple[str, ...] = ()
+    proposed: tuple[tuple[str, str], ...] = ()
 
 
 @dataclass(frozen=True)

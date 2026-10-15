@@ -119,6 +119,9 @@ class ImportQuestion(Contract):
     prompt: NonEmpty
     options: list[str] = []
     preselected: str | None = None
+    # "columns" only: an example cell per option (same order) and the roles already recognised.
+    examples: list[Annotated[str, StringConstraints(max_length=24)]] = []
+    proposed: dict[str, str] | None = None
 
 
 class ImportedFile(Contract):

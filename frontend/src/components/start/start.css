@@ -58,3 +58,10 @@
 .balance-form input[aria-invalid] { border-color: var(--color-status-error); }
 .balance-form .bf-error { margin: var(--space-2) 0 0; font-size: var(--font-size-sm); color: var(--color-status-error); }
 .check-card .show-more { margin-top: var(--space-2); }
+
+.fr-columns .fr-prompt { margin: 0 0 var(--space-3); font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.fr-columns .column-picks { display: grid; gap: var(--space-3); margin: var(--space-3) 0 var(--space-4); }
+.fr-columns .column-picks .field { display: grid; gap: var(--space-1); margin: 0; }
+.fr-columns .column-picks label { font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--color-text-secondary); }
+.fr-columns select { min-height: 44px; width: 100%; padding: 0 var(--space-3); border: 1px solid var(--color-border-secondary); border-radius: var(--border-radius-sm); background: var(--color-bg-secondary); color: var(--color-text-primary); font: inherit; }
+@media (min-width: 768px) { .fr-columns .column-picks { grid-template-columns: 1fr 1fr; } }

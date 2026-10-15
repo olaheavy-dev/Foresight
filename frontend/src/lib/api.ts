@@ -117,7 +117,12 @@ export function fetchHealthz(options: ApiOptions = {}): Promise<Healthz | null> 
 }
 
 /** Answers to an import's questions, applied to every file sent with them (docs/06 H13). */
-export type ImportAnswers = Partial<Record<"currency" | "date_order" | "decimal_separator", string>>;
+export type ColumnRole = "date" | "description" | "amount" | "money_in" | "money_out" | "balance";
+/** Which column holds what, for a file whose headings weren't recognised (normalised names). */
+export type ColumnMapping = Partial<Record<ColumnRole, string>>;
+export type ImportAnswers = Partial<Record<"currency" | "date_order" | "decimal_separator", string>> & {
+  columns?: ColumnMapping;
+};
 
 /** Upload one or more statement files (multipart, field `files`), with any answers. */
 export function importStatements(

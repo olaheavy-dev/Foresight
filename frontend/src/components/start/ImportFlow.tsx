@@ -8,7 +8,16 @@
  * Engine data only: no model call.
  */
 import { useRouter } from "next/navigation";
-import { type ChangeEvent, type DragEvent, type FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import {
+  type ChangeEvent,
+  type DragEvent,
+  type FormEvent,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from "react";
 
 import { Icon } from "@/components/icons/Icon";
 import { Badge, Button, ButtonLink, CardHead } from "@/components/ui/primitives";
@@ -17,12 +26,13 @@ import {
   fetchAccounts,
   fetchDetected,
   fetchProfile,
+  type ColumnMapping,
   type ImportAnswers,
   importStatements,
   startNewProfile,
 } from "@/lib/api";
 import { formatLongDate, formatMoney, parseAmountMinor } from "@/lib/format";
-import type { AccountList, DetectedFlows, ImportedFile, ProfileView } from "@/ui-contracts/types";
+import type { AccountList, DetectedFlows, ImportedFile, ImportQuestion, ProfileView } from "@/ui-contracts/types";
 
 import "./start.css";
 
@@ -30,6 +40,7 @@ const MAX_FILES = 10;
 const MAX_BYTES = 10 * 1024 * 1024;
 const ACCEPT = ".csv,.xlsx,.xls,text/csv";
 const ANSWERABLE = new Set(["currency", "date_order", "decimal_separator"]);
+type FormatQuestion = "currency" | "date_order" | "decimal_separator";
 
 type Picked = { file: File; result: ImportedFile | null };
 
@@ -179,7 +190,12 @@ function FilesStep() {
               onAnswer={(kind, value) =>
                 setAnswers((a) => ({ ...a, [p.file.name]: { ...a[p.file.name], [kind]: value } }))
               }
-              onRetry={(given) => void send([p.file], given)}
+              onRetry={(given) => {
+                // Keep the column choice: a later question (date order, say) resends the file.
+                const columns = given.columns ?? answers[p.file.name]?.columns;
+                if (given.columns) setAnswers((a) => ({ ...a, [p.file.name]: { ...a[p.file.name], columns } }));
+                void send([p.file], columns ? { ...given, columns } : given);
+              }}
             />
           ))}
         </ul>
@@ -236,6 +252,7 @@ function FileResult({
     );
   }
   const questions = (r.questions ?? []).filter((q) => ANSWERABLE.has(q.kind));
+  const columnsQuestion = (r.questions ?? []).find((q) => q.kind === "columns");
   const rec = r.reconciliation;
   return (
     <li className="file-result">
@@ -305,6 +322,15 @@ function FileResult({
           </ul>
         </details>
       ) : null}
+      {r.status === "needs_mapping" && columnsQuestion ? (
+        <ColumnsForm
+          key={columnsQuestion.prompt}
+          question={columnsQuestion}
+          file={r.filename}
+          busy={busy}
+          onSubmit={(columns) => onRetry({ columns })}
+        />
+      ) : null}
       {r.status === "needs_mapping" && questions.length ? (
         <form
           className="fr-questions"
@@ -312,8 +338,9 @@ function FileResult({
             e.preventDefault();
             const given: ImportAnswers = {};
             for (const q of questions) {
-              const v = answers[q.kind as keyof ImportAnswers] ?? q.preselected ?? q.options?.[0];
-              if (v) given[q.kind as keyof ImportAnswers] = v;
+              const kind = q.kind as FormatQuestion;
+              const v = answers[kind] ?? q.preselected ?? q.options?.[0];
+              if (v) given[kind] = v;
             }
             onRetry(given);
           }}
@@ -328,7 +355,7 @@ function FileResult({
                       type="radio"
                       name={`${r.filename}-${q.kind}`}
                       value={o}
-                      defaultChecked={(answers[q.kind as keyof ImportAnswers] ?? q.preselected) === o}
+                      defaultChecked={(answers[q.kind as FormatQuestion] ?? q.preselected) === o}
                       onChange={() => onAnswer(q.kind, o)}
                     />
                     {o}
@@ -343,6 +370,112 @@ function FileResult({
         </form>
       ) : null}
     </li>
+  );
+}
+
+const ROLE_LABELS: Record<"date" | "description" | "amount" | "money_in" | "money_out" | "balance", string> = {
+  date: "Date",
+  description: "Description",
+  amount: "Amount",
+  money_in: "Money in",
+  money_out: "Money out",
+  balance: "Balance after each row (optional)",
+};
+
+/**
+ * R5: a file whose headings weren't recognised. The person says which column is which, seeing an
+ * example from each; anything recognised is pre-filled. Foresight checks the choice against the
+ * file (and the running balance, if given) and remembers it for this bank's next export.
+ */
+function ColumnsForm({
+  question,
+  file,
+  busy,
+  onSubmit,
+}: {
+  question: ImportQuestion;
+  file: string;
+  busy: boolean;
+  onSubmit: (columns: ColumnMapping) => void;
+}) {
+  const options = question.options ?? [];
+  const examples = question.examples ?? [];
+  const proposed = (question.proposed ?? {}) as ColumnMapping;
+  const [split, setSplit] = useState(Boolean(proposed.money_in && proposed.money_out && !proposed.amount));
+  const [picked, setPicked] = useState<ColumnMapping>(proposed);
+  const [problem, setProblem] = useState<string | null>(null);
+  const fieldId = useId();
+  const roles: (keyof ColumnMapping)[] = split
+    ? ["date", "description", "money_in", "money_out", "balance"]
+    : ["date", "description", "amount", "balance"];
+
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    const chosen: ColumnMapping = {};
+    for (const role of roles) if (picked[role]) chosen[role] = picked[role];
+    const required = split ? ["date", "description", "money_in", "money_out"] : ["date", "description", "amount"];
+    if (required.some((role) => !chosen[role as keyof ColumnMapping])) {
+      setProblem(
+        `Choose a column for ${required.map((r) => ROLE_LABELS[r as keyof ColumnMapping].toLowerCase()).join(", ")}.`,
+      );
+      return;
+    }
+    const used = Object.values(chosen);
+    if (new Set(used).size !== used.length) {
+      setProblem("Each column can only be used once.");
+      return;
+    }
+    setProblem(null);
+    onSubmit(chosen);
+  };
+
+  return (
+    <form className="fr-questions fr-columns" onSubmit={submit} aria-label={`Columns in ${file}`}>
+      <p className="fr-prompt">{question.prompt}</p>
+      <fieldset>
+        <legend>How does this file show amounts?</legend>
+        <div className="options">
+          <label className="option">
+            <input type="radio" name={`${file}-split`} checked={!split} onChange={() => setSplit(false)} />
+            One amount column (money out is negative)
+          </label>
+          <label className="option">
+            <input type="radio" name={`${file}-split`} checked={split} onChange={() => setSplit(true)} />
+            Separate money in and money out columns
+          </label>
+        </div>
+      </fieldset>
+      <div className="column-picks">
+        {roles.map((role) => {
+          const id = `${fieldId}-${role}`;
+          return (
+            <div key={role} className="field">
+              <label htmlFor={id}>{ROLE_LABELS[role]}</label>
+              <select
+                id={id}
+                value={picked[role] ?? ""}
+                onChange={(e) => setPicked((p) => ({ ...p, [role]: e.target.value || undefined }))}
+              >
+                <option value="">{role === "balance" ? "No balance column" : "Choose a column"}</option>
+                {options.map((o, i) => (
+                  <option key={o} value={o}>
+                    {examples[i] ? `${o} (e.g. ${examples[i]})` : o}
+                  </option>
+                ))}
+              </select>
+            </div>
+          );
+        })}
+      </div>
+      {problem ? (
+        <p className="form-error" role="alert">
+          {problem}
+        </p>
+      ) : null}
+      <Button type="submit" variant="primary" disabled={busy}>
+        Import with these columns
+      </Button>
+    </form>
   );
 }
 

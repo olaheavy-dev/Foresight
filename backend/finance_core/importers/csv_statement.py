@@ -9,6 +9,7 @@ leave the batch uncommitted (no rows returned). Contains no bank-specific code.
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, replace
@@ -74,6 +75,71 @@ def _strip_units(header: str) -> str:
     return re.sub(r"\s*\((?:[a-z]{3}|[£€$₹¥])\)\s*$", "", header)
 
 
+# Roles a person can assign when the headers aren't recognised (the answer to a "columns" question).
+COLUMN_ROLES = ("date", "description", "amount", "money_in", "money_out", "balance")
+COLUMNS_PROMPT = (
+    "We didn’t recognise this file’s columns. Choose which column holds the date, the description "
+    "and the amount (or money in and money out)."
+)
+
+
+def columns_question(
+    table: Table, recognised: Mapping[str, tuple[str, ...]], note: str | None = None
+) -> Question:
+    """The "columns" question with an example value per column and what was recognised, so the
+    person only fills the gaps. Examples are the file's own cells, shown back to its owner."""
+    headers = [normalise_header(h) for h in table.headers]
+    examples = []
+    for idx in range(len(headers)):
+        cell = next(
+            (c[idx].strip() for _, c in table.rows[:20] if idx < len(c) and c[idx].strip()), ""
+        )
+        examples.append(cell[:24])
+    proposed = tuple(
+        (role, names[0]) for role, names in recognised.items() if role in COLUMN_ROLES and names
+    )
+    return Question(
+        kind="columns",
+        prompt=f"{note} {COLUMNS_PROMPT}" if note else COLUMNS_PROMPT,
+        options=tuple(headers),
+        examples=tuple(examples),
+        proposed=proposed,
+    )
+
+
+def manual_profile(
+    headers: Sequence[str], chosen: Mapping[str, str]
+) -> tuple[FormatProfile | None, str | None]:
+    """A profile from the person's column choice, or why it can't be used. Deterministic: the
+    choice is checked against the file, never guessed."""
+    norm = [normalise_header(h) for h in headers]
+    picked = {role: normalise_header(name) for role, name in chosen.items() if name}
+    if not set(picked) <= set(COLUMN_ROLES):
+        return None, "Those roles aren’t ones we can use."
+    if any(name not in norm for name in picked.values()):
+        return None, "One of those columns isn’t in this file."
+    if len(set(picked.values())) != len(picked):
+        return None, "Each column can only be used once."
+    split = "money_in" in picked and "money_out" in picked
+    if "date" not in picked or "description" not in picked or not (split or "amount" in picked):
+        return None, "We need a date, a description and an amount (or money in and money out)."
+    if ("money_in" in picked) != ("money_out" in picked) and "amount" not in picked:
+        return None, "Money in and money out go together."
+    signature = tuple(h for h in norm if h)
+    return (
+        FormatProfile(
+            profile_id="user." + hashlib.sha256("|".join(signature).encode()).hexdigest()[:12],
+            label="Your column choice",
+            header_signature=signature,
+            columns={role: (name,) for role, name in picked.items()},
+            sign_convention="in_out" if split else "signed",
+            skip_zero_amount=True,
+            origin="user_confirmed",
+        ),
+        None,
+    )
+
+
 def heuristic_profile(headers: Sequence[str]) -> tuple[FormatProfile | None, Question | None]:
     """Map unknown headers to roles. Confident ⇒ a heuristic profile; unsure ⇒ a Question."""
     norm = [_strip_units(normalise_header(h)) for h in headers]
@@ -91,11 +157,11 @@ def heuristic_profile(headers: Sequence[str]) -> tuple[FormatProfile | None, Que
     has_amount = "amount" in columns or ("money_in" in columns and "money_out" in columns)
     confident = "date" in columns and "description" in columns and has_amount
     if not confident:
-        proposal = ", ".join(f"{r} = {c[0]}" for r, c in columns.items()) or "no columns recognised"
         return None, Question(
             kind="columns",
-            prompt=f"Please confirm the columns in this file (proposed: {proposal}).",
+            prompt=COLUMNS_PROMPT,
             options=tuple(normalise_header(h) for h in headers),
+            proposed=tuple((r, c[0]) for r, c in columns.items() if r in COLUMN_ROLES),
         )
     # Split in/out columns win; a signed amount column alongside them is kept as a cross-check.
     convention = "in_out" if "money_in" in columns and "money_out" in columns else "signed"
@@ -145,11 +211,21 @@ def import_table(
     answers = dict(answers or {})
     warnings: list[str] = []
     profile = match_profile(table.headers, list(saved_profiles) + list(BUILTIN_PROFILES))
+    if profile is None and "columns" in answers:
+        chosen = json.loads(answers["columns"])
+        profile, problem = manual_profile(table.headers, chosen)
+        if profile is None:
+            recognised = {r: (n,) for r, n in chosen.items() if isinstance(n, str) and n}
+            return _pending(
+                table, None, (columns_question(table, recognised, problem),), file_sha256
+            )
     if profile is None:
         profile, question = heuristic_profile(table.headers)
         if profile is None:
             assert question is not None
-            return _pending(table, None, (question,), file_sha256)
+            guess = dict(question.proposed)
+            recognised = {r: (n,) for r, n in guess.items()}
+            return _pending(table, None, (columns_question(table, recognised),), file_sha256)
     cols = profile.columns
     amount_names = cols.get("amount", ()) + cols.get("money_in", ()) + cols.get("money_out", ())
     amount_samples = [_cell(table.headers, c, amount_names) for _, c in table.rows[:200]]

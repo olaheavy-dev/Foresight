@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import date
 
 import pytest
@@ -171,3 +172,68 @@ def test_pdf_and_spreadsheets_are_honestly_not_supported_yet() -> None:
     xlsx = import_file("s.xlsx", b"PK\x03\x04rest", pack=UK, home_currency="GBP")
     assert xlsx.tables == ()
     assert xlsx.message is not None
+
+
+ODD_BANK = (
+    "Posted On,Payee Text,Value (GBP),Running Total,Ref\n"
+    "01/10/2026,SALARY ACME LTD,2100.00,2600.00,A1\n"
+    "02/10/2026,TESCO STORES,-42.10,2557.90,A2\n"
+    "03/10/2026,RENT OCTOBER,-950.00,1607.90,A3\n"
+    "15/10/2026,DELIVEROO,-18.40,1589.50,A4\n"
+)
+ODD_MAPPING = json.dumps(
+    {
+        "date": "posted on",
+        "description": "payee text",
+        "amount": "value (gbp)",
+        "balance": "running total",
+    }
+)
+
+
+def test_unrecognised_columns_come_with_examples_and_what_was_recognised() -> None:
+    """R5: the question can be answered: each column shows an example, and anything recognised
+    is pre-filled."""
+    (table,) = run(ODD_BANK).tables
+    (q,) = blocking_questions(table.result)
+    assert q.kind == "columns"
+    assert q.options == ("posted on", "payee text", "value (gbp)", "running total", "ref")
+    assert q.examples[0] == "01/10/2026"
+    assert q.examples[1] == "SALARY ACME LTD"
+    assert ("amount", "value (gbp)") in q.proposed
+
+
+def test_a_column_mapping_answer_imports_and_reconciles() -> None:
+    (table,) = run(ODD_BANK, answers={"columns": ODD_MAPPING}).tables
+    assert not blocking_questions(table.result)
+    assert len(table.result.rows) == 4
+    assert table.result.reconciliation.status == ReconciliationStatus.RECONCILED
+    assert table.profile is not None
+    assert table.profile.origin == "user_confirmed"
+    assert table.profile.profile_id.startswith("user.")
+    # Saved, the profile makes the next export from this bank silent.
+    (again,) = run(ODD_BANK, saved_profiles=[table.profile]).tables
+    assert not blocking_questions(again.result)
+    assert len(again.result.rows) == 4
+
+
+@pytest.mark.parametrize(
+    ("mapping", "why"),
+    [
+        ('{"date": "posted on", "amount": "value (gbp)"}', "need a date, a description"),
+        (
+            '{"date": "posted on", "description": "payee text", "amount": "nope"}',
+            "isn’t in this file",
+        ),
+        (
+            '{"date": "posted on", "description": "posted on", "amount": "value (gbp)"}',
+            "only be used once",
+        ),
+    ],
+)
+def test_an_unusable_mapping_asks_again_and_says_why(mapping: str, why: str) -> None:
+    (table,) = run(ODD_BANK, answers={"columns": mapping}).tables
+    (q,) = blocking_questions(table.result)
+    assert q.kind == "columns"
+    assert why in q.prompt
+    assert not table.result.rows
