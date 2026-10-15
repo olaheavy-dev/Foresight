@@ -69,7 +69,7 @@ features:
   decision_lab:
     stage: 3
     title: Decision Lab scenario comparison
-    enabled: false
+    enabled: true
     suites: [E-SIM, E-SCN]
   ledger:
     stage: 3

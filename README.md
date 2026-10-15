@@ -25,13 +25,13 @@ Features ship behind flags ([`features.yaml`](features.yaml)). A feature is list
 - Advisor and Verifier loop (advice checked before you see it)
 - Evidence and audit trail for every recommendation
 - AI Workspace — conversational analysis with generated answers
+- Decision Lab scenario comparison
 - Transactions, imports and categorisation review
 
 ### Not shipped (planned)
 
 - Stage 1: What-if simulation against the same engine
 - Stage 3: Home (cached financial briefing and proactive insights)
-- Stage 3: Decision Lab scenario comparison
 - Stage 3: Scheduled Telegram digest
 - Stage 3: Goal tracking with adaptive advice
 - Stage 3: Instant answers to repeated questions on unchanged data

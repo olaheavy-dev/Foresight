@@ -190,29 +190,32 @@ export function LineChart({
           </li>
         ) : null}
       </ul>
-      <table className="sr-only">
-        <caption>{ariaLabel}</caption>
-        <thead>
-          <tr>
-            <th scope="col">Date</th>
-            {usable.map((l) => (
-              <th key={l.key} scope="col">
-                {l.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {first.dates.map((d, i) => (
-            <tr key={d}>
-              <th scope="row">{formatShortDate(d, locale)}</th>
+      <div className="sr-only">
+        {/* A div clips; a table ignores width: 1px and would widen the page. */}
+        <table>
+          <caption>{ariaLabel}</caption>
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
               {usable.map((l) => (
-                <td key={l.key}>{l.dates[i] === d ? money(l.values[i]) : ""}</td>
+                <th key={l.key} scope="col">
+                  {l.label}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {first.dates.map((d, i) => (
+              <tr key={d}>
+                <th scope="row">{formatShortDate(d, locale)}</th>
+                {usable.map((l) => (
+                  <td key={l.key}>{l.dates[i] === d ? money(l.values[i]) : ""}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -348,17 +351,20 @@ export function Columns({
           </>
         ) : null}
       </ul>
-      <table className="sr-only">
-        <caption>{ariaLabel}</caption>
-        <tbody>
-          {values.map((v, i) => (
-            <tr key={i}>
-              <th scope="row">{labels[i]}</th>
-              <td>{money(v)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="sr-only">
+        {/* A div clips; a table ignores width: 1px and would widen the page. */}
+        <table>
+          <caption>{ariaLabel}</caption>
+          <tbody>
+            {values.map((v, i) => (
+              <tr key={i}>
+                <th scope="row">{labels[i]}</th>
+                <td>{money(v)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
