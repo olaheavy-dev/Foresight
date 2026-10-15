@@ -136,6 +136,14 @@ def _apply(
     inputs = prep.inputs
     dates = prep.dates
     in_horizon = [d for d in dates if d > inputs.as_of]
+    # A period that misses the forecast entirely would change nothing: refuse it, never answer
+    # "no difference" for a change that wasn't simulated.
+    if mod.from_date and mod.to_date and mod.from_date > mod.to_date:
+        raise ScenarioError(f"{mod.type} from_date {mod.from_date} is after to_date {mod.to_date}")
+    if mod.from_date and in_horizon and mod.from_date > in_horizon[-1]:
+        raise ScenarioError(f"{mod.type} from_date {mod.from_date} is outside the forecast horizon")
+    if mod.to_date and mod.to_date <= inputs.as_of:
+        raise ScenarioError(f"{mod.type} to_date {mod.to_date} is before the forecast starts")
     if mod.type in ("one_off_outflow", "one_off_inflow"):
         amount = _positive_amount(mod)
         if mod.date is None:

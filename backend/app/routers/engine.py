@@ -125,21 +125,27 @@ INT_FIELDS = frozenset(
 TEXT_FIELDS = frozenset(
     {"type", "label", "category_key", "income_stream_key", "recurring_id", "cadence"}
 )
+# The documented contract's names (docs/07 §6.5) for fields the engine names differently.
+ALIASES = {"income_stream_id": "income_stream_key", "start_date": "date"}
 _MODIFIER_FIELDS = DATE_FIELDS | INT_FIELDS | TEXT_FIELDS
+_ACCEPTED_FIELDS = _MODIFIER_FIELDS | set(ALIASES)
 
 
 def _modifier(raw: dict[str, Any], ids: Mapping[str, str] | None = None) -> ScenarioModifier:
     """An API modifier as the engine's. `ids` maps this profile's `inc_`/`rob_` ids (what
     /api/detected returns) to the engine's stream and obligation keys; keys pass through."""
-    unknown = set(raw) - _MODIFIER_FIELDS
+    unknown = set(raw) - _ACCEPTED_FIELDS
     if unknown:
         raise _unprocessable(f"Unsupported modifier fields: {', '.join(sorted(unknown))}.")
     ids = ids or {}
     try:
         values: dict[str, Any] = {}
-        for name, value in raw.items():
-            if value is None:
-                continue
+        for given, value in raw.items():
+            name = ALIASES.get(given, given)
+            if name in values and given != name:
+                raise ValueError(f"{given} and {name} name the same thing; send one")
+            if value is None or (name == "occurrences" and value == "all"):
+                continue  # occurrences "all" (docs/07) is the engine's default: every payday
             if name in DATE_FIELDS:
                 if not isinstance(value, str):
                     raise ValueError(f"{name} must be an ISO date")

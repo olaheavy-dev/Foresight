@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import dataclasses
 
-from backend.app.routers.engine import _MODIFIER_FIELDS, _modifier
+from backend.app.routers.engine import _MODIFIER_FIELDS, ALIASES, _modifier
 from backend.finance_core.types import ScenarioModifier
 
 
@@ -28,3 +28,16 @@ def test_ids_from_the_api_become_engine_keys() -> None:
          "cadence": "monthly"}
     )  # fmt: skip
     assert (split.instalments, split.cadence) == (3, "monthly")
+
+
+def test_the_documented_field_names_are_accepted() -> None:
+    """#45 (Codex): docs/07's names map to the engine's; "all" occurrences is the default."""
+    assert set(ALIASES.values()) <= _MODIFIER_FIELDS
+    delay = _modifier(
+        {"type": "income_delay", "income_stream_id": "inc_X", "days": 3, "occurrences": "all"},
+        {"inc_X": "income:acme"},
+    )
+    assert (delay.income_stream_key, delay.occurrences) == ("income:acme", None)
+    spread = _modifier({"type": "split_outflow", "start_date": "2026-11-02", "amount_minor": 1,
+                        "instalments": 2, "cadence": "monthly"})  # fmt: skip
+    assert str(spread.date) == "2026-11-02"
