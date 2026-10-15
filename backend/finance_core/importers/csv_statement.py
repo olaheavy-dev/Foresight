@@ -83,6 +83,29 @@ COLUMNS_PROMPT = (
 )
 
 
+# Examples are the owner's own cells, but identifiers still never leave the importer (AGENTS.md
+# rule 1): no example for identifier-like columns, and long digit runs are masked everywhere else.
+_IDENTIFIER_HEADER = re.compile(
+    r"account|iban|sort ?code|card|\bbic\b|swift|\bref|reference|\bid\b|number|\bno\b", re.I
+)
+_AMOUNT_CELL = re.compile(r"^[-+(]?\s?[£$€₹]?\s?[\d,]+(\.\d+)?\)?$")
+_DIGIT_RUN = re.compile(r"\d(?:[\d\s-]*\d)?")
+
+
+def safe_example(header: str, cell: str) -> str:
+    """A cell fit to show back as an example, or "" if it might be an identifier."""
+    if not cell or _IDENTIFIER_HEADER.search(header):
+        return ""
+    if _AMOUNT_CELL.match(cell):
+        return cell[:24]
+
+    def mask(m: re.Match[str]) -> str:
+        digits = sum(ch.isdigit() for ch in m.group())
+        return "•" * 4 if digits >= 6 else m.group()
+
+    return _DIGIT_RUN.sub(mask, cell)[:24]
+
+
 def columns_question(
     table: Table, recognised: Mapping[str, tuple[str, ...]], note: str | None = None
 ) -> Question:
@@ -94,7 +117,7 @@ def columns_question(
         cell = next(
             (c[idx].strip() for _, c in table.rows[:20] if idx < len(c) and c[idx].strip()), ""
         )
-        examples.append(cell[:24])
+        examples.append(safe_example(headers[idx], cell))
     proposed = tuple(
         (role, names[0]) for role, names in recognised.items() if role in COLUMN_ROLES and names
     )
@@ -212,13 +235,20 @@ def import_table(
     warnings: list[str] = []
     profile = match_profile(table.headers, list(saved_profiles) + list(BUILTIN_PROFILES))
     if profile is None and "columns" in answers:
-        chosen = json.loads(answers["columns"])
-        profile, problem = manual_profile(table.headers, chosen)
-        if profile is None:
-            recognised = {r: (n,) for r, n in chosen.items() if isinstance(n, str) and n}
-            return _pending(
-                table, None, (columns_question(table, recognised, problem),), file_sha256
-            )
+        # A list of mappings, one per unrecognised table: each table takes the first mapping whose
+        # columns it actually has (a file can hold tables with different headings).
+        parsed = json.loads(answers["columns"])
+        mappings: list[dict[str, str]] = parsed if isinstance(parsed, list) else [parsed]
+        present = {normalise_header(h) for h in table.headers}
+        chosen = next(
+            (c for c in mappings if {normalise_header(n) for n in c.values() if n} <= present), None
+        )
+        if chosen is not None:
+            profile, problem = manual_profile(table.headers, chosen)
+            if profile is None:
+                recognised = {r: (n,) for r, n in chosen.items() if isinstance(n, str) and n}
+                asked = columns_question(table, recognised, problem)
+                return _pending(table, None, (asked,), file_sha256)
     if profile is None:
         profile, question = heuristic_profile(table.headers)
         if profile is None:
@@ -228,6 +258,9 @@ def import_table(
             return _pending(table, None, (columns_question(table, recognised),), file_sha256)
     cols = profile.columns
     amount_names = cols.get("amount", ()) + cols.get("money_in", ()) + cols.get("money_out", ())
+    # The amount columns' own headings ("Value (USD)") are currency evidence too, in their
+    # original case so an ISO code is recognised; conflicting units end in a question.
+    amount_headings = " ".join(h for h in table.headers if normalise_header(h) in amount_names)
     amount_samples = [_cell(table.headers, c, amount_names) for _, c in table.rows[:200]]
     amount_samples = [s for s in amount_samples if s]
 
@@ -239,7 +272,7 @@ def import_table(
         currency, provenance, cq = detect_currency(
             currency_column_values=currency_values,
             amount_samples=amount_samples,
-            header_text=table.title or "",
+            header_text=f"{table.title or ''} {amount_headings}",
             profile_currency=profile.currency,
             home_currency=home_currency,
         )

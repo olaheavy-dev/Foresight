@@ -192,9 +192,11 @@ function FilesStep() {
               }
               onRetry={(given) => {
                 // Keep the column choice: a later question (date order, say) resends the file.
-                const columns = given.columns ?? answers[p.file.name]?.columns;
+                // Mappings accumulate: a file with two unknown tables is answered table by table.
+                const kept = answers[p.file.name]?.columns ?? [];
+                const columns = given.columns ? [...kept, ...given.columns] : kept;
                 if (given.columns) setAnswers((a) => ({ ...a, [p.file.name]: { ...a[p.file.name], columns } }));
-                void send([p.file], columns ? { ...given, columns } : given);
+                void send([p.file], columns.length ? { ...given, columns } : given);
               }}
             />
           ))}
@@ -252,7 +254,7 @@ function FileResult({
     );
   }
   const questions = (r.questions ?? []).filter((q) => ANSWERABLE.has(q.kind));
-  const columnsQuestion = (r.questions ?? []).find((q) => q.kind === "columns");
+  const columnsQuestions = (r.questions ?? []).filter((q) => q.kind === "columns");
   const rec = r.reconciliation;
   return (
     <li className="file-result">
@@ -322,15 +324,19 @@ function FileResult({
           </ul>
         </details>
       ) : null}
-      {r.status === "needs_mapping" && columnsQuestion ? (
-        <ColumnsForm
-          key={columnsQuestion.prompt}
-          question={columnsQuestion}
-          file={r.filename}
-          busy={busy}
-          onSubmit={(columns) => onRetry({ columns })}
-        />
-      ) : null}
+      {r.status === "needs_mapping"
+        ? columnsQuestions.map((q, i) => (
+            <ColumnsForm
+              key={`${i}-${q.prompt}-${(q.options ?? []).join("|")}`}
+              question={q}
+              label={
+                columnsQuestions.length > 1 ? `Columns in ${r.filename}, table ${i + 1}` : `Columns in ${r.filename}`
+              }
+              busy={busy}
+              onSubmit={(columns) => onRetry({ columns: [columns] })}
+            />
+          ))
+        : null}
       {r.status === "needs_mapping" && questions.length ? (
         <form
           className="fr-questions"
@@ -389,12 +395,12 @@ const ROLE_LABELS: Record<"date" | "description" | "amount" | "money_in" | "mone
  */
 function ColumnsForm({
   question,
-  file,
+  label,
   busy,
   onSubmit,
 }: {
   question: ImportQuestion;
-  file: string;
+  label: string;
   busy: boolean;
   onSubmit: (columns: ColumnMapping) => void;
 }) {
@@ -430,17 +436,17 @@ function ColumnsForm({
   };
 
   return (
-    <form className="fr-questions fr-columns" onSubmit={submit} aria-label={`Columns in ${file}`}>
+    <form className="fr-questions fr-columns" onSubmit={submit} aria-label={label}>
       <p className="fr-prompt">{question.prompt}</p>
       <fieldset>
         <legend>How does this file show amounts?</legend>
         <div className="options">
           <label className="option">
-            <input type="radio" name={`${file}-split`} checked={!split} onChange={() => setSplit(false)} />
+            <input type="radio" name={`${fieldId}-split`} checked={!split} onChange={() => setSplit(false)} />
             One amount column (money out is negative)
           </label>
           <label className="option">
-            <input type="radio" name={`${file}-split`} checked={split} onChange={() => setSplit(true)} />
+            <input type="radio" name={`${fieldId}-split`} checked={split} onChange={() => setSplit(true)} />
             Separate money in and money out columns
           </label>
         </div>

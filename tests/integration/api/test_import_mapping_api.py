@@ -63,3 +63,10 @@ def test_a_mapping_must_use_known_roles(api: TestClient) -> None:
         data={"answers": json.dumps({"columns": {"when": "posted on"}})},
     )
     assert bad.status_code == 422
+
+
+def test_a_list_of_mappings_is_accepted(api: TestClient) -> None:
+    """One mapping per unrecognised table (#42 Codex review); a single mapping still works."""
+    new_profile(api)
+    mapped = send(api, "odd.csv", {"columns": [MAPPING]})
+    assert mapped["status"] == "imported"

@@ -221,9 +221,10 @@ def test_a_column_mapping_answer_imports_and_reconciles() -> None:
     ("mapping", "why"),
     [
         ('{"date": "posted on", "amount": "value (gbp)"}', "need a date, a description"),
+        # A mapping naming a column this table lacks doesn't apply to it: the question returns.
         (
             '{"date": "posted on", "description": "payee text", "amount": "nope"}',
-            "isn’t in this file",
+            "didn’t recognise",
         ),
         (
             '{"date": "posted on", "description": "posted on", "amount": "value (gbp)"}',
@@ -237,3 +238,51 @@ def test_an_unusable_mapping_asks_again_and_says_why(mapping: str, why: str) -> 
     assert q.kind == "columns"
     assert why in q.prompt
     assert not table.result.rows
+
+
+def test_examples_never_show_account_identifiers() -> None:
+    """#42 (Codex review): examples come from the owner's file, but identifiers stay inside."""
+    text = (
+        "Posted On,Account Number,Payee Text,Value (GBP)\n"
+        "01/10/2026,12345678,TRANSFER TO 40-11-62 87654321,-25.00\n"
+        "15/10/2026,12345678,CARD SHOP,-4.20\n"
+    )
+    (table,) = run(text).tables
+    (q,) = blocking_questions(table.result)
+    assert q.examples[1] == ""  # an identifier column shows no example at all
+    assert "87654321" not in q.examples[2]
+    assert "••••" in q.examples[2]
+    assert q.examples[3] == "-25.00"  # amounts are kept
+    assert q.examples[0] == "01/10/2026"  # dates are kept
+
+
+def test_a_mapped_amount_heading_sets_the_currency() -> None:
+    """#42 (Codex review): "Value (USD)" in a GBP profile imports as USD, not GBP."""
+    text = "Posted On,Payee Text,Value (USD)\n01/10/2026,SHOP,-12.50\n02/10/2026,PAY,100.00\n"
+    mapping = json.dumps(
+        {"date": "posted on", "description": "payee text", "amount": "value (usd)"}
+    )
+    (table,) = run(text, answers={"columns": mapping, "date_order": "DMY"}).tables
+    assert not blocking_questions(table.result)
+    assert {r.currency for r in table.result.rows} == {"USD"}
+
+
+def test_each_unrecognised_table_takes_its_own_mapping() -> None:
+    """#42 (Codex review): a file with two unknown tables is importable, one mapping each."""
+    text = (
+        '"Main account",,,\n"Transaction statement",,,\n'
+        "Posted On,Payee Text,Value (GBP),Running Total\n"
+        "01/10/2026,SALARY,100.00,100.00\n02/10/2026,SHOP,-10.00,90.00\n"
+        "---------,,,\n"
+        '"Savings pot",,,\n"Transaction statement",,,\n'
+        "When Booked,Narrative,Sum (GBP),Pot Total\n"
+        "03/10/2026,ROUND UP,0.50,0.50\n04/10/2026,ROUND UP,0.40,0.90\n"
+    )
+    first = {"date": "posted on", "description": "payee text", "amount": "value (gbp)"}
+    second = {"date": "when booked", "description": "narrative", "amount": "sum (gbp)"}
+    one = run(text, answers={"columns": json.dumps([first]), "date_order": "DMY"}).tables
+    assert len(one) == 2
+    assert [bool(blocking_questions(t.result)) for t in one] == [False, True]
+    both = run(text, answers={"columns": json.dumps([first, second]), "date_order": "DMY"}).tables
+    assert not any(blocking_questions(t.result) for t in both)
+    assert [len(t.result.rows) for t in both] == [2, 2]

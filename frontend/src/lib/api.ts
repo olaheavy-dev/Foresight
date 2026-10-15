@@ -129,7 +129,8 @@ export type ColumnRole = "date" | "description" | "amount" | "money_in" | "money
 /** Which column holds what, for a file whose headings weren't recognised (normalised names). */
 export type ColumnMapping = Partial<Record<ColumnRole, string>>;
 export type ImportAnswers = Partial<Record<"currency" | "date_order" | "decimal_separator", string>> & {
-  columns?: ColumnMapping;
+  /** One mapping per unrecognised table; each table uses the one whose columns it has. */
+  columns?: ColumnMapping[];
 };
 
 /** Upload one or more statement files (multipart, field `files`), with any answers. */

@@ -129,16 +129,22 @@ def _answers(raw: str | None) -> dict[str, str] | None:
     given: dict[str, str] = {}
     for kind, value in parsed.items():
         if kind == "columns":
+            # One mapping, or a list of them (one per unrecognised table in the file).
+            mappings = value if isinstance(value, list) else [value]
             if not (
-                isinstance(value, dict)
-                and set(value) <= set(COLUMN_ROLES)
-                and all(isinstance(v, str) and 0 < len(v) <= 100 for v in value.values())
+                0 < len(mappings) <= 10
+                and all(
+                    isinstance(m, dict)
+                    and set(m) <= set(COLUMN_ROLES)
+                    and all(isinstance(v, str) and 0 < len(v) <= 100 for v in m.values())
+                    for m in mappings
+                )
             ):
                 raise HTTPException(
                     status.HTTP_422_UNPROCESSABLE_ENTITY,
                     f"columns must map roles from {list(COLUMN_ROLES)} to column names.",
                 )
-            given[kind] = json.dumps(value, sort_keys=True)
+            given[kind] = json.dumps(mappings, sort_keys=True)
         elif isinstance(value, str) and 0 < len(value) <= 8:
             given[kind] = value
         else:
