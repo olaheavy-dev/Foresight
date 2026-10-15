@@ -266,3 +266,48 @@ def test_home_forecast_reads_the_stored_calculation_quickly(
         timings.append(time.perf_counter() - started)
         assert response.status_code == 200, response.text
     assert max(timings) <= 0.5, timings
+
+
+def test_every_modifier_type_runs_through_the_api(api: TestClient) -> None:
+    """R6: what the engine supports, the API accepts, with the ids /api/detected returns."""
+    demo(api)
+    chart = api.get("/api/forecast").json()["chart"]
+    as_of = date.fromisoformat(chart["as_of"])
+    soon = (as_of + timedelta(days=7)).isoformat()
+    flows = api.get("/api/detected").json()
+    income_id = flows["income"][0]["income_stream_id"]  # an inc_ id, not an engine key
+    bill = next(r for r in flows["recurring"] if r["category_key"] != "housing.rent")
+    base = {"schema": "scenario_spec/1", "name": "What if", "scope": "mine", "currency": "GBP"}
+    modifiers = [
+        {"type": "split_outflow", "date": soon, "amount_minor": 90000, "instalments": 3,
+         "cadence": "monthly", "label": "Laptop"},
+        {"type": "income_change_pct", "income_stream_key": income_id, "pct": -10},
+        {"type": "income_delay", "income_stream_key": income_id, "days": 3},
+        {"type": "recurring_cancel", "recurring_id": bill["recurring_id"], "from_date": soon},
+        {"type": "category_cut_pct", "category_key": "food.delivery", "pct": 50},
+        {"type": "category_cap", "category_key": "food.delivery", "monthly_cap_minor": 5000},
+        {"type": "buffer_override", "buffer_minor": 100000},
+    ]  # fmt: skip
+    for mod in modifiers:
+        response = api.post("/api/simulate", json={**base, "modifiers": [mod]})
+        assert response.status_code == 200, (mod["type"], response.text)
+        checked(api, response, "/api/simulate")
+    bad = api.post(
+        "/api/simulate",
+        json={**base, "modifiers": [{"type": "category_cut_pct", "category_key": "food.delivery",
+                                     "pct": 150}]},
+    )  # fmt: skip
+    assert bad.status_code == 422
+    assert "between 0 and 100" in bad.text
+    # #45 (Codex): a period that misses the forecast is refused, never answered "no change".
+    cancel_late = {"type": "recurring_cancel", "recurring_id": bill["recurring_id"],
+                   "from_date": "2099-01-01"}  # fmt: skip
+    late = api.post("/api/simulate", json={**base, "modifiers": [cancel_late]})
+    assert late.status_code == 422
+    assert "outside the forecast horizon" in late.text
+    documented = api.post(
+        "/api/simulate",
+        json={**base, "modifiers": [{"type": "income_delay", "income_stream_id": income_id,
+                                     "days": 3, "occurrences": "all"}]},
+    )  # fmt: skip
+    assert documented.status_code == 200, documented.text

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from datetime import date
 from typing import Any, TypeVar
 
@@ -23,6 +23,7 @@ from backend.pipeline.forecast import (
     run_forecast,
     run_simulation,
 )
+from backend.storage import models as m
 from backend.storage.repositories import WorkspaceContext, demo_workspace
 
 router = APIRouter(prefix="/api", tags=["engine"])
@@ -107,27 +108,59 @@ def forecast(
     )
 
 
-_MODIFIER_FIELDS = {"type", "date", "amount_minor", "label", "category_key", "income_stream_key",
-                    "days", "occurrences"}  # fmt: skip
+# Every field the engine's ScenarioModifier has, by kind (docs/07 §6.5). Derived from the
+# dataclass and checked by a unit test, so the API can never again lag behind the engine (R6).
+DATE_FIELDS = frozenset({"date", "from_date", "to_date"})
+INT_FIELDS = frozenset(
+    {
+        "amount_minor",
+        "days",
+        "occurrences",
+        "pct",
+        "instalments",
+        "monthly_cap_minor",
+        "buffer_minor",
+    }
+)
+TEXT_FIELDS = frozenset(
+    {"type", "label", "category_key", "income_stream_key", "recurring_id", "cadence"}
+)
+# The documented contract's names (docs/07 §6.5) for fields the engine names differently.
+ALIASES = {"income_stream_id": "income_stream_key", "start_date": "date"}
+_MODIFIER_FIELDS = DATE_FIELDS | INT_FIELDS | TEXT_FIELDS
+_ACCEPTED_FIELDS = _MODIFIER_FIELDS | set(ALIASES)
 
 
-def _modifier(raw: dict[str, Any]) -> ScenarioModifier:
-    unknown = set(raw) - _MODIFIER_FIELDS
+def _modifier(raw: dict[str, Any], ids: Mapping[str, str] | None = None) -> ScenarioModifier:
+    """An API modifier as the engine's. `ids` maps this profile's `inc_`/`rob_` ids (what
+    /api/detected returns) to the engine's stream and obligation keys; keys pass through."""
+    unknown = set(raw) - _ACCEPTED_FIELDS
     if unknown:
         raise _unprocessable(f"Unsupported modifier fields: {', '.join(sorted(unknown))}.")
+    ids = ids or {}
     try:
-        on = raw.get("date")
-        return ScenarioModifier(
-            type=raw["type"],
-            date=date.fromisoformat(on) if isinstance(on, str) else None,
-            amount_minor=_int(raw.get("amount_minor")),
-            label=str(raw.get("label") or "")[:120],
-            category_key=raw.get("category_key"),
-            income_stream_key=raw.get("income_stream_key"),
-            days=_int(raw.get("days")),
-            occurrences=_int(raw.get("occurrences")),
-        )
-    except ValueError as exc:
+        values: dict[str, Any] = {}
+        for given, value in raw.items():
+            name = ALIASES.get(given, given)
+            if name in values and given != name:
+                raise ValueError(f"{given} and {name} name the same thing; send one")
+            if value is None or (name == "occurrences" and value == "all"):
+                continue  # occurrences "all" (docs/07) is the engine's default: every payday
+            if name in DATE_FIELDS:
+                if not isinstance(value, str):
+                    raise ValueError(f"{name} must be an ISO date")
+                values[name] = date.fromisoformat(value)
+            elif name in INT_FIELDS:
+                values[name] = _int(value)
+            else:
+                if not isinstance(value, str):
+                    raise ValueError(f"{name} must be text")
+                text = value[:120]
+                values[name] = (
+                    ids.get(text, text) if name in ("income_stream_key", "recurring_id") else text
+                )
+        return ScenarioModifier(**values)
+    except (ValueError, TypeError) as exc:
         raise _unprocessable(f"Invalid modifier: {exc}") from None
 
 
@@ -137,6 +170,15 @@ def _int(value: object) -> int | None:
     if isinstance(value, bool) or not isinstance(value, int):
         raise ValueError(f"{value!r} is not a whole number")
     return value
+
+
+def _engine_keys(ctx: WorkspaceContext) -> dict[str, str]:
+    """This profile's income and recurring ids → the keys the engine knows them by."""
+    rows: list[m.IncomeStream | m.RecurringObligation] = [
+        *ctx.all(m.IncomeStream),
+        *ctx.all(m.RecurringObligation),
+    ]
+    return {r.id: r.key for r in rows}
 
 
 @router.post("/simulate", response_model=SimulationView)
@@ -151,11 +193,12 @@ def simulate(ctx: Profile, body: ScenarioSpecPayload) -> SimulationView:
     if not body.modifiers:
         raise _unprocessable("A scenario needs at least one change.")
     accounts = resolve_scope(ctx, body.scope, body.scope_account_id)
+    keys = _engine_keys(ctx)
     horizon = body.horizon_days or DEFAULT_HORIZON
     spec = ScenarioSpec(
         name=body.name,
         currency=body.currency,
-        modifiers=tuple(_modifier(m.model_dump()) for m in body.modifiers),
+        modifiers=tuple(_modifier(mod.model_dump(), keys) for mod in body.modifiers),
         horizon_days=horizon,
     )
 
