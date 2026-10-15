@@ -99,3 +99,15 @@ Found and fixed while reviewing:
 Checked and kept: six template cards in a grid from 768 px and stacked on mobile; labelled fields in two columns from 768 px; the result reuses the Workspace's comparison block (current path, dashed scenario line, likely range, a verdict badge and its reason) with a plain note that no AI was used. Refusals appear inline under the form, and a new run clears the previous result.
 
 Could improve (open): the result could also show the scenario's key numbers (lowest balance before and after) as text above the chart.
+
+## Activity, reviewed 15 Oct 2026
+
+Captured by `e2e/app.screenshots.spec.ts` (`SCREENSHOTS=1`, real local stack) at 375, 768 and 1280 px in light and dark: `review-activity-*`, with the demo's empty run list and, in an earlier capture, a profile with an advice run. All six: **0 axe violations and 0 horizontal overflow**. Journeys: `e2e/activity.spec.ts` (no profile yet; an import plus a payee-wide correction shown as one line, audit chain intact).
+
+Found and fixed in this review:
+- **The step table on mobile showed bare values** ("coordinator", "1.8 s", "900 / 120") with no column names. Each step now stacks as its label (`td.lead`) and labelled rows (`data-label`), like the other data tables.
+- **The empty "No agent runs yet" line sat tight against the card heading.** It now has the same gap as the chain badge below "Changes".
+
+Checked and kept: run summaries read as plain outcomes ("Advised on a question", Done, time, cost), with steps behind a disclosure so the page stays calm. The audit chain badge uses the success colour only when the hash chain checks out, and states plainly what that means. Consecutive identical changes collapse to one line, and the "Traces stay on Foresight's own servers" note says where traces live without technical names.
+
+Could improve (open): a run's steps could show a small time bar so the slow step stands out; the Changes list could page past its latest 40 lines.
