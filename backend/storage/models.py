@@ -63,6 +63,51 @@ class Workspace(Base):
     buffer_minor: Mapped[int | None] = mapped_column(BigInteger)  # home-currency buffer
     # Incremented on every ledger mutation; part of forecast seeds and cache keys.
     data_version: Mapped[int] = mapped_column(Integer, server_default="0")
+    # Who may open it (docs/05 §5.9): a signed-in user, or a guest session. Seeded templates
+    # (kind demo) have neither and are never served to a browser; guests get a `sample` copy.
+    owner_user_id: Mapped[str | None] = mapped_column(
+        String(32), ForeignKey("app_user.id", ondelete="CASCADE"), index=True
+    )
+    owner_session_id: Mapped[str | None] = mapped_column(
+        String(32), ForeignKey("auth_session.id", ondelete="CASCADE"), index=True
+    )
+    last_active_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class AppUser(Base):
+    """A signed-in person (docs/05 §5.9). Identified by the provider's issuer + subject, never by
+    an e-mail address alone."""
+
+    __tablename__ = "app_user"
+    __table_args__ = (UniqueConstraint("issuer", "subject", name="uq_app_user_identity"),)
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)  # usr_
+    issuer: Mapped[str] = mapped_column(String(255))
+    subject: Mapped[str] = mapped_column(String(255))
+    email: Mapped[str | None] = mapped_column(String(320))
+    name: Mapped[str | None] = mapped_column(String(200))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class AuthSession(Base):
+    """A browser session: a random token in a cookie, of which only the SHA-256 is stored. A guest
+    session has no user; signing in rotates to a new session linked to the user."""
+
+    __tablename__ = "auth_session"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)  # ses_
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    user_id: Mapped[str | None] = mapped_column(
+        String(32), ForeignKey("app_user.id", ondelete="CASCADE"), index=True
+    )
+    active_workspace_id: Mapped[str | None] = mapped_column(String(32))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    last_seen_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class Account(Base):

@@ -17,6 +17,8 @@ _CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
 PREFIXES = frozenset(
     {
         "wsp",
+        "usr",
+        "ses",
         "acct",
         "imp",
         "txn",

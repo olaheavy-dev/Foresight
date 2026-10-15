@@ -6,7 +6,7 @@ from datetime import date
 
 from fastapi import APIRouter, HTTPException, Query, status
 
-from backend.app.session import Profile
+from backend.app.session import Profile, read_only
 from backend.app.ui_contracts.money import money_value
 from backend.app.ui_contracts.primitives import MoneyAmount
 from backend.app.ui_contracts.response import (
@@ -86,7 +86,7 @@ def correct(ctx: Profile, transaction_id: str, body: CategoryCorrection) -> Cate
     """A user's category correction, appended and taught to merchant memory; with
     `apply_to_merchant`, every other row from the same payee that the user hasn't set by hand
     changes too. The forecast and detection see it at once (data version bump)."""
-    if ctx.workspace.kind == "demo":
+    if read_only(ctx.workspace):
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
             "The demo profile is read-only. Start a new profile to correct your own categories.",

@@ -10,7 +10,7 @@ from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy.exc import IntegrityError
 
 from backend.app import views
-from backend.app.session import Profile
+from backend.app.session import Db, Profile
 from backend.app.ui_contracts.primitives import ScenarioSpecPayload
 from backend.app.ui_contracts.response import CalculationView, ForecastView, SimulationView
 from backend.finance_core.calc import content_hash
@@ -23,7 +23,7 @@ from backend.pipeline.forecast import (
     run_forecast,
     run_simulation,
 )
-from backend.storage.repositories import WorkspaceContext
+from backend.storage.repositories import WorkspaceContext, demo_workspace
 
 router = APIRouter(prefix="/api", tags=["engine"])
 
@@ -200,3 +200,17 @@ def calculation(ctx: Profile, calc_id: str) -> CalculationView:
         params=calc.params,
         result=calc.result,
     )
+
+
+public_router = APIRouter(prefix="/api/public", tags=["engine"])
+
+
+@public_router.get("/demo-forecast", response_model=ForecastView)
+def demo_forecast(db: Db) -> ForecastView:
+    """The fictional P1 demo's baseline forecast for the public Landing preview. Read-only, no
+    session and no cookie: visitors only get a private copy when they choose the demo."""
+    template = demo_workspace(db, "P1")
+    if template is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "The demo profile hasn't been set up yet.")
+    ctx = WorkspaceContext.open(db, template.id)
+    return forecast(ctx, scope="mine", as_of=None, horizon=DEFAULT_HORIZON)

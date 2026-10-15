@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-from fastapi import FastAPI, Response, status
+from fastapi import FastAPI, Request, Response, status
+from fastapi.responses import JSONResponse
 
 from backend.app.routers import ask, engine, financial_data, imports, ledger
 from backend.app.routers import session as profile
+from backend.app.session import CSRF_HEADER
 from backend.features import load_features
 from backend.settings import get_settings
 from backend.storage.db import database_reachable
@@ -14,6 +16,21 @@ from backend.storage.db import database_reachable
 def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(title="Foresight API", version="0.1.0")
+
+    @app.middleware("http")
+    async def require_client_header(request: Request, call_next):  # type: ignore[no-untyped-def]
+        """CSRF (docs/05 §7.2): every state-changing API call must carry the custom
+        `X-Foresight-Client` header. A cross-site page can't add one to a request that sends the
+        session cookie, and the API answers no CORS preflight."""
+        if (
+            request.method not in ("GET", "HEAD", "OPTIONS")
+            and request.url.path.startswith("/api/")
+            and not request.headers.get(CSRF_HEADER)
+        ):
+            return JSONResponse(
+                {"detail": "Missing client header."}, status_code=status.HTTP_403_FORBIDDEN
+            )
+        return await call_next(request)
 
     @app.get("/healthz")
     def healthz(response: Response) -> dict[str, object]:
@@ -48,6 +65,7 @@ def create_app() -> FastAPI:
         ledger.categories_router,
         financial_data.router,
         engine.router,
+        engine.public_router,
         ask.router,
     )
     for router in routers:
