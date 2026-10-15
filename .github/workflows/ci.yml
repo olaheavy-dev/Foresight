@@ -41,12 +41,14 @@ jobs:
         run: lint-imports
       - name: Unit and integration tests (PostgreSQL)
         run: python -m pytest
-      - name: Feature flags only on with green evals
+      - name: Feature flags only on with green evals (committed results)
         run: python -m tools.check_feature_flags
       - name: README status section is generated, not typed
         run: python -m tools.render_readme_status --check
       - name: Deterministic evals (docs/09 §16)
         run: python -m evals.run --suite all --results-dir "$RUNNER_TEMP/evals"
+      - name: Feature flags only on with this run's gates (a fresh failing gate blocks the push)
+        run: python -m tools.check_feature_flags --results "$RUNNER_TEMP/evals/latest.json"
       - name: Eval regression gate against evals/results/baseline.json
         run: python -m evals.regression --latest "$RUNNER_TEMP/evals/latest.json"
       - name: README results section is generated from latest.json
