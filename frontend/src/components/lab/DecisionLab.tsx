@@ -77,6 +77,7 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
   const [result, setResult] = useState<{ view: SimulationView; name: string } | null>(null);
   // The forecast's date (null if it couldn't load); a spread waits for it, never using today.
   const asOf = useRef<Promise<string | null> | null>(null);
+  const latest = useRef(0);
 
   useEffect(() => {
     asOf.current = fetchForecast().then((f) => f?.chart.as_of ?? null);
@@ -154,13 +155,17 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
 
   const run = async (e: FormEvent) => {
     e.preventDefault();
+    if (busy) return;
+    const ticket = ++latest.current; // only the latest submission may publish its outcome
     setResult(null); // a new run never shows the last one's figures beside its own outcome
+    setBusy(true); // locked from here, including while a spread waits for the forecast's date
     const built = build(kind === "spread" ? ((await asOf.current) ?? null) : null);
+    if (ticket !== latest.current) return;
     if (typeof built === "string") {
+      setBusy(false);
       setProblem(built);
       return;
     }
-    setBusy(true);
     setProblem(null);
     const outcome = await simulateWithReason({
       schema: "scenario_spec/1",
@@ -170,6 +175,7 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
       modifiers: [built.modifier],
       ...(built.horizon ? { horizon_days: built.horizon } : {}),
     });
+    if (ticket !== latest.current) return;
     setBusy(false);
     if (!outcome) setProblem("The simulation couldn’t run just now. Try again.");
     else if ("error" in outcome) setProblem(outcome.error);
@@ -177,6 +183,9 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
   };
 
   const choose = (next: Kind) => {
+    latest.current += 1; // a pending run for the previous choice never publishes
+    setBusy(false);
+    setResult(null);
     setKind(next);
     setProblem(null);
     if (next === "income") setPct("-10");
