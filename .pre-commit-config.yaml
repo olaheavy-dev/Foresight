@@ -1,3 +1,7 @@
+# `make install` (pre-commit install) sets up both stages: the quick checks below run on every
+# commit, the pre-push ones mirror CI's fast checks (~30 s) so a push doesn't fail on lint, types,
+# contracts or unit tests. The PostgreSQL integration tests, evals and e2e still run in CI.
+default_install_hook_types: [pre-commit, pre-push]
 repos:
   - repo: local
     hooks:
@@ -8,11 +12,48 @@ repos:
         pass_filenames: true
       - id: ruff
         name: ruff
-        entry: ruff check
+        entry: ruff check --force-exclude
         language: system
         types: [python]
       - id: ruff-format
         name: ruff format
-        entry: ruff format --check
+        entry: ruff format --check --force-exclude
         language: system
         types: [python]
+
+      - id: mypy
+        name: mypy (backend types)
+        entry: mypy
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+      - id: import-contracts
+        name: Mesh-only and module-boundary contracts
+        entry: lint-imports
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+      - id: contracts-generated
+        name: UI contracts are regenerated
+        entry: python tools/export_schemas.py --check
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+      - id: feature-flags
+        name: feature flags only on with green evals
+        entry: python -m tools.check_feature_flags
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+      - id: backend-unit
+        name: backend unit tests (no database)
+        entry: python -m pytest -q -p no:cacheprovider tests/unit
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+      - id: frontend
+        name: frontend format, types and unit tests
+        entry: sh -c 'cd frontend && npm run --silent format:check && npm run --silent typecheck && npm test --silent'
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
