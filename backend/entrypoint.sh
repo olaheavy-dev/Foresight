@@ -5,5 +5,7 @@ set -eu
 alembic upgrade head
 if [ "${SEED_DEMO:-1}" = "1" ]; then
     python -m backend.pipeline.seed_demo || echo "entrypoint: demo seeding failed; starting anyway" >&2
+    # Private demo copies for guests, ready before the first visitor (backend/app/demo_pool.py).
+    python -m backend.app.demo_pool || echo "entrypoint: demo pool fill failed; starting anyway" >&2
 fi
 exec uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --proxy-headers

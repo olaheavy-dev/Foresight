@@ -120,6 +120,7 @@ def test_demo_copies_come_from_a_warm_pool_seeded_in_a_worker_process(
     from backend.app.routers.session import purge_expired
 
     monkeypatch.setenv("DEMO_POOL_SIZE", "1")
+    monkeypatch.setattr(demo_pool, "REFILL_DELAY_SECONDS", 0.0)
     get_settings.cache_clear()
     with make_client(create_app(), base_url=BASE) as first:  # start-up queues one seed
         _drain_worker()
@@ -128,7 +129,8 @@ def test_demo_copies_come_from_a_warm_pool_seeded_in_a_worker_process(
         assert len(pooled) == 1
         claimed = demo(first)["workspace_id"]
         assert claimed == pooled[0].id  # the ready copy, not a fresh seed
-        _drain_worker()  # the claim queued a replacement
+        demo_pool._refills["P1"].join(timeout=30)  # the claim scheduled a refill
+        _drain_worker()
         with _db() as db:
             spare = db.scalars(demo_pool._unowned("P1")).one()
             assert spare.id != claimed

@@ -25,6 +25,7 @@ services:
         required: false
     environment:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-foresight}:${POSTGRES_PASSWORD:-change_me}@postgres:5432/${POSTGRES_DB:-foresight}
+      DEMO_POOL_SIZE: ${DEMO_POOL_SIZE:-3}
     depends_on:
       postgres:
         condition: service_healthy

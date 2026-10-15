@@ -103,7 +103,7 @@ def use_demo(
         copy.last_active_at = sess.utcnow()
     row.active_workspace_id = copy.id
     db.commit()
-    demo_pool.top_up(db, persona)
+    demo_pool.schedule_refill(persona)
     return profile_view(copy, account_view(db, row))
 
 

@@ -4,8 +4,11 @@ Seeding a guest's private copy of the fictional demo is CPU work (CSV parse, cat
 forecast: about 2.5 s), and in the single API process it slowed every other request while it ran.
 So copies are seeded ahead of time in one separate worker process and kept unowned (kind
 `sample`, no owner, so they never open in a browser). "Explore the live demo" claims one with
-`FOR UPDATE SKIP LOCKED`, which is instant, and the pool is topped up in the background. If the
-pool is empty, the request waits for the worker rather than seeding in the API process.
+`FOR UPDATE SKIP LOCKED`, which is instant. The entrypoint fills the pool before the API serves,
+and refills wait until claims have been quiet for REFILL_DELAY_SECONDS: a seed is a burst of
+database writes, and running it while a guest loads their first pages made those pages time out
+on a small machine. If the pool is empty, the request waits for the worker (the guest sees
+"Opening the demo…") rather than seeding in the API process.
 
 `DEMO_POOL_SIZE=0` turns the pool off and seeds inline (tests).
 """
@@ -26,11 +29,14 @@ from backend.storage import models as m
 
 log = logging.getLogger(__name__)
 SEED_WAIT_SECONDS = 60
+REFILL_DELAY_SECONDS = 60.0
+POOLED = ("P1",)  # the persona "Explore the live demo" opens; others seed on demand
 UNOWNED = {"owner_user_id": None, "owner_session_id": None}
 
 _lock = threading.Lock()
 _executor: ProcessPoolExecutor | None = None
 _pending: dict[str, int] = {}
+_refills: dict[str, threading.Timer] = {}
 
 
 def enabled() -> bool:
@@ -114,7 +120,50 @@ def claim(db: Session, persona: str, owner: dict[str, str | None]) -> m.Workspac
     return ws
 
 
+def schedule_refill(persona: str) -> None:
+    """Top the pool up once claims have been quiet for REFILL_DELAY_SECONDS (debounced)."""
+    if not enabled() or persona not in POOLED:
+        return
+
+    def refill() -> None:
+        from backend.storage.db import session_factory
+
+        try:
+            with session_factory(get_settings().database_url)() as db:
+                top_up(db, persona)
+        except Exception:  # noqa: BLE001 - the next claim tries again
+            log.exception("demo pool: refill failed")
+
+    with _lock:
+        if (old := _refills.get(persona)) is not None:
+            old.cancel()
+        timer = threading.Timer(REFILL_DELAY_SECONDS, refill)
+        timer.daemon = True
+        _refills[persona] = timer
+        timer.start()
+
+
 def warm(db: Session) -> None:
-    """Fill the pool at start-up."""
-    for persona in PERSONAS:
-        top_up(db, persona.key)
+    """Queue whatever the pool is missing (start-up, after the entrypoint's fill)."""
+    for persona in POOLED:
+        top_up(db, persona)
+
+
+def fill(database_url: str, size: int) -> int:
+    """Seed the pool in this process until it is full (the entrypoint, before the API serves)."""
+    from backend.storage.db import session_factory
+
+    made = 0
+    for persona in POOLED:
+        with session_factory(database_url)() as db:
+            ready = db.scalar(select(func.count()).select_from(_unowned(persona).subquery())) or 0
+        for _ in range(size - ready):
+            seed_unowned(database_url, persona)
+            made += 1
+    return made
+
+
+if __name__ == "__main__":
+    settings = get_settings()
+    if settings.demo_pool_size > 0 and settings.database_url:
+        print(f"demo pool: seeded {fill(settings.database_url, settings.demo_pool_size)} copies")

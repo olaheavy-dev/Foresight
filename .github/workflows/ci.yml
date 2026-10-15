@@ -83,6 +83,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Start the real stack (postgres + api + web)
+        # Enough private demo copies for every journey, seeded before the API serves, so the
+        # run measures the app rather than refills competing with the browser.
+        env:
+          DEMO_POOL_SIZE: "16"
         run: docker compose up --build -d
       - uses: actions/setup-python@v6
         with:
@@ -100,7 +104,7 @@ jobs:
         working-directory: frontend
       - name: Wait for the stack
         run: |
-          for i in $(seq 1 60); do curl -sf http://localhost:3000/healthz && exit 0; sleep 2; done
+          for i in $(seq 1 120); do curl -sf http://localhost:3000/healthz && exit 0; sleep 2; done
           docker compose logs; exit 1
       - name: Playwright journeys and accessibility checks
         run: npx playwright test
