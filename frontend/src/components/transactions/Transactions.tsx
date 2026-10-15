@@ -75,7 +75,18 @@ function provenance(r: TransactionRow): string {
   return r.categorised_by === "user" || r.confidence == null ? how : `${how} · ${Math.round(r.confidence * 100)}%`;
 }
 
-export function Transactions({ tab, readOnly, locale }: { tab: LedgerTab; readOnly: boolean; locale: string }) {
+export function Transactions({
+  tab,
+  readOnly,
+  locale,
+  initialCategory = "",
+}: {
+  tab: LedgerTab;
+  readOnly: boolean;
+  locale: string;
+  /** From `?category=` (Home's "See the transactions" link). */
+  initialCategory?: string;
+}) {
   const [reviewCount, setReviewCount] = useState<number | null>(null);
   useEffect(() => {
     void fetchTransactions({ review: true, limit: 1 }).then((p) => setReviewCount(p?.total ?? null));
@@ -107,7 +118,14 @@ export function Transactions({ tab, readOnly, locale }: { tab: LedgerTab; readOn
       ) : tab === "imports" ? (
         <Imports locale={locale} />
       ) : (
-        <Ledger key={tab} review={tab === "review"} readOnly={readOnly} locale={locale} onChanged={setReviewCount} />
+        <Ledger
+          key={tab}
+          review={tab === "review"}
+          readOnly={readOnly}
+          locale={locale}
+          initialCategory={tab === "all" ? initialCategory : ""}
+          onChanged={setReviewCount}
+        />
       )}
     </>
   );
@@ -120,15 +138,17 @@ function Ledger({
   review,
   readOnly,
   locale,
+  initialCategory,
   onChanged,
 }: {
   review: boolean;
   readOnly: boolean;
   locale: string;
+  initialCategory: string;
   onChanged: (reviewTotal: number | null) => void;
 }) {
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(initialCategory);
   const [flowKind, setFlowKind] = useState("");
   const [page, setPage] = useState<TransactionPage | null>(null);
   const [rows, setRows] = useState<TransactionRow[]>([]);

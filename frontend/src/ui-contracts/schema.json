@@ -3886,6 +3886,102 @@
       "title": "Healthz",
       "type": "object"
     },
+    "HomeInsights": {
+      "additionalProperties": false,
+      "description": "Home's proactive insights (review R2): findings always; checked recommendations from the\nlatest proactive run; the state of that run and why advice is paused, if it is.",
+      "properties": {
+        "can_check": {
+          "default": false,
+          "title": "Can Check",
+          "type": "boolean"
+        },
+        "checked_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Checked At"
+        },
+        "checked_data_version": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Checked Data Version"
+        },
+        "data_version": {
+          "title": "Data Version",
+          "type": "integer"
+        },
+        "findings": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/InsightFinding"
+          },
+          "title": "Findings",
+          "type": "array"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "enum": [
+                "ai_paused",
+                "daily_limit",
+                "not_run"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "recommendations": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/InterventionCard"
+          },
+          "title": "Recommendations",
+          "type": "array"
+        },
+        "status": {
+          "enum": [
+            "empty",
+            "checking",
+            "ready",
+            "paused",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "workspace_id": {
+          "pattern": "^wsp_[0-9A-HJKMNP-TV-Z]{26}$",
+          "title": "Workspace Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "status",
+        "data_version"
+      ],
+      "title": "HomeInsights",
+      "type": "object"
+    },
     "ImportBatchView": {
       "additionalProperties": false,
       "properties": {
@@ -4323,6 +4419,61 @@
         "payments"
       ],
       "title": "IncomeStreamView",
+      "type": "object"
+    },
+    "InsightFinding": {
+      "additionalProperties": false,
+      "description": "A deterministic behaviour finding, with every figure filled from its stored calculation.",
+      "properties": {
+        "detail": {
+          "default": "",
+          "title": "Detail",
+          "type": "string"
+        },
+        "finding_id": {
+          "pattern": "^fnd_[0-9A-HJKMNP-TV-Z]{26}$",
+          "title": "Finding Id",
+          "type": "string"
+        },
+        "headline": {
+          "minLength": 1,
+          "title": "Headline",
+          "type": "string"
+        },
+        "kind": {
+          "minLength": 1,
+          "title": "Kind",
+          "type": "string"
+        },
+        "link": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Link"
+        },
+        "severity": {
+          "enum": [
+            "info",
+            "watch",
+            "act"
+          ],
+          "title": "Severity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "finding_id",
+        "kind",
+        "severity",
+        "headline"
+      ],
+      "title": "InsightFinding",
       "type": "object"
     },
     "InterventionCard": {
@@ -8877,6 +9028,7 @@
     "DetectedFlows",
     "CategoryList",
     "CategoryCorrected",
-    "ImportHistory"
+    "ImportHistory",
+    "HomeInsights"
   ]
 }

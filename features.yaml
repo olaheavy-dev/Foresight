@@ -63,8 +63,8 @@ features:
   # Stage 3 — experiences, proactive delivery, goals
   briefing:
     stage: 3
-    title: Home (cached financial briefing and proactive insights)
-    enabled: false
+    title: Home proactive insights (findings and checked advice after each change)
+    enabled: true
     suites: [E-ORC, E-UI]
   decision_lab:
     stage: 3

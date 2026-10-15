@@ -3,9 +3,10 @@ import { Suspense } from "react";
 import { firstName, greeting } from "@/components/home/greeting";
 import { ForecastCard } from "@/components/home/ForecastCard";
 import { HomeMetrics } from "@/components/home/HomeMetrics";
+import { ProactiveInsights } from "@/components/home/ProactiveInsights";
 import { ButtonLink, CardHead } from "@/components/ui/primitives";
 import { NotShipped, Unavailable } from "@/components/ui/NotShipped";
-import { fetchForecast } from "@/lib/api";
+import { fetchForecast, fetchHomeInsights } from "@/lib/api";
 import { isShipped } from "@/lib/flags";
 import { loadShell } from "@/lib/server";
 
@@ -70,21 +71,59 @@ export default async function HomePage() {
         </Suspense>
       )}
 
-      {/* Until the briefing and insights ship, one compact card says what comes next (the
-          forecast keeps the full width instead of sharing it with an empty column). */}
-      <section className="card coming-next" aria-labelledby="next-h">
-        <CardHead
-          icon="sparkles"
-          title="Coming next"
-          titleId="next-h"
-          sub="Written from your data once each passes its evaluation."
-        />
-        <div className="coming-grid">
-          <NotShipped title="Financial briefing" compact detail="A short morning summary of what changed." />
-          <NotShipped title="Proactive insights" compact detail="Each insight will come with one checked action." />
-        </div>
-      </section>
+      {isShipped(features, "briefing") ? (
+        <Suspense fallback={<InsightsLoading />}>
+          <HomeInsightsCard
+            options={options}
+            demo={profile.kind === "demo"}
+            currency={profile.home_currency}
+            locale={profile.locale}
+            timeZone={profile.timezone}
+            checkedAdvice={isShipped(features, "checked_advice")}
+          />
+        </Suspense>
+      ) : (
+        /* Until the briefing and insights ship, one compact card says what comes next (the
+          forecast keeps the full width instead of sharing it with an empty column). */
+        <section className="card coming-next" aria-labelledby="next-h">
+          <CardHead
+            icon="sparkles"
+            title="Coming next"
+            titleId="next-h"
+            sub="Written from your data once each passes its evaluation."
+          />
+          <div className="coming-grid">
+            <NotShipped title="Financial briefing" compact detail="A short morning summary of what changed." />
+            <NotShipped title="Proactive insights" compact detail="Each insight will come with one checked action." />
+          </div>
+        </section>
+      )}
     </main>
+  );
+}
+
+async function HomeInsightsCard({
+  options,
+  ...props
+}: {
+  options: Options;
+  demo: boolean;
+  currency: string;
+  locale: string;
+  timeZone: string;
+  checkedAdvice: boolean;
+}) {
+  const insights = await fetchHomeInsights(options);
+  if (!insights) return <Unavailable what="Your insights" />;
+  return <ProactiveInsights initial={insights} {...props} />;
+}
+
+function InsightsLoading() {
+  return (
+    <section className="card insights" aria-labelledby="insights-h" aria-busy="true">
+      <CardHead icon="sparkles" title="Proactive insights" titleId="insights-h" />
+      <p className="insights-status">Loading your insights…</p>
+    </section>
   );
 }
 

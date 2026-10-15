@@ -19,6 +19,7 @@ from backend.app.ui_contracts.response import (
     FeaturesPayload,
     ForecastView,
     Healthz,
+    HomeInsights,
     ImportHistory,
     ImportSummary,
     ProfileView,
@@ -44,6 +45,7 @@ ROOTS: tuple[type[BaseModel], ...] = (
     CategoryList,
     CategoryCorrected,
     ImportHistory,
+    HomeInsights,
 )
 
 

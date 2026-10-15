@@ -77,6 +77,25 @@ test("the demo opens Home, where each section is drawn from the engine or says i
   await noSeriousA11yIssues(page);
 });
 
+test("Home shows the demo's findings, and each links to its transactions (R2)", async ({ page }) => {
+  await openDemo(page);
+  const insights = page.getByRole("region", { name: "Proactive insights" });
+  await expect(insights).toBeVisible();
+  // The local and CI stacks have no Mesh key: findings show, advice says why it isn't there.
+  await expect(insights).toContainText("come straight from the demo’s data");
+  const findings = insights.getByRole("list", { name: "Findings" }).getByRole("listitem");
+  await expect(findings.first()).toBeVisible();
+  await expect(insights).not.toContainText("{{"); // every figure filled from its calculation
+  await noSeriousA11yIssues(page);
+  const link = insights.getByRole("link", { name: /See the transactions/ }).first();
+  const href = await link.getAttribute("href");
+  await link.click();
+  await page.waitForURL(`**${href}`);
+  await expect(page.getByRole("heading", { level: 1, name: "Transactions" })).toBeVisible();
+  const category = new URL(href ?? "", "http://x").searchParams.get("category");
+  if (category) await expect(page.getByLabel("Category")).toHaveValue(category);
+});
+
 test("navigation reaches each section; unshipped ones say so honestly", async ({ page }) => {
   await openDemo(page);
   const nav = page.getByRole("navigation", { name: "Main" });
