@@ -9,7 +9,7 @@ from typing import Annotated, Literal
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
 from starlette.concurrency import run_in_threadpool
 
-from backend.app.session import Profile, read_only
+from backend.app.session import Profile, imports_refused
 from backend.app.ui_contracts.primitives import DateRange
 from backend.app.ui_contracts.response import (
     ImportedFile,
@@ -152,10 +152,11 @@ async def import_statements(
         Form(description='Answers to import questions, as JSON: {"date_order": "DMY"}'),
     ] = None,
 ) -> ImportSummary:
-    if read_only(ctx.workspace):
+    if imports_refused(ctx.workspace):
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
-            "The demo profile is read-only. Start a new profile to import your own statements.",
+            "The demo profile holds fictional data. Start a new profile to import your own "
+            "statements.",
         )
     if not 1 <= len(files) <= MAX_FILES:
         raise HTTPException(

@@ -29,11 +29,12 @@ def test_demo_lists_its_account_balance_and_detected_flows(api: TestClient) -> N
     amounts = [r["amount"]["minor"] for r in flows["recurring"]]
     assert amounts == sorted(amounts, reverse=True)
     assert all(a > 0 for a in amounts)
-    refused = api.post(
+    # The demo is a private copy, so a declared balance is allowed and only affects this visitor.
+    accepted = api.post(
         f"/api/accounts/{account['account_id']}/balance",
         json={"as_of": date.today().isoformat(), "amount_minor": 100},
     )
-    assert refused.status_code == 403
+    assert accepted.status_code == 200
 
 
 def test_a_monzo_import_has_no_balance_until_one_is_declared(api: TestClient) -> None:

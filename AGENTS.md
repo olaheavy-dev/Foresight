@@ -31,7 +31,7 @@ Review every change against these rules. A finding names the rule, the file and 
 - Every endpoint that reads or writes workspace data resolves **session → ownership → workspace** through the `Profile` dependency (`backend/app/session.py`). That covers threads, messages, the run event stream (`/api/runs/{id}/events`), stored responses, evidence and calculations, imports, corrections, and follow-up or background runs.
 - A resource from another workspace returns **404**, never 403 or the data, so its existence doesn't leak. Test cross-access with two clients (`make_client`), including two visitors on the same demo persona.
 - The client never chooses a workspace by id (header, query or body). Background work receives its workspace id from the server, never from a cookie.
-- Seeded demo templates (`kind = "demo"`) are never served to a browser; guests get private `sample` copies. `demo` and `sample` workspaces are read-only for imports and edits.
+- Seeded demo templates (`kind = "demo"`) are never served to a browser; guests get private `sample` copies. Neither ever takes an import (`imports_refused`); a private `sample` copy accepts category corrections and balances, and "Reset demo" (`POST /api/session/demo/reset`) swaps it for a fresh one.
 - State-changing `/api/*` calls must carry the `X-Foresight-Client` header (CSRF). New frontend writes must send it.
 - Session tokens, OAuth secrets and account numbers never appear in logs, responses, fixtures or commits. Deleting user data goes through the purge path (`foresight.purge`) so the audit chain is removed with it.
 

@@ -20,7 +20,9 @@ async function noSeriousA11yIssues(page: Page) {
   expect(results.violations.filter((v) => ["serious", "critical"].includes(v.impact ?? ""))).toEqual([]);
 }
 
-test("the demo ledger: search, review queue, recurring, imports, read-only corrections", async ({ page }, info) => {
+test("the demo ledger: search, a correction on your own copy, review queue, recurring, imports", async ({
+  page,
+}, info) => {
   await page.context().clearCookies();
   await page.goto("/");
   await page.getByRole("button", { name: "Explore the live demo" }).click();
@@ -33,9 +35,13 @@ test("the demo ledger: search, review queue, recurring, imports, read-only corre
 
   await page.getByPlaceholder("Search payee or description").fill("deliveroo");
   await expect(page.locator(".lr-payee").first()).toContainText(/deliveroo/i);
+  await expect(page.getByText("Changes here only affect your copy of the demo.")).toBeVisible();
   await page.locator(".lr-category").first().click();
-  await expect(page.getByText("The demo profile is read-only.")).toBeVisible();
+  await page.locator(".lr-edit select").selectOption("food.eating_out");
   await shot(page, "search-edit", info.project.name);
+  await page.getByRole("button", { name: "Save" }).click();
+  await expect(page.locator(".lr-category").first()).toContainText("Eating out");
+  await expect(page.locator(".lr-category").first()).toContainText("You");
 
   await page.getByRole("link", { name: /To review/ }).click();
   await expect(page.getByRole("heading", { name: "To review" })).toBeVisible();
@@ -68,4 +74,31 @@ test("an own profile corrects a category for every row from the payee", async ({
   await expect(page.locator(".lr-category").first()).toContainText("Eating out");
   await expect(page.locator(".lr-category").first()).toContainText("You");
   await expect(page.locator(".lr-category").nth(1)).toContainText("You");
+});
+
+test("Reset demo swaps a corrected demo for a fresh copy", async ({ page }) => {
+  await page.context().clearCookies();
+  await page.goto("/");
+  await page.getByRole("button", { name: "Explore the live demo" }).click();
+  await page.waitForURL("**/home");
+  await page.goto("/transactions");
+  await page.getByPlaceholder("Search payee or description").fill("deliveroo");
+  const first = page.locator(".lr-category").first();
+  await expect(first).not.toContainText("You");
+  await first.click();
+  await page.locator(".lr-edit select").selectOption("food.eating_out");
+  await page.getByRole("button", { name: "Save" }).click();
+  await expect(first).toContainText("You");
+
+  await page.getByRole("button", { name: /account menu/i }).click();
+  await page.getByRole("button", { name: "Reset demo" }).click();
+  const confirm = page.getByRole("group", { name: "Confirm resetting the demo" });
+  await expect(confirm).toBeVisible();
+  await noSeriousA11yIssues(page);
+  await confirm.getByRole("button", { name: "Reset demo" }).click();
+  await page.waitForURL("**/home");
+  await page.goto("/transactions");
+  await page.getByPlaceholder("Search payee or description").fill("deliveroo");
+  await expect(page.locator(".lr-payee").first()).toContainText(/deliveroo/i);
+  await expect(page.locator(".lr-category").first()).not.toContainText("You");
 });

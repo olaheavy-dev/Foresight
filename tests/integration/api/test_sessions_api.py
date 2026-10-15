@@ -37,7 +37,7 @@ def test_two_visitors_on_the_same_demo_never_share_conversations(
         b: Any = demo(bob)
         assert a["persona"] == b["persona"] == "P1"
         assert a["workspace_id"] != b["workspace_id"]
-        assert a["read_only"] is True
+        assert a["read_only"] is False  # a private copy is editable
         assert a["account"] == {"kind": "guest", "name": None, "email": None}
         thread = alice.post("/api/threads").json()["thread_id"]
         assert thread in {t["thread_id"] for t in alice.get("/api/threads").json()["threads"]}
@@ -198,3 +198,78 @@ def test_profiles_from_before_accounts_survive_the_purge_and_their_browser_adopt
         ws = db.get(m.Workspace, legacy)
         assert ws is not None
         assert ws.owner_session_id is not None
+
+
+def test_a_demo_correction_stays_private_and_reset_brings_a_fresh_copy(
+    make_client: type[TestClient],
+) -> None:
+    """Owner decision 15 Oct: private demo copies accept corrections but never imports; Reset
+    demo swaps the copy for a fresh one and other visitors never see either."""
+    fix = "/api/transactions/{}/category"
+    with (
+        make_client(create_app(), base_url=BASE) as alice,
+        make_client(create_app(), base_url=BASE) as bob,
+    ):
+        a: Any = demo(alice)
+        b: Any = demo(bob)
+        row = alice.get("/api/transactions?limit=1").json()["items"][0]
+        target = "groceries" if row["category_key"] != "groceries" else "food.delivery"
+        assert (
+            alice.post(fix.format(row["transaction_id"]), json={"category_key": target}).status_code
+            == 200
+        )
+        mine = alice.get("/api/transactions?limit=1").json()["items"][0]
+        theirs = bob.get("/api/transactions?limit=1").json()["items"][0]
+        assert mine["category_key"] == target
+        assert theirs["category_key"] == row["category_key"]  # Bob's copy is untouched
+
+        csv = ("files", ("x.csv", b"Date,Description,Amount\n01/01/2026,X,1.00\n", "text/csv"))
+        assert alice.post("/api/imports", files=[csv]).status_code == 403
+
+        fresh: Any = checked(
+            alice, alice.post("/api/session/demo/reset"), "/api/session/demo/reset"
+        )
+        assert fresh["workspace_id"] not in {a["workspace_id"], b["workspace_id"]}
+        again = alice.get("/api/transactions?limit=1").json()["items"][0]
+        assert again["category_key"] == row["category_key"]  # back to the start
+        with _db() as db:
+            assert db.get(m.Workspace, a["workspace_id"]) is None  # the old copy is gone
+        assert demo(alice)["workspace_id"] == fresh["workspace_id"]
+
+        new = alice.post("/api/session/new")
+        assert new.status_code == 201
+        assert alice.post("/api/session/demo/reset").status_code == 409  # not a demo profile
+
+
+def test_reset_moves_every_browser_of_the_account_and_removes_duplicate_copies(
+    make_client: type[TestClient],
+) -> None:
+    """Codex review on #39: an account open in two browsers, holding two demo copies (one moved
+    in from a guest session at sign-in), ends up with exactly one fresh copy, open in both."""
+    with (
+        make_client(create_app(), base_url=BASE) as laptop,
+        make_client(create_app(), base_url=BASE) as phone,
+    ):
+        first = demo(laptop)["workspace_id"]
+        second = demo(phone)["workspace_id"]
+        with _db() as db:  # both browsers signed in as one user, each with its own demo copy
+            user = m.AppUser(id="usr_01M4ZZZZZZZZZZZZZZZZZZZZZZ", issuer="test", subject="one")
+            db.add(user)
+            db.flush()
+            for ws_id in (first, second):
+                ws = db.get(m.Workspace, ws_id)
+                assert ws is not None
+                ws.owner_user_id, ws.owner_session_id = user.id, None
+            for s in db.scalars(
+                select(m.AuthSession).where(m.AuthSession.active_workspace_id.in_((first, second)))
+            ):
+                s.user_id = user.id
+            db.commit()
+
+        fresh = laptop.post("/api/session/demo/reset").json()["workspace_id"]
+        assert fresh not in {first, second}
+        assert phone.get("/api/session").json()["workspace_id"] == fresh
+        assert demo(laptop)["workspace_id"] == fresh
+        with _db() as db:
+            assert db.get(m.Workspace, first) is None
+            assert db.get(m.Workspace, second) is None

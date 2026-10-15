@@ -8,6 +8,8 @@ user, and names its active workspace. Every request resolves session → ownersh
 - a workspace owned by a guest session opens only for that session;
 - seeded demo templates (kind `demo`) have no owner and never open in a browser; "Explore the
   demo" gives each guest a private `sample` copy, so visitors never share conversations or limits.
+  A copy accepts category corrections and balances (they only affect its owner) but never imports,
+  and "Reset demo" swaps it for a fresh one.
 
 There is deliberately no header or query parameter that selects a workspace by id. State-changing
 API calls must carry the `X-Foresight-Client` header (CSRF: a cross-site page cannot set a custom
@@ -40,7 +42,12 @@ CSRF_HEADER = "X-Foresight-Client"
 GUEST_IDLE = timedelta(days=7)  # a guest's private demo and imports expire after a week unused
 USER_IDLE = timedelta(days=30)
 TOUCH_EVERY = timedelta(minutes=5)
-READ_ONLY_KINDS = frozenset({"demo", "sample"})  # fictional data: imports and edits refused
+FICTIONAL_KINDS = frozenset(
+    {"demo", "sample"}
+)  # the demo persona: never mixed with real statements
+READ_ONLY_KINDS = frozenset(
+    {"demo"}
+)  # the shared template; a guest's private `sample` copy is editable
 
 
 def utcnow() -> datetime:
@@ -164,7 +171,7 @@ def adopt_legacy(request: Request, response: Response, db: Session) -> m.AuthSes
     if workspace_id is None:
         return None
     ws = db.get(m.Workspace, workspace_id)
-    if ws is None or ws.kind in READ_ONLY_KINDS or ws.owner_user_id or ws.owner_session_id:
+    if ws is None or ws.kind in FICTIONAL_KINDS or ws.owner_user_id or ws.owner_session_id:
         return None
     row = start(db, response)
     ws.owner_session_id = row.id
@@ -199,7 +206,14 @@ def workspace(request: Request, response: Response, db: Db) -> WorkspaceContext:
 
 
 def read_only(ws: m.Workspace) -> bool:
+    """Edits refused: only the shared demo template (which never opens in a browser)."""
     return ws.kind in READ_ONLY_KINDS
+
+
+def imports_refused(ws: m.Workspace) -> bool:
+    """Real statements never go into the fictional demo persona, private copy or not: the
+    forecast would mix real and made-up data and the "Demo data" label would be untrue."""
+    return ws.kind in FICTIONAL_KINDS
 
 
 Profile = Annotated[WorkspaceContext, Depends(workspace)]
