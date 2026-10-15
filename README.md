@@ -152,7 +152,7 @@ Not run yet: E-ACCT, E-ALIAS, E-XFER.
 
 **Where we fall short**
 
-- E-ORC ORC-pass: Case pass rate (all 30; not recorded or not built count as unmet) = 0.935 (target >= 1.0, 31 cases); not gated: includes cases for features of later stages not built yet
+- E-ORC ORC-pass: Case pass rate (all 30; not recorded or not built count as unmet) = 0.935 (target >= 1.0, 31 cases)
 
 <!-- RESULTS:END -->
 
