@@ -92,7 +92,14 @@ def test_gate_rules() -> None:
         "targets": [{**target("t1", "t", 0.1, ">=", 0.9, "d"), "gated": False}],
         "error": None,
     }
-    assert gate(opted_out)["status"] == "pass"
+    # An opt-out without a reason is ignored: the failed target still fails the suite.
+    assert gate(opted_out)["status"] == "fail"
+    assert (
+        gate({**opted_out, "targets": [{**opted_out["targets"][0], "not_gated_because": " "}]})[
+            "status"
+        ]
+        == "fail"
+    )
     assert gate({"targets": [], "error": "boom"})["status"] == "fail"
     assert gate(None)["status"] == "fail"
 

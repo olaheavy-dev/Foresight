@@ -44,8 +44,10 @@ RULE_NOT_RUN = "not run"
 
 
 def is_gated(target: dict[str, Any]) -> bool:
-    """Every target counts unless it opts out explicitly (docs/09 §16)."""
-    return target.get("gated", True) is not False
+    """Every target counts unless it opts out explicitly, with a stated reason (docs/09 §16,
+    review R7): `gated: false` without `not_gated_because` is ignored, so it still gates."""
+    reason = str(target.get("not_gated_because") or "").strip()
+    return not (target.get("gated", True) is False and reason)
 
 
 def gate(result: dict[str, Any] | None) -> dict[str, Any]:
