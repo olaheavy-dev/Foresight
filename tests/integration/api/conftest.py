@@ -11,6 +11,7 @@ from sqlalchemy import Engine
 from sqlalchemy.orm import sessionmaker
 
 from backend.app.main import create_app
+from backend.app.routers import ask as ask_router
 from backend.app.session import CSRF_HEADER
 from backend.pipeline.seed_demo import seed_all
 from backend.settings import get_settings
@@ -34,6 +35,8 @@ def api(seeded: Engine, monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClient]
     monkeypatch.setenv("DATABASE_URL", seeded.url.render_as_string(hide_password=False))
     monkeypatch.setenv("SESSION_SECRET", "test-only-secret")
     monkeypatch.setenv("DEMO_POOL_SIZE", "0")
+    monkeypatch.setenv("PROACTIVE_WORKER", "0")
+    monkeypatch.setattr(ask_router, "_mesh", None)  # no client cached from another test
     get_settings.cache_clear()
     with TestClient(create_app(), base_url="https://testserver", headers=CLIENT) as client:
         yield client
@@ -54,6 +57,8 @@ def make_client(seeded: Engine, monkeypatch: pytest.MonkeyPatch) -> Iterator[typ
     monkeypatch.setenv("DATABASE_URL", seeded.url.render_as_string(hide_password=False))
     monkeypatch.setenv("SESSION_SECRET", "test-only-secret")
     monkeypatch.setenv("DEMO_POOL_SIZE", "0")
+    monkeypatch.setenv("PROACTIVE_WORKER", "0")
+    monkeypatch.setattr(ask_router, "_mesh", None)  # no client cached from another test
     get_settings.cache_clear()
     yield BrowserClient
     get_settings.cache_clear()

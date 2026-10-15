@@ -66,6 +66,9 @@ class Settings(BaseSettings):
     # Private demo copies kept seeded ahead of time per persona (backend/app/demo_pool.py); 0 seeds
     # each one inline, in the request.
     demo_pool_size: int = 3
+    # Run queued proactive analyses in a background thread (backend/app/proactive.py). Tests turn
+    # it off and run jobs explicitly.
+    proactive_worker: bool = True
 
 
 @lru_cache

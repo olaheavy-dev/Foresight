@@ -2,7 +2,7 @@
 import type * as T from "./types";
 import { validate, type SchemaError } from "./validate";
 
-export const ROOT_TYPES = ["AgentResponse","ResponsePlan","Healthz","FeaturesPayload","ImportSummary","ForecastView","SimulationView","ProfileView","TransactionPage","CalculationView","AccountList","AccountView","DetectedFlows","CategoryList","CategoryCorrected","ImportHistory"] as const;
+export const ROOT_TYPES = ["AgentResponse","ResponsePlan","Healthz","FeaturesPayload","ImportSummary","ForecastView","SimulationView","ProfileView","TransactionPage","CalculationView","AccountList","AccountView","DetectedFlows","CategoryList","CategoryCorrected","ImportHistory","HomeInsights"] as const;
 export const BLOCK_DEFS = ["Narrative","ClarifyingQuestion","FinancialMetricGroup","SpendingByCategory","SpendingOverTime","CashFlowForecastChart","ScenarioComparison","TransactionTable","RiskAssessment","InterventionCard","GoalProjection","EvidencePanel","AgentExecutionTimeline"] as const;
 
 export function isAgentResponse(value: unknown): value is T.AgentResponse {
@@ -115,6 +115,13 @@ export function isImportHistory(value: unknown): value is T.ImportHistory {
 }
 export function checkImportHistory(value: unknown): SchemaError[] {
   return validate("ImportHistory", value);
+}
+
+export function isHomeInsights(value: unknown): value is T.HomeInsights {
+  return validate("HomeInsights", value).length === 0;
+}
+export function checkHomeInsights(value: unknown): SchemaError[] {
+  return validate("HomeInsights", value);
 }
 
 export function isNarrative(value: unknown): value is T.Narrative {

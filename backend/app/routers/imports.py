@@ -9,6 +9,7 @@ from typing import Annotated, Literal
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
 from starlette.concurrency import run_in_threadpool
 
+from backend.app import proactive
 from backend.app.session import Profile, imports_refused
 from backend.app.ui_contracts.primitives import DateRange
 from backend.app.ui_contracts.response import (
@@ -162,7 +163,10 @@ def _ingest_all(
     for name, data in payloads:
         # Each file is its own transaction: a refused file never undoes an accepted one.
         try:
-            results.append(imported_file(ctx, ingest_file(ctx, name, data, answers=given)))
+            outcome = ingest_file(ctx, name, data, answers=given)
+            results.append(imported_file(ctx, outcome))
+            if outcome.new_rows:
+                proactive.enqueue(ctx, "import_committed")  # same transaction as the rows (R2)
             session.commit()
         except Exception:
             session.rollback()

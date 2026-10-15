@@ -57,6 +57,8 @@ test("a Monzo CSV imports, asks for today's balance, then forecasts", async ({ p
   await page.waitForURL("**/home");
   // The first forecast after an import is computed on demand.
   await expect(page.getByText("£1,234.56")).toBeVisible({ timeout: 15_000 });
+  // R2: the import queued a proactive check, which Home reports while it waits to run.
+  await expect(page.getByRole("region", { name: "Proactive insights" })).toContainText("Checking your latest changes");
 });
 
 // R5: a bank we don't recognise is a question the person can answer, not a dead end.

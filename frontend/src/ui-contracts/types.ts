@@ -105,6 +105,7 @@ export interface UiContracts {
   CategoryList?: CategoryList;
   CategoryCorrected?: CategoryCorrected;
   ImportHistory?: ImportHistory;
+  HomeInsights?: HomeInsights;
 }
 /**
  * This interface was referenced by `UiContracts`'s JSON-Schema
@@ -2005,4 +2006,31 @@ export interface ImportBatchView {
   rows_imported: number;
   rows_read: number;
   status: string;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "HomeInsights".
+ */
+export interface HomeInsights {
+  can_check?: boolean;
+  checked_at?: string | null;
+  checked_data_version?: number | null;
+  data_version: number;
+  findings?: InsightFinding[];
+  reason?: ("ai_paused" | "daily_limit" | "not_run") | null;
+  recommendations?: InterventionCard[];
+  status: "empty" | "checking" | "ready" | "paused" | "failed";
+  workspace_id: string;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "InsightFinding".
+ */
+export interface InsightFinding {
+  detail?: string;
+  finding_id: string;
+  headline: string;
+  kind: string;
+  link?: string | null;
+  severity: "info" | "watch" | "act";
 }

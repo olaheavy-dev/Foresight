@@ -13,7 +13,7 @@ const LEDE =
 export default async function TransactionsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string | string[] }>;
+  searchParams: Promise<{ tab?: string | string[]; category?: string | string[] }>;
 }) {
   const [{ profile, features }, params] = await Promise.all([loadShell(), searchParams]);
   if (!isShipped(features, "ledger")) {
@@ -28,7 +28,12 @@ export default async function TransactionsPage({
         <p className="note-line">Changes here only affect your copy of the demo. Reset it from the account menu.</p>
       ) : null}
       {profile ? (
-        <Transactions tab={tab} readOnly={Boolean(profile.read_only)} locale={profile.locale} />
+        <Transactions
+          tab={tab}
+          readOnly={Boolean(profile.read_only)}
+          locale={profile.locale}
+          initialCategory={typeof params.category === "string" ? params.category.slice(0, 64) : ""}
+        />
       ) : (
         <p className="lede">Choose the demo profile or import a statement first.</p>
       )}

@@ -22,6 +22,7 @@ import {
   isForecastView,
   isHealthz,
   isImportSummary,
+  isHomeInsights,
   isProfileView,
   isSimulationView,
   isTransactionPage,
@@ -42,6 +43,7 @@ import type {
   Healthz,
   ImportSummary,
   Placement,
+  HomeInsights,
   ProfileView,
   ScenarioSpecPayload,
   SimulationView,
@@ -398,6 +400,18 @@ export function signOut(options: ApiOptions = {}): Promise<boolean | null> {
 /** Delete every profile this session or account owns, then end the session (browser). */
 export function deleteMyData(options: ApiOptions = {}): Promise<boolean | null> {
   return request("/api/session/delete", (_b, status) => status === 200 || null, options, {
+    method: "POST",
+  });
+}
+
+/** Home's proactive insights: findings, checked recommendations and the latest check's state. */
+export function fetchHomeInsights(options: ApiOptions = {}): Promise<HomeInsights | null> {
+  return request("/api/home/insights", okAnd(isHomeInsights), options);
+}
+
+/** Start a proactive check now (browser; counts against the profile's daily allowance). */
+export function startProactiveCheck(options: ApiOptions = {}): Promise<HomeInsights | null> {
+  return request("/api/home/check", (body, status) => (status === 200 && isHomeInsights(body) ? body : null), options, {
     method: "POST",
   });
 }

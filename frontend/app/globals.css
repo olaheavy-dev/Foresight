@@ -429,6 +429,21 @@ button.um-item { width: 100%; border: 0; background: none; font: inherit; cursor
 .row-2 { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); margin-bottom: var(--space-4); }
 .row-1 { margin-bottom: var(--space-4); }
 .coming-next { padding: var(--space-4); }
+.insights { padding: var(--space-4); }
+.insights-status { display: flex; align-items: center; gap: var(--space-2); margin: var(--space-2) 0 var(--space-4); font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.insights .spinner { width: 14px; height: 14px; flex: none; border-radius: 50%; border: 2px solid var(--color-border-secondary); border-top-color: var(--color-accent-primary); animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .insights .spinner { animation: none; } }
+.insight-list { list-style: none; margin: 0 0 var(--space-4); padding: 0; display: grid; gap: var(--space-3); }
+.insight { display: grid; grid-template-columns: auto 1fr; gap: var(--space-3); align-items: start; padding: var(--space-3); border: 1px solid var(--color-border-primary); border-radius: var(--border-radius-md); background: var(--color-bg-secondary); }
+.insight-headline { margin: 0; font-weight: var(--font-weight-medium); color: var(--color-text-primary); }
+.insight-detail { margin: var(--space-1) 0 0; font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.insight-link { display: inline-flex; align-items: center; gap: var(--space-1); margin-top: var(--space-2); font-size: var(--font-size-sm); color: var(--color-accent-primary); text-decoration: underline; text-underline-offset: 2px; }
+.insight-link svg { width: 14px; height: 14px; }
+.insights-empty { margin: 0 0 var(--space-4); font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.insight-recs { display: grid; gap: var(--space-3); margin-bottom: var(--space-3); }
+.insight-recs-h { margin: 0; font-family: var(--font-family-display); font-size: var(--font-size-md); }
+@media (min-width: 768px) { .insights { padding: var(--space-5) var(--space-6); } }
 .coming-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); margin-top: var(--space-3); }
 @media (min-width: 768px) {
   .coming-next { padding: var(--space-5) var(--space-6); }
