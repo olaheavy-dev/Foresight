@@ -14,7 +14,7 @@ export function AskBox() {
     router.push(text ? `/workspace?q=${encodeURIComponent(text)}` : "/workspace");
   };
   return (
-    <form className="search" role="search" onSubmit={submit}>
+    <form className="search" role="search" aria-label="Ask Foresight" onSubmit={submit}>
       <Icon name="search" />
       <label className="sr-only" htmlFor="ask-box">
         Ask Foresight about your finances

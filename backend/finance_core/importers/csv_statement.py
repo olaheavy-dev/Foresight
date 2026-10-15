@@ -96,7 +96,10 @@ def safe_example(header: str, cell: str) -> str:
     """A cell fit to show back as an example, or "" if it might be an identifier."""
     if not cell or _IDENTIFIER_HEADER.search(header):
         return ""
-    if _AMOUNT_CELL.match(cell):
+    # Kept whole only if it reads as money: a decimal part, a sign or a symbol, or too few
+    # digits to be an account number. A bare "12345678" under any heading is masked.
+    digits = sum(ch.isdigit() for ch in cell)
+    if _AMOUNT_CELL.match(cell) and (re.search(r"[.£$€₹+()-]", cell) or digits < 6):
         return cell[:24]
 
     def mask(m: re.Match[str]) -> str:

@@ -256,6 +256,19 @@ def test_examples_never_show_account_identifiers() -> None:
     assert q.examples[0] == "01/10/2026"  # dates are kept
 
 
+def test_a_bare_account_number_under_an_unfamiliar_heading_is_masked() -> None:
+    """#42 (Codex re-review): "12345678" looks like an amount but has no decimal, sign or symbol."""
+    text = (
+        "Posted On,Beneficiary,Payee Text,Value (GBP)\n"
+        "01/10/2026,12345678,RENT,-950.00\n"
+        "15/10/2026,12345678,SHOP,-4.20\n"
+    )
+    (table,) = run(text).tables
+    (q,) = blocking_questions(table.result)
+    assert q.examples[1] == "••••"
+    assert q.examples[3] == "-950.00"
+
+
 def test_a_mapped_amount_heading_sets_the_currency() -> None:
     """#42 (Codex review): "Value (USD)" in a GBP profile imports as USD, not GBP."""
     text = "Posted On,Payee Text,Value (USD)\n01/10/2026,SHOP,-12.50\n02/10/2026,PAY,100.00\n"

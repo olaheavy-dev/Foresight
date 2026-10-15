@@ -675,7 +675,7 @@ button.um-item { width: 100%; border: 0; background: none; font: inherit; cursor
 .legal ul { margin: 0 0 var(--space-3); padding-left: var(--space-5); display: grid; gap: var(--space-2); }
 .legal strong { color: var(--color-text-primary); }
 .legal code { font-size: 0.9em; }
-.legal a { color: var(--color-accent-primary); text-decoration: underline; text-underline-offset: 2px; }
+.legal p a, .legal li a { color: var(--color-accent-primary); text-decoration: underline; text-underline-offset: 2px; }
 @media (min-width: 1024px) {
   .landing-frame.single { display: block; max-width: 760px; margin: var(--space-7) auto; min-height: 0; }
 }

@@ -294,7 +294,8 @@ function FileResult({
             {r.duplicates ? ` · ${r.duplicates} duplicates skipped` : ""}
           </dd>
         </div>
-        {rec ? (
+        {/* A file waiting for an answer has no balance check yet: say nothing rather than guess. */}
+        {rec && r.status !== "needs_mapping" ? (
           <div>
             <dt>Balance check</dt>
             <dd className={rec.status === "failed" ? "bad" : rec.status === "passed" ? "good" : ""}>
@@ -314,7 +315,7 @@ function FileResult({
           ))}
         </ul>
       ) : null}
-      {(r.rejections ?? []).length ? (
+      {(r.rejections ?? []).length && r.status !== "needs_mapping" ? (
         <details className="fr-rejections">
           <summary>Rows that didn’t add up ({(r.rejections ?? []).length})</summary>
           <ul>
