@@ -110,3 +110,4 @@ def test_runs_are_traces_and_the_audit_log_reads_in_words(
         assert "model output must not leak" not in alice.get("/api/activity").text
 
         assert all(r["run_id"] != run_id for r in _activity(bob)["runs"])  # never another's
+        assert all(e["action"] != "txn.recategorised" for e in _activity(bob)["events"])
