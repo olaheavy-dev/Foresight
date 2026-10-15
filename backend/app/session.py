@@ -16,7 +16,9 @@ header on a same-origin request, and the API sends no CORS headers).
 
 from __future__ import annotations
 
+import base64
 import hashlib
+import hmac
 import secrets
 from collections.abc import Iterator
 from datetime import datetime, timedelta, timezone
@@ -33,6 +35,7 @@ from backend.storage.ids import new_id
 from backend.storage.repositories import WorkspaceContext, WorkspaceNotFound
 
 COOKIE = "foresight_session"
+LEGACY_COOKIE = "foresight_profile"  # before accounts: a signed workspace id (migration 0007)
 CSRF_HEADER = "X-Foresight-Client"
 GUEST_IDLE = timedelta(days=7)  # a guest's private demo and imports expire after a week unused
 USER_IDLE = timedelta(days=30)
@@ -112,8 +115,8 @@ def start(db: Session, response: Response, *, user_id: str | None = None) -> m.A
 
 
 def ensure(request: Request, response: Response, db: Session) -> m.AuthSession:
-    """The browser's live session, or a new guest session."""
-    return current(request, db) or start(db, response)
+    """The browser's live session, a pre-accounts one it can adopt, or a new guest session."""
+    return current(request, db) or adopt_legacy(request, response, db) or start(db, response)
 
 
 def revoke(db: Session, row: m.AuthSession) -> None:
@@ -141,8 +144,38 @@ def owned_workspaces(db: Session, row: m.AuthSession) -> list[m.Workspace]:
     return list(db.scalars(stmt.order_by(m.Workspace.created_at)))
 
 
-def workspace(request: Request, db: Db) -> WorkspaceContext:
-    row = current(request, db)
+def _legacy_workspace_id(request: Request) -> str | None:
+    """The workspace named by a pre-accounts `foresight_profile` cookie, if its signature checks
+    (HMAC-SHA256 with SESSION_SECRET, as that cookie was issued)."""
+    value = request.cookies.get(LEGACY_COOKIE)
+    secret = get_settings().session_secret
+    if not value or not secret or len(value) > 200:
+        return None
+    workspace_id, _, _ = value.partition(".")
+    mac = hmac.new(secret.encode("utf-8"), workspace_id.encode("utf-8"), hashlib.sha256).digest()
+    expected = f"{workspace_id}.{base64.urlsafe_b64encode(mac).decode('ascii').rstrip('=')}"
+    return workspace_id if workspace_id and hmac.compare_digest(expected, value) else None
+
+
+def adopt_legacy(request: Request, response: Response, db: Session) -> m.AuthSession | None:
+    """A browser returning with a pre-accounts cookie keeps its profile: if that workspace has
+    no owner yet, a new guest session takes it over (and the old cookie is dropped)."""
+    workspace_id = _legacy_workspace_id(request)
+    if workspace_id is None:
+        return None
+    ws = db.get(m.Workspace, workspace_id)
+    if ws is None or ws.kind in READ_ONLY_KINDS or ws.owner_user_id or ws.owner_session_id:
+        return None
+    row = start(db, response)
+    ws.owner_session_id = row.id
+    row.active_workspace_id = ws.id
+    db.commit()
+    response.delete_cookie(LEGACY_COOKIE, path="/")
+    return row
+
+
+def workspace(request: Request, response: Response, db: Db) -> WorkspaceContext:
+    row = current(request, db) or adopt_legacy(request, response, db)
     if row is None or row.active_workspace_id is None:
         raise HTTPException(
             status.HTTP_401_UNAUTHORIZED,

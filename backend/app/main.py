@@ -2,20 +2,35 @@
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request, Response, status
 from fastapi.responses import JSONResponse
 
+from backend.app import demo_pool
 from backend.app.routers import ask, auth, engine, financial_data, imports, ledger
 from backend.app.routers import session as profile
 from backend.app.session import CSRF_HEADER
 from backend.features import load_features
 from backend.settings import get_settings
-from backend.storage.db import database_reachable
+from backend.storage.db import database_reachable, session_factory
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    if demo_pool.enabled():
+        try:
+            with session_factory(get_settings().database_url)() as db:
+                demo_pool.warm(db)
+        except Exception:  # noqa: BLE001 - a cold pool still works (requests wait for a seed)
+            demo_pool.log.exception("demo pool: warm-up failed")
+    yield
 
 
 def create_app() -> FastAPI:
     settings = get_settings()
-    app = FastAPI(title="Foresight API", version="0.1.0")
+    app = FastAPI(title="Foresight API", version="0.1.0", lifespan=lifespan)
 
     @app.middleware("http")
     async def require_client_header(request: Request, call_next):  # type: ignore[no-untyped-def]

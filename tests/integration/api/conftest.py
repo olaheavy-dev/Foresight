@@ -33,6 +33,7 @@ def api(seeded: Engine, monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClient]
     """A client bound to the disposable database. https, because the cookie is Secure."""
     monkeypatch.setenv("DATABASE_URL", seeded.url.render_as_string(hide_password=False))
     monkeypatch.setenv("SESSION_SECRET", "test-only-secret")
+    monkeypatch.setenv("DEMO_POOL_SIZE", "0")
     get_settings.cache_clear()
     with TestClient(create_app(), base_url="https://testserver", headers=CLIENT) as client:
         yield client
@@ -52,6 +53,7 @@ def make_client(seeded: Engine, monkeypatch: pytest.MonkeyPatch) -> Iterator[typ
     """For tests that need two browsers (two separate cookie jars)."""
     monkeypatch.setenv("DATABASE_URL", seeded.url.render_as_string(hide_password=False))
     monkeypatch.setenv("SESSION_SECRET", "test-only-secret")
+    monkeypatch.setenv("DEMO_POOL_SIZE", "0")
     get_settings.cache_clear()
     yield BrowserClient
     get_settings.cache_clear()

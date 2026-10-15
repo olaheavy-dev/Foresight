@@ -101,3 +101,96 @@ def test_expired_guest_data_is_purged_when_the_next_guest_starts(
     with _db() as db:
         assert db.get(m.Workspace, ws) is None
         assert db.scalars(select(m.AuthSession).where(m.AuthSession.id == owner)).first() is None
+
+
+def _drain_worker() -> None:
+    """The pool's single worker runs jobs in order: a no-op finishing means every seed has."""
+    from backend.app import demo_pool
+
+    demo_pool._pool().submit(int).result(timeout=120)
+
+
+def test_demo_copies_come_from_a_warm_pool_seeded_in_a_worker_process(
+    make_client: type[TestClient], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Seeding is CPU work, so it runs in a separate process ahead of time; a visitor claims a
+    ready copy. Unclaimed copies have no owner, so no browser can open them, and the orphan
+    purge leaves them alone."""
+    from backend.app import demo_pool
+    from backend.app.routers.session import purge_expired
+
+    monkeypatch.setenv("DEMO_POOL_SIZE", "1")
+    get_settings.cache_clear()
+    with make_client(create_app(), base_url=BASE) as first:  # start-up queues one seed
+        _drain_worker()
+        with _db() as db:
+            pooled = db.scalars(demo_pool._unowned("P1")).all()
+        assert len(pooled) == 1
+        claimed = demo(first)["workspace_id"]
+        assert claimed == pooled[0].id  # the ready copy, not a fresh seed
+        _drain_worker()  # the claim queued a replacement
+        with _db() as db:
+            spare = db.scalars(demo_pool._unowned("P1")).one()
+            assert spare.id != claimed
+            spare.created_at = utcnow() - timedelta(days=30)
+            db.commit()
+            purge_expired(db)
+            db.commit()
+            assert db.get(m.Workspace, spare.id) is not None
+
+
+def _legacy_cookie(workspace_id: str) -> str:
+    """A `foresight_profile` cookie exactly as the pre-accounts API signed it."""
+    import base64
+    import hashlib
+    import hmac
+
+    mac = hmac.new(b"test-only-secret", workspace_id.encode(), hashlib.sha256).digest()
+    return f"{workspace_id}.{base64.urlsafe_b64encode(mac).decode().rstrip('=')}"
+
+
+def test_profiles_from_before_accounts_survive_the_purge_and_their_browser_adopts_them(
+    make_client: type[TestClient],
+) -> None:
+    """Codex review on #36: after migration 0007 old profiles have no owner. They must not be
+    purged, and the browser holding the old signed cookie keeps its profile."""
+    from backend.app.routers.session import purge_expired
+    from backend.storage.repositories import create_workspace
+
+    with _db() as db:
+        legacy = create_workspace(
+            db,
+            name="Imported before accounts",
+            country="GB",
+            home_currency="GBP",
+            locale="en-GB",
+            timezone_name="Europe/London",
+            kind="user",
+        ).workspace_id
+        ws = db.get(m.Workspace, legacy)
+        assert ws is not None
+        ws.created_at = utcnow() - timedelta(days=30)
+        db.commit()
+
+    with make_client(create_app(), base_url=BASE) as stranger:
+        demo(stranger)  # a new guest arriving runs the purge
+    with _db() as db:
+        purge_expired(db)
+        db.commit()
+        assert db.get(m.Workspace, legacy) is not None
+
+    with make_client(create_app(), base_url=BASE) as forged:
+        bad = f"foresight_profile={legacy}.not-the-signature"
+        assert forged.get("/api/session", headers={"cookie": bad}).status_code == 401
+
+    with make_client(create_app(), base_url=BASE) as returning:
+        old = f"foresight_profile={_legacy_cookie(legacy)}"
+        first = returning.get("/api/session", headers={"cookie": old})
+        assert first.status_code == 200, first.text
+        assert first.json()["workspace_id"] == legacy
+        assert returning.cookies.get(COOKIE)  # now a normal guest session
+        assert returning.get("/api/session").json()["workspace_id"] == legacy
+    with _db() as db:
+        ws = db.get(m.Workspace, legacy)
+        assert ws is not None
+        assert ws.owner_session_id is not None

@@ -57,7 +57,8 @@ import {
 
 // Browser: same origin (the Next proxy). Server: straight to the private backend container.
 const DEFAULT_BASE_URL = typeof window === "undefined" ? (process.env.API_BASE_URL ?? "http://backend:8000") : "";
-export const TIMEOUTS = { read: 3000, simulate: 10000, import: 30000, seed: 30000 } as const;
+// forecast: the first one after an import is computed on demand (Monte Carlo), not just read.
+export const TIMEOUTS = { read: 3000, forecast: 8000, simulate: 10000, import: 30000, seed: 30000 } as const;
 export const CLIENT_HEADER = "X-Foresight-Client";
 const RESPONSE_ID = /^rsp_[0-9A-HJKMNP-TV-Z]{26}$/;
 
@@ -209,7 +210,7 @@ export function fetchCalculation(calcId: string, options: ApiOptions = {}): Prom
 /** The current baseline forecast for a scope. */
 export function fetchForecast(scope: Scope = "mine", options: ApiOptions = {}): Promise<ForecastView | null> {
   const query = new URLSearchParams({ scope });
-  return request(`/api/forecast?${query}`, okAnd(isForecastView), options);
+  return request(`/api/forecast?${query}`, okAnd(isForecastView), { timeoutMs: TIMEOUTS.forecast, ...options });
 }
 
 /** The fictional demo's forecast for the public Landing preview (no session, no cookie). */

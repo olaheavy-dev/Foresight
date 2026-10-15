@@ -9,21 +9,19 @@
 
 from __future__ import annotations
 
-from datetime import timedelta
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Request, Response, status
 from sqlalchemy import delete, or_, text
 
+from backend.app import demo_pool
 from backend.app import session as sess
 from backend.app.session import Db, Profile
 from backend.app.ui_contracts.response import ProfileView, SessionAccount
-from backend.pipeline.seed_demo import PERSONAS, dataset_root, seed_persona
 from backend.storage import models as m
 from backend.storage.repositories import create_workspace
 
 router = APIRouter(prefix="/api/session", tags=["session"])
-ORPHAN_GRACE = timedelta(days=1)
 
 
 def account_view(db: Db, row: m.AuthSession | None) -> SessionAccount | None:
@@ -60,9 +58,10 @@ def allow_purge(db: Db) -> None:
 
 
 def purge_expired(db: Db) -> int:
-    """Delete guest data nobody can open any more: expired or revoked guest sessions (their
-    workspaces cascade) and non-template workspaces left without an owner. Cheap; runs when a
-    new guest starts."""
+    """Delete expired or revoked guest sessions; their workspaces go with them (ON DELETE
+    CASCADE). Ownerless workspaces are never deleted here: they are the warm demo pool or
+    profiles from before accounts (migration 0007), which a returning browser can still adopt
+    (session.adopt_legacy). Cheap; runs when a new guest starts."""
     now = sess.utcnow()
     allow_purge(db)
     gone = db.execute(
@@ -71,15 +70,7 @@ def purge_expired(db: Db) -> int:
             or_(m.AuthSession.expires_at <= now, m.AuthSession.revoked_at.is_not(None)),
         )
     ).rowcount
-    orphans = db.execute(
-        delete(m.Workspace).where(
-            m.Workspace.kind != "demo",
-            m.Workspace.owner_user_id.is_(None),
-            m.Workspace.owner_session_id.is_(None),
-            m.Workspace.created_at <= now - ORPHAN_GRACE,
-        )
-    ).rowcount
-    return int(gone or 0) + int(orphans or 0)
+    return int(gone or 0)
 
 
 @router.post("/demo", response_model=ProfileView)
@@ -101,15 +92,18 @@ def use_demo(
         None,
     )
     if copy is None:
-        spec = next(p for p in PERSONAS if p.key == persona)
-        report = seed_persona(db, dataset_root(), spec, owner=sess.owner_fields(row))
-        copy = db.get(m.Workspace, report.workspace_id)
+        try:
+            copy = demo_pool.claim(db, persona, sess.owner_fields(row))
+        except TimeoutError:
+            copy = None
         if copy is None:
             raise HTTPException(
-                status.HTTP_503_SERVICE_UNAVAILABLE, "The demo couldn't be prepared."
+                status.HTTP_503_SERVICE_UNAVAILABLE, "The demo couldn't be prepared. Try again."
             )
+        copy.last_active_at = sess.utcnow()
     row.active_workspace_id = copy.id
     db.commit()
+    demo_pool.top_up(db, persona)
     return profile_view(copy, account_view(db, row))
 
 
