@@ -51,16 +51,23 @@ def _redirect_uri() -> str:
     return get_settings().public_base_url.rstrip("/") + CALLBACK
 
 
+# Where a sign-in may return to: the app's own pages only, so `next` can never redirect off-site.
+RETURN_PAGES = ("/home", "/workspace", "/transactions", "/lab", "/quality", "/activity", "/settings", "/start")
+
+
 def _safe_next(value: str | None) -> str:
-    """Only a same-site path: never an absolute URL or a protocol-relative one."""
-    if value and value.startswith("/") and not value.startswith("//") and "\\" not in value:
-        return value[:200]
-    return "/home"
+    """One of RETURN_PAGES (the constant, never the caller's string); anything else is /home."""
+    return next((page for page in RETURN_PAGES if page == value), "/home")
+
+
+@lru_cache
+def _derive_flow_key(secret: str) -> bytes:
+    return hashlib.pbkdf2_hmac("sha256", secret.encode(), b"foresight-oidc-flow", 200_000)
 
 
 def _flow_key() -> bytes:
-    secret = get_settings().session_secret or get_settings().google_oauth_client_secret
-    return hashlib.sha256(f"oidc-flow|{secret}".encode()).digest()
+    s = get_settings()
+    return _derive_flow_key(s.session_secret or s.google_oauth_client_secret)
 
 
 def _seal(data: dict[str, str]) -> str:
@@ -219,7 +226,7 @@ def google_callback(
             )
         active = guest.active_workspace_id
         sess.revoke(db, guest)
-    response = RedirectResponse(flow.get("next") or "/home", status_code=303)
+    response = RedirectResponse(_safe_next(flow.get("next")), status_code=303)
     fresh = sess.start(db, response, user_id=user.id)  # rotate: a new token at sign-in
     owned = sess.owned_workspaces(db, fresh)
     if active not in {w.id for w in owned}:

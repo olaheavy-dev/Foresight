@@ -140,3 +140,11 @@ def test_a_forged_state_and_an_unsafe_next_are_ignored(
         demo(browser)
         done = sign_in(browser, google, next_path="//evil.example/steal")
         assert done.headers["location"] == "/home"
+
+
+def test_return_path_is_only_ever_an_app_page() -> None:
+    from backend.app.routers.auth import _safe_next
+
+    assert _safe_next("/transactions") == "/transactions"
+    for hostile in ("//evil.example", "https://evil.example", "/home/../x", "/\\evil", None, ""):
+        assert _safe_next(hostile) == "/home"
