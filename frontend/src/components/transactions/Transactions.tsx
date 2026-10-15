@@ -8,7 +8,7 @@
  * Engine data only: no model call.
  */
 import Link from "next/link";
-import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Icon } from "@/components/icons/Icon";
 import { Badge, Button, ButtonLink, CardHead } from "@/components/ui/primitives";
@@ -151,9 +151,14 @@ function Ledger({
     [query, category, flowKind, review],
   );
 
+  // Only the latest request may update the list: a slow answer for old filters (the ledger
+  // timeout is 10 s) must never overwrite a newer one.
+  const latest = useRef(0);
   const load = useCallback(
     async (offset = 0) => {
+      const ticket = ++latest.current;
       const p = await fetchTransactions({ ...filters, offset });
+      if (ticket !== latest.current) return;
       setFailed(!p);
       if (!p) return;
       setPage(p);
