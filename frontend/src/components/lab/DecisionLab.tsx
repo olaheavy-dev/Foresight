@@ -6,7 +6,7 @@
  * simulated paths as the forecast (deterministic, no AI). The result is the same comparison block
  * the Workspace shows; anything the engine can't simulate comes back with its reason.
  */
-import { type FormEvent, useEffect, useId, useState } from "react";
+import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 
 import { Button, CardHead } from "@/components/ui/primitives";
 import { categoryName } from "@/components/transactions/Transactions";
@@ -75,10 +75,11 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
   const [result, setResult] = useState<{ view: SimulationView; name: string } | null>(null);
-  const [asOf, setAsOf] = useState<string | null>(null);
+  // The forecast's date (null if it couldn't load); a spread waits for it, never using today.
+  const asOf = useRef<Promise<string | null> | null>(null);
 
   useEffect(() => {
-    void fetchForecast().then((f) => setAsOf(f?.chart.as_of ?? null));
+    asOf.current = fetchForecast().then((f) => f?.chart.as_of ?? null);
     void fetchDetected().then((f) => {
       setFlows(f);
       setRecurring(f?.recurring[0]?.recurring_id ?? "");
@@ -94,7 +95,7 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
   // Income the user said isn't income (R4) can't be changed or delayed.
   const income = (flows?.income ?? []).filter((s) => (s.provenance as string) !== "rejected");
 
-  const build = (): { name: string; modifier: ScenarioModifierSpec; horizon?: number } | string => {
+  const build = (from: string | null): { name: string; modifier: ScenarioModifierSpec; horizon?: number } | string => {
     const minor = parseAmountMinor(amount, currency);
     switch (kind) {
       case "purchase":
@@ -105,7 +106,8 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
         };
       case "spread": {
         if (!minor || minor <= 0) return "Enter the total amount, like 900.";
-        const from = asOf ?? isoInDays(0);
+        if (from === null)
+          return "Your forecast couldn’t load, so a spread can’t be checked against it. Reload the page and try again.";
         if (date <= from) return `Choose a first payment after ${from}, the day your forecast starts from.`;
         const horizon = spreadHorizon(date, Number(instalments), cadence, from);
         if (horizon === null)
@@ -153,7 +155,7 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
   const run = async (e: FormEvent) => {
     e.preventDefault();
     setResult(null); // a new run never shows the last one's figures beside its own outcome
-    const built = build();
+    const built = build(kind === "spread" ? ((await asOf.current) ?? null) : null);
     if (typeof built === "string") {
       setProblem(built);
       return;

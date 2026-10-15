@@ -43,3 +43,18 @@ test("Decision Lab compares a spread purchase with the current path, and explain
   await expect(form.getByRole("alert")).toContainText("outside the forecast horizon");
   await expect(result).toHaveCount(0); // the income result isn't left beside the refusal
 });
+
+test("a spread isn't checked against today when the forecast's date can't load (#48 review)", async ({ page }) => {
+  await page.context().clearCookies();
+  await page.goto("/");
+  await page.getByRole("button", { name: "Explore the live demo" }).click();
+  await page.waitForURL("**/home");
+  await page.route("**/api/forecast*", (route) => route.fulfill({ status: 500, body: "{}" }));
+  await page.goto("/lab");
+  await page.getByRole("radio", { name: /Spread a purchase/ }).check();
+  const form = page.getByRole("form", { name: "Scenario details" });
+  await form.getByLabel("Total amount").fill("900");
+  await form.getByRole("button", { name: "Test it" }).click();
+  await expect(form.getByRole("alert")).toContainText("Your forecast couldn’t load");
+  await expect(page.getByRole("region", { name: "Result" })).toHaveCount(0);
+});
