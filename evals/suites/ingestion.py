@@ -420,7 +420,7 @@ def run(fast: bool = False) -> dict[str, Any]:
         target(
             "ING-heuristic+llm",
             "FormatProfile success, heuristic+LLM",
-            None,
+            unseen_llm["success"],
             ">=",
             0.85,
             "C1–C4",

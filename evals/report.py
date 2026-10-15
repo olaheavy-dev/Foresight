@@ -69,9 +69,10 @@ def render_report(summary: dict[str, Any], results: dict[str, dict[str, Any]]) -
         "",
         f"Not run (gate `fail` until they exist): {', '.join(not_run) or 'none'}.",
         "",
-        "Gate rule: a suite errors → fail; else if any docs/09 target that applies to Stage 1 was "
-        "measured, every measured one must be met; else the suite passes if it ran without "
-        "errors. A null target is never counted as met.",
+        "Gate rule: a suite errors → fail; else every gated target must be measured and met: an "
+        "unmeasured (null) target fails the suite. A target is left out only by an opt-out the "
+        "gate accepts (dataset missing, or features not built beside a companion that gates); a "
+        "suite with no targets passes if it ran without errors.",
         "",
         "## Targets",
         "",
@@ -86,7 +87,7 @@ def render_report(summary: dict[str, Any], results: dict[str, dict[str, Any]]) -
                 "|---|---|---|---|---|---|---|",
             ]
             for t in r["targets"]:
-                gated = "yes" if is_gated(t) else "no (opted out)"
+                gated = "yes" if is_gated(t, r["targets"]) else "no (opted out)"
                 lines.append(
                     f"| {t['id']} | {t['label']} | {t['dataset']} | {fmt(t['value'])} | "
                     f"{t['target']} | {mark(t['met'])} | {gated} |"

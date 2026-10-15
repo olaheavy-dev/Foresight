@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from evals.gates import is_gated
 from evals.headline import dig, headline
 
 CORE_JSON = Path("frontend/src/generated/core-metrics.json")
@@ -260,6 +261,7 @@ def render(summary: dict[str, Any]) -> str:
     ]
     misses = [
         f"- {sid} {t['id']}: {t['label']} = {_f(t['value'])} (target {t['target']}, {t['dataset']})"
+        + _opt_out(t, targets)
         for sid, targets in (summary.get("targets") or {}).items()
         for t in targets
         if t.get("stage1") and t.get("met") is False
@@ -267,6 +269,14 @@ def render(summary: dict[str, Any]) -> str:
     lines += misses or ["- No measured Stage 1 target missed."]
     lines += ["", END]
     return "\n".join(lines)
+
+
+def _opt_out(t: dict[str, Any], suite: list[dict[str, Any]]) -> str:
+    """Why a missed target doesn't fail its suite, only when the gate itself excludes it (the same
+    predicate, AGENTS.md rule 4), so an older result's bare opt-out is never presented as one."""
+    if not is_gated(t, suite):
+        return f"; not gated: {t['not_gated_because']}"
+    return ""
 
 
 def _forecast_arms(s: dict[str, Any]) -> list[str]:

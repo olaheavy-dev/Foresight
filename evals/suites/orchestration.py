@@ -689,6 +689,8 @@ def run(fast: bool = False) -> dict[str, Any]:
         f"{len(results)} cases",
     )
     all_target["gated"] = False
+    all_target["not_gated_kind"] = "feature_not_built"
+    all_target["gated_by"] = "ORC-pass-built"
     all_target["not_gated_because"] = "includes cases for features of later stages not built yet"
     targets: list[Target] = [
         all_target,

@@ -99,3 +99,9 @@ Found and fixed while reviewing:
 Checked and kept: six template cards in a grid from 768 px and stacked on mobile; labelled fields in two columns from 768 px; the result reuses the Workspace's comparison block (current path, dashed scenario line, likely range, a verdict badge and its reason) with a plain note that no AI was used. Refusals appear inline under the form, and a new run clears the previous result.
 
 Could improve (open): the result could also show the scenario's key numbers (lowest balance before and after) as text above the chart.
+
+## Quality run label, reviewed 15 Oct 2026
+
+The Core metrics note now names its run in words ("From the evaluation run of 14 Oct 2026 (commit 21b5e1e)"), with the raw run id kept in a tooltip, instead of `evalrun_20261014T162812Z_21b5e1e`. Captured `review-quality-*` at 375, 768 and 1280 px in light and dark (`SCREENSHOTS=1`, real local stack): **0 axe violations and 0 horizontal overflow** on all six. At 375 px the longer note wraps to three lines within the measure and pushes nothing sideways. This closes the "raw run id on Quality" item left open on 14 Oct.
+
+Could improve (open): the fast tier lists its model twice ("gpt-6-luna, openai/gpt-6-luna") because older recordings stored the name without its provider prefix; the label could normalise names before joining them.

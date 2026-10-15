@@ -41,12 +41,14 @@ jobs:
         run: lint-imports
       - name: Unit and integration tests (PostgreSQL)
         run: python -m pytest
-      - name: Feature flags only on with green evals
+      - name: Feature flags only on with green evals (committed results)
         run: python -m tools.check_feature_flags
       - name: README status section is generated, not typed
         run: python -m tools.render_readme_status --check
       - name: Deterministic evals (docs/09 §16)
         run: python -m evals.run --suite all --results-dir "$RUNNER_TEMP/evals"
+      - name: Feature flags only on with this run's gates (a fresh failing gate blocks the push)
+        run: python -m tools.check_feature_flags --results "$RUNNER_TEMP/evals/latest.json"
       - name: Eval regression gate against evals/results/baseline.json
         run: python -m evals.regression --latest "$RUNNER_TEMP/evals/latest.json"
       - name: README results section is generated from latest.json
@@ -109,6 +111,17 @@ jobs:
       - name: Playwright journeys and accessibility checks
         run: npx playwright test
         working-directory: frontend
+      - name: AI Workspace journeys and accessibility checks (scripted mock API)
+        run: npx playwright test e2e/workspace.spec.ts --config playwright.workspace.config.ts --output "${{ runner.temp }}/workspace-results"
+        working-directory: frontend
+      - name: Keep the AI Workspace results of a failed run
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: workspace-results
+          path: ${{ runner.temp }}/workspace-results
+          retention-days: 7
+          if-no-files-found: ignore
       - name: Keep the Playwright results (page snapshots, traces) of a failed run
         if: failure()
         uses: actions/upload-artifact@v4

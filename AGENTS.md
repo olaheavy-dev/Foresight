@@ -53,7 +53,7 @@ Review every change against these rules. A finding names the rule, the file and 
 ### 4. Contracts, flags and claims
 
 - A backend contract change (`backend/app/ui_contracts`) is regenerated (`tools.export_schemas`) and the frontend still compiles and validates payloads. Prefer additive, optional fields; breaking changes need every client updated in the same PR.
-- A feature flag turns on only when its linked suites pass **and** its required targets are measured: a null target is not a pass. Check `features.yaml`, the gate result and `tools/check_feature_flags.py`.
+- A feature flag turns on only when its linked suites pass **and** its required targets are measured: a null target is not a pass. There are two exceptions, and `evals/gates.py` accepts no others: a target whose dataset doesn't exist yet, so it has no value (`not_gated_kind: dataset_missing`, owner decision 15 Oct 2026), and a target that covers features not built yet while the cases for built features gate in the target its `gated_by` names (`feature_not_built`, e.g. E-ORC `ORC-pass` beside `ORC-pass-built`, owner decision 13 Oct 2026). The gate checks both conditions. Each also states a `not_gated_because` reason, shown in the README results and listed in `evals/CHANGELOG.md`. Any other failed or unmeasured target is never excluded. Check `features.yaml`, the gate result and `tools/check_feature_flags.py`.
 - README, `/quality` and UI copy claim only what was measured, with its dataset and mode (replay, live, generated, holdout). Failures are disclosed, never hidden by relaxing a target; a target or baseline change needs an `evals/CHANGELOG.md` entry with the reason.
 
 ### 5. Tests and UI

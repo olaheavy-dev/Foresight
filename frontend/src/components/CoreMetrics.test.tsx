@@ -40,3 +40,11 @@ describe("CoreMetrics", () => {
     expect(screen.getByText(/checks: fails/)).toBeInTheDocument();
   });
 });
+
+describe("runLabel", () => {
+  it("names the run by date and commit instead of its raw id", async () => {
+    const { runLabel } = await import("./CoreMetrics");
+    expect(runLabel("evalrun_20261014T124926Z_4c6fc75")).toBe("the evaluation run of 14 Oct 2026 (commit 4c6fc75)");
+    expect(runLabel(null)).toBe("an evaluation run not recorded here");
+  });
+});
