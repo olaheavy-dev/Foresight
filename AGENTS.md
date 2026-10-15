@@ -60,6 +60,7 @@ Review every change against these rules. A finding names the rule, the file and 
 
 - A bug fix comes with a regression test that fails without it. Isolation changes come with a two-browser test.
 - UI changes pass axe with no serious issues and no horizontal overflow at 375, 768 and 1280 px, light and dark, and match the Atelier design brief.
+- A UI change ships with end-to-end journeys for its main and error states, and with screenshots of each new or changed surface at 375, 768 and 1280 px, light and dark (`SCREENSHOTS=1` specs), reviewed against `.design/foresight/DESIGN_BRIEF.md` before merge. The PR lists what was captured and any findings, and `.design/foresight/DESIGN_REVIEW_APP.md` gets a dated note.
 - Copy: "Checked", not "Verified"; no regulated financial-product advice; no claims bank data can't support (say "overlap", not "unused subscription"); fictional data is labelled.
 - CPU or bulk-write work added to a request path (seeding, imports, forecasts) is timed alone and under concurrent load on constrained resources (e.g. `docker update --cpus 1` on the API and `--cpus 0.5` on Postgres), with the numbers in the PR. Move it out of the request if it slows other users.
 
