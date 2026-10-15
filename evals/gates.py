@@ -43,17 +43,27 @@ RULE_ERROR = "suite error"
 RULE_NOT_RUN = "not run"
 
 
-# The only reasons a target may be left out (AGENTS.md rule 4): its dataset doesn't exist yet, or
-# it covers features that aren't built (the cases for built features gate in another target).
-OPT_OUT_KINDS = ("dataset_missing", "feature_not_built")
+def is_gated(target: dict[str, Any], suite: list[dict[str, Any]] | None = None) -> bool:
+    """Every target counts unless it opts out explicitly (docs/09 §16, review R7), and an opt-out
+    counts only when its own conditions hold:
 
+    - `dataset_missing`: the target has no measurement (a value proves the dataset exists);
+    - `feature_not_built`: `gated_by` names another target of the same suite that gates.
 
-def is_gated(target: dict[str, Any]) -> bool:
-    """Every target counts unless it opts out explicitly (docs/09 §16, review R7): `gated: false`
-    counts only with an allowed `not_gated_kind` and a stated `not_gated_because`."""
-    reason = str(target.get("not_gated_because") or "").strip()
-    allowed = target.get("not_gated_kind") in OPT_OUT_KINDS
-    return not (target.get("gated", True) is False and reason and allowed)
+    It also needs a stated `not_gated_because`. Any other opt-out is ignored, so the target gates.
+    """
+    if target.get("gated", True) is not False:
+        return True
+    if not str(target.get("not_gated_because") or "").strip():
+        return True
+    kind = target.get("not_gated_kind")
+    if kind == "dataset_missing":
+        return target.get("value") is not None
+    if kind == "feature_not_built":
+        companion = next((t for t in suite or [] if t.get("id") == target.get("gated_by")), None)
+        # The companion must gate without an opt-out of its own (no chains or loops).
+        return companion is None or companion.get("gated", True) is False
+    return True
 
 
 def gate(result: dict[str, Any] | None) -> dict[str, Any]:
@@ -67,7 +77,8 @@ def gate(result: dict[str, Any] | None) -> dict[str, Any]:
             "unmeasured": [],
             "error": result["error"],
         }
-    gated = [t for t in result.get("targets", []) if is_gated(t)]
+    targets = result.get("targets", [])
+    gated = [t for t in targets if is_gated(t, targets)]
     measured = [t for t in gated if t.get("met") is not None]
     unmeasured = [t["id"] for t in gated if t.get("met") is None]
     failed = [t["id"] for t in measured if t["met"] is not True]

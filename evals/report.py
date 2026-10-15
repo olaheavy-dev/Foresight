@@ -86,7 +86,7 @@ def render_report(summary: dict[str, Any], results: dict[str, dict[str, Any]]) -
                 "|---|---|---|---|---|---|---|",
             ]
             for t in r["targets"]:
-                gated = "yes" if is_gated(t) else "no (opted out)"
+                gated = "yes" if is_gated(t, r["targets"]) else "no (opted out)"
                 lines.append(
                     f"| {t['id']} | {t['label']} | {t['dataset']} | {fmt(t['value'])} | "
                     f"{t['target']} | {mark(t['met'])} | {gated} |"
