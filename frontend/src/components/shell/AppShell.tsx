@@ -9,7 +9,7 @@ import { SideNav } from "./SideNav";
 
 /**
  * App frame (IA §Navigation): sidebar from 1024px, bottom tab bar below; top bar with the ask
- * box, Activity and the avatar menu. A "Demo data" badge marks the read-only demo profile.
+ * box, Activity and the avatar menu. A "Demo data" badge marks the fictional demo profile.
  */
 export function AppShell({ profile, children }: { profile: ProfileView | null; children: ReactNode }) {
   const subtitle = !profile
@@ -50,7 +50,12 @@ export function AppShell({ profile, children }: { profile: ProfileView | null; c
             <Link className="icon-btn" href="/activity" aria-label="Activity">
               <Icon name="bell" />
             </Link>
-            <AvatarMenu name={profile?.name ?? null} subtitle={subtitle} account={profile?.account ?? null} />
+            <AvatarMenu
+              name={profile?.name ?? null}
+              subtitle={subtitle}
+              account={profile?.account ?? null}
+              demo={profile?.kind === "demo"}
+            />
           </div>
         </header>
         {children}

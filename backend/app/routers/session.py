@@ -2,6 +2,7 @@
 
 - `POST /api/session/demo?persona=P1` gives this browser a private copy of the demo (a guest
   session is started if there is none). Visitors never share a demo workspace.
+- `POST /api/session/demo/reset` swaps that private copy for a fresh one.
 - `POST /api/session/new` creates an empty profile of its own for statement imports.
 - `POST /api/session/logout` ends the session; `POST /api/session/delete` deletes every profile
   the session or user owns, then ends it.
@@ -39,7 +40,7 @@ def profile_view(ws: m.Workspace, account: SessionAccount | None = None) -> Prof
     return ProfileView(
         workspace_id=ws.id,
         name=ws.name,
-        kind="demo" if ws.kind in sess.READ_ONLY_KINDS else "user",
+        kind="demo" if ws.kind in sess.FICTIONAL_KINDS else "user",
         persona=ws.persona_key,
         country=ws.country,
         home_currency=ws.home_currency,
@@ -105,6 +106,32 @@ def use_demo(
     db.commit()
     demo_pool.schedule_refill(persona)
     return profile_view(copy, account_view(db, row))
+
+
+@router.post("/demo/reset", response_model=ProfileView)
+def reset_demo(request: Request, db: Db) -> ProfileView:
+    """Swap this session's private demo copy (the active profile) for a fresh one: categories,
+    balances and conversations go back to the start. Other visitors are never affected."""
+    row = sess.current(request, db)
+    ws = db.get(m.Workspace, row.active_workspace_id) if row and row.active_workspace_id else None
+    if row is None or ws is None or ws.kind != "sample" or not sess.owns(row, ws):
+        raise HTTPException(status.HTTP_409_CONFLICT, "Only a demo profile can be reset.")
+    persona = ws.persona_key or "P1"
+    try:
+        fresh = demo_pool.claim(db, persona, sess.owner_fields(row))
+    except TimeoutError:
+        fresh = None
+    if fresh is None:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE, "A fresh demo couldn't be prepared. Try again."
+        )
+    fresh.last_active_at = sess.utcnow()
+    row.active_workspace_id = fresh.id
+    allow_purge(db)
+    db.delete(ws)
+    db.commit()
+    demo_pool.schedule_refill(persona)
+    return profile_view(fresh, account_view(db, row))
 
 
 @router.post("/new", response_model=ProfileView, status_code=status.HTTP_201_CREATED)

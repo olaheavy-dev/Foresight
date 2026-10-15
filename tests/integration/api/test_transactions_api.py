@@ -38,8 +38,9 @@ def test_search_review_categories_and_imports_on_the_demo(api: TestClient) -> No
     assert history["imports"]
     assert history["imports"][0]["rows_read"] > 0
     row = everything["items"][0]["transaction_id"]
-    refused = api.post(FIX.format(transaction_id=row), json={"category_key": "groceries"})
-    assert refused.status_code == 403
+    # A private demo copy accepts corrections (they affect nobody else).
+    fixed = api.post(FIX.format(transaction_id=row), json={"category_key": "groceries"})
+    assert fixed.status_code == 200
 
 
 def test_a_correction_applies_to_the_payee_and_leaves_the_review_queue(api: TestClient) -> None:

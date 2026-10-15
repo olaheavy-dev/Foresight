@@ -89,7 +89,7 @@ def correct(ctx: Profile, transaction_id: str, body: CategoryCorrection) -> Cate
     if read_only(ctx.workspace):
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
-            "The demo profile is read-only. Start a new profile to correct your own categories.",
+            "This profile is read-only.",
         )
     if body.category_key not in packs.categorisation_pack(ctx.workspace.country).categories:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Unknown category.")

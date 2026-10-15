@@ -80,7 +80,7 @@ def set_balance(ctx: Profile, account_id: str, body: BalanceDeclaration) -> Acco
     if read_only(ctx.workspace):
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
-            "The demo profile is read-only. Start a new profile to use your own statements.",
+            "This profile is read-only.",
         )
     account = next((a for a in ctx.all(m.Account) if a.id == account_id), None)
     if account is None:

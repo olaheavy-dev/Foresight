@@ -41,7 +41,7 @@ def upload(client: TestClient, *paths: Path) -> Any:
 def test_demo_forecast_simulate_and_evidence(api: TestClient) -> None:
     profile = demo(api)
     assert profile["kind"] == "demo"
-    assert profile["read_only"] is True
+    assert profile["read_only"] is False  # a private copy: corrections allowed, imports not
     assert api.cookies.get(COOKIE)
 
     first = api.get("/api/forecast")
@@ -112,7 +112,7 @@ def test_demo_forecast_simulate_and_evidence(api: TestClient) -> None:
     sim_calc = "calc_" + body["simulation_id"].removeprefix("sim_")
     assert api.get(f"/api/calculations/{sim_calc}").json()["kind"] == "simulation"
 
-    # The demo is shared, so it is read-only.
+    # The demo is fictional: real statements never go into it, even a private copy.
     refused = api.post(
         "/api/imports", files=[("files", (P1_CSV.name, P1_CSV.read_bytes(), "text/csv"))]
     )
