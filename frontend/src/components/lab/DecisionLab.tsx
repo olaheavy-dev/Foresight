@@ -31,8 +31,21 @@ const KINDS: { id: Kind; label: string; hint: string }[] = [
   { id: "cancel", label: "Cancel a regular payment", hint: "From one of your bills" },
   { id: "cut", label: "Spend less on something", hint: "Cut a category by a share" },
   { id: "income", label: "My income changes", hint: "A raise or a pay cut" },
-  { id: "late", label: "My pay arrives late", hint: "A delayed payday" },
+  { id: "late", label: "My next pay arrives late", hint: "Only the next payday moves" },
 ];
+
+const DEFAULT_HORIZON = 90;
+const MAX_HORIZON = 365;
+const CADENCE_DAYS: Record<string, number> = { weekly: 7, fortnightly: 14, monthly: 31 };
+
+/** A forecast long enough to include a spread purchase's last payment; null past a year. */
+export function spreadHorizon(start: string, instalments: number, cadence: string, today = new Date()): number | null {
+  const first = new Date(`${start}T00:00:00`);
+  const days = Math.ceil((first.getTime() - today.getTime()) / 86_400_000);
+  const last = days + (instalments - 1) * (CADENCE_DAYS[cadence] ?? 31) + 7;
+  if (last > MAX_HORIZON) return null;
+  return Math.max(DEFAULT_HORIZON, last);
+}
 
 const isoInDays = (days: number) => {
   const d = new Date();
@@ -74,7 +87,7 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
   // Income the user said isn't income (R4) can't be changed or delayed.
   const income = (flows?.income ?? []).filter((s) => (s.provenance as string) !== "rejected");
 
-  const build = (): { name: string; modifier: ScenarioModifierSpec } | string => {
+  const build = (): { name: string; modifier: ScenarioModifierSpec; horizon?: number } | string => {
     const minor = parseAmountMinor(amount, currency);
     switch (kind) {
       case "purchase":
@@ -85,6 +98,8 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
         };
       case "spread":
         if (!minor || minor <= 0) return "Enter the total amount, like 900.";
+        if (spreadHorizon(date, Number(instalments), cadence) === null)
+          return "That plan runs past the year the forecast covers. Choose fewer payments or a shorter gap.";
         return {
           name: `Spread over ${instalments} payments`,
           modifier: {
@@ -95,6 +110,7 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
             cadence,
             label: "Purchase",
           },
+          horizon: spreadHorizon(date, Number(instalments), cadence) ?? undefined,
         };
       case "cancel":
         if (!recurring) return "There are no regular payments to cancel yet.";
@@ -117,14 +133,15 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
       case "late":
         if (!stream) return "There's no regular income to delay yet.";
         return {
-          name: `Pay ${days} days late`,
-          modifier: { type: "income_delay", income_stream_id: stream, days: Number(days) },
+          name: `Next pay ${days} days late`,
+          modifier: { type: "income_delay", income_stream_id: stream, days: Number(days), occurrences: 1 },
         };
     }
   };
 
   const run = async (e: FormEvent) => {
     e.preventDefault();
+    setResult(null); // a new run never shows the last one's figures beside its own outcome
     const built = build();
     if (typeof built === "string") {
       setProblem(built);
@@ -138,6 +155,7 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
       scope: "mine",
       currency,
       modifiers: [built.modifier],
+      ...(built.horizon ? { horizon_days: built.horizon } : {}),
     });
     setBusy(false);
     if (!outcome) setProblem("The simulation couldn’t run just now. Try again.");
