@@ -30,7 +30,7 @@ features:
   simulation:
     stage: 1
     title: What-if simulation against the same engine
-    enabled: false
+    enabled: true
     suites: [E-SIM]
 
   # Stage 2 — agents and the checked-advice loop
