@@ -1635,6 +1635,36 @@
       "title": "CashFlowForecastData",
       "type": "object"
     },
+    "CategoryCorrected": {
+      "additionalProperties": false,
+      "properties": {
+        "category_key": {
+          "minLength": 1,
+          "title": "Category Key",
+          "type": "string"
+        },
+        "data_version": {
+          "minimum": 0,
+          "title": "Data Version",
+          "type": "integer"
+        },
+        "transaction_ids": {
+          "items": {
+            "pattern": "^txn_[0-9A-HJKMNP-TV-Z]{26}$",
+            "type": "string"
+          },
+          "title": "Transaction Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "category_key",
+        "transaction_ids",
+        "data_version"
+      ],
+      "title": "CategoryCorrected",
+      "type": "object"
+    },
     "CategoryLabel": {
       "additionalProperties": false,
       "properties": {
@@ -1654,6 +1684,50 @@
         "label"
       ],
       "title": "CategoryLabel",
+      "type": "object"
+    },
+    "CategoryList": {
+      "additionalProperties": false,
+      "properties": {
+        "categories": {
+          "items": {
+            "$ref": "#/$defs/CategoryOption"
+          },
+          "title": "Categories",
+          "type": "array"
+        }
+      },
+      "required": [
+        "categories"
+      ],
+      "title": "CategoryList",
+      "type": "object"
+    },
+    "CategoryOption": {
+      "additionalProperties": false,
+      "properties": {
+        "flow_kind": {
+          "minLength": 1,
+          "title": "Flow Kind",
+          "type": "string"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "nature": {
+          "minLength": 1,
+          "title": "Nature",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "nature",
+        "flow_kind"
+      ],
+      "title": "CategoryOption",
       "type": "object"
     },
     "CategorySeries": {
@@ -3810,6 +3884,129 @@
         "database"
       ],
       "title": "Healthz",
+      "type": "object"
+    },
+    "ImportBatchView": {
+      "additionalProperties": false,
+      "properties": {
+        "account_id": {
+          "anyOf": [
+            {
+              "pattern": "^acct_[0-9A-HJKMNP-TV-Z]{26}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "duplicates": {
+          "minimum": 0,
+          "title": "Duplicates",
+          "type": "integer"
+        },
+        "filename": {
+          "minLength": 1,
+          "title": "Filename",
+          "type": "string"
+        },
+        "format_profile": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Format Profile"
+        },
+        "import_id": {
+          "pattern": "^imp_[0-9A-HJKMNP-TV-Z]{26}$",
+          "title": "Import Id",
+          "type": "string"
+        },
+        "imported_at": {
+          "format": "date-time",
+          "title": "Imported At",
+          "type": "string"
+        },
+        "message": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message"
+        },
+        "reconciliation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reconciliation"
+        },
+        "rows_imported": {
+          "minimum": 0,
+          "title": "Rows Imported",
+          "type": "integer"
+        },
+        "rows_read": {
+          "minimum": 0,
+          "title": "Rows Read",
+          "type": "integer"
+        },
+        "status": {
+          "minLength": 1,
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "import_id",
+        "filename",
+        "status",
+        "rows_read",
+        "rows_imported",
+        "duplicates",
+        "imported_at"
+      ],
+      "title": "ImportBatchView",
+      "type": "object"
+    },
+    "ImportHistory": {
+      "additionalProperties": false,
+      "properties": {
+        "imports": {
+          "items": {
+            "$ref": "#/$defs/ImportBatchView"
+          },
+          "title": "Imports",
+          "type": "array"
+        },
+        "workspace_id": {
+          "pattern": "^wsp_[0-9A-HJKMNP-TV-Z]{26}$",
+          "title": "Workspace Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "imports"
+      ],
+      "title": "ImportHistory",
       "type": "object"
     },
     "ImportQuestion": {
@@ -8623,6 +8820,9 @@
     "CalculationView",
     "AccountList",
     "AccountView",
-    "DetectedFlows"
+    "DetectedFlows",
+    "CategoryList",
+    "CategoryCorrected",
+    "ImportHistory"
   ]
 }

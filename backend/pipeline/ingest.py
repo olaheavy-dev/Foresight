@@ -435,36 +435,70 @@ def correct_category(
     ctx: WorkspaceContext, transaction_id: str, category_key: str, *, actor: str = "user"
 ) -> m.Categorisation:
     """A user correction: appended (never overwritten) and taught to merchant memory."""
+    rows = correct_categories(ctx, [transaction_id], category_key, actor=actor)
+    return rows[0]
+
+
+def same_merchant(ctx: WorkspaceContext, transaction_id: str) -> list[str]:
+    """The transaction and every other active one from its counterparty that the user hasn't
+    set by hand ("apply to all from this merchant", docs/01 F-07)."""
     txn = ctx.get(m.Transaction, transaction_id)
     if txn is None:
         raise LookupError(transaction_id)
+    if not txn.counterparty:
+        return [txn.id]
+    latest = ctx.latest_categorisations()
+    others = [
+        t.id
+        for t in ctx.transactions()
+        if t.counterparty == txn.counterparty
+        and t.id != txn.id
+        and (latest.get(t.id) is None or latest[t.id].method != "user")
+    ]
+    return [txn.id, *others]
+
+
+def correct_categories(
+    ctx: WorkspaceContext, transaction_ids: list[str], category_key: str, *, actor: str = "user"
+) -> list[m.Categorisation]:
+    """User corrections for one or more transactions: each appended (never overwritten), the
+    merchant taught once, then one data-version bump and one re-detection for the batch."""
     cpack = packs.categorisation_pack(ctx.workspace.country)
-    previous = ctx.latest_categorisations().get(transaction_id)
-    row = ledger.categorisation_row(
-        Categorisation(
-            transaction_id,
-            category_key,
-            cpack.default_flow_kind(category_key),
-            CategorisationMethod.USER,
-            1.0,
-            "your correction",
-        ),
-        supersedes=previous.id if previous else None,
-    )
-    ctx.add(row)
-    if txn.counterparty:
-        memory = learn(merchant_memory(ctx), txn.counterparty, category_key, "user")
-        cpty = _counterparty(ctx, ctx.counterparties(), txn.counterparty)
-        cpty.default_category_key = memory[txn.counterparty].category_key
-        cpty.memory_source = memory[txn.counterparty].source
-    ctx.append_audit(
-        "txn.recategorised", "transaction", transaction_id, actor=actor,
-        before={"category_key": previous.category_key} if previous else None,
-        after={"category_key": category_key},
-    )  # fmt: skip
+    latest = ctx.latest_categorisations()
+    rows: list[m.Categorisation] = []
+    taught: set[str] = set()
+    for transaction_id in transaction_ids:
+        txn = ctx.get(m.Transaction, transaction_id)
+        if txn is None:
+            raise LookupError(transaction_id)
+        previous = latest.get(transaction_id)
+        row = ledger.categorisation_row(
+            Categorisation(
+                transaction_id,
+                category_key,
+                cpack.default_flow_kind(category_key),
+                CategorisationMethod.USER,
+                1.0,
+                "your correction",
+            ),
+            supersedes=previous.id if previous else None,
+        )
+        ctx.add(row)
+        rows.append(row)
+        if txn.counterparty and txn.counterparty not in taught:
+            taught.add(txn.counterparty)
+            memory = learn(merchant_memory(ctx), txn.counterparty, category_key, "user")
+            cpty = _counterparty(ctx, ctx.counterparties(), txn.counterparty)
+            cpty.default_category_key = memory[txn.counterparty].category_key
+            cpty.memory_source = memory[txn.counterparty].source
+        ctx.append_audit(
+            "txn.recategorised", "transaction", transaction_id, actor=actor,
+            before={"category_key": previous.category_key} if previous else None,
+            after={"category_key": category_key},
+        )  # fmt: skip
     ctx.bump_data_version()
     detect(ctx)
-    return row
+    return rows
 
 
 # ------------------------------------------------------------------------- detection
