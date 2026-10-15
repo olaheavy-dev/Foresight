@@ -129,8 +129,9 @@ def activity(ctx: Profile, limit: int = Query(default=20, ge=1, le=50)) -> Activ
         for msg in ctx.session.scalars(
             ctx.select(m.Message).where(m.Message.run_id.in_(run_ids), m.Message.role == "user")
         ):
-            if msg.run_id:  # a follow-up's context-complete rewrite, when it has one (docs/05)
-                questions[msg.run_id] = (msg.standalone_question or msg.text or "")[:300]
+            if msg.run_id:  # the person's own words: the model's standalone rewrite could carry
+                # a figure the model wrote, and no model figure is shown unchecked (rule 2)
+                questions[msg.run_id] = (msg.text or "")[:300]
 
     total = ctx.session.scalar(
         select(func.count())

@@ -125,8 +125,8 @@ def test_runs_are_traces_and_the_audit_log_reads_in_words(
         body = _activity(alice)
         (run,) = [r for r in body["runs"] if r["run_id"] == run_id]
         assert (run["duration_ms"], run["approved"], run["rejected"]) == (12000, 1, 0)
-        # A follow-up shows its stored standalone rewrite, not the fragment typed (#50 review).
-        assert run["question"] == "Can I afford a £800 purchase on 20 November?"
+        # The person's words, never the model's rewrite, which could carry a figure (#50 review).
+        assert run["question"] == "What about £800?"
         assert [s["agent"] for s in run["steps"]] == ["advisor", "verifier"]
         assert run["steps"][0]["model"] == "anthropic/claude-sonnet-5.5"
         assert "model output must not leak" not in alice.get("/api/activity").text
