@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Response, status
 from fastapi.responses import JSONResponse
 
-from backend.app import demo_pool
+from backend.app import demo_pool, logs
 from backend.app.routers import ask, auth, engine, financial_data, imports, ledger
 from backend.app.routers import session as profile
 from backend.app.session import CSRF_HEADER
@@ -30,6 +30,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
 
 def create_app() -> FastAPI:
     settings = get_settings()
+    logs.install()
     app = FastAPI(title="Foresight API", version="0.1.0", lifespan=lifespan)
 
     @app.middleware("http")
