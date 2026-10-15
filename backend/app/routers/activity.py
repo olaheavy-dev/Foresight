@@ -60,8 +60,9 @@ def _summary(action: str, count: int, after: dict[str, Any] | None) -> str:
 
 
 def _events(ctx: Any, limit: int) -> list[ActivityEvent]:
-    """Newest first; consecutive identical actions (one correction applied to every payment
-    from a payee) collapse into one line."""
+    """Newest first. Consecutive identical actions collapse into one line, except corrections:
+    those collapse only within one batch (one correction applied to every payment from a payee),
+    so two separate corrections stay two lines."""
     rows = ctx.session.scalars(
         ctx.select(m.AuditEvent).order_by(m.AuditEvent.seq.desc()).limit(limit * 20)
     ).all()
@@ -84,6 +85,9 @@ def _events(ctx: Any, limit: int) -> list[ActivityEvent]:
 
     for row in rows:
         same = group and row.action == group[0].action and row.actor == group[0].actor
+        if same and row.action == "txn.recategorised":
+            batch = (row.after or {}).get("batch")
+            same = batch is not None and batch == (group[0].after or {}).get("batch")
         if group and (not same or row.action == "income_decision"):
             flush()
         group.append(row)
@@ -121,8 +125,8 @@ def activity(ctx: Profile, limit: int = Query(default=20, ge=1, le=50)) -> Activ
         for msg in ctx.session.scalars(
             ctx.select(m.Message).where(m.Message.run_id.in_(run_ids), m.Message.role == "user")
         ):
-            if msg.run_id:
-                questions[msg.run_id] = (msg.text or "")[:300]
+            if msg.run_id:  # a follow-up's context-complete rewrite, when it has one (docs/05)
+                questions[msg.run_id] = (msg.standalone_question or msg.text or "")[:300]
 
     total = ctx.session.scalar(
         select(func.count())

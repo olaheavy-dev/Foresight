@@ -12,7 +12,7 @@ const LEDE = "What Foresight did and when: every agent run with its steps, and e
 
 export default async function ActivityPage() {
   const { profile, features, options } = await loadShell();
-  if (!isShipped(features, "agents") || !isShipped(features, "audit_trail")) {
+  if (!isShipped(features, "activity")) {
     return <SectionPage title="Activity" lede={LEDE} what="Activity feed" />;
   }
   if (!profile) {

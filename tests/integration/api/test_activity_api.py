@@ -57,6 +57,16 @@ def _seed_run(workspace_id: str) -> str:
                 **step,
             )
         )  # fmt: skip
+        thread = new_id("thr")
+        db.add(m.Thread(id=thread, workspace_id=workspace_id))
+        db.flush()
+        db.add(
+            m.Message(
+                id=new_id("msg"), workspace_id=workspace_id, thread_id=thread, seq=1,
+                role="user", text="What about £800?", run_id=run_id,
+                standalone_question="Can I afford a £800 purchase on 20 November?",
+            )
+        )  # fmt: skip
         db.flush()
         rec = new_id("rec")
         db.add(
@@ -101,10 +111,22 @@ def test_runs_are_traces_and_the_audit_log_reads_in_words(
         assert len(changed) == 1
         assert changed[0]["summary"].startswith("Changed the category of ")
 
+        # Two separate single-row corrections stay two lines, never one "bulk" change (#50 review).
+        rows = alice.get("/api/transactions?q=tesco&limit=2").json()["items"]
+        for r in rows:
+            alice.post(
+                f"/api/transactions/{r['transaction_id']}/category",
+                json={"category_key": "food.eating_out", "apply_to_merchant": False},
+            )
+        changed = [e for e in _activity(alice)["events"] if e["action"] == "txn.recategorised"]
+        assert [e["summary"] for e in changed[:2]] == ["Changed a transaction’s category"] * 2
+
         run_id = _seed_run(mine)
         body = _activity(alice)
         (run,) = [r for r in body["runs"] if r["run_id"] == run_id]
         assert (run["duration_ms"], run["approved"], run["rejected"]) == (12000, 1, 0)
+        # A follow-up shows its stored standalone rewrite, not the fragment typed (#50 review).
+        assert run["question"] == "Can I afford a £800 purchase on 20 November?"
         assert [s["agent"] for s in run["steps"]] == ["advisor", "verifier"]
         assert run["steps"][0]["model"] == "anthropic/claude-sonnet-5.5"
         assert "model output must not leak" not in alice.get("/api/activity").text
