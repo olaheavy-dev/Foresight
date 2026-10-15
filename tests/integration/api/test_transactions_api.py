@@ -7,7 +7,10 @@ from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import Engine, event
+from sqlalchemy.orm import Session
 
+from backend.storage.repositories import WorkspaceContext, demo_workspace
 from tests.integration.api.contract import checked
 from tests.integration.api.test_engine_api import P1_CSV, demo, new_profile, upload
 
@@ -66,3 +69,29 @@ def test_a_correction_applies_to_the_payee_and_leaves_the_review_queue(api: Test
     assert bad.status_code == 422
     missing = FIX.format(transaction_id="txn_01JAAAAAAAAAAAAAAAAAAAAAAA")
     assert api.post(missing, json={"category_key": "groceries"}).status_code == 404
+
+
+def test_the_ledger_query_reads_only_this_workspaces_categorisations(seeded: Engine) -> None:
+    """#41 (Codex review): with several populated workspaces, both categorisation scans in the
+    transaction page are filtered by workspace. Results were identical before; the cost grew with
+    every profile on the server, which timed the demo's list out on a busy CI runner."""
+    sent: list[str] = []
+
+    def capture(_conn: Any, _cursor: Any, statement: str, *_rest: Any) -> None:
+        sent.append(statement)
+
+    with Session(seeded) as db:
+        p1, p2 = demo_workspace(db, "P1"), demo_workspace(db, "P2")
+        assert p1 is not None
+        assert p2 is not None  # a second populated workspace
+        ctx = WorkspaceContext.open(db, p1.id)
+        event.listen(seeded, "before_cursor_execute", capture)
+        try:
+            total, rows = ctx.transaction_page(limit=5)
+        finally:
+            event.remove(seeded, "before_cursor_execute", capture)
+    assert total > 0
+    assert all(c is None or c.workspace_id == p1.id for _, c in rows)
+    ledger = [s for s in sent if "max(categorisation.seq)" in s]
+    assert ledger, "the transaction page query wasn't captured"
+    assert all(s.count("categorisation.workspace_id =") >= 2 for s in ledger)
