@@ -37,7 +37,8 @@
 .lr-narration { font-size: var(--font-size-xs); color: var(--color-text-secondary); overflow-wrap: anywhere; }
 .lr-amount { grid-area: amount; text-align: right; font-weight: var(--font-weight-semibold); white-space: nowrap; }
 .lr-amount.in { color: var(--color-status-success); }
-.flow-list > li > .badge, .flow-list > li > span:empty { grid-area: badge; justify-self: start; }
+.flow-list > li > .badge, .flow-list > li > span:empty, .flow-list > li > .income-controls { grid-area: badge; justify-self: start; }
+.lr-amount.muted { color: var(--color-text-secondary); text-decoration: line-through; }
 .lr-category {
   grid-area: cat; justify-self: start; display: inline-flex; align-items: center; gap: var(--space-2); min-height: 32px;
   padding: 0 var(--space-3); border: 1px solid var(--color-border-primary); border-radius: var(--border-radius-full);

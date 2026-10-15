@@ -64,6 +64,11 @@ for (const theme of THEMES) {
         await capture(page, p, s, theme);
       }
 
+      // Income confirmation (R4) on Transactions › Recurring and income.
+      await page.goto(`/transactions?tab=recurring&theme=${theme}`);
+      await page.waitForLoadState("networkidle");
+      await capture(page, "transactions-recurring", s, theme);
+
       // States added 15 Oct: the account menu and its Reset demo confirm (demo profile).
       await page.goto(`/home?theme=${theme}`);
       await page.waitForLoadState("networkidle");

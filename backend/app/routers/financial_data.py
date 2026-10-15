@@ -4,6 +4,7 @@ Engine data only: no agent, no model call."""
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from datetime import date
 
 from fastapi import APIRouter, HTTPException, status
@@ -18,10 +19,11 @@ from backend.app.ui_contracts.response import (
     AccountView,
     BalanceDeclaration,
     DetectedFlows,
+    IncomeDecision,
     IncomeStreamView,
     RecurringView,
 )
-from backend.pipeline.ingest import declare_balance
+from backend.pipeline.ingest import decide_income, declare_balance
 from backend.storage import models as m
 from backend.storage.repositories import WorkspaceContext
 
@@ -98,6 +100,45 @@ def set_balance(ctx: Profile, account_id: str, body: BalanceDeclaration) -> Acco
     return _account_view(ctx, account)
 
 
+def _income_view(
+    s: m.IncomeStream, locale: str, last: Callable[[list[str]], date | None]
+) -> IncomeStreamView:
+    return IncomeStreamView(
+        income_stream_id=s.id,
+        source=s.source_label or "Income",
+        amount=money_value(
+            MoneyAmount(amount_minor=s.amount_minor, currency=s.currency), locale, "exact"
+        ),
+        cadence=s.cadence,
+        provenance=s.provenance,  # type: ignore[arg-type]
+        payments=len(s.member_ids or []),
+        last_paid=last(list(s.member_ids or [])),
+    )
+
+
+@router.post("/income/{income_stream_id}", response_model=IncomeStreamView)
+def decide(ctx: Profile, income_stream_id: str, body: IncomeDecision) -> IncomeStreamView:
+    """Confirm a detected income stream, say it isn't income, or undo either (review R4). The
+    forecast follows at once (data version bump); Home's proactive check is queued."""
+    if read_only(ctx.workspace):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "This profile is read-only.")
+    before = ctx.workspace.data_version
+    try:
+        stream = decide_income(ctx, income_stream_id, body.decision)
+    except LookupError:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "No such income in this profile.") from None
+    if ctx.workspace.data_version != before:
+        proactive.enqueue(ctx, "income_decided")
+    ctx.session.commit()
+    posted = {t.id: t.posted_on for t in ctx.transactions()}
+
+    def last(ids: list[str]) -> date | None:
+        days = [posted[i] for i in ids if i in posted]
+        return max(days) if days else None
+
+    return _income_view(stream, ctx.workspace.locale, last)
+
+
 @router.get("/detected", response_model=DetectedFlows)
 def detected(ctx: Profile) -> DetectedFlows:
     """Income streams and recurring payments as the detectors found them, largest first
@@ -109,20 +150,7 @@ def detected(ctx: Profile) -> DetectedFlows:
         days = [posted[i] for i in member_ids if i in posted]
         return max(days) if days else None
 
-    income = [
-        IncomeStreamView(
-            income_stream_id=s.id,
-            source=s.source_label or "Income",
-            amount=money_value(
-                MoneyAmount(amount_minor=s.amount_minor, currency=s.currency), locale, "exact"
-            ),
-            cadence=s.cadence,
-            provenance=s.provenance,  # type: ignore[arg-type]
-            payments=len(s.member_ids or []),
-            last_paid=last(list(s.member_ids or [])),
-        )
-        for s in ctx.all(m.IncomeStream)
-    ]
+    income = [_income_view(s, locale, last) for s in ctx.all(m.IncomeStream)]
     recurring = [
         RecurringView(
             recurring_id=o.id,

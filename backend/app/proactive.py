@@ -39,6 +39,7 @@ WORKFLOWS = {
     "category_corrected": "risk_detection",
     "balance_declared": "risk_detection",
     "manual_check": "risk_detection",  # a demo copy's "Run the proactive check"
+    "income_decided": "risk_detection",  # confirmed, or "this isn't income" (R4)
 }
 DEBOUNCE = timedelta(seconds=30)
 RUNS_PER_DAY = 2

@@ -706,3 +706,9 @@ button.um-item { width: 100%; border: 0; background: none; font: inherit; cursor
 .core-metrics table.data td.lead, .core-metrics table.data th { white-space: nowrap; }
 
 .note-line { margin: calc(-1 * var(--space-2)) 0 var(--space-4); font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+
+/* Income confirmation (R4): the stream's state and the user's controls, under the row. */
+.income-controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.income-controls .btn.sm { min-height: 36px; padding: 0 var(--space-3); font-size: var(--font-size-xs); }
+.income-controls .link-btn { min-height: 36px; padding: 0 var(--space-2); border: 0; background: none; font: inherit; font-size: var(--font-size-xs); color: var(--color-accent-primary); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.income-controls .form-error { flex-basis: 100%; margin: 0; }

@@ -4444,7 +4444,8 @@
           "enum": [
             "detected",
             "confirmed",
-            "declared"
+            "declared",
+            "rejected"
           ],
           "title": "Provenance",
           "type": "string"
@@ -9074,6 +9075,7 @@
     "CategoryList",
     "CategoryCorrected",
     "ImportHistory",
-    "HomeInsights"
+    "HomeInsights",
+    "IncomeStreamView"
   ]
 }

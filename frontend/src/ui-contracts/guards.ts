@@ -2,7 +2,7 @@
 import type * as T from "./types";
 import { validate, type SchemaError } from "./validate";
 
-export const ROOT_TYPES = ["AgentResponse","ResponsePlan","Healthz","FeaturesPayload","ImportSummary","ForecastView","SimulationView","ProfileView","TransactionPage","CalculationView","AccountList","AccountView","DetectedFlows","CategoryList","CategoryCorrected","ImportHistory","HomeInsights"] as const;
+export const ROOT_TYPES = ["AgentResponse","ResponsePlan","Healthz","FeaturesPayload","ImportSummary","ForecastView","SimulationView","ProfileView","TransactionPage","CalculationView","AccountList","AccountView","DetectedFlows","CategoryList","CategoryCorrected","ImportHistory","HomeInsights","IncomeStreamView"] as const;
 export const BLOCK_DEFS = ["Narrative","ClarifyingQuestion","FinancialMetricGroup","SpendingByCategory","SpendingOverTime","CashFlowForecastChart","ScenarioComparison","TransactionTable","RiskAssessment","InterventionCard","GoalProjection","EvidencePanel","AgentExecutionTimeline"] as const;
 
 export function isAgentResponse(value: unknown): value is T.AgentResponse {
@@ -122,6 +122,13 @@ export function isHomeInsights(value: unknown): value is T.HomeInsights {
 }
 export function checkHomeInsights(value: unknown): SchemaError[] {
   return validate("HomeInsights", value);
+}
+
+export function isIncomeStreamView(value: unknown): value is T.IncomeStreamView {
+  return validate("IncomeStreamView", value).length === 0;
+}
+export function checkIncomeStreamView(value: unknown): SchemaError[] {
+  return validate("IncomeStreamView", value);
 }
 
 export function isNarrative(value: unknown): value is T.Narrative {

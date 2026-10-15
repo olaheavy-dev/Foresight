@@ -44,6 +44,8 @@
 .check-list { list-style: none; margin: var(--space-3) 0 0; padding: 0; }
 .check-list > li { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) 0; border-top: 1px solid var(--color-border-primary); }
 .check-list > li:first-child { border-top: 0; }
+.check-list > li { flex-wrap: wrap; }
+.check-list > li > .income-controls { flex-basis: 100%; }
 .cl-main { display: flex; flex-direction: column; min-width: 0; }
 .cl-title { font-weight: var(--font-weight-medium); overflow-wrap: anywhere; }
 .cl-sub { font-size: var(--font-size-xs); color: var(--color-text-secondary); }
