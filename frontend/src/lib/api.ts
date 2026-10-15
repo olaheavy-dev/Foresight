@@ -11,6 +11,9 @@
  * browser calls can *choose* a profile, because only the browser can store the new cookie.
  */
 import {
+  isCategoryCorrected,
+  isCategoryList,
+  isImportHistory,
   isAccountList,
   isAccountView,
   isCalculationView,
@@ -24,6 +27,9 @@ import {
   isTransactionPage,
 } from "@/ui-contracts/guards";
 import type {
+  CategoryCorrected,
+  CategoryList,
+  ImportHistory,
   AccountList,
   AccountView,
   AgentResponse,
@@ -155,6 +161,8 @@ export type TransactionFilters = {
   category?: string;
   flowKind?: string;
   accountId?: string;
+  query?: string;
+  review?: boolean;
   limit?: number;
   offset?: number;
 };
@@ -170,6 +178,8 @@ export function fetchTransactions(
     category: "category",
     flowKind: "flow_kind",
     accountId: "account_id",
+    query: "q",
+    review: "review",
     limit: "limit",
     offset: "offset",
   };
@@ -292,4 +302,33 @@ export function declareBalance(
 /** Income and recurring payments the detectors found. */
 export function fetchDetected(options: ApiOptions = {}): Promise<DetectedFlows | null> {
   return request("/api/detected", okAnd(isDetectedFlows), options);
+}
+
+/** The categories a transaction can be moved to (the profile's locale pack). */
+export function fetchCategories(options: ApiOptions = {}): Promise<CategoryList | null> {
+  return request("/api/categories", okAnd(isCategoryList), options);
+}
+
+/** Correct a transaction's category; `applyToMerchant` changes every row from the same payee. */
+export function correctCategory(
+  transactionId: string,
+  categoryKey: string,
+  applyToMerchant: boolean,
+  options: ApiOptions = {},
+): Promise<CategoryCorrected | null> {
+  return request(
+    `/api/transactions/${encodeURIComponent(transactionId)}/category`,
+    okAnd(isCategoryCorrected),
+    options,
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ category_key: categoryKey, apply_to_merchant: applyToMerchant }),
+    },
+  );
+}
+
+/** Every import batch, newest first. */
+export function fetchImports(options: ApiOptions = {}): Promise<ImportHistory | null> {
+  return request("/api/imports", okAnd(isImportHistory), options);
 }
