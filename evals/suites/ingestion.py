@@ -420,19 +420,13 @@ def run(fast: bool = False) -> dict[str, Any]:
         target(
             "ING-heuristic+llm",
             "FormatProfile success, heuristic+LLM",
-            None,
+            unseen_llm["success"],
             ">=",
             0.85,
             "C1–C4",
             stage1=False,
         ),
     ]
-    for tgt in targets:
-        if tgt["id"] == "ING-heuristic+llm" and tgt.get("met") is None:
-            tgt["gated"] = False  # review R7: excluded explicitly, with the reason
-            tgt["not_gated_because"] = (
-                "not shipped: an unrecognised file gets the column form (R5), not a model proposal"
-            )
     notes = [
         "C1–C4 also run heuristic+llm: the Ledger Agent's proposed FormatProfile, replayed from "
         "recorded Mesh responses, with the user's confirmation simulated (§4.1.3).",
