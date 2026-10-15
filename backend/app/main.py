@@ -45,6 +45,7 @@ def create_app() -> FastAPI:
         profile.router,
         imports.router,
         ledger.router,
+        ledger.categories_router,
         financial_data.router,
         engine.router,
         ask.router,

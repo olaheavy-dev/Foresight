@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from typing import Any, TypeVar
 
-from sqlalchemy import Select, delete, func, select
+from sqlalchemy import Select, and_, delete, func, or_, select
 from sqlalchemy.orm import Session, aliased
 
 from backend.storage import models as m
@@ -53,6 +53,9 @@ def _audit_body(event: m.AuditEvent) -> dict[str, Any]:
         "run_id": event.run_id,
         "occurred_at": event.occurred_at,
     }
+
+
+REVIEW_BELOW = 0.85  # docs/01 F-06: the hybrid's trust threshold; below it a row is for review
 
 
 @dataclass
@@ -153,6 +156,8 @@ class WorkspaceContext:
         category_key: str | None = None,
         flow_kind: str | None = None,
         account_id: str | None = None,
+        query: str | None = None,
+        review: bool = False,
         limit: int = 100,
         offset: int = 0,
     ) -> tuple[int, list[tuple[m.Transaction, m.Categorisation | None]]]:
@@ -184,6 +189,17 @@ class WorkspaceContext:
             stmt = stmt.where(cat.category_key == category_key)
         if flow_kind is not None:
             stmt = stmt.where(cat.flow_kind == flow_kind)
+        if query:
+            like = f"%{query.replace('%', '').replace('_', '')}%"
+            stmt = stmt.where(
+                or_(m.Transaction.description.ilike(like), m.Transaction.counterparty.ilike(like))
+            )
+        if review:
+            # docs/01 F-07: uncategorised, or below the 0.85 confidence the hybrid trusts, and
+            # never one the user already set.
+            stmt = stmt.where(
+                or_(cat.id.is_(None), and_(cat.method != "user", cat.confidence < REVIEW_BELOW))
+            )
         total = int(self.session.scalar(select(func.count()).select_from(stmt.subquery())) or 0)
         page = (
             stmt.order_by(

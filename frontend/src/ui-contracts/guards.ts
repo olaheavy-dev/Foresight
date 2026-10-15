@@ -2,7 +2,7 @@
 import type * as T from "./types";
 import { validate, type SchemaError } from "./validate";
 
-export const ROOT_TYPES = ["AgentResponse","ResponsePlan","Healthz","FeaturesPayload","ImportSummary","ForecastView","SimulationView","ProfileView","TransactionPage","CalculationView","AccountList","AccountView","DetectedFlows"] as const;
+export const ROOT_TYPES = ["AgentResponse","ResponsePlan","Healthz","FeaturesPayload","ImportSummary","ForecastView","SimulationView","ProfileView","TransactionPage","CalculationView","AccountList","AccountView","DetectedFlows","CategoryList","CategoryCorrected","ImportHistory"] as const;
 export const BLOCK_DEFS = ["Narrative","ClarifyingQuestion","FinancialMetricGroup","SpendingByCategory","SpendingOverTime","CashFlowForecastChart","ScenarioComparison","TransactionTable","RiskAssessment","InterventionCard","GoalProjection","EvidencePanel","AgentExecutionTimeline"] as const;
 
 export function isAgentResponse(value: unknown): value is T.AgentResponse {
@@ -94,6 +94,27 @@ export function isDetectedFlows(value: unknown): value is T.DetectedFlows {
 }
 export function checkDetectedFlows(value: unknown): SchemaError[] {
   return validate("DetectedFlows", value);
+}
+
+export function isCategoryList(value: unknown): value is T.CategoryList {
+  return validate("CategoryList", value).length === 0;
+}
+export function checkCategoryList(value: unknown): SchemaError[] {
+  return validate("CategoryList", value);
+}
+
+export function isCategoryCorrected(value: unknown): value is T.CategoryCorrected {
+  return validate("CategoryCorrected", value).length === 0;
+}
+export function checkCategoryCorrected(value: unknown): SchemaError[] {
+  return validate("CategoryCorrected", value);
+}
+
+export function isImportHistory(value: unknown): value is T.ImportHistory {
+  return validate("ImportHistory", value).length === 0;
+}
+export function checkImportHistory(value: unknown): SchemaError[] {
+  return validate("ImportHistory", value);
 }
 
 export function isNarrative(value: unknown): value is T.Narrative {

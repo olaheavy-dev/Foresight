@@ -15,12 +15,12 @@ features:
   categorisation:
     stage: 1
     title: Transaction categorisation (rules + Ledger Agent)
-    enabled: false
+    enabled: true
     suites: [E-CAT]
   income_and_recurring:
     stage: 1
     title: Income and recurring-bill detection
-    enabled: false
+    enabled: true
     suites: [E-INC, E-REC]
   forecast:
     stage: 1
@@ -74,7 +74,7 @@ features:
   ledger:
     stage: 3
     title: Transactions, imports and categorisation review
-    enabled: false
+    enabled: true
     suites: [E-CAT]
   scheduled_digest:
     stage: 3

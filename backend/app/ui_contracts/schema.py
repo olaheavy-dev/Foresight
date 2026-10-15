@@ -13,10 +13,13 @@ from backend.app.ui_contracts.response import (
     AccountView,
     AgentResponse,
     CalculationView,
+    CategoryCorrected,
+    CategoryList,
     DetectedFlows,
     FeaturesPayload,
     ForecastView,
     Healthz,
+    ImportHistory,
     ImportSummary,
     ProfileView,
     SimulationView,
@@ -38,6 +41,9 @@ ROOTS: tuple[type[BaseModel], ...] = (
     AccountList,
     AccountView,
     DetectedFlows,
+    CategoryList,
+    CategoryCorrected,
+    ImportHistory,
 )
 
 

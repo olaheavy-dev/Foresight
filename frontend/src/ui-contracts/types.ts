@@ -102,6 +102,9 @@ export interface UiContracts {
   AccountList?: AccountList;
   AccountView?: AccountView;
   DetectedFlows?: DetectedFlows;
+  CategoryList?: CategoryList;
+  CategoryCorrected?: CategoryCorrected;
+  ImportHistory?: ImportHistory;
 }
 /**
  * This interface was referenced by `UiContracts`'s JSON-Schema
@@ -1936,4 +1939,54 @@ export interface RecurringView {
   payments: number;
   provenance: string;
   recurring_id: string;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "CategoryList".
+ */
+export interface CategoryList {
+  categories: CategoryOption[];
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "CategoryOption".
+ */
+export interface CategoryOption {
+  flow_kind: string;
+  key: string;
+  nature: string;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "CategoryCorrected".
+ */
+export interface CategoryCorrected {
+  category_key: string;
+  data_version: number;
+  transaction_ids: string[];
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "ImportHistory".
+ */
+export interface ImportHistory {
+  imports: ImportBatchView[];
+  workspace_id: string;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "ImportBatchView".
+ */
+export interface ImportBatchView {
+  account_id?: string | null;
+  duplicates: number;
+  filename: string;
+  format_profile?: string | null;
+  import_id: string;
+  imported_at: string;
+  message?: string | null;
+  reconciliation?: string | null;
+  rows_imported: number;
+  rows_read: number;
+  status: string;
 }

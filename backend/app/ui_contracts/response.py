@@ -285,3 +285,46 @@ class DetectedFlows(Contract):
     workspace_id: WorkspaceId
     income: list[IncomeStreamView]
     recurring: list[RecurringView]
+
+
+# --- Transactions page (docs/01 F-07, F-11, F-51) ------------------------------------------------
+
+
+class CategoryOption(Contract):
+    key: NonEmpty
+    nature: NonEmpty
+    flow_kind: NonEmpty
+
+
+class CategoryList(Contract):
+    categories: list[CategoryOption]
+
+
+class CategoryCorrection(Contract):
+    category_key: Annotated[str, StringConstraints(min_length=1, max_length=64)]
+    apply_to_merchant: bool = False
+
+
+class CategoryCorrected(Contract):
+    category_key: NonEmpty
+    transaction_ids: list[TransactionId]
+    data_version: Annotated[int, Field(ge=0)]
+
+
+class ImportBatchView(Contract):
+    import_id: ImportId
+    filename: NonEmpty
+    status: NonEmpty  # committed | needs_review | rejected
+    account_id: AccountId | None = None
+    format_profile: str | None = None
+    rows_read: Annotated[int, Field(ge=0)]
+    rows_imported: Annotated[int, Field(ge=0)]
+    duplicates: Annotated[int, Field(ge=0)]
+    reconciliation: str | None = None
+    imported_at: dt.datetime
+    message: str | None = None
+
+
+class ImportHistory(Contract):
+    workspace_id: WorkspaceId
+    imports: list[ImportBatchView]

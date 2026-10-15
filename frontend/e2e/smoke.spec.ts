@@ -39,13 +39,16 @@ test("the demo opens Home, where each section is drawn from the engine or says i
   await noSeriousA11yIssues(page);
 });
 
-test("navigation reaches the other sections, which say honestly that they aren't shipped", async ({ page }) => {
+test("navigation reaches each section; unshipped ones say so honestly", async ({ page }) => {
   await openDemo(page);
-  for (const name of ["Activity", "Transactions"]) {
-    await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name }).click();
-    await expect(page.getByRole("heading", { level: 1, name })).toBeVisible();
-    await expect(page.getByText("Not shipped yet").first()).toBeVisible();
-  }
+  const nav = page.getByRole("navigation", { name: "Main" });
+  await nav.getByRole("link", { name: "Activity" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Activity" })).toBeVisible();
+  await expect(page.getByText("Not shipped yet").first()).toBeVisible();
+  // Transactions ships with the ledger flag: real rows, no placeholder.
+  await nav.getByRole("link", { name: "Transactions" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Transactions" })).toBeVisible();
+  await expect(page.getByText(/^Showing \d+ of \d+$/)).toBeVisible();
 });
 
 test("health endpoint is proxied to the backend and reports a deploy SHA", async ({ request }) => {
