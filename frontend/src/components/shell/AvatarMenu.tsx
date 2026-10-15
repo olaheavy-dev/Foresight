@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { Icon } from "@/components/icons/Icon";
+import { deleteMyData, signOut } from "@/lib/api";
+import type { SessionAccount } from "@/ui-contracts/types";
 import { ThemeControl } from "./ThemeControl";
 
 export function initials(name: string): string {
@@ -11,17 +13,36 @@ export function initials(name: string): string {
   return letters.map((p) => p[0]?.toUpperCase() ?? "").join("") || "?";
 }
 
-/** Avatar → menu: Switch profile, Settings, Quality checks, Theme. Esc and outside click close. */
-export function AvatarMenu({ name, subtitle }: { name: string | null; subtitle: string }) {
+/**
+ * Avatar → menu: who is signed in, Switch profile, Settings, Quality checks, Theme, then Sign in
+ * with Google (guests), Sign out and Delete my data (inline confirm). Esc and outside click close.
+ */
+export function AvatarMenu({
+  name,
+  subtitle,
+  account = null,
+}: {
+  name: string | null;
+  subtitle: string;
+  account?: SessionAccount | null;
+}) {
   const [open, setOpen] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
   const button = useRef<HTMLButtonElement>(null);
   const id = useId();
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      setConfirming(false);
+      setFailed(false);
+      return;
+    }
     const onClick = (e: MouseEvent) => {
-      if (wrap.current && !wrap.current.contains(e.target as Node)) setOpen(false);
+      // composedPath: a click that swaps the clicked button out (Delete → confirm) still counts as inside.
+      if (wrap.current && !e.composedPath().includes(wrap.current)) setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -37,7 +58,24 @@ export function AvatarMenu({ name, subtitle }: { name: string | null; subtitle: 
     };
   }, [open]);
 
+  const leave = async (action: typeof signOut, to: string) => {
+    setBusy(true);
+    setFailed(false);
+    if (await action()) {
+      window.location.assign(to); // a full load: every server component re-reads the session
+      return;
+    }
+    setBusy(false);
+    setFailed(true);
+  };
+
   const display = name ?? "No profile";
+  const who =
+    account?.kind === "google"
+      ? `Signed in as ${account.email ?? account.name ?? "your Google account"}`
+      : account
+        ? "Guest: private to this browser, deleted after a week unused"
+        : null;
   return (
     <div className="user-wrap" ref={wrap}>
       <button
@@ -75,6 +113,55 @@ export function AvatarMenu({ name, subtitle }: { name: string | null; subtitle: 
           Theme
         </p>
         <ThemeControl labelledBy={`${id}-theme`} />
+        {account ? (
+          <>
+            <div className="um-sep" role="separator" />
+            {who ? <p className="um-note">{who}</p> : null}
+            {account.kind === "guest" ? (
+              <a className="um-item" href="/api/auth/google/start?next=%2Fhome">
+                Sign in with Google to keep your profiles
+              </a>
+            ) : null}
+            <button
+              type="button"
+              className="um-item"
+              disabled={busy}
+              onClick={() => leave(signOut, "/?auth=signedout")}
+            >
+              Sign out
+            </button>
+            {confirming ? (
+              <div className="um-confirm" role="group" aria-label="Confirm deleting your data">
+                <p>
+                  Delete every profile, import and conversation{" "}
+                  {account.kind === "google" ? "on this account" : "in this browser"}? This can’t be undone.
+                </p>
+                <div className="um-actions">
+                  <button
+                    type="button"
+                    className="btn danger"
+                    disabled={busy}
+                    onClick={() => leave(deleteMyData, "/?auth=deleted")}
+                  >
+                    {busy ? "Deleting…" : "Delete my data"}
+                  </button>
+                  <button type="button" className="btn" disabled={busy} onClick={() => setConfirming(false)}>
+                    Keep it
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button type="button" className="um-item danger" onClick={() => setConfirming(true)}>
+                Delete my data
+              </button>
+            )}
+            {failed ? (
+              <p className="form-error" role="alert">
+                That didn’t go through. Please try again.
+              </p>
+            ) : null}
+          </>
+        ) : null}
       </div>
     </div>
   );

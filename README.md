@@ -156,4 +156,4 @@ Not run yet: E-ACCT, E-ALIAS, E-XFER.
 
 ## Privacy
 
-All personas and figures in this repository are fictional. Real bank statements never enter the repo or the deployed app; a pre-commit hook blocks statement files and account identifiers.
+All personas and figures in this repository are fictional, and a pre-commit hook blocks statement files and account identifiers from the repo. In the deployed app you can import your own CSV statements: they're stored privately for your guest session (deleted after 7 days unused) or your Google account, account numbers are masked before any model call, and **Delete my data** in the account menu removes every profile, import and conversation at once.

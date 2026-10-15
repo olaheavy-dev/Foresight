@@ -227,6 +227,6 @@ def google_callback(
     fresh.active_workspace_id = active
     db.commit()
     if active is None:
-        response.headers["location"] = "/"
+        response.headers["location"] = "/?auth=signedin"
     response.delete_cookie(FLOW_COOKIE, path="/api/auth")
     return response

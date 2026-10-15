@@ -1,5 +1,9 @@
 import {
+  CLIENT_HEADER,
+  deleteMyData,
+  fetchAuthProviders,
   fetchCalculation,
+  fetchDemoForecast,
   fetchFeatures,
   fetchForecast,
   fetchHealthz,
@@ -7,6 +11,7 @@ import {
   fetchResponse,
   fetchTransactions,
   importStatements,
+  signOut,
   parseAgentResponse,
   simulate,
   startDemo,
@@ -325,10 +330,44 @@ describe("session and ledger", () => {
 
     await fetchProfile({
       ...base,
-      cookie: "foresight_profile=abc",
+      cookie: "foresight_session=abc",
       fetchImpl: respond(profile, 200, calls),
     });
-    expect(new Headers(calls[1].init?.headers).get("cookie")).toBe("foresight_profile=abc");
+    expect(new Headers(calls[1].init?.headers).get("cookie")).toBe("foresight_session=abc");
+  });
+
+  it("marks every write with the client header (CSRF) and leaves reads plain", async () => {
+    const calls: Call[] = [];
+    await startDemo("P1", { ...base, fetchImpl: respond(profile, 200, calls) });
+    await fetchProfile({ ...base, fetchImpl: respond(profile, 200, calls) });
+    expect(new Headers(calls[0].init?.headers).get(CLIENT_HEADER)).toBe("web");
+    expect(new Headers(calls[1].init?.headers).get(CLIENT_HEADER)).toBeNull();
+  });
+
+  it("signs out and deletes data with POSTs, and reads the sign-in providers", async () => {
+    const calls: Call[] = [];
+    const noContent: typeof fetch = async (input, init) => {
+      calls.push({ url: String(input), init });
+      return new Response(null, { status: 204 });
+    };
+    expect(await signOut({ ...base, fetchImpl: noContent })).toBe(true);
+    expect(await deleteMyData({ ...base, fetchImpl: noContent })).toBe(true);
+    expect(calls.map((c) => [c.url, c.init?.method])).toEqual([
+      ["http://api.test/api/session/logout", "POST"],
+      ["http://api.test/api/session/delete", "POST"],
+    ]);
+    expect(await fetchAuthProviders({ ...base, fetchImpl: respond({ google: true, guest: true }) })).toEqual({
+      google: true,
+      guest: true,
+    });
+    expect(await fetchAuthProviders({ ...base, fetchImpl: respond({}, 200) })).toBeNull();
+  });
+
+  it("reads the public demo forecast without a session", async () => {
+    const calls: Call[] = [];
+    expect(await fetchDemoForecast({ ...base, fetchImpl: respond({}, 404, calls) })).toBeNull();
+    expect(calls[0].url).toBe("http://api.test/api/public/demo-forecast");
+    expect(calls[0].init?.method ?? "GET").toBe("GET");
   });
 
   it("creates a new profile and refuses an error response", async () => {
