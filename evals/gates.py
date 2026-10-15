@@ -2,11 +2,12 @@
 
 Rule, per suite:
 1. The suite raised an error → fail.
-2. Some docs/09 targets were measured → pass only if every measured one is met. Since Stage 2
-   (13 Oct 2026) every measured target counts, not only Stage 1 ones; a target is exempt only if
-   it sets `"gated": false` with a documented reason. Unmeasured (null) targets are listed and
-   never counted as met.
-3. No target was measured → pass if the suite ran without errors.
+2. The suite has gated targets → pass only if every one is measured and met. Since Stage 2
+   (13 Oct 2026) every target counts, not only Stage 1 ones, and since review R7 (15 Oct 2026)
+   an unmeasured (null) target fails the suite. A target is exempt only through an opt-out
+   `is_gated` accepts: `dataset_missing` (no value) or `feature_not_built` (a `gated_by`
+   companion that gates), each with a stated reason.
+3. The suite has no gated targets → pass if it ran without errors.
 Suites that did not run are "fail" (not run is never a pass).
 """
 
