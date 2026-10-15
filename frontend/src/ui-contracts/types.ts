@@ -107,6 +107,7 @@ export interface UiContracts {
   ImportHistory?: ImportHistory;
   HomeInsights?: HomeInsights;
   IncomeStreamView?: IncomeStreamView;
+  ActivityFeed?: ActivityFeed;
 }
 /**
  * This interface was referenced by `UiContracts`'s JSON-Schema
@@ -2034,4 +2035,66 @@ export interface InsightFinding {
   kind: string;
   link?: string | null;
   severity: "info" | "watch" | "act";
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "ActivityFeed".
+ */
+export interface ActivityFeed {
+  audit_chain_intact: boolean;
+  audit_events?: number;
+  events?: ActivityEvent[];
+  runs?: ActivityRun[];
+  workspace_id: string;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "ActivityEvent".
+ */
+export interface ActivityEvent {
+  action: string;
+  actor: string;
+  occurred_at: string;
+  seq: number;
+  summary: string;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "ActivityRun".
+ */
+export interface ActivityRun {
+  approved?: number;
+  cost_usd?: number | null;
+  duration_ms?: number | null;
+  llm_calls?: number;
+  partial?: boolean;
+  question?: string | null;
+  rejected?: number;
+  revisions?: number;
+  run_id: string;
+  started_at: string;
+  status: string;
+  steps?: ActivityStep[];
+  tokens_in?: number;
+  tokens_out?: number;
+  trigger: string;
+  workflow: string;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "ActivityStep".
+ */
+export interface ActivityStep {
+  agent: string;
+  cached?: boolean;
+  cost_usd?: number | null;
+  kind: string;
+  label?: string;
+  latency_ms?: number | null;
+  model?: string | null;
+  node: string;
+  seq: number;
+  status: string;
+  tokens_in?: number;
+  tokens_out?: number;
 }

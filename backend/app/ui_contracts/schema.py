@@ -11,6 +11,7 @@ from backend.app.ui_contracts.plan import ResponsePlan
 from backend.app.ui_contracts.response import (
     AccountList,
     AccountView,
+    ActivityFeed,
     AgentResponse,
     CalculationView,
     CategoryCorrected,
@@ -48,6 +49,7 @@ ROOTS: tuple[type[BaseModel], ...] = (
     ImportHistory,
     HomeInsights,
     IncomeStreamView,
+    ActivityFeed,
 )
 
 

@@ -9,7 +9,16 @@ from fastapi import FastAPI, Request, Response, status
 from fastapi.responses import JSONResponse
 
 from backend.app import demo_pool, logs, proactive
-from backend.app.routers import ask, auth, engine, financial_data, home, imports, ledger
+from backend.app.routers import (
+    activity,
+    ask,
+    auth,
+    engine,
+    financial_data,
+    home,
+    imports,
+    ledger,
+)
 from backend.app.routers import session as profile
 from backend.app.session import CSRF_HEADER
 from backend.features import load_features
@@ -91,6 +100,7 @@ def create_app() -> FastAPI:
         engine.public_router,
         ask.router,
         home.router,
+        activity.router,
     )
     for router in routers:
         app.include_router(router)
