@@ -41,8 +41,8 @@ export default function PrivacyPage() {
         <h2>Guests and accounts</h2>
         <ul>
           <li>
-            <strong>As a guest</strong>, your profiles belong to this browser only. They’re deleted after 7 days without
-            use.
+            <strong>As a guest</strong>, your profiles belong to this browser only. They’re deleted when you sign out,
+            or after 7 days without use.
           </li>
           <li>
             <strong>Signed in with Google</strong>, your profiles are kept until you delete them. Signing in after using
@@ -79,8 +79,8 @@ export default function PrivacyPage() {
         <p>
           Open the account menu and choose <strong>Delete my data</strong>. It removes every profile, import, question
           and answer you own, and your account record if you signed in with Google, from the live database straight
-          away. Signing out of a Google account keeps your data for next time. A guest who signs out can’t get back to
-          their guest profiles, so they’re deleted too.
+          away. Signing out of a Google account keeps your data for next time. When a guest signs out, their guest
+          profiles are deleted at the same moment.
         </p>
 
         <h2>Questions</h2>

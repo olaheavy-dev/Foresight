@@ -59,6 +59,9 @@ test("the account menu signs a guest out and asks before deleting their data", a
   await confirm.getByRole("button", { name: "Keep it" }).click();
   await expect(confirm).toHaveCount(0);
   await page.getByRole("button", { name: "Sign out" }).click();
+  const leaving = page.getByRole("group", { name: "Confirm signing out as a guest" });
+  await expect(leaving).toContainText("deletes your guest profiles");
+  await leaving.getByRole("button", { name: "Sign out and delete" }).click();
   await page.waitForURL("**/?auth=signedout");
   await expect(page.getByRole("status").filter({ hasText: "You’re signed out." })).toBeVisible();
 });
