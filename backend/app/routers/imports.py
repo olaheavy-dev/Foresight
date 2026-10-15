@@ -8,7 +8,7 @@ from typing import Annotated, Literal
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
 
-from backend.app.session import Profile
+from backend.app.session import Profile, read_only
 from backend.app.ui_contracts.primitives import DateRange
 from backend.app.ui_contracts.response import (
     ImportedFile,
@@ -135,7 +135,7 @@ async def import_statements(
         Form(description='Answers to import questions, as JSON: {"date_order": "DMY"}'),
     ] = None,
 ) -> ImportSummary:
-    if ctx.workspace.kind == "demo":
+    if read_only(ctx.workspace):
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
             "The demo profile is read-only. Start a new profile to import your own statements.",

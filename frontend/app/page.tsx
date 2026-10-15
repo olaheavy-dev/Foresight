@@ -6,15 +6,34 @@ import { Logo } from "@/components/Logo";
 import { ThemeControl } from "@/components/shell/ThemeControl";
 import { ButtonLink, CardHead, IconChip } from "@/components/ui/primitives";
 import { NotShipped } from "@/components/ui/NotShipped";
-import { fetchFeatures } from "@/lib/api";
+import { GoogleButton } from "@/components/landing/GoogleButton";
+import { fetchAuthProviders, fetchFeatures, fetchProfile } from "@/lib/api";
 import { isShipped } from "@/lib/flags";
 import { apiOptions, demoForecast } from "@/lib/server";
 
 export const dynamic = "force-dynamic";
 
-/** Landing (IA): demo and CSV entry; sign-in shown but disabled until after the hackathon. */
-export default async function Landing() {
-  const features = await fetchFeatures(await apiOptions());
+const NOTICES: Record<string, { text: string; error: boolean }> = {
+  failed: { text: "Google sign-in didn’t finish. Please try again, or continue as a guest.", error: true },
+  unverified: { text: "That Google account’s email isn’t verified, so we can’t sign you in with it.", error: true },
+  unavailable: { text: "Google sign-in isn’t available just now. You can continue as a guest.", error: true },
+  signedin: { text: "You’re signed in. Explore the demo or import a statement to start.", error: false },
+  signedout: { text: "You’re signed out.", error: false },
+  deleted: { text: "Your profiles and their data have been deleted.", error: false },
+};
+
+/** Landing (IA): guest demo and CSV entry, plus Google sign-in once it is configured. */
+export default async function Landing({ searchParams }: { searchParams: Promise<{ auth?: string | string[] }> }) {
+  const options = await apiOptions();
+  const [features, providers, profile, params] = await Promise.all([
+    fetchFeatures(options),
+    fetchAuthProviders(options),
+    fetchProfile(options),
+    searchParams,
+  ]);
+  const auth = typeof params.auth === "string" ? params.auth : "";
+  const notice = NOTICES[auth] ?? null;
+  const signedIn = profile?.account?.kind === "google" || auth === "signedin";
   const forecastOn = isShipped(features, "forecast");
   const preview = forecastOn ? await demoForecast() : null;
 
@@ -37,34 +56,24 @@ export default async function Landing() {
           </ButtonLink>
         </div>
 
-        <div className="divider">or sign in</div>
-        <form className="signin" aria-describedby="soon" aria-label="Sign in (coming after the hackathon)">
-          <div className="seg" aria-hidden="true">
-            <span className="on">Sign in</span>
-            <span>Create account</span>
-          </div>
-          <div className="field">
-            <label htmlFor="em">Email address</label>
-            <div className="input">
-              <Icon name="mail" />
-              <input id="em" type="email" placeholder="you@example.com" disabled />
+        {signedIn ? null : providers?.google ? (
+          <>
+            <div className="divider">or keep your profiles</div>
+            <div className="signin">
+              <GoogleButton />
+              <p className="soon">
+                <Icon name="lock" />
+                Sign in to keep your profiles between visits. As a guest, everything is private to this browser and
+                deleted after a week unused.
+              </p>
             </div>
-          </div>
-          <div className="field">
-            <label htmlFor="pw">Password</label>
-            <div className="input">
-              <Icon name="lock" />
-              <input id="pw" type="password" disabled />
-            </div>
-          </div>
-          <button className="btn primary lg" type="button" disabled style={{ width: "100%" }}>
-            Sign in <Icon name="arrowright" />
-          </button>
-          <p className="soon" id="soon">
-            <Icon name="clock" />
-            Accounts are coming after the hackathon. For now, try the demo or import a CSV.
+          </>
+        ) : null}
+        {notice ? (
+          <p className={notice.error ? "form-error" : "soon"} role={notice.error ? "alert" : "status"}>
+            {notice.text}
           </p>
-        </form>
+        ) : null}
 
         <p className="privacy">
           <Icon name="shield" />

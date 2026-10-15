@@ -1812,6 +1812,7 @@ export interface ScenarioComparisonData {
  * via the `definition` "ProfileView".
  */
 export interface ProfileView {
+  account?: SessionAccount | null;
   country: string;
   data_version: number;
   home_currency: string;
@@ -1822,6 +1823,15 @@ export interface ProfileView {
   read_only: boolean;
   timezone: string;
   workspace_id: string;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "SessionAccount".
+ */
+export interface SessionAccount {
+  email?: string | null;
+  kind: "guest" | "google";
+  name?: string | null;
 }
 /**
  * This interface was referenced by `UiContracts`'s JSON-Schema

@@ -347,6 +347,14 @@ button.user[aria-expanded="true"] .chev { transform: rotate(180deg); }
   border-radius: var(--border-radius-sm); color: var(--color-text-primary); text-decoration: none; font-size: var(--font-size-base);
 }
 .um-item:hover { background: var(--color-bg-tertiary); color: var(--color-text-primary); }
+button.um-item { width: 100%; border: 0; background: none; font: inherit; cursor: pointer; text-align: left; }
+.um-item:disabled { cursor: progress; opacity: 0.6; }
+.um-item.danger { color: var(--color-status-error); }
+.um-note { margin: var(--space-2) var(--space-3); font-size: var(--font-size-xs); color: var(--color-text-tertiary); overflow-wrap: anywhere; }
+.um-confirm { margin: var(--space-1) 0; padding: var(--space-3); border-radius: var(--border-radius-sm); background: var(--color-status-error-tint); }
+.um-confirm p { margin: 0 0 var(--space-3); font-size: var(--font-size-sm); color: var(--color-text-primary); }
+.um-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.btn.danger { border-color: var(--color-status-error); color: var(--color-status-error); }
 .um-sep { height: 1px; background: var(--color-border-primary); margin: var(--space-1) 0; }
 .um-label { margin: var(--space-2) var(--space-3) var(--space-1); font-size: var(--font-size-xs); color: var(--color-text-tertiary); font-weight: var(--font-weight-medium); }
 .theme-group {
@@ -508,6 +516,7 @@ button.user[aria-expanded="true"] .chev { transform: rotate(180deg); }
 .divider { display: flex; align-items: center; gap: var(--space-3); font-size: var(--font-size-sm); color: var(--color-text-tertiary); margin: var(--space-1) 0 var(--space-4); }
 .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--color-border-primary); }
 .signin { border: 1px solid var(--color-border-primary); border-radius: var(--border-radius-lg); padding: var(--space-4); background: var(--color-bg-tertiary); }
+.signin .btn.google { width: 100%; }
 .signin .seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--color-border-primary); border-radius: var(--border-radius-md); padding: 3px; margin-bottom: var(--space-4); background: var(--color-bg-secondary); }
 .signin .seg span { text-align: center; padding: var(--space-2); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); border-radius: var(--border-radius-sm); color: var(--color-text-secondary); }
 .signin .seg span.on { background: var(--color-accent-primary-tint); color: var(--color-accent-primary); }

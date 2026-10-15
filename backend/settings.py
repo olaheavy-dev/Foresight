@@ -54,10 +54,18 @@ class Settings(BaseSettings):
     # .env file uses, so runtime configuration cannot mask the build being served.
     build_sha: str = Field(default="local", validation_alias="FORESIGHT_BUILD_SHA")
     features_file: str = "features.yaml"
-    # Signs the profile cookie (docs/05 §7.1). Empty → a random per-process secret, so sessions
-    # simply end when the API restarts.
+    # Signs the short-lived Google sign-in cookie (docs/05 §5.9). Empty → derived from the Google
+    # client secret.
     session_secret: str = ""
     session_cookie_secure: bool = True
+    # Google sign-in (OIDC, owner decision 15 Oct 2026). Sign-in is offered only when both are set;
+    # guests can always use the app. PUBLIC_BASE_URL builds the registered redirect URI.
+    google_oauth_client_id: str = ""
+    google_oauth_client_secret: str = ""
+    public_base_url: str = "http://localhost:3000"
+    # Private demo copies kept seeded ahead of time per persona (backend/app/demo_pool.py); 0 seeds
+    # each one inline, in the request.
+    demo_pool_size: int = 3
 
 
 @lru_cache

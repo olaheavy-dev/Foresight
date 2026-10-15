@@ -55,5 +55,6 @@ test("a Monzo CSV imports, asks for today's balance, then forecasts", async ({ p
 
   await page.getByRole("link", { name: "See your forecast" }).click();
   await page.waitForURL("**/home");
-  await expect(page.getByText("£1,234.56")).toBeVisible();
+  // The first forecast after an import is computed on demand.
+  await expect(page.getByText("£1,234.56")).toBeVisible({ timeout: 15_000 });
 });

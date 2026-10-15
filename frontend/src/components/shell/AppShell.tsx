@@ -50,7 +50,7 @@ export function AppShell({ profile, children }: { profile: ProfileView | null; c
             <Link className="icon-btn" href="/activity" aria-label="Activity">
               <Icon name="bell" />
             </Link>
-            <AvatarMenu name={profile?.name ?? null} subtitle={subtitle} />
+            <AvatarMenu name={profile?.name ?? null} subtitle={subtitle} account={profile?.account ?? null} />
           </div>
         </header>
         {children}

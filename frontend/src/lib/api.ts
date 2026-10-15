@@ -3,8 +3,8 @@
  * guards (docs/08 §6 Step 3) before the UI sees it; anything malformed, late or failed is `null`,
  * so the UI shows an error state and never a number it could not verify.
  *
- * Session: the API identifies the profile by an HttpOnly cookie (`foresight_profile`), set by
- * `startDemo()` / `startNewProfile()`. In the browser, calls go to this origin's `/api/*` (proxied
+ * Session: the API identifies the browser by an opaque HttpOnly cookie (`foresight_session`), set
+ * by `startDemo()` / `startNewProfile()` or Google sign-in; writes also carry `X-Foresight-Client`. In the browser, calls go to this origin's `/api/*` (proxied
  * to the backend by next.config.ts) with `credentials: "include"`, so the cookie travels and the
  * browser stores the one the backend sets. On the server (React Server Components, route
  * handlers) there is no cookie jar: pass the incoming request's cookie header as `cookie`. Only
@@ -57,7 +57,9 @@ import {
 
 // Browser: same origin (the Next proxy). Server: straight to the private backend container.
 const DEFAULT_BASE_URL = typeof window === "undefined" ? (process.env.API_BASE_URL ?? "http://backend:8000") : "";
-export const TIMEOUTS = { read: 3000, simulate: 10000, import: 30000 } as const;
+// forecast: the first one after an import is computed on demand (Monte Carlo), not just read.
+export const TIMEOUTS = { read: 3000, forecast: 8000, simulate: 10000, import: 30000, seed: 30000 } as const;
+export const CLIENT_HEADER = "X-Foresight-Client";
 const RESPONSE_ID = /^rsp_[0-9A-HJKMNP-TV-Z]{26}$/;
 
 export type ApiOptions = {
@@ -79,6 +81,8 @@ async function request<T>(
   try {
     const headers = new Headers(init.headers);
     if (cookie) headers.set("cookie", cookie);
+    // CSRF (docs/05 §7.2): every write carries the client header the API requires.
+    if (init.method && init.method !== "GET") headers.set(CLIENT_HEADER, "web");
     const response = await fetchImpl(`${baseUrl}${path}`, {
       cache: "no-store",
       credentials: "include",
@@ -86,7 +90,8 @@ async function request<T>(
       headers,
       signal: AbortSignal.timeout(timeoutMs),
     });
-    return accept(await response.json(), response.ok ? 200 : response.status);
+    const text = await response.text(); // a 204 (sign out, delete) has no body
+    return accept(text ? JSON.parse(text) : null, response.ok ? 200 : response.status);
   } catch {
     return null;
   }
@@ -138,9 +143,14 @@ export function importStatements(
 /** Choose the seeded demo profile (browser only: stores the session cookie). */
 export function startDemo(persona: "P1" | "P2" = "P1", options: ApiOptions = {}): Promise<ProfileView | null> {
   const query = new URLSearchParams({ persona });
-  return request(`/api/session/demo?${query}`, okAnd(isProfileView), options, {
-    method: "POST",
-  });
+  return request(
+    `/api/session/demo?${query}`,
+    okAnd(isProfileView),
+    { timeoutMs: TIMEOUTS.seed, ...options },
+    {
+      method: "POST",
+    },
+  );
 }
 
 /** Create a new, empty profile to import statements into (browser only). */
@@ -200,7 +210,12 @@ export function fetchCalculation(calcId: string, options: ApiOptions = {}): Prom
 /** The current baseline forecast for a scope. */
 export function fetchForecast(scope: Scope = "mine", options: ApiOptions = {}): Promise<ForecastView | null> {
   const query = new URLSearchParams({ scope });
-  return request(`/api/forecast?${query}`, okAnd(isForecastView), options);
+  return request(`/api/forecast?${query}`, okAnd(isForecastView), { timeoutMs: TIMEOUTS.forecast, ...options });
+}
+
+/** The fictional demo's forecast for the public Landing preview (no session, no cookie). */
+export function fetchDemoForecast(options: ApiOptions = {}): Promise<ForecastView | null> {
+  return request("/api/public/demo-forecast", okAnd(isForecastView), options);
 }
 
 /** Run a what-if through the engine (deterministic, no AI). */
@@ -331,4 +346,32 @@ export function correctCategory(
 /** Every import batch, newest first. */
 export function fetchImports(options: ApiOptions = {}): Promise<ImportHistory | null> {
   return request("/api/imports", okAnd(isImportHistory), options);
+}
+
+export type AuthProviders = { google: boolean; guest: boolean };
+
+/** Which sign-in methods the API offers (Google appears only once it is configured). */
+export function fetchAuthProviders(options: ApiOptions = {}): Promise<AuthProviders | null> {
+  return request(
+    "/api/auth/providers",
+    (body, status) => {
+      const b = body as Partial<AuthProviders> | null;
+      return status === 200 && typeof b?.google === "boolean" ? { google: b.google, guest: b.guest !== false } : null;
+    },
+    options,
+  );
+}
+
+/** End this session (browser). */
+export function signOut(options: ApiOptions = {}): Promise<boolean | null> {
+  return request("/api/session/logout", (_b, status) => status === 200 || null, options, {
+    method: "POST",
+  });
+}
+
+/** Delete every profile this session or account owns, then end the session (browser). */
+export function deleteMyData(options: ApiOptions = {}): Promise<boolean | null> {
+  return request("/api/session/delete", (_b, status) => status === 200 || null, options, {
+    method: "POST",
+  });
 }

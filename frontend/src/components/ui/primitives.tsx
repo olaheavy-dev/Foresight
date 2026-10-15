@@ -34,7 +34,7 @@ export function Badge({ tone = "blue", icon, children }: { tone?: Tone; icon?: I
 
 type ButtonLook = { variant?: "primary" | "secondary"; size?: "md" | "lg"; icon?: IconName; iconEnd?: IconName };
 
-function buttonClass({ variant = "secondary", size = "md" }: ButtonLook, extra?: string) {
+export function buttonClass({ variant = "secondary", size = "md" }: ButtonLook, extra?: string) {
   return ["btn", variant === "primary" ? "primary" : "", size === "lg" ? "lg" : "", extra ?? ""]
     .filter(Boolean)
     .join(" ");

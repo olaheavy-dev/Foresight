@@ -65,12 +65,20 @@ def _read_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def seed_persona(session: Session, root: Path, persona: Persona) -> SeedReport:
+def seed_persona(
+    session: Session,
+    root: Path,
+    persona: Persona,
+    *,
+    owner: dict[str, str | None] | None = None,
+) -> SeedReport:
+    """Seed a persona: the shared template (kind `demo`, idempotent) or, with `owner`, a new
+    private `sample` copy for one guest or user (docs/05 §5.9). Same files, same engine."""
     folder = root / persona.dataset
     spec = _read_json(folder / "workspace.json")
     accounts = _read_json(folder / "truth_accounts.json")["accounts"]
 
-    existing = demo_workspace(session, persona.key)
+    existing = None if owner else demo_workspace(session, persona.key)
     if existing is None:
         ctx = create_workspace(
             session,
@@ -79,9 +87,10 @@ def seed_persona(session: Session, root: Path, persona: Persona) -> SeedReport:
             home_currency=spec["home_currency"],
             locale=spec["locale"],
             timezone_name=spec["timezone"],
-            kind="demo",
+            kind="sample" if owner else "demo",
             persona_key=persona.key,
             buffer_minor=spec.get("buffer_minor"),
+            **(owner or {}),
         )
     else:
         ctx = WorkspaceContext.open(session, existing.id)

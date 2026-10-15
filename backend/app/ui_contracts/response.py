@@ -148,6 +148,14 @@ class ImportSummary(Contract):
     files: Annotated[list[ImportedFile], Field(min_length=1)]
 
 
+class SessionAccount(Contract):
+    """Who the session belongs to: a guest, or a signed-in Google account."""
+
+    kind: Literal["guest", "google"]
+    name: str | None = None
+    email: str | None = None
+
+
 class ProfileView(Contract):
     """The profile (workspace) the session cookie points at."""
 
@@ -161,6 +169,7 @@ class ProfileView(Contract):
     timezone: NonEmpty
     data_version: Annotated[int, Field(ge=0)]
     read_only: bool  # demo profiles refuse imports
+    account: SessionAccount | None = None
 
 
 class TransactionRow(Contract):

@@ -475,18 +475,21 @@ Jobs: `daily_refresh` (06:30 workspace-local time: recompute forecast when data,
 
 Telegram Bot API: free, instant and easy to demo live. The user links an account with a one-time `/start <token>` deep link. SMTP works with any provider and shares the same renderer. A digest is a persisted `rsp_…` snapshot rendered to Telegram MarkdownV2 or HTML email, containing **one key insight and one approved action**, or an honest status/next step if none is approved (`00` §13) plus a link back to the evidence.
 
-### 5.9 Authentication (hackathon vs production)
+### 5.9 Authentication: guests and Google sign-in (rev 15 Oct 2026)
 
-| Option | For | Against | Verdict |
-|---|---|---|---|
-| **Signed-cookie session + profile switcher** (UI term "Profile"; demo profiles P1–P4 plus a "your data" workspace) | No external dependency; judges can open the app without signing up; isolation still enforced by `workspace_id` | Not real multi-tenant auth | **Hackathon** |
-| Clerk / Auth0 | Managed, MFA, quick integration | External account needed by judges; adds failure modes | Production option |
-| Supabase Auth + Postgres RLS | Auth and RLS together | Ties storage to Supabase | Production option |
-| Roll our own passwords | — | Security liability | Never |
+The owner chose **Google sign-in with a "continue as a guest" option** (15 Oct 2026), replacing the shared demo profile, which let every visitor see the same conversations and limits (readiness review R1).
 
-The architecture keeps an `AuthContext → workspace_id` seam in `app/deps.py`. Swapping to managed auth changes only that dependency.
+| Who | How | What they own |
+|---|---|---|
+| **Guest** | "Explore the live demo" or "Import a CSV statement" starts a guest session (no sign-up) | A private `sample` copy of the fictional demo and any profiles they import, visible only to that browser session. Deleted after **7 days** unused. |
+| **Google user** | "Continue with Google": OpenID Connect authorization-code flow with PKCE (S256), `state` and `nonce` in a short-lived signed cookie; the code is exchanged server-side and the ID token is checked against Google's published keys (RS256, issuer, audience, expiry, nonce) | Their profiles across browsers. Identified by issuer + subject, never by email alone. Signing in moves a guest's profiles to the account and rotates the session. Sessions expire after **30 days** unused. |
 
-**User → Workspace.** Hackathon: a single implicit local user; the session holds the active `workspace_id` chosen with *Switch profile*. Production: managed auth yields a `user_id`; `WorkspaceMembership(user_id, workspace_id, role=owner)` authorises access; every repository call still takes a `WorkspaceContext`, and Postgres RLS checks `workspace_id` against the members table.
+- **Session cookie.** `foresight_session` holds an opaque random token (Secure, HttpOnly, SameSite=Lax); only its SHA-256 is stored (`auth_session`). There is no header or query parameter that selects a workspace by id: every request resolves session → ownership → active workspace (`backend/app/session.py`, the `Profile` dependency).
+- **Ownership.** Each workspace has `owner_user_id` or `owner_session_id`. Seeded demo templates (kind `demo`) have no owner and never open in a browser; the Landing preview reads them through the public, read-only `GET /api/public/demo-forecast`. `demo` and `sample` workspaces are read-only (no imports or edits).
+- **Sign out and delete.** `POST /api/session/logout` revokes the session. `POST /api/session/delete` deletes every workspace the session or account owns (including its audit trail, through the guarded purge path) and then signs out. Expired guest sessions are purged when new guests arrive, and their workspaces go with them. Ownerless workspaces are never purged automatically.
+- **Warm demo pool.** Seeding a private demo copy is CPU work (about 2.5 s), so `DEMO_POOL_SIZE` copies per persona (default 3) are seeded before the API serves (entrypoint) and kept unowned. "Explore the live demo" claims one (`FOR UPDATE SKIP LOCKED`). Refills run in one separate worker process once claims have been quiet for 60 s, because a seed is a burst of database writes that slowed a new guest's first pages when it overlapped them. If the pool runs dry, the guest waits for a seed while "Opening the demo…" shows (`backend/app/demo_pool.py`).
+- **Profiles from before accounts.** Migration 0007 leaves earlier workspaces without an owner. A browser that returns with its old signed `foresight_profile` cookie adopts its profile into a new guest session (`session.adopt_legacy`).
+- **Configuration.** `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET` and `PUBLIC_BASE_URL` (the redirect URI is `PUBLIC_BASE_URL/api/auth/google/callback`). Without them, `GET /api/auth/providers` reports `google: false` and the UI shows the guest options only.
 
 ---
 
@@ -550,6 +553,7 @@ The briefing stores `{data_version, prefs_version, engine_version, as_of}`. It i
 ### 7.2 Workspace isolation
 
 - Every workspace-owned table carries a non-null `workspace_id`; global categories and built-in format/layout profiles are read-only exceptions scoped through the repository API. Repositories take a `WorkspaceContext` object rather than a raw ID, and the base query adds `WHERE workspace_id = :scope`. A unit test enumerates all models and asserts each has the column and that each repository applies the scope.
+- **Ownership first.** A workspace opens only for the session or Google account that owns it (§5.9); requests for another workspace's resources return 404. State-changing API calls must carry the `X-Foresight-Client` header (CSRF: a cross-site page can't set a custom header on a same-origin request, and the API sends no CORS headers).
 - Evidence and snapshot endpoints check that the requested `calc_…`, `rec_…` or `rsp_…` belongs to the session's workspace, returning 404 rather than 403 to avoid leaking existence.
 - Production: Postgres RLS policy `workspace_id = current_setting('app.workspace_id')` as defence in depth.
 
@@ -727,7 +731,7 @@ Pipeline:
 4. Smoke tests follow the platform's onboarding checklist: the public URL returns 200, `/healthz` reports the expected SHA, no container publishes host ports, logs show no startup errors.
 5. **Feature flags** (`features.yaml`, FR-86) decide what the deployed app shows; CI refuses a flag turned on while its eval suites are red, so the public app never shows a half-built feature.
 
-Readiness probe `/healthz` (database reachable, migrations at head, deploy SHA), and `/healthz/mesh`, which runs the metadata call and is cached for 5 minutes. Postgres is internal to the app network, so the egress allow-list (Mesh, Telegram, SMTP; 09 ORC-13) is unchanged.
+Readiness probe `/healthz` (database reachable, migrations at head, deploy SHA), and `/healthz/mesh`, which runs the metadata call and is cached for 5 minutes. Postgres is internal to the app network. The deployed app's egress allow-list is Mesh, Telegram and SMTP (09 ORC-13) plus, for Google sign-in (§5.9), `accounts.google.com` (browser redirect only), `oauth2.googleapis.com` (code exchange) and `www.googleapis.com` (signing keys). No model call or financial data goes to Google.
 
 ---
 

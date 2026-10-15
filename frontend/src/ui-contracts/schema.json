@@ -5556,6 +5556,17 @@
       "additionalProperties": false,
       "description": "The profile (workspace) the session cookie points at.",
       "properties": {
+        "account": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SessionAccount"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "country": {
           "pattern": "^[A-Z]{2}$",
           "title": "Country",
@@ -6982,6 +6993,49 @@
         "switchable"
       ],
       "title": "Scope",
+      "type": "object"
+    },
+    "SessionAccount": {
+      "additionalProperties": false,
+      "description": "Who the session belongs to: a guest, or a signed-in Google account.",
+      "properties": {
+        "email": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Email"
+        },
+        "kind": {
+          "enum": [
+            "guest",
+            "google"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "SessionAccount",
       "type": "object"
     },
     "SetBufferAction": {

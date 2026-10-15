@@ -18,14 +18,36 @@ async function openDemo(page: Page) {
   await page.waitForURL("**/home");
 }
 
-test("landing offers the demo and CSV import, with sign-in disabled", async ({ page }) => {
+test("landing offers the demo and CSV import as a guest; Google appears only once configured", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1, name: "Start with your own statements" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Explore the live demo" })).toBeEnabled();
   await expect(page.getByRole("link", { name: "Import a CSV statement" })).toHaveAttribute("href", "/start");
-  await expect(page.getByRole("button", { name: /sign in/i })).toBeDisabled();
+  await expect(page.getByRole("link", { name: "Continue with Google" })).toHaveCount(0); // the mock has no client
   await noHorizontalScroll(page);
   await noSeriousA11yIssues(page);
+
+  await page.goto("/?auth=failed");
+  await expect(page.getByRole("alert").filter({ hasText: "Google sign-in didn’t finish" })).toBeVisible();
+});
+
+test("the account menu signs a guest out and asks before deleting their data", async ({ page }) => {
+  await openDemo(page);
+  await page.getByRole("button", { name: /account menu/i }).click();
+  await expect(page.getByText(/Guest: private to this browser/)).toBeVisible();
+  await expect(page.getByRole("link", { name: /sign in with google/i })).toHaveAttribute(
+    "href",
+    "/api/auth/google/start?next=%2Fhome",
+  );
+  await page.getByRole("button", { name: "Delete my data" }).click();
+  const confirm = page.getByRole("group", { name: "Confirm deleting your data" });
+  await expect(confirm).toContainText("can’t be undone");
+  await noSeriousA11yIssues(page);
+  await confirm.getByRole("button", { name: "Keep it" }).click();
+  await expect(confirm).toHaveCount(0);
+  await page.getByRole("button", { name: "Sign out" }).click();
+  await page.waitForURL("**/?auth=signedout");
+  await expect(page.getByRole("status").filter({ hasText: "You’re signed out." })).toBeVisible();
 });
 
 test("the demo opens Home, where each section is drawn from the engine or says it isn't shipped", async ({ page }) => {

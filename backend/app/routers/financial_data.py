@@ -8,7 +8,7 @@ from datetime import date
 
 from fastapi import APIRouter, HTTPException, status
 
-from backend.app.session import Profile
+from backend.app.session import Profile, read_only
 from backend.app.ui_contracts.money import money_value
 from backend.app.ui_contracts.primitives import DateRange, MoneyAmount
 from backend.app.ui_contracts.response import (
@@ -77,7 +77,7 @@ def accounts(ctx: Profile) -> AccountList:
 def set_balance(ctx: Profile, account_id: str, body: BalanceDeclaration) -> AccountView:
     """The user's balance on a day (provenance declared): the forecast becomes absolute instead
     of relative. An unchanged answer changes nothing (docs/01 F-10)."""
-    if ctx.workspace.kind == "demo":
+    if read_only(ctx.workspace):
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
             "The demo profile is read-only. Start a new profile to use your own statements.",

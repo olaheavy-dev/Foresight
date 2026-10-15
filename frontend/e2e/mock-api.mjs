@@ -27,6 +27,7 @@ const profile = {
   timezone: "Europe/London",
   data_version: 2,
   read_only: true,
+  account: { kind: "guest", name: null, email: null },
 };
 const FEATURES = ["forecast", "agents", "checked_advice", "audit_trail", "ask", "anomaly_detection"].map((key, i) => ({
   key,
@@ -82,13 +83,18 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms / SPEED));
 createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   const path = url.pathname;
-  const cookie = "foresight_profile=mock; Path=/; HttpOnly; SameSite=Lax";
+  const cookie = "foresight_session=mock; Path=/; HttpOnly; SameSite=Lax";
 
   if (path === "/healthz") return json(res, 200, { status: "ok", sha: "mock", database: true });
   if (path === "/api/features") return json(res, 200, { features: FEATURES });
   if (path === "/api/session" && req.method === "GET") return json(res, 200, profile);
   if (path === "/api/session/demo" && req.method === "POST") return json(res, 200, profile, { "set-cookie": cookie });
-  if (path === "/api/forecast") {
+  if (path === "/api/auth/providers") return json(res, 200, { google: process.env.MOCK_GOOGLE === "1", guest: true });
+  if (path === "/api/session/logout" || path === "/api/session/delete") {
+    res.writeHead(204, { "set-cookie": "foresight_session=; Path=/; Max-Age=0" });
+    return res.end();
+  }
+  if (path === "/api/forecast" || path === "/api/public/demo-forecast") {
     const chart = fx.forecastChart();
     return json(res, 200, {
       forecast_id: `fc_${"0a1b2c3d4e5f60718293a4b5"}`,

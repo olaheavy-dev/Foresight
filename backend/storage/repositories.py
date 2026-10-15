@@ -381,6 +381,8 @@ def create_workspace(
     kind: str = "user",
     persona_key: str | None = None,
     buffer_minor: int | None = None,
+    owner_user_id: str | None = None,
+    owner_session_id: str | None = None,
 ) -> WorkspaceContext:
     ws = m.Workspace(
         id=new_id("wsp"),
@@ -393,6 +395,8 @@ def create_workspace(
         persona_key=persona_key,
         buffer_minor=buffer_minor,
         data_version=0,
+        owner_user_id=owner_user_id,
+        owner_session_id=owner_session_id,
     )
     session.add(ws)
     session.flush()

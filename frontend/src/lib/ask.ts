@@ -19,7 +19,7 @@
  * `no-transform`: through the plain /api rewrite, Next gzips the response and the browser gets
  * every event at once when the run ends, so the live checklist never shows.
  */
-import { parseAgentResponse, type ApiOptions, type ParsedResponse } from "@/lib/api";
+import { CLIENT_HEADER, parseAgentResponse, type ApiOptions, type ParsedResponse } from "@/lib/api";
 
 const ULID = "[0-9A-HJKMNP-TV-Z]{26}";
 const THREAD_ID = new RegExp(`^thr_${ULID}$`);
@@ -37,7 +37,7 @@ async function post(path: string, body: unknown, { fetchImpl = fetch, baseUrl = 
       method: "POST",
       cache: "no-store",
       credentials: "include",
-      headers: { "content-type": "application/json" },
+      headers: { "content-type": "application/json", [CLIENT_HEADER]: "web" },
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
