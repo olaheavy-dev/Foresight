@@ -8,6 +8,7 @@ from datetime import date
 
 from fastapi import APIRouter, HTTPException, status
 
+from backend.app import proactive
 from backend.app.session import Profile, read_only
 from backend.app.ui_contracts.money import money_value
 from backend.app.ui_contracts.primitives import DateRange, MoneyAmount
@@ -89,7 +90,10 @@ def set_balance(ctx: Profile, account_id: str, body: BalanceDeclaration) -> Acco
         raise HTTPException(
             status.HTTP_422_UNPROCESSABLE_ENTITY, "A balance can't be dated in the future."
         )
+    before = ctx.workspace.data_version
     declare_balance(ctx, account.id, body.as_of, body.amount_minor)
+    if ctx.workspace.data_version != before:  # an unchanged answer changes nothing
+        proactive.enqueue(ctx, "balance_declared")  # with the balance (R2)
     ctx.session.commit()
     return _account_view(ctx, account)
 

@@ -8,8 +8,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Response, status
 from fastapi.responses import JSONResponse
 
-from backend.app import demo_pool, logs
-from backend.app.routers import ask, auth, engine, financial_data, imports, ledger
+from backend.app import demo_pool, logs, proactive
+from backend.app.routers import ask, auth, engine, financial_data, home, imports, ledger
 from backend.app.routers import session as profile
 from backend.app.session import CSRF_HEADER
 from backend.features import load_features
@@ -19,6 +19,11 @@ from backend.storage.db import database_reachable, session_factory
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    if get_settings().proactive_worker and get_settings().database_url:
+        try:
+            proactive.start_worker()
+        except Exception:  # noqa: BLE001 - the app serves without proactive runs
+            proactive.log.exception("proactive: worker failed to start")
     if demo_pool.enabled():
         try:
             with session_factory(get_settings().database_url)() as db:
@@ -26,6 +31,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
         except Exception:  # noqa: BLE001 - a cold pool still works (requests wait for a seed)
             demo_pool.log.exception("demo pool: warm-up failed")
     yield
+    proactive.stop_worker()
 
 
 def create_app() -> FastAPI:
@@ -84,6 +90,7 @@ def create_app() -> FastAPI:
         engine.router,
         engine.public_router,
         ask.router,
+        home.router,
     )
     for router in routers:
         app.include_router(router)

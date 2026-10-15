@@ -7,7 +7,12 @@ from typing import Annotated, Any, Literal
 
 from pydantic import Field, StringConstraints
 
-from backend.app.ui_contracts.blocks import Block, CashFlowForecastData, ScenarioComparisonData
+from backend.app.ui_contracts.blocks import (
+    Block,
+    CashFlowForecastData,
+    InterventionCard,
+    ScenarioComparisonData,
+)
 from backend.app.ui_contracts.plan import PlanIntent
 from backend.app.ui_contracts.primitives import (
     AccountId,
@@ -337,3 +342,29 @@ class ImportBatchView(Contract):
 class ImportHistory(Contract):
     workspace_id: WorkspaceId
     imports: list[ImportBatchView]
+
+
+class InsightFinding(Contract):
+    """A deterministic behaviour finding, with every figure filled from its stored calculation."""
+
+    finding_id: FindingId
+    kind: NonEmpty
+    severity: Literal["info", "watch", "act"]
+    headline: NonEmpty
+    detail: str = ""
+    link: str | None = None  # an app path to the supporting transactions
+
+
+class HomeInsights(Contract):
+    """Home's proactive insights (review R2): findings always; checked recommendations from the
+    latest proactive run; the state of that run and why advice is paused, if it is."""
+
+    workspace_id: WorkspaceId
+    status: Literal["empty", "checking", "ready", "paused", "failed"]
+    reason: Literal["ai_paused", "daily_limit", "not_run"] | None = None
+    data_version: int
+    checked_data_version: int | None = None
+    checked_at: dt.datetime | None = None
+    findings: list[InsightFinding] = []
+    recommendations: list[InterventionCard] = []
+    can_check: bool = False

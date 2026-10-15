@@ -6,6 +6,7 @@ from datetime import date
 
 from fastapi import APIRouter, HTTPException, Query, status
 
+from backend.app import proactive
 from backend.app.session import Profile, read_only
 from backend.app.ui_contracts.money import money_value
 from backend.app.ui_contracts.primitives import MoneyAmount
@@ -96,6 +97,7 @@ def correct(ctx: Profile, transaction_id: str, body: CategoryCorrection) -> Cate
     try:
         ids = same_merchant(ctx, transaction_id) if body.apply_to_merchant else [transaction_id]
         correct_categories(ctx, ids, body.category_key)
+        proactive.enqueue(ctx, "category_corrected")  # with the correction (R2)
     except LookupError:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "No such transaction.") from None
     ctx.session.commit()

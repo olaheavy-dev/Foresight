@@ -40,6 +40,8 @@ PREFIXES = frozenset(
         "msg",
         # behaviour findings (migration 0005)
         "fnd",
+        # proactive analysis jobs (migration 0008)
+        "job",
     }
 )
 

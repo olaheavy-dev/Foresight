@@ -25,6 +25,7 @@ from sqlalchemy import (
     Time,
     UniqueConstraint,
     func,
+    text,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -606,6 +607,37 @@ class AnswerCacheEntry(Base):
     hits: Mapped[int] = mapped_column(Integer, server_default="0")
     created_at: Mapped[datetime] = _created_at()
     last_hit_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class AnalysisJob(Base):
+    """A queued proactive analysis of one profile (migration 0008, review R2)."""
+
+    __tablename__ = "analysis_job"
+    __table_args__ = (
+        Index(
+            "uq_analysis_job_queued",
+            "workspace_id",
+            unique=True,
+            postgresql_where=text("status = 'queued'"),
+        ),
+        Index("ix_analysis_job_status_not_before", "status", "not_before"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)  # job_
+    workspace_id: Mapped[str] = _workspace_fk()
+    event: Mapped[str] = mapped_column(String(32))  # import_committed | category_corrected | …
+    workflow: Mapped[str] = mapped_column(String(24))  # ingestion | risk_detection
+    data_version: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(
+        String(12), server_default="queued"
+    )  # queued|running|done|skipped|failed
+    not_before: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    attempts: Mapped[int] = mapped_column(Integer, server_default="0")
+    run_id: Mapped[str | None] = mapped_column(String(32))
+    note: Mapped[str | None] = mapped_column(Text)  # why advice was skipped, or the error
+    created_at: Mapped[datetime] = _created_at()
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class Finding(Base):
