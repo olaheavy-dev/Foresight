@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { DemoButton } from "@/components/landing/DemoButton";
 import { LandingMetrics } from "@/components/landing/LandingMetrics";
 import { ForecastCard } from "@/components/home/ForecastCard";
@@ -81,6 +82,9 @@ export default async function Landing({ searchParams }: { searchParams: Promise<
             Your statements stay private. Every model call goes through one gateway, account numbers are masked first,
             and we never ask for bank logins.
           </span>
+        </p>
+        <p className="privacy-link">
+          <Link href="/privacy">Privacy: what we store and how to delete it</Link>
         </p>
         <div className="theme-footer">
           <span className="um-label" id="landing-theme">

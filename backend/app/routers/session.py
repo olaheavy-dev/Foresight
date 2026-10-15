@@ -3,8 +3,8 @@
 - `POST /api/session/demo?persona=P1` gives this browser a private copy of the demo (a guest
   session is started if there is none). Visitors never share a demo workspace.
 - `POST /api/session/new` creates an empty profile of its own for statement imports.
-- `POST /api/session/logout` ends the session; `POST /api/session/delete` deletes every profile
-  the session or user owns, then ends it.
+- `POST /api/session/logout` ends the session (a guest's profiles are deleted with it);
+  `POST /api/session/delete` deletes every profile the session or user owns, then ends it.
 """
 
 from __future__ import annotations
@@ -137,10 +137,18 @@ def current(request: Request, ctx: Profile, db: Db) -> ProfileView:
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 def logout(request: Request, response: Response, db: Db) -> None:
-    """End this session. A guest's data stays until it expires (or use delete)."""
+    """End this session. A signed-in user's profiles stay with the account. A guest's can never be
+    opened again once the cookie is gone, so they're deleted now, not left until a purge runs
+    (the privacy page promises this)."""
     row = sess.current(request, db)
     if row is not None:
-        sess.revoke(db, row)
+        if row.user_id is None:
+            allow_purge(db)
+            for ws in sess.owned_workspaces(db, row):
+                db.delete(ws)
+            db.delete(row)
+        else:
+            sess.revoke(db, row)
         db.commit()
     sess.clear_cookie(response)
 

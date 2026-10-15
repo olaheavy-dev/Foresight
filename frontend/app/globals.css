@@ -667,6 +667,14 @@ button.um-item { width: 100%; border: 0; background: none; font: inherit; cursor
 .legend .lg-buffer { stroke: var(--color-data-buffer); stroke-width: 1.5; stroke-dasharray: 2 4; stroke-linecap: round; }
 .primary-actions.inline { display: flex; flex-wrap: wrap; gap: var(--space-3); }
 .landing-frame.single { min-height: 100vh; }
+.privacy-link { margin: var(--space-3) 0 0; font-size: var(--font-size-xs); }
+.privacy-link a { color: var(--color-text-secondary); text-decoration: underline; text-underline-offset: 2px; }
+.legal h2 { font-family: var(--font-family-display); font-size: var(--font-size-lg); margin: var(--space-6) 0 var(--space-2); }
+.legal p, .legal li { font-size: var(--font-size-base); line-height: var(--line-height-normal); color: var(--color-text-secondary); max-width: 68ch; }
+.legal ul { margin: 0 0 var(--space-3); padding-left: var(--space-5); display: grid; gap: var(--space-2); }
+.legal strong { color: var(--color-text-primary); }
+.legal code { font-size: 0.9em; }
+.legal a { color: var(--color-accent-primary); text-decoration: underline; text-underline-offset: 2px; }
 @media (min-width: 1024px) {
   .landing-frame.single { display: block; max-width: 760px; margin: var(--space-7) auto; min-height: 0; }
 }
