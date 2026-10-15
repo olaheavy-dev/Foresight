@@ -14,9 +14,9 @@ export function initials(name: string): string {
 }
 
 /**
- * Avatar → menu: who is signed in, Switch profile, Settings, Quality checks, Theme, then Reset demo
- * (demo profiles), Sign in with Google (guests), Sign out and Delete my data (inline confirms).
- * Esc and outside click close.
+ * Avatar → menu: who is signed in, Switch profile, Settings, Quality checks, Privacy, Theme, then
+ * Reset demo (demo profiles), Sign in with Google (guests), Sign out (a guest confirms first: it
+ * deletes their profiles) and Delete my data (inline confirms). Esc and outside click close.
  */
 export function AvatarMenu({
   name,
@@ -30,7 +30,7 @@ export function AvatarMenu({
   demo?: boolean;
 }) {
   const [open, setOpen] = useState(false);
-  const [confirming, setConfirming] = useState<"delete" | "reset" | null>(null);
+  const [confirming, setConfirming] = useState<"delete" | "reset" | "signout" | null>(null);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
@@ -111,6 +111,9 @@ export function AvatarMenu({
         <Link className="um-item" href="/quality">
           Quality checks
         </Link>
+        <Link className="um-item" href="/privacy">
+          Privacy
+        </Link>
         <div className="um-sep" role="separator" />
         <p className="um-label" id={`${id}-theme`}>
           Theme
@@ -147,14 +150,35 @@ export function AvatarMenu({
                 Reset demo
               </button>
             ) : null}
-            <button
-              type="button"
-              className="um-item"
-              disabled={busy}
-              onClick={() => leave(signOut, "/?auth=signedout")}
-            >
-              Sign out
-            </button>
+            {confirming === "signout" ? (
+              <div className="um-confirm" role="group" aria-label="Confirm signing out as a guest">
+                <p>Signing out as a guest deletes your guest profiles. Sign in with Google first to keep them.</p>
+                <div className="um-actions">
+                  <button
+                    type="button"
+                    className="btn danger"
+                    disabled={busy}
+                    onClick={() => leave(signOut, "/?auth=signedout")}
+                  >
+                    {busy ? "Signing out…" : "Sign out and delete"}
+                  </button>
+                  <button type="button" className="btn" disabled={busy} onClick={() => setConfirming(null)}>
+                    Keep them
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                className="um-item"
+                disabled={busy}
+                onClick={() =>
+                  account.kind === "guest" ? setConfirming("signout") : leave(signOut, "/?auth=signedout")
+                }
+              >
+                Sign out
+              </button>
+            )}
             {confirming === "delete" ? (
               <div className="um-confirm" role="group" aria-label="Confirm deleting your data">
                 <p>

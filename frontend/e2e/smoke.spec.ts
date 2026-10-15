@@ -35,6 +35,15 @@ test("landing offers the demo and CSV import as a guest; Google appears only whe
   await expect(page.getByRole("alert").filter({ hasText: "Google sign-in didn’t finish" })).toBeVisible();
 });
 
+test("the privacy page is public and says how to delete your data", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: /^Privacy/ }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "How Foresight handles your data" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "Deleting your data" })).toBeVisible();
+  await noHorizontalScroll(page);
+  await noSeriousA11yIssues(page);
+});
+
 test("the account menu signs a guest out and asks before deleting their data", async ({ page }) => {
   await openDemo(page);
   await page.getByRole("button", { name: /account menu/i }).click();
@@ -50,6 +59,9 @@ test("the account menu signs a guest out and asks before deleting their data", a
   await confirm.getByRole("button", { name: "Keep it" }).click();
   await expect(confirm).toHaveCount(0);
   await page.getByRole("button", { name: "Sign out" }).click();
+  const leaving = page.getByRole("group", { name: "Confirm signing out as a guest" });
+  await expect(leaving).toContainText("deletes your guest profiles");
+  await leaving.getByRole("button", { name: "Sign out and delete" }).click();
   await page.waitForURL("**/?auth=signedout");
   await expect(page.getByRole("status").filter({ hasText: "You’re signed out." })).toBeVisible();
 });

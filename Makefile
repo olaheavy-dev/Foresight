@@ -5,6 +5,7 @@ EVAL_TMP ?= $${TMPDIR:-/tmp}/foresight-evals
 
 install:
 	$(PY) -m pip install -r requirements-dev.txt
+	cd frontend && npm ci  # the pre-push hook runs Prettier, tsc, Vitest and the contract codegen
 	pre-commit install
 
 test:
