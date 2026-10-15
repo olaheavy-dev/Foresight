@@ -260,6 +260,7 @@ def render(summary: dict[str, Any]) -> str:
     ]
     misses = [
         f"- {sid} {t['id']}: {t['label']} = {_f(t['value'])} (target {t['target']}, {t['dataset']})"
+        + _opt_out(t)
         for sid, targets in (summary.get("targets") or {}).items()
         for t in targets
         if t.get("stage1") and t.get("met") is False
@@ -267,6 +268,13 @@ def render(summary: dict[str, Any]) -> str:
     lines += misses or ["- No measured Stage 1 target missed."]
     lines += ["", END]
     return "\n".join(lines)
+
+
+def _opt_out(t: dict[str, Any]) -> str:
+    """Why a missed target doesn't fail its suite, when the suite excluded it (AGENTS.md rule 4)."""
+    if t.get("gated") is False and t.get("not_gated_because"):
+        return f"; not gated: {t['not_gated_because']}"
+    return ""
 
 
 def _forecast_arms(s: dict[str, Any]) -> list[str]:
