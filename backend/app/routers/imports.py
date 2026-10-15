@@ -17,6 +17,7 @@ from backend.app.ui_contracts.response import (
     ImportReconciliation,
     ImportSummary,
 )
+from backend.finance_core.importers.csv_statement import COLUMN_ROLES
 from backend.pipeline.ingest import IngestOutcome, ingest_file
 from backend.storage import models as m
 from backend.storage.repositories import WorkspaceContext
@@ -97,34 +98,60 @@ def imported_file(ctx: WorkspaceContext, outcome: IngestOutcome) -> ImportedFile
         rejections=[f for t in outcome.tables for f in t.failures],
         questions=[
             ImportQuestion(
-                kind=q.kind, prompt=q.prompt, options=list(q.options), preselected=q.preselected
+                kind=q.kind,
+                prompt=q.prompt,
+                options=list(q.options),
+                preselected=q.preselected,
+                examples=list(q.examples),
+                proposed=dict(q.proposed) or None,
+                labels=list(q.labels),
+                table_id=q.table_id,
             )
             for q in outcome.questions
         ],  # fmt: skip
     )
 
 
-ANSWER_KINDS = frozenset({"currency", "date_order", "decimal_separator"})
+ANSWER_KINDS = frozenset({"currency", "date_order", "decimal_separator", "columns"})
 
 
 def _answers(raw: str | None) -> dict[str, str] | None:
-    """The user's answers to H13 questions (docs/06 §9), applied to every file in the request."""
+    """The user's answers to H13 questions (docs/06 §9), applied to every file in the request.
+    Short codes for the format questions; for "columns", an object of role → column name, passed
+    on as canonical JSON (checked against the file by the importer)."""
     if not raw:
         return None
     try:
         parsed = json.loads(raw)
     except json.JSONDecodeError:
         parsed = None
-    if (
-        not isinstance(parsed, dict)
-        or not set(parsed) <= ANSWER_KINDS
-        or not all(isinstance(v, str) and 0 < len(v) <= 8 for v in parsed.values())
-    ):
-        raise HTTPException(
-            status.HTTP_422_UNPROCESSABLE_ENTITY,
-            f"answers must be a JSON object with keys from {sorted(ANSWER_KINDS)}.",
-        )
-    return parsed
+    problem = f"answers must be a JSON object with keys from {sorted(ANSWER_KINDS)}."
+    if not isinstance(parsed, dict) or not set(parsed) <= ANSWER_KINDS:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, problem)
+    given: dict[str, str] = {}
+    for kind, value in parsed.items():
+        if kind == "columns":
+            # One mapping, or a list of them (one per unrecognised table in the file).
+            mappings = value if isinstance(value, list) else [value]
+            if not (
+                0 < len(mappings) <= 10
+                and all(
+                    isinstance(m, dict)
+                    and set(m) <= {*COLUMN_ROLES, "table"}
+                    and all(isinstance(v, str) and 0 < len(v) <= 100 for v in m.values())
+                    for m in mappings
+                )
+            ):
+                raise HTTPException(
+                    status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    f"columns must map roles from {list(COLUMN_ROLES)} to column names.",
+                )
+            given[kind] = json.dumps(mappings, sort_keys=True)
+        elif isinstance(value, str) and 0 < len(value) <= 8:
+            given[kind] = value
+        else:
+            raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, problem)
+    return given
 
 
 def _ingest_all(

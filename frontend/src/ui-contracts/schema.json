@@ -4013,10 +4013,28 @@
       "additionalProperties": false,
       "description": "Something only the user can answer before (or after) a file is used (docs/06 H13).",
       "properties": {
+        "examples": {
+          "default": [],
+          "items": {
+            "maxLength": 24,
+            "type": "string"
+          },
+          "title": "Examples",
+          "type": "array"
+        },
         "kind": {
           "minLength": 1,
           "title": "Kind",
           "type": "string"
+        },
+        "labels": {
+          "default": [],
+          "items": {
+            "maxLength": 60,
+            "type": "string"
+          },
+          "title": "Labels",
+          "type": "array"
         },
         "options": {
           "default": [],
@@ -4042,6 +4060,33 @@
           "minLength": 1,
           "title": "Prompt",
           "type": "string"
+        },
+        "proposed": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Proposed"
+        },
+        "table_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Table Id"
         }
       },
       "required": [

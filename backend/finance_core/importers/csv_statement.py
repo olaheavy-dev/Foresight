@@ -9,6 +9,7 @@ leave the batch uncommitted (no rows returned). Contains no bank-specific code.
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, replace
@@ -74,8 +75,140 @@ def _strip_units(header: str) -> str:
     return re.sub(r"\s*\((?:[a-z]{3}|[£€$₹¥])\)\s*$", "", header)
 
 
-def heuristic_profile(headers: Sequence[str]) -> tuple[FormatProfile | None, Question | None]:
-    """Map unknown headers to roles. Confident ⇒ a heuristic profile; unsure ⇒ a Question."""
+# Roles a person can assign when the headers aren't recognised (the answer to a "columns" question).
+COLUMN_ROLES = ("date", "description", "amount", "money_in", "money_out", "balance")
+COLUMNS_PROMPT = (
+    "We didn’t recognise this file’s columns. Choose which column holds the date, the description "
+    "and the amount (or money in and money out)."
+)
+
+
+# Examples are the owner's own cells, but identifiers still never leave the importer (AGENTS.md
+# rule 1): no example for identifier-like columns, and long digit runs are masked everywhere else.
+_IDENTIFIER_HEADER = re.compile(
+    r"account|iban|sort ?code|card|\bbic\b|swift|\bref|reference|\bid\b|number|\bno\b", re.I
+)
+_AMOUNT_CELL = re.compile(r"^[-+(]?\s?[£$€₹]?\s?[\d,]+(\.\d+)?\)?$")
+_DIGIT_RUN = re.compile(r"\d(?:[\d\s-]*\d)?")
+
+
+def safe_example(header: str, cell: str) -> str:
+    """A cell fit to show back as an example, or "" if it might be an identifier."""
+    if not cell or _IDENTIFIER_HEADER.search(header):
+        return ""
+    # Kept whole only if it reads as money: a decimal part, a sign or a symbol, or too few
+    # digits to be an account number. A bare "12345678" under any heading is masked.
+    digits = sum(ch.isdigit() for ch in cell)
+    if _AMOUNT_CELL.match(cell) and (re.search(r"[.£$€₹+()-]", cell) or digits < 6):
+        return cell[:24]
+
+    def mask(m: re.Match[str]) -> str:
+        digits = sum(ch.isdigit() for ch in m.group())
+        return "•" * 4 if digits >= 6 else m.group()
+
+    return _DIGIT_RUN.sub(mask, cell)[:24]
+
+
+def columns_question(
+    table: Table, recognised: Mapping[str, tuple[str, ...]], note: str | None = None
+) -> Question:
+    """The "columns" question with an example value per column and what was recognised, so the
+    person only fills the gaps. Examples are the file's own cells, shown back to its owner."""
+    headers = [normalise_header(h) for h in table.headers]
+    examples = []
+    for idx in range(len(headers)):
+        cell = next(
+            (c[idx].strip() for _, c in table.rows[:20] if idx < len(c) and c[idx].strip()), ""
+        )
+        examples.append(safe_example(headers[idx], cell))
+    # Options are opaque column positions; the labels shown are the headings with any long digit
+    # run masked, so an account number written into a heading never leaves the importer.
+    ids = [column_id(i) for i in range(len(headers))]
+    proposed = tuple(
+        (role, ids[headers.index(names[0])])
+        for role, names in recognised.items()
+        if role in COLUMN_ROLES and names and names[0] in headers
+    )
+    return Question(
+        kind="columns",
+        prompt=f"{note} {COLUMNS_PROMPT}" if note else COLUMNS_PROMPT,
+        options=tuple(ids),
+        labels=tuple(_DIGIT_RUN.sub(_mask_long, h)[:60] for h in headers),
+        examples=tuple(examples),
+        proposed=proposed,
+        table_id=table_key(table.headers),
+    )
+
+
+def column_id(index: int) -> str:
+    return f"c{index}"
+
+
+def table_key(headers: Sequence[str]) -> str:
+    """A short, stable id for a table's heading row: a mapping answers exactly one table."""
+    sig = "|".join(normalise_header(h) for h in headers)
+    return hashlib.sha256(sig.encode()).hexdigest()[:10]
+
+
+def _mask_long(m: re.Match[str]) -> str:
+    return "•" * 4 if sum(ch.isdigit() for ch in m.group()) >= 6 else m.group()
+
+
+def manual_profile(
+    headers: Sequence[str], chosen: Mapping[str, str]
+) -> tuple[FormatProfile | None, str | None]:
+    """A profile from the person's column choice, or why it can't be used. Deterministic: the
+    choice is checked against the file, never guessed."""
+    norm = [normalise_header(h) for h in headers]
+
+    def resolve(name: str) -> str:
+        ident = re.fullmatch(r"c(\d{1,3})", name)
+        return norm[int(ident.group(1))] if ident and int(ident.group(1)) < len(norm) else name
+
+    picked = {role: normalise_header(resolve(name)) for role, name in chosen.items() if name}
+    twice = sorted({n for n in picked.values() if norm.count(n) > 1})
+    if twice:
+        return None, (
+            f"This file has two columns called “{twice[0]}”, so we can’t tell them apart. "
+            "Rename one in the file and import it again."
+        )
+    if not set(picked) <= set(COLUMN_ROLES):
+        return None, "Those roles aren’t ones we can use."
+    if any(name not in norm for name in picked.values()):
+        return None, "One of those columns isn’t in this file."
+    if len(set(picked.values())) != len(picked):
+        return None, "Each column can only be used once."
+    split = "money_in" in picked and "money_out" in picked
+    if "date" not in picked or "description" not in picked or not (split or "amount" in picked):
+        return None, "We need a date, a description and an amount (or money in and money out)."
+    if ("money_in" in picked) != ("money_out" in picked) and "amount" not in picked:
+        return None, "Money in and money out go together."
+    signature = tuple(h for h in norm if h)
+    return (
+        FormatProfile(
+            profile_id="user." + hashlib.sha256("|".join(signature).encode()).hexdigest()[:12],
+            label="Your column choice",
+            header_signature=signature,
+            # The person's choice, plus what the headings already say for roles the form doesn't
+            # ask about (a `Currency` column, the bank's own category or type, a time).
+            columns={
+                **{
+                    role: names
+                    for role, names in recognise(headers).items()
+                    if role not in COLUMN_ROLES and names[0] not in picked.values()
+                },
+                **{role: (name,) for role, name in picked.items()},
+            },
+            sign_convention="in_out" if split else "signed",
+            skip_zero_amount=True,
+            origin="user_confirmed",
+        ),
+        None,
+    )
+
+
+def recognise(headers: Sequence[str]) -> dict[str, tuple[str, ...]]:
+    """The roles the synonym table recognises in these headings (first match per role)."""
     norm = [_strip_units(normalise_header(h)) for h in headers]
     columns: dict[str, tuple[str, ...]] = {}
     used: set[int] = set()
@@ -88,14 +221,21 @@ def heuristic_profile(headers: Sequence[str]) -> tuple[FormatProfile | None, Que
                 columns[role] = (normalise_header(headers[idx]),)
                 used.add(idx)
                 break
+    return columns
+
+
+def heuristic_profile(headers: Sequence[str]) -> tuple[FormatProfile | None, Question | None]:
+    """Map unknown headers to roles. Confident ⇒ a heuristic profile; unsure ⇒ a Question."""
+    norm = [_strip_units(normalise_header(h)) for h in headers]
+    columns = recognise(headers)
     has_amount = "amount" in columns or ("money_in" in columns and "money_out" in columns)
     confident = "date" in columns and "description" in columns and has_amount
     if not confident:
-        proposal = ", ".join(f"{r} = {c[0]}" for r, c in columns.items()) or "no columns recognised"
         return None, Question(
             kind="columns",
-            prompt=f"Please confirm the columns in this file (proposed: {proposal}).",
+            prompt=COLUMNS_PROMPT,
             options=tuple(normalise_header(h) for h in headers),
+            proposed=tuple((r, c[0]) for r, c in columns.items() if r in COLUMN_ROLES),
         )
     # Split in/out columns win; a signed amount column alongside them is kept as a cross-check.
     convention = "in_out" if "money_in" in columns and "money_out" in columns else "signed"
@@ -145,13 +285,44 @@ def import_table(
     answers = dict(answers or {})
     warnings: list[str] = []
     profile = match_profile(table.headers, list(saved_profiles) + list(BUILTIN_PROFILES))
+    if profile is None and "columns" in answers:
+        # A list of mappings, one per unrecognised table: each table takes the first mapping whose
+        # columns it actually has (a file can hold tables with different headings).
+        parsed = json.loads(answers["columns"])
+        mappings: list[dict[str, str]] = parsed if isinstance(parsed, list) else [parsed]
+        key = table_key(table.headers)
+        present = {normalise_header(h) for h in table.headers}
+
+        def fits(c: Mapping[str, str]) -> bool:
+            # A mapping that names its table answers that table only (tables can share
+            # headings); an unbound one fits any table that has all its columns.
+            if c.get("table"):
+                return c["table"] == key
+            names = [n for r, n in c.items() if n and r != "table"]
+            if names and all(re.fullmatch(r"c\d{1,3}", n) for n in names):
+                return all(int(n[1:]) < len(table.headers) for n in names)
+            return {normalise_header(n) for n in names} <= present
+
+        found = next((c for c in mappings if fits(c)), None)
+        chosen = {r: n for r, n in found.items() if r != "table"} if found else None
+        if chosen is not None:
+            profile, problem = manual_profile(table.headers, chosen)
+            if profile is None:
+                recognised = {r: (n,) for r, n in chosen.items() if isinstance(n, str) and n}
+                asked = columns_question(table, recognised, problem)
+                return _pending(table, None, (asked,), file_sha256)
     if profile is None:
         profile, question = heuristic_profile(table.headers)
         if profile is None:
             assert question is not None
-            return _pending(table, None, (question,), file_sha256)
+            guess = dict(question.proposed)
+            recognised = {r: (n,) for r, n in guess.items()}
+            return _pending(table, None, (columns_question(table, recognised),), file_sha256)
     cols = profile.columns
     amount_names = cols.get("amount", ()) + cols.get("money_in", ()) + cols.get("money_out", ())
+    # The amount columns' own headings ("Value (USD)") are currency evidence too, in their
+    # original case so an ISO code is recognised; conflicting units end in a question.
+    amount_headings = " ".join(h for h in table.headers if normalise_header(h) in amount_names)
     amount_samples = [_cell(table.headers, c, amount_names) for _, c in table.rows[:200]]
     amount_samples = [s for s in amount_samples if s]
 
@@ -163,7 +334,7 @@ def import_table(
         currency, provenance, cq = detect_currency(
             currency_column_values=currency_values,
             amount_samples=amount_samples,
-            header_text=table.title or "",
+            header_text=f"{table.title or ''} {amount_headings}",
             profile_currency=profile.currency,
             home_currency=home_currency,
         )

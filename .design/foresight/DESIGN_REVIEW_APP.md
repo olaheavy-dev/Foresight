@@ -71,3 +71,18 @@ Captured by `e2e/import.spec.ts` with `SCREENSHOTS=1` (real local stack): `revie
 ## Transactions (`/transactions`), built 15 Oct 2026
 
 Captured by `e2e/transactions.spec.ts` with `SCREENSHOTS=1` (real local stack): `review-transactions-{all,search-edit,review,recurring,imports}-{desktop,mobile,desktop-dark}.png` and `review-transactions-review-viewport-desktop-1280.png`. The views (`?tab=all|review|recurring|imports`) use pill links. Rows are grouped by day, with the bank's description first, a category chip showing where it came from ("Rule · 92%", "Merchant memory", "AI", "You") and right-aligned tabular amounts, money in shown in green. A correction opens inline under the row, with "Apply to all from <payee>"; on the demo it says the profile is read-only. Fixed while building: the violet "Commitment" badge failed axe contrast, so it uses the blue badge; each view now starts fresh rather than keeping the previous view's search and open editor; payee titles use the bank's description instead of the upper-case normalised payee; transfer and savings keys have plain names. Both journeys pass on desktop, mobile and dark, with no serious axe issues.
+
+## Accounts, privacy, editable demo and column mapping, reviewed 15 Oct 2026
+
+> From 15 Oct, `review-*` captures are not committed (they were half the repository's size). Regenerate them with `SCREENSHOTS=1 npx playwright test app.screenshots --project=desktop` against a local stack; failed CI runs keep theirs as Playwright artifacts. A curated final set for the README goes in `docs/screenshots/` at the freeze.
+
+Captured by `e2e/app.screenshots.spec.ts` (`SCREENSHOTS=1`, real local stack) at 375, 768 and 1280 px in light and dark. The spec now also covers the states added today: `review-privacy-*`, `review-menu-open-*`, `review-menu-reset-confirm-*`, `review-start-columns-*` and `review-start-columns-error-*`, alongside every page. That's 84 captures; after the fixes below: **0 axe violations and 0 horizontal overflow** on all of them.
+
+Found and fixed in this review:
+- **Duplicate `search` landmarks on Transactions** (axe `landmark-unique`, 1280 px): the top bar's Ask box and the ledger filters were both unnamed `role="search"`. They're now labelled "Ask Foresight" and "Search and filter transactions".
+- **A file waiting for a column answer showed contradictory details**: "Rows that didn't add up (1)", whose only entry was the internal "waiting for answers" note, and "Balance check: No balance column" for a file that has one. While a file needs an answer, the card now shows only its format, rows and the question.
+- **The privacy page underlined the Foresight logo** (the prose link style caught it). Link styling now applies only to links inside the text.
+
+Checked and kept: the account menu fits at 375 px with the inline Reset demo confirm reachable. The destructive actions (Delete my data, guest "Sign out and delete") use the error colour and stand apart from the calm reset confirm. The column form stacks to one column on mobile and two from 768 px. Each choice shows an example cell, with identifiers withheld or masked. The privacy page reads at a comfortable measure in both themes.
+
+Could improve (open): the column choices show normalised, lower-case names (`value (gbp)`) rather than the file's own headings; and the menu is long on small phones, so it could group Sign out and Delete under a divider.
