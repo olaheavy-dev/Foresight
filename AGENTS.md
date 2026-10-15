@@ -11,7 +11,7 @@ An agent-native personal-finance workspace (Agent Arena 2026). Next.js frontend 
 | Task | Command |
 |---|---|
 | Lint, types, import contracts, unit tests | `make check` |
-| Git hooks: quick checks on commit, CI's fast checks on push (~30 s) | `make install` (runs `pre-commit install`) |
+| Git hooks: quick checks on commit, CI's fast checks on push (~30 s) | `make install` (Python and frontend dependencies, then `pre-commit install`) |
 | PostgreSQL integration tests | `DATABASE_URL=… make test-db` |
 | Fast eval and regression gate (before every push) | `make eval-fast` |
 | Full eval (replay, no model spend) | `make eval` |
