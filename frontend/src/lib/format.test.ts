@@ -40,3 +40,16 @@ describe("run timing and cost formatting", () => {
     expect(formatUsdEstimate(0.004)).toBe("under $0.01");
   });
 });
+
+describe("parseAmountMinor", () => {
+  it("reads typed amounts as integer minor units", async () => {
+    const { parseAmountMinor } = await import("./format");
+    expect(parseAmountMinor("1,234.56", "GBP")).toBe(123456);
+    expect(parseAmountMinor("£1234.5", "GBP")).toBe(123450);
+    expect(parseAmountMinor("-40", "GBP")).toBe(-4000);
+    expect(parseAmountMinor("1500", "JPY")).toBe(1500);
+    expect(parseAmountMinor("12.345", "GBP")).toBeNull();
+    expect(parseAmountMinor("abc", "GBP")).toBeNull();
+    expect(parseAmountMinor("", "GBP")).toBeNull();
+  });
+});

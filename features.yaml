@@ -10,7 +10,7 @@ features:
   csv_import:
     stage: 1
     title: CSV statement import with reconciliation
-    enabled: false
+    enabled: true
     suites: [E-ING]
   categorisation:
     stage: 1

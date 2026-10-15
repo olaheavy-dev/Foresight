@@ -19,10 +19,12 @@ from backend.app.ui_contracts.primitives import (
     FollowUpAction,
     ForecastId,
     ImportId,
+    IncomeStreamId,
     Locale,
     MoneyValue,
     NonEmpty,
     RecommendationId,
+    RecurringObligationId,
     ResponseId,
     RunId,
     ScenarioId,
@@ -219,3 +221,67 @@ class SimulationView(Contract):
     locale: Locale
     engine_version: NonEmpty
     comparison: ScenarioComparisonData
+
+
+# --- Financial data (`/start` "Check what we found", Transactions tabs) --------------------------
+
+
+class AccountBalance(Contract):
+    """The latest known balance of an account and where it came from (docs/01 F-10)."""
+
+    money: MoneyValue
+    as_of: dt.date
+    provenance: Literal["statement_column", "declared"]
+
+
+class AccountView(Contract):
+    account_id: AccountId
+    name: NonEmpty
+    institution: str | None = None
+    type: NonEmpty
+    currency: Currency
+    tracked: bool
+    transactions: Annotated[int, Field(ge=0)]
+    period: DateRange | None = None
+    balance: AccountBalance | None = None  # None: no balance column and none declared yet
+
+
+class AccountList(Contract):
+    workspace_id: WorkspaceId
+    accounts: list[AccountView]
+
+
+class BalanceDeclaration(Contract):
+    """The user's "balance today" for an account (provenance declared)."""
+
+    as_of: dt.date
+    amount_minor: int
+
+
+class IncomeStreamView(Contract):
+    income_stream_id: IncomeStreamId
+    source: NonEmpty
+    amount: MoneyValue
+    cadence: NonEmpty
+    provenance: Literal["detected", "confirmed", "declared"]
+    payments: Annotated[int, Field(ge=0)]
+    last_paid: dt.date | None = None
+
+
+class RecurringView(Contract):
+    recurring_id: RecurringObligationId
+    label: NonEmpty
+    category_key: NonEmpty
+    amount: MoneyValue  # the outflow as a positive amount
+    cadence: NonEmpty
+    day_of_month: Annotated[int, Field(ge=1, le=31)] | None = None
+    is_commitment: bool
+    provenance: NonEmpty
+    payments: Annotated[int, Field(ge=0)]
+    last_paid: dt.date | None = None
+
+
+class DetectedFlows(Contract):
+    workspace_id: WorkspaceId
+    income: list[IncomeStreamView]
+    recurring: list[RecurringView]

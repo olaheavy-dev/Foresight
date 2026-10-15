@@ -9,8 +9,11 @@ from pydantic.json_schema import models_json_schema
 
 from backend.app.ui_contracts.plan import ResponsePlan
 from backend.app.ui_contracts.response import (
+    AccountList,
+    AccountView,
     AgentResponse,
     CalculationView,
+    DetectedFlows,
     FeaturesPayload,
     ForecastView,
     Healthz,
@@ -32,6 +35,9 @@ ROOTS: tuple[type[BaseModel], ...] = (
     ProfileView,
     TransactionPage,
     CalculationView,
+    AccountList,
+    AccountView,
+    DetectedFlows,
 )
 
 
