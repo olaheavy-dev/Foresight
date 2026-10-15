@@ -14,7 +14,7 @@ export function initials(name: string): string {
 }
 
 /**
- * Avatar → menu: who is signed in, Switch profile, Settings, Quality checks, Theme, then Sign in
+ * Avatar → menu: who is signed in, Switch profile, Settings, Quality checks, Privacy, Theme, then Sign in
  * with Google (guests), Sign out and Delete my data (inline confirm). Esc and outside click close.
  */
 export function AvatarMenu({
@@ -107,6 +107,9 @@ export function AvatarMenu({
         </Link>
         <Link className="um-item" href="/quality">
           Quality checks
+        </Link>
+        <Link className="um-item" href="/privacy">
+          Privacy
         </Link>
         <div className="um-sep" role="separator" />
         <p className="um-label" id={`${id}-theme`}>

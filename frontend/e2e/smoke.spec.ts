@@ -18,17 +18,30 @@ async function openDemo(page: Page) {
   await page.waitForURL("**/home");
 }
 
-test("landing offers the demo and CSV import as a guest; Google appears only once configured", async ({ page }) => {
+test("landing offers the demo and CSV import as a guest; Google appears only when configured", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1, name: "Start with your own statements" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Explore the live demo" })).toBeEnabled();
   await expect(page.getByRole("link", { name: "Import a CSV statement" })).toHaveAttribute("href", "/start");
-  await expect(page.getByRole("link", { name: "Continue with Google" })).toHaveCount(0); // the mock has no client
+  // Google shows only when the API has a client configured.
+  const providers = await (await page.request.get("/api/auth/providers")).json();
+  const google = page.getByRole("link", { name: "Continue with Google" });
+  if (providers.google) await expect(google).toHaveAttribute("href", "/api/auth/google/start?next=%2Fhome");
+  else await expect(google).toHaveCount(0);
   await noHorizontalScroll(page);
   await noSeriousA11yIssues(page);
 
   await page.goto("/?auth=failed");
   await expect(page.getByRole("alert").filter({ hasText: "Google sign-in didn’t finish" })).toBeVisible();
+});
+
+test("the privacy page is public and says how to delete your data", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: /^Privacy/ }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "How Foresight handles your data" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "Deleting your data" })).toBeVisible();
+  await noHorizontalScroll(page);
+  await noSeriousA11yIssues(page);
 });
 
 test("the account menu signs a guest out and asks before deleting their data", async ({ page }) => {
