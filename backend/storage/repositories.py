@@ -170,7 +170,10 @@ class WorkspaceContext:
             .subquery()
         )
         current = (
-            select(m.Categorisation).join(latest, m.Categorisation.seq == latest.c.seq).subquery()
+            select(m.Categorisation)
+            .where(m.Categorisation.workspace_id == self.workspace_id)  # not every workspace's rows
+            .join(latest, m.Categorisation.seq == latest.c.seq)
+            .subquery()
         )
         cat = aliased(m.Categorisation, current)
         stmt = (
