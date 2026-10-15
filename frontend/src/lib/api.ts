@@ -58,7 +58,15 @@ import {
 // Browser: same origin (the Next proxy). Server: straight to the private backend container.
 const DEFAULT_BASE_URL = typeof window === "undefined" ? (process.env.API_BASE_URL ?? "http://backend:8000") : "";
 // forecast: the first one after an import is computed on demand (Monte Carlo), not just read.
-export const TIMEOUTS = { read: 3000, forecast: 8000, simulate: 10000, import: 30000, seed: 30000 } as const;
+// ledger: a page of transactions with their categories; a busy server may need more than a read.
+export const TIMEOUTS = {
+  read: 3000,
+  forecast: 8000,
+  ledger: 10000,
+  simulate: 10000,
+  import: 30000,
+  seed: 30000,
+} as const;
 export const CLIENT_HEADER = "X-Foresight-Client";
 const RESPONSE_ID = /^rsp_[0-9A-HJKMNP-TV-Z]{26}$/;
 
@@ -198,7 +206,7 @@ export function fetchTransactions(
     if (value !== undefined) query.set(names[key as keyof TransactionFilters], String(value));
   }
   const suffix = query.size > 0 ? `?${query}` : "";
-  return request(`/api/transactions${suffix}`, okAnd(isTransactionPage), options);
+  return request(`/api/transactions${suffix}`, okAnd(isTransactionPage), { timeoutMs: TIMEOUTS.ledger, ...options });
 }
 
 /** A stored calculation for the Evidence drawer. */
