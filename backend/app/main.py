@@ -5,7 +5,7 @@ from __future__ import annotations
 from fastapi import FastAPI, Request, Response, status
 from fastapi.responses import JSONResponse
 
-from backend.app.routers import ask, engine, financial_data, imports, ledger
+from backend.app.routers import ask, auth, engine, financial_data, imports, ledger
 from backend.app.routers import session as profile
 from backend.app.session import CSRF_HEADER
 from backend.features import load_features
@@ -60,6 +60,7 @@ def create_app() -> FastAPI:
 
     routers = (
         profile.router,
+        auth.router,
         imports.router,
         ledger.router,
         ledger.categories_router,

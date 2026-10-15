@@ -58,6 +58,11 @@ class Settings(BaseSettings):
     # simply end when the API restarts.
     session_secret: str = ""
     session_cookie_secure: bool = True
+    # Google sign-in (OIDC, owner decision 15 Oct 2026). Sign-in is offered only when both are set;
+    # guests can always use the app. PUBLIC_BASE_URL builds the registered redirect URI.
+    google_oauth_client_id: str = ""
+    google_oauth_client_secret: str = ""
+    public_base_url: str = "http://localhost:3000"
 
 
 @lru_cache
