@@ -43,11 +43,17 @@ RULE_ERROR = "suite error"
 RULE_NOT_RUN = "not run"
 
 
+# The only reasons a target may be left out (AGENTS.md rule 4): its dataset doesn't exist yet, or
+# it covers features that aren't built (the cases for built features gate in another target).
+OPT_OUT_KINDS = ("dataset_missing", "feature_not_built")
+
+
 def is_gated(target: dict[str, Any]) -> bool:
-    """Every target counts unless it opts out explicitly, with a stated reason (docs/09 §16,
-    review R7): `gated: false` without `not_gated_because` is ignored, so it still gates."""
+    """Every target counts unless it opts out explicitly (docs/09 §16, review R7): `gated: false`
+    counts only with an allowed `not_gated_kind` and a stated `not_gated_because`."""
     reason = str(target.get("not_gated_because") or "").strip()
-    return not (target.get("gated", True) is False and reason)
+    allowed = target.get("not_gated_kind") in OPT_OUT_KINDS
+    return not (target.get("gated", True) is False and reason and allowed)
 
 
 def gate(result: dict[str, Any] | None) -> dict[str, Any]:

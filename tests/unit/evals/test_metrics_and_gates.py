@@ -80,6 +80,7 @@ def test_gate_rules() -> None:
     explained = {
         "targets": [
             {**target("t1", "t", None, ">=", 0.9, "d"), "gated": False,
+             "not_gated_kind": "dataset_missing",
              "not_gated_because": "dataset doesn't exist yet"},
             target("t2", "t", 0.95, ">=", 0.9, "d"),
         ],
@@ -92,7 +93,9 @@ def test_gate_rules() -> None:
         "targets": [{**target("t1", "t", 0.1, ">=", 0.9, "d"), "gated": False}],
         "error": None,
     }
-    # An opt-out without a reason is ignored: the failed target still fails the suite.
+    # An opt-out without an allowed kind and a reason is ignored: the target still gates.
+    any_reason = {**opted_out["targets"][0], "not_gated_because": "it's hard to meet"}
+    assert gate({**opted_out, "targets": [any_reason]})["status"] == "fail"
     assert gate(opted_out)["status"] == "fail"
     assert (
         gate({**opted_out, "targets": [{**opted_out["targets"][0], "not_gated_because": " "}]})[
