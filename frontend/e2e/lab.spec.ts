@@ -29,6 +29,12 @@ test("Decision Lab compares a spread purchase with the current path, and explain
   await expect(result).toContainText("No AI was used");
   await noSeriousA11yIssues(page);
 
+  // Income from /api/detected, sent as the documented income_stream_id.
+  await page.getByRole("radio", { name: /My income changes/ }).check();
+  await form.getByLabel("Change").selectOption("-10");
+  await form.getByRole("button", { name: "Test it" }).click();
+  await expect(result).toContainText("Income -10%", { timeout: 15_000 });
+
   // The engine refuses a date beyond the forecast; the reason reaches the person.
   await page.getByRole("radio", { name: /A one-off purchase/ }).check();
   await form.getByLabel("Amount", { exact: true }).fill("100");

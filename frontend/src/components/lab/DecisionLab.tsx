@@ -112,13 +112,13 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
         if (!stream) return "There's no regular income to change yet.";
         return {
           name: `Income ${Number(pct) >= 0 ? "+" : ""}${pct}%`,
-          modifier: { type: "income_change_pct", income_stream_key: stream, pct: Number(pct) },
+          modifier: { type: "income_change_pct", income_stream_id: stream, pct: Number(pct) },
         };
       case "late":
         if (!stream) return "There's no regular income to delay yet.";
         return {
           name: `Pay ${days} days late`,
-          modifier: { type: "income_delay", income_stream_key: stream, days: Number(days) },
+          modifier: { type: "income_delay", income_stream_id: stream, days: Number(days) },
         };
     }
   };
