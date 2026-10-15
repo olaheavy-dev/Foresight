@@ -86,3 +86,9 @@ Found and fixed in this review:
 Checked and kept: the account menu fits at 375 px with the inline Reset demo confirm reachable. The destructive actions (Delete my data, guest "Sign out and delete") use the error colour and stand apart from the calm reset confirm. The column form stacks to one column on mobile and two from 768 px. Each choice shows an example cell, with identifiers withheld or masked. The privacy page reads at a comfortable measure in both themes.
 
 Could improve (open): the column choices show normalised, lower-case names (`value (gbp)`) rather than the file's own headings; and the menu is long on small phones, so it could group Sign out and Delete under a divider.
+
+## Quality run label, reviewed 15 Oct 2026
+
+The Core metrics note now names its run in words ("From the evaluation run of 14 Oct 2026 (commit 21b5e1e)"), with the raw run id kept in a tooltip, instead of `evalrun_20261014T162812Z_21b5e1e`. Captured `review-quality-*` at 375, 768 and 1280 px in light and dark (`SCREENSHOTS=1`, real local stack): **0 axe violations and 0 horizontal overflow** on all six. At 375 px the longer note wraps to three lines within the measure and pushes nothing sideways. This closes the "raw run id on Quality" item left open on 14 Oct.
+
+Could improve (open): the fast tier lists its model twice ("gpt-6-luna, openai/gpt-6-luna") because older recordings stored the name without its provider prefix; the label could normalise names before joining them.
