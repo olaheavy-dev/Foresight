@@ -34,7 +34,7 @@ test("Activity lists an import and a payee-wide correction in words, with the au
   await expect(changes).toContainText("Audit chain intact");
   // One correction applied to every payment from the payee is one line, not one per row.
   await expect(changes.getByText(/Changed the category of \d+ transactions/)).toHaveCount(1);
-  await expect(changes).toContainText("Imported a statement");
+  await expect(changes).toContainText("Imported transactions for");
   await expect(changes).toContainText("You ·");
   await expect(page.getByText("Traces stay on Foresight’s own servers")).toBeVisible();
   await noSeriousA11yIssues(page);

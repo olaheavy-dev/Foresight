@@ -148,7 +148,7 @@ export function ActivityFeed({ feed, locale, timeZone }: { feed: Feed; locale: s
               Audit chain broken
             </Badge>
           )}
-          <span>Each entry is hashed with the one before, so a change to the history would show.</span>
+          <span>Each entry is hashed with the one before, so a change to an earlier entry would show.</span>
         </p>
         {events.length ? (
           <ol className="act-events">

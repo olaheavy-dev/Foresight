@@ -98,7 +98,7 @@ def test_runs_are_traces_and_the_audit_log_reads_in_words(
         start = _activity(alice)
         assert start["audit_chain_intact"] is True
         assert start["audit_events"] > 0
-        assert any(e["summary"] == "Imported a statement" for e in start["events"])
+        assert any(e["summary"].startswith("Imported transactions for") for e in start["events"])
 
         # One payee-wide correction is one line, not one per transaction.
         row = alice.get("/api/transactions?q=deliveroo&limit=1").json()["items"][0]

@@ -24,7 +24,11 @@ from backend.storage import models as m
 router = APIRouter(prefix="/api/activity", tags=["activity"])
 
 PHRASES = {
-    "import.committed": ("Imported a statement", "Imported {n} statements"),
+    # One event per imported table: a statement with GBP and EUR pockets is two accounts.
+    "import.committed": (
+        "Imported transactions for an account",
+        "Imported transactions for {n} accounts",
+    ),
     "import.needs_review": ("A statement is waiting for an answer", "{n} statements are waiting"),
     "txn.recategorised": (
         "Changed a transaction’s category",
