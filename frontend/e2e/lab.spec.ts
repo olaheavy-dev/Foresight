@@ -87,3 +87,29 @@ test("a spread still waiting for the forecast's date never replaces a newer resu
   await expect(result).toContainText("One-off purchase");
   await expect(result).not.toContainText("Spread over");
 });
+
+test("the spread's fields lock while it waits for the forecast's date (#48 review)", async ({ page }) => {
+  await page.context().clearCookies();
+  await page.goto("/");
+  await page.getByRole("button", { name: "Explore the live demo" }).click();
+  await page.waitForURL("**/home");
+  let release: () => void = () => {};
+  const held = new Promise<void>((r) => (release = r));
+  await page.route("**/api/forecast*", async (route) => {
+    await held;
+    await route.continue();
+  });
+  await page.goto("/lab");
+  const form = page.getByRole("form", { name: "Scenario details" });
+  await page.getByRole("radio", { name: /Spread a purchase/ }).check();
+  await form.getByLabel("Total amount").fill("900");
+  await form.getByLabel("Payments").selectOption("3");
+  await form.getByRole("button", { name: "Test it" }).click();
+  await expect(form.getByLabel("Total amount")).toBeDisabled();
+  await expect(form.getByLabel("Payments")).toBeDisabled();
+  release();
+  const result = page.getByRole("region", { name: "Result" });
+  await expect(result).toContainText("Spread over 3 payments", { timeout: 15_000 });
+  await expect(form.getByLabel("Total amount")).toBeEnabled();
+  await expect(form.getByLabel("Total amount")).toHaveValue("900");
+});

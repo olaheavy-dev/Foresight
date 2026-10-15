@@ -222,122 +222,126 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
           ))}
         </div>
 
-        <form className="lab-fields" onSubmit={run} aria-label="Scenario details">
-          {kind === "purchase" || kind === "spread" ? (
-            <Field id={`${id}-amount`} label={kind === "spread" ? "Total amount" : "Amount"}>
-              <input
-                id={`${id}-amount`}
-                inputMode="decimal"
-                placeholder="450.00"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-              />
-            </Field>
-          ) : null}
-          {kind === "purchase" || kind === "spread" || kind === "cancel" ? (
-            <Field
-              id={`${id}-date`}
-              label={kind === "cancel" ? "Cancel from" : kind === "spread" ? "First payment" : "Date"}
-            >
-              <input id={`${id}-date`} type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-            </Field>
-          ) : null}
-          {kind === "spread" ? (
-            <>
-              <Field id={`${id}-n`} label="Payments">
-                <select id={`${id}-n`} value={instalments} onChange={(e) => setInstalments(e.target.value)}>
-                  {[2, 3, 4, 6, 12].map((n) => (
+        <form onSubmit={run} aria-label="Scenario details">
+          {/* Every field locks while a run is pending, so what it simulates is what the form shows. */}
+          <fieldset className="lab-fields" disabled={busy}>
+            <legend className="sr-only">Details of the change</legend>
+            {kind === "purchase" || kind === "spread" ? (
+              <Field id={`${id}-amount`} label={kind === "spread" ? "Total amount" : "Amount"}>
+                <input
+                  id={`${id}-amount`}
+                  inputMode="decimal"
+                  placeholder="450.00"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                />
+              </Field>
+            ) : null}
+            {kind === "purchase" || kind === "spread" || kind === "cancel" ? (
+              <Field
+                id={`${id}-date`}
+                label={kind === "cancel" ? "Cancel from" : kind === "spread" ? "First payment" : "Date"}
+              >
+                <input id={`${id}-date`} type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+              </Field>
+            ) : null}
+            {kind === "spread" ? (
+              <>
+                <Field id={`${id}-n`} label="Payments">
+                  <select id={`${id}-n`} value={instalments} onChange={(e) => setInstalments(e.target.value)}>
+                    {[2, 3, 4, 6, 12].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <Field id={`${id}-cad`} label="Every">
+                  <select id={`${id}-cad`} value={cadence} onChange={(e) => setCadence(e.target.value)}>
+                    <option value="monthly">Month</option>
+                    <option value="fortnightly">Two weeks</option>
+                    <option value="weekly">Week</option>
+                  </select>
+                </Field>
+              </>
+            ) : null}
+            {kind === "cancel" ? (
+              <Field id={`${id}-rec`} label="Regular payment">
+                <select id={`${id}-rec`} value={recurring} onChange={(e) => setRecurring(e.target.value)}>
+                  {(flows?.recurring ?? []).map((r) => (
+                    <option key={r.recurring_id} value={r.recurring_id}>
+                      {r.label} · {r.amount.display}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            ) : null}
+            {kind === "cut" ? (
+              <>
+                <Field id={`${id}-cat`} label="Category">
+                  <select id={`${id}-cat`} value={category} onChange={(e) => setCategory(e.target.value)}>
+                    {categories.map((c) => (
+                      <option key={c.key} value={c.key}>
+                        {categoryName(c.key)}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <Field id={`${id}-pct`} label="Spend less by">
+                  <select id={`${id}-pct`} value={pct} onChange={(e) => setPct(e.target.value)}>
+                    {[10, 20, 30, 50, 75, 100].map((n) => (
+                      <option key={n} value={n}>
+                        {n}%
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+              </>
+            ) : null}
+            {kind === "income" || kind === "late" ? (
+              <Field id={`${id}-inc`} label="Income">
+                <select id={`${id}-inc`} value={stream} onChange={(e) => setStream(e.target.value)}>
+                  {income.map((s) => (
+                    <option key={s.income_stream_id} value={s.income_stream_id}>
+                      {s.source} · {s.amount.display}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            ) : null}
+            {kind === "income" ? (
+              <Field id={`${id}-chg`} label="Change">
+                <select id={`${id}-chg`} value={pct} onChange={(e) => setPct(e.target.value)}>
+                  {[-50, -25, -10, 5, 10, 20].map((n) => (
+                    <option key={n} value={n}>
+                      {n > 0 ? `+${n}` : n}%
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            ) : null}
+            {kind === "late" ? (
+              <Field id={`${id}-days`} label="Days late">
+                <select id={`${id}-days`} value={days} onChange={(e) => setDays(e.target.value)}>
+                  {[2, 3, 5, 7, 10, 14].map((n) => (
                     <option key={n} value={n}>
                       {n}
                     </option>
                   ))}
                 </select>
               </Field>
-              <Field id={`${id}-cad`} label="Every">
-                <select id={`${id}-cad`} value={cadence} onChange={(e) => setCadence(e.target.value)}>
-                  <option value="monthly">Month</option>
-                  <option value="fortnightly">Two weeks</option>
-                  <option value="weekly">Week</option>
-                </select>
-              </Field>
-            </>
-          ) : null}
-          {kind === "cancel" ? (
-            <Field id={`${id}-rec`} label="Regular payment">
-              <select id={`${id}-rec`} value={recurring} onChange={(e) => setRecurring(e.target.value)}>
-                {(flows?.recurring ?? []).map((r) => (
-                  <option key={r.recurring_id} value={r.recurring_id}>
-                    {r.label} · {r.amount.display}
-                  </option>
-                ))}
-              </select>
-            </Field>
-          ) : null}
-          {kind === "cut" ? (
-            <>
-              <Field id={`${id}-cat`} label="Category">
-                <select id={`${id}-cat`} value={category} onChange={(e) => setCategory(e.target.value)}>
-                  {categories.map((c) => (
-                    <option key={c.key} value={c.key}>
-                      {categoryName(c.key)}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <Field id={`${id}-pct`} label="Spend less by">
-                <select id={`${id}-pct`} value={pct} onChange={(e) => setPct(e.target.value)}>
-                  {[10, 20, 30, 50, 75, 100].map((n) => (
-                    <option key={n} value={n}>
-                      {n}%
-                    </option>
-                  ))}
-                </select>
-              </Field>
-            </>
-          ) : null}
-          {kind === "income" || kind === "late" ? (
-            <Field id={`${id}-inc`} label="Income">
-              <select id={`${id}-inc`} value={stream} onChange={(e) => setStream(e.target.value)}>
-                {income.map((s) => (
-                  <option key={s.income_stream_id} value={s.income_stream_id}>
-                    {s.source} · {s.amount.display}
-                  </option>
-                ))}
-              </select>
-            </Field>
-          ) : null}
-          {kind === "income" ? (
-            <Field id={`${id}-chg`} label="Change">
-              <select id={`${id}-chg`} value={pct} onChange={(e) => setPct(e.target.value)}>
-                {[-50, -25, -10, 5, 10, 20].map((n) => (
-                  <option key={n} value={n}>
-                    {n > 0 ? `+${n}` : n}%
-                  </option>
-                ))}
-              </select>
-            </Field>
-          ) : null}
-          {kind === "late" ? (
-            <Field id={`${id}-days`} label="Days late">
-              <select id={`${id}-days`} value={days} onChange={(e) => setDays(e.target.value)}>
-                {[2, 3, 5, 7, 10, 14].map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
-            </Field>
-          ) : null}
-          <div className="lab-actions">
-            <Button type="submit" variant="primary" disabled={busy} iconEnd="arrowright">
-              {busy ? "Running the simulation…" : "Test it"}
-            </Button>
-          </div>
-          {problem ? (
-            <p className="form-error" role="alert">
-              {problem}
-            </p>
-          ) : null}
+            ) : null}
+            <div className="lab-actions">
+              <Button type="submit" variant="primary" disabled={busy} iconEnd="arrowright">
+                {busy ? "Running the simulation…" : "Test it"}
+              </Button>
+            </div>
+            {problem ? (
+              <p className="form-error" role="alert">
+                {problem}
+              </p>
+            ) : null}
+          </fieldset>
         </form>
       </section>
 
