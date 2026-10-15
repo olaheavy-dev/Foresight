@@ -18,7 +18,7 @@ from sqlalchemy import delete, or_, text, update
 from backend.app import demo_pool
 from backend.app import session as sess
 from backend.app.session import Db, Profile
-from backend.app.ui_contracts.response import ProfileView, SessionAccount
+from backend.app.ui_contracts.response import ProfileUpdate, ProfileView, SessionAccount
 from backend.storage import models as m
 from backend.storage.repositories import create_workspace
 
@@ -49,6 +49,7 @@ def profile_view(ws: m.Workspace, account: SessionAccount | None = None) -> Prof
         data_version=ws.data_version,
         read_only=sess.read_only(ws),
         account=account,
+        buffer_minor=ws.buffer_minor,
     )
 
 
@@ -175,6 +176,32 @@ def new_profile(request: Request, response: Response, db: Db) -> ProfileView:
 @router.get("", response_model=ProfileView)
 def current(request: Request, ctx: Profile, db: Db) -> ProfileView:
     return profile_view(ctx.workspace, account_view(db, sess.current(request, db)))
+
+
+@router.patch("", response_model=ProfileView)
+def update_profile(request: Request, ctx: Profile, db: Db, body: ProfileUpdate) -> ProfileView:
+    """Settings: the profile's name and buffer. A new buffer changes the forecast's chance of
+    going below it, so it bumps the data version like any ledger change; an unchanged value
+    changes nothing. Country and currency stay as created: imports and figures depend on them."""
+    ws = ctx.workspace
+    if sess.read_only(ws):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "This profile is read-only.")
+    sent = body.model_fields_set
+    if "name" in sent and body.name is not None and body.name != ws.name:
+        ctx.append_audit(
+            "profile.renamed", "workspace", ws.id, actor="user",
+            before={"name": ws.name}, after={"name": body.name},
+        )  # fmt: skip
+        ws.name = body.name
+    if "buffer_minor" in sent and body.buffer_minor != ws.buffer_minor:
+        ctx.append_audit(
+            "profile.buffer_set", "workspace", ws.id, actor="user",
+            before={"buffer_minor": ws.buffer_minor}, after={"buffer_minor": body.buffer_minor},
+        )  # fmt: skip
+        ws.buffer_minor = body.buffer_minor
+        ctx.bump_data_version()
+    db.commit()
+    return profile_view(ws, account_view(db, sess.current(request, db)))
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)

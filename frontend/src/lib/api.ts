@@ -392,6 +392,21 @@ export function resetDemo(options: ApiOptions = {}): Promise<ProfileView | null>
   );
 }
 
+/** Settings: rename the profile or set its buffer; `bufferMinor: null` clears it (browser). */
+export function updateProfile(
+  changes: { name?: string; bufferMinor?: number | null },
+  options: ApiOptions = {},
+): Promise<ProfileView | null> {
+  const body: Record<string, unknown> = {};
+  if (changes.name !== undefined) body.name = changes.name;
+  if (changes.bufferMinor !== undefined) body.buffer_minor = changes.bufferMinor;
+  return request("/api/session", okAnd(isProfileView), options, {
+    method: "PATCH",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
 /** End this session (browser). */
 export function signOut(options: ApiOptions = {}): Promise<boolean | null> {
   return request("/api/session/logout", (_b, status) => status === 200 || null, options, {
