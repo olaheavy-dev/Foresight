@@ -5,11 +5,11 @@
    Phones/tablets: conversation (collapsible) / canvas / question box, stacked above the tab bar.
    From 1280: conversation column with the box pinned at its foot | canvas.
    ===================================================================== */
-.frame:has(.ws-body) {
+.frame:has(.ws-body:not(.block-host)) {
   height: 100vh; height: 100dvh; min-height: 0; overflow: hidden;
   display: flex; flex-direction: column;
 }
-.frame:has(.ws-body) > .main { flex: 1 1 auto; min-height: 0; }
+.frame:has(.ws-body:not(.block-host)) > .main { flex: 1 1 auto; min-height: 0; }
 .ws-main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 
 .ws-body {
@@ -415,8 +415,8 @@
 }
 
 @media (min-width: 1024px) {
-  .frame:has(.ws-body) { display: grid; height: calc(100vh - 2 * var(--space-3)); height: calc(100dvh - 2 * var(--space-3)); }
-  .frame:has(.ws-body) > .main { overflow: hidden; }
+  .frame:has(.ws-body:not(.block-host)) { display: grid; height: calc(100vh - 2 * var(--space-3)); height: calc(100dvh - 2 * var(--space-3)); }
+  .frame:has(.ws-body:not(.block-host)) > .main { overflow: hidden; }
   .ws-body .convo { border-top: 0; }
 }
 
@@ -445,3 +445,8 @@
 .ws-body .ws-followup { margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--color-border-primary); }
 .ws-body .ws-followup-h { margin: 0 0 var(--space-3); font-family: var(--font-family-display); font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); }
 .ws-body .ws-followup-note { margin: var(--space-4) 0 0; padding: var(--space-3) var(--space-4); border-radius: var(--border-radius-md); background: var(--color-accent-primary-tint); font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+
+/* Blocks reused outside the Workspace (Decision Lab, Home's checked advice) sit in a `.ws-body`
+   so their scoped styles apply; `.block-host` drops the Workspace page's own grid layout. */
+.ws-body.block-host { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: none; flex: none; min-height: 0; }
+@media (min-width: 1024px) { .ws-body.block-host { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; } }

@@ -418,6 +418,26 @@ export function startProactiveCheck(options: ApiOptions = {}): Promise<HomeInsig
   });
 }
 
+export type SimulationOutcome = { view: SimulationView } | { error: string };
+
+/** Run a what-if and keep the engine's reason when it refuses one (Decision Lab). */
+export function simulateWithReason(
+  spec: ScenarioSpecPayload,
+  options: ApiOptions = {},
+): Promise<SimulationOutcome | null> {
+  return request(
+    "/api/simulate",
+    (body, status) => {
+      if (status === 200 && isSimulationView(body)) return { view: body };
+      const detail = (body as { detail?: unknown } | null)?.detail;
+      if (status === 422 && typeof detail === "string") return { error: detail };
+      return null;
+    },
+    { timeoutMs: TIMEOUTS.simulate, ...options },
+    { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(spec) },
+  );
+}
+
 /** Confirm a detected income stream, say it isn't income, or undo either (browser; R4). */
 export function decideIncome(
   incomeStreamId: string,

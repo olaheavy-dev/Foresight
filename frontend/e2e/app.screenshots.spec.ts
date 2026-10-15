@@ -64,6 +64,13 @@ for (const theme of THEMES) {
         await capture(page, p, s, theme);
       }
 
+      // Decision Lab with a result (R8).
+      await page.goto(`/lab?theme=${theme}`);
+      await page.getByRole("radio", { name: /Spread a purchase/ }).check();
+      await page.getByLabel("Total amount").fill("900");
+      await page.getByRole("button", { name: "Test it" }).click();
+      await page.getByRole("region", { name: "Result" }).waitFor({ timeout: 15_000 });
+      await capture(page, "lab-result", s, theme);
       // Income confirmation (R4) on Transactions › Recurring and income.
       await page.goto(`/transactions?tab=recurring&theme=${theme}`);
       await page.waitForLoadState("networkidle");
