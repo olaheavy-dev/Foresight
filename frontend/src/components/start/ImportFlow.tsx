@@ -20,6 +20,7 @@ import {
 } from "react";
 
 import { Icon } from "@/components/icons/Icon";
+import { IncomeControls } from "@/components/income/IncomeControls";
 import { Badge, Button, ButtonLink, CardHead } from "@/components/ui/primitives";
 import {
   declareBalance,
@@ -598,6 +599,18 @@ function CheckStep() {
                   </span>
                 </div>
                 <span className="cl-value num">{s.amount.display}</span>
+                <IncomeControls
+                  stream={s}
+                  onChange={(next) =>
+                    setFlows(
+                      (f) =>
+                        f && {
+                          ...f,
+                          income: f.income.map((x) => (x.income_stream_id === next.income_stream_id ? next : x)),
+                        },
+                    )
+                  }
+                />
               </li>
             ))}
           </ul>

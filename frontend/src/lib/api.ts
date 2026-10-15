@@ -22,6 +22,7 @@ import {
   isForecastView,
   isHealthz,
   isImportSummary,
+  isIncomeStreamView,
   isHomeInsights,
   isProfileView,
   isSimulationView,
@@ -44,6 +45,7 @@ import type {
   ImportSummary,
   Placement,
   HomeInsights,
+  IncomeStreamView,
   ProfileView,
   ScenarioSpecPayload,
   SimulationView,
@@ -434,4 +436,17 @@ export function simulateWithReason(
     { timeoutMs: TIMEOUTS.simulate, ...options },
     { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(spec) },
   );
+}
+
+/** Confirm a detected income stream, say it isn't income, or undo either (browser; R4). */
+export function decideIncome(
+  incomeStreamId: string,
+  decision: "confirm" | "reject" | "undo",
+  options: ApiOptions = {},
+): Promise<IncomeStreamView | null> {
+  return request(`/api/income/${encodeURIComponent(incomeStreamId)}`, okAnd(isIncomeStreamView), options, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ decision }),
+  });
 }

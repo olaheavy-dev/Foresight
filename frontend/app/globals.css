@@ -727,3 +727,8 @@ button.um-item { width: 100%; border: 0; background: none; font: inherit; cursor
   .lab-kinds { grid-template-columns: repeat(3, 1fr); }
   .lab-fields { grid-template-columns: repeat(2, 1fr); }
 }
+/* Income confirmation (R4): the stream's state and the user's controls, under the row. */
+.income-controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.income-controls .btn.sm { min-height: 36px; padding: 0 var(--space-3); font-size: var(--font-size-xs); }
+.income-controls .link-btn { min-height: 36px; padding: 0 var(--space-2); border: 0; background: none; font: inherit; font-size: var(--font-size-xs); color: var(--color-accent-primary); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.income-controls .form-error { flex-basis: 100%; margin: 0; }

@@ -106,6 +106,7 @@ export interface UiContracts {
   CategoryCorrected?: CategoryCorrected;
   ImportHistory?: ImportHistory;
   HomeInsights?: HomeInsights;
+  IncomeStreamView?: IncomeStreamView;
 }
 /**
  * This interface was referenced by `UiContracts`'s JSON-Schema
@@ -1938,7 +1939,7 @@ export interface IncomeStreamView {
   income_stream_id: string;
   last_paid?: string | null;
   payments: number;
-  provenance: "detected" | "confirmed" | "declared";
+  provenance: "detected" | "confirmed" | "declared" | "rejected";
   source: string;
 }
 /**

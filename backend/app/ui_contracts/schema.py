@@ -22,6 +22,7 @@ from backend.app.ui_contracts.response import (
     HomeInsights,
     ImportHistory,
     ImportSummary,
+    IncomeStreamView,
     ProfileView,
     SimulationView,
     TransactionPage,
@@ -46,6 +47,7 @@ ROOTS: tuple[type[BaseModel], ...] = (
     CategoryCorrected,
     ImportHistory,
     HomeInsights,
+    IncomeStreamView,
 )
 
 

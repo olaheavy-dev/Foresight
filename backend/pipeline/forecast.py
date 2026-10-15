@@ -64,6 +64,7 @@ from backend.finance_core.types import (
     SimulationResult,
 )
 from backend.pipeline import ledger, packs
+from backend.pipeline.ingest import REJECTED
 from backend.storage import models as m
 from backend.storage.repositories import WorkspaceContext
 
@@ -189,7 +190,11 @@ def forecast_inputs(
     rows = [r for r in rows if r.posted_on <= as_of]
     latest = ctx.latest_categorisations()
     streams = sorted(
-        (ledger.income_stream(s) for s in ctx.all(m.IncomeStream) if s.currency == currency),
+        (
+            ledger.income_stream(s)
+            for s in ctx.all(m.IncomeStream)
+            if s.currency == currency and s.provenance != REJECTED  # "this isn't income"
+        ),
         key=lambda s: s.key,
     )
     obligations = sorted(
