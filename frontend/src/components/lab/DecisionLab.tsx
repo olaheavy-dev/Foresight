@@ -6,14 +6,14 @@
  * simulated paths as the forecast (deterministic, no AI). The result is the same comparison block
  * the Workspace shows; anything the engine can't simulate comes back with its reason.
  */
-import { type FormEvent, useEffect, useId, useState } from "react";
+import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 
 import { Button, CardHead } from "@/components/ui/primitives";
 import { categoryName } from "@/components/transactions/Transactions";
 import { BlockEnvProvider, ScenarioBlock } from "@/components/workspace/blocks";
 // The blocks reused from the Workspace bring their styles with them.
 import "@/components/workspace/workspace.css";
-import { fetchCategories, fetchDetected, simulateWithReason } from "@/lib/api";
+import { fetchCategories, fetchDetected, fetchForecast, simulateWithReason } from "@/lib/api";
 import { parseAmountMinor } from "@/lib/format";
 import type {
   CategoryOption,
@@ -38,10 +38,15 @@ const DEFAULT_HORIZON = 90;
 const MAX_HORIZON = 365;
 const CADENCE_DAYS: Record<string, number> = { weekly: 7, fortnightly: 14, monthly: 31 };
 
-/** A forecast long enough to include a spread purchase's last payment; null past a year. */
-export function spreadHorizon(start: string, instalments: number, cadence: string, today = new Date()): number | null {
-  const first = new Date(`${start}T00:00:00`);
-  const days = Math.ceil((first.getTime() - today.getTime()) / 86_400_000);
+const dayNumber = (iso: string) => Date.parse(`${iso}T00:00:00Z`) / 86_400_000;
+
+/**
+ * A forecast long enough to include a spread purchase's last payment; null past a year. Measured
+ * from the forecast's own date (`asOf`, the last day of the statements), as the engine measures
+ * `horizon_days`, not from today.
+ */
+export function spreadHorizon(start: string, instalments: number, cadence: string, asOf: string): number | null {
+  const days = dayNumber(start) - dayNumber(asOf);
   const last = days + (instalments - 1) * (CADENCE_DAYS[cadence] ?? 31) + 7;
   if (last > MAX_HORIZON) return null;
   return Math.max(DEFAULT_HORIZON, last);
@@ -70,8 +75,12 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
   const [result, setResult] = useState<{ view: SimulationView; name: string } | null>(null);
+  // The forecast's date (null if it couldn't load); a spread waits for it, never using today.
+  const asOf = useRef<Promise<string | null> | null>(null);
+  const latest = useRef(0);
 
   useEffect(() => {
+    asOf.current = fetchForecast().then((f) => f?.chart.as_of ?? null);
     void fetchDetected().then((f) => {
       setFlows(f);
       setRecurring(f?.recurring[0]?.recurring_id ?? "");
@@ -87,7 +96,7 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
   // Income the user said isn't income (R4) can't be changed or delayed.
   const income = (flows?.income ?? []).filter((s) => (s.provenance as string) !== "rejected");
 
-  const build = (): { name: string; modifier: ScenarioModifierSpec; horizon?: number } | string => {
+  const build = (from: string | null): { name: string; modifier: ScenarioModifierSpec; horizon?: number } | string => {
     const minor = parseAmountMinor(amount, currency);
     switch (kind) {
       case "purchase":
@@ -96,9 +105,13 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
           name: "One-off purchase",
           modifier: { type: "one_off_outflow", date, amount_minor: minor, label: "Purchase" },
         };
-      case "spread":
+      case "spread": {
         if (!minor || minor <= 0) return "Enter the total amount, like 900.";
-        if (spreadHorizon(date, Number(instalments), cadence) === null)
+        if (from === null)
+          return "Your forecast couldn’t load, so a spread can’t be checked against it. Reload the page and try again.";
+        if (date <= from) return `Choose a first payment after ${from}, the day your forecast starts from.`;
+        const horizon = spreadHorizon(date, Number(instalments), cadence, from);
+        if (horizon === null)
           return "That plan runs past the year the forecast covers. Choose fewer payments or a shorter gap.";
         return {
           name: `Spread over ${instalments} payments`,
@@ -110,8 +123,9 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
             cadence,
             label: "Purchase",
           },
-          horizon: spreadHorizon(date, Number(instalments), cadence) ?? undefined,
+          horizon,
         };
+      }
       case "cancel":
         if (!recurring) return "There are no regular payments to cancel yet.";
         return {
@@ -141,13 +155,17 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
 
   const run = async (e: FormEvent) => {
     e.preventDefault();
+    if (busy) return;
+    const ticket = ++latest.current; // only the latest submission may publish its outcome
     setResult(null); // a new run never shows the last one's figures beside its own outcome
-    const built = build();
+    setBusy(true); // locked from here, including while a spread waits for the forecast's date
+    const built = build(kind === "spread" ? ((await asOf.current) ?? null) : null);
+    if (ticket !== latest.current) return;
     if (typeof built === "string") {
+      setBusy(false);
       setProblem(built);
       return;
     }
-    setBusy(true);
     setProblem(null);
     const outcome = await simulateWithReason({
       schema: "scenario_spec/1",
@@ -157,6 +175,7 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
       modifiers: [built.modifier],
       ...(built.horizon ? { horizon_days: built.horizon } : {}),
     });
+    if (ticket !== latest.current) return;
     setBusy(false);
     if (!outcome) setProblem("The simulation couldn’t run just now. Try again.");
     else if ("error" in outcome) setProblem(outcome.error);
@@ -164,6 +183,9 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
   };
 
   const choose = (next: Kind) => {
+    latest.current += 1; // a pending run for the previous choice never publishes
+    setBusy(false);
+    setResult(null);
     setKind(next);
     setProblem(null);
     if (next === "income") setPct("-10");
@@ -200,122 +222,126 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
           ))}
         </div>
 
-        <form className="lab-fields" onSubmit={run} aria-label="Scenario details">
-          {kind === "purchase" || kind === "spread" ? (
-            <Field id={`${id}-amount`} label={kind === "spread" ? "Total amount" : "Amount"}>
-              <input
-                id={`${id}-amount`}
-                inputMode="decimal"
-                placeholder="450.00"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-              />
-            </Field>
-          ) : null}
-          {kind === "purchase" || kind === "spread" || kind === "cancel" ? (
-            <Field
-              id={`${id}-date`}
-              label={kind === "cancel" ? "Cancel from" : kind === "spread" ? "First payment" : "Date"}
-            >
-              <input id={`${id}-date`} type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-            </Field>
-          ) : null}
-          {kind === "spread" ? (
-            <>
-              <Field id={`${id}-n`} label="Payments">
-                <select id={`${id}-n`} value={instalments} onChange={(e) => setInstalments(e.target.value)}>
-                  {[2, 3, 4, 6, 12].map((n) => (
+        <form onSubmit={run} aria-label="Scenario details">
+          {/* Every field locks while a run is pending, so what it simulates is what the form shows. */}
+          <fieldset className="lab-fields" disabled={busy}>
+            <legend className="sr-only">Details of the change</legend>
+            {kind === "purchase" || kind === "spread" ? (
+              <Field id={`${id}-amount`} label={kind === "spread" ? "Total amount" : "Amount"}>
+                <input
+                  id={`${id}-amount`}
+                  inputMode="decimal"
+                  placeholder="450.00"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                />
+              </Field>
+            ) : null}
+            {kind === "purchase" || kind === "spread" || kind === "cancel" ? (
+              <Field
+                id={`${id}-date`}
+                label={kind === "cancel" ? "Cancel from" : kind === "spread" ? "First payment" : "Date"}
+              >
+                <input id={`${id}-date`} type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+              </Field>
+            ) : null}
+            {kind === "spread" ? (
+              <>
+                <Field id={`${id}-n`} label="Payments">
+                  <select id={`${id}-n`} value={instalments} onChange={(e) => setInstalments(e.target.value)}>
+                    {[2, 3, 4, 6, 12].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <Field id={`${id}-cad`} label="Every">
+                  <select id={`${id}-cad`} value={cadence} onChange={(e) => setCadence(e.target.value)}>
+                    <option value="monthly">Month</option>
+                    <option value="fortnightly">Two weeks</option>
+                    <option value="weekly">Week</option>
+                  </select>
+                </Field>
+              </>
+            ) : null}
+            {kind === "cancel" ? (
+              <Field id={`${id}-rec`} label="Regular payment">
+                <select id={`${id}-rec`} value={recurring} onChange={(e) => setRecurring(e.target.value)}>
+                  {(flows?.recurring ?? []).map((r) => (
+                    <option key={r.recurring_id} value={r.recurring_id}>
+                      {r.label} · {r.amount.display}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            ) : null}
+            {kind === "cut" ? (
+              <>
+                <Field id={`${id}-cat`} label="Category">
+                  <select id={`${id}-cat`} value={category} onChange={(e) => setCategory(e.target.value)}>
+                    {categories.map((c) => (
+                      <option key={c.key} value={c.key}>
+                        {categoryName(c.key)}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <Field id={`${id}-pct`} label="Spend less by">
+                  <select id={`${id}-pct`} value={pct} onChange={(e) => setPct(e.target.value)}>
+                    {[10, 20, 30, 50, 75, 100].map((n) => (
+                      <option key={n} value={n}>
+                        {n}%
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+              </>
+            ) : null}
+            {kind === "income" || kind === "late" ? (
+              <Field id={`${id}-inc`} label="Income">
+                <select id={`${id}-inc`} value={stream} onChange={(e) => setStream(e.target.value)}>
+                  {income.map((s) => (
+                    <option key={s.income_stream_id} value={s.income_stream_id}>
+                      {s.source} · {s.amount.display}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            ) : null}
+            {kind === "income" ? (
+              <Field id={`${id}-chg`} label="Change">
+                <select id={`${id}-chg`} value={pct} onChange={(e) => setPct(e.target.value)}>
+                  {[-50, -25, -10, 5, 10, 20].map((n) => (
+                    <option key={n} value={n}>
+                      {n > 0 ? `+${n}` : n}%
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            ) : null}
+            {kind === "late" ? (
+              <Field id={`${id}-days`} label="Days late">
+                <select id={`${id}-days`} value={days} onChange={(e) => setDays(e.target.value)}>
+                  {[2, 3, 5, 7, 10, 14].map((n) => (
                     <option key={n} value={n}>
                       {n}
                     </option>
                   ))}
                 </select>
               </Field>
-              <Field id={`${id}-cad`} label="Every">
-                <select id={`${id}-cad`} value={cadence} onChange={(e) => setCadence(e.target.value)}>
-                  <option value="monthly">Month</option>
-                  <option value="fortnightly">Two weeks</option>
-                  <option value="weekly">Week</option>
-                </select>
-              </Field>
-            </>
-          ) : null}
-          {kind === "cancel" ? (
-            <Field id={`${id}-rec`} label="Regular payment">
-              <select id={`${id}-rec`} value={recurring} onChange={(e) => setRecurring(e.target.value)}>
-                {(flows?.recurring ?? []).map((r) => (
-                  <option key={r.recurring_id} value={r.recurring_id}>
-                    {r.label} · {r.amount.display}
-                  </option>
-                ))}
-              </select>
-            </Field>
-          ) : null}
-          {kind === "cut" ? (
-            <>
-              <Field id={`${id}-cat`} label="Category">
-                <select id={`${id}-cat`} value={category} onChange={(e) => setCategory(e.target.value)}>
-                  {categories.map((c) => (
-                    <option key={c.key} value={c.key}>
-                      {categoryName(c.key)}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <Field id={`${id}-pct`} label="Spend less by">
-                <select id={`${id}-pct`} value={pct} onChange={(e) => setPct(e.target.value)}>
-                  {[10, 20, 30, 50, 75, 100].map((n) => (
-                    <option key={n} value={n}>
-                      {n}%
-                    </option>
-                  ))}
-                </select>
-              </Field>
-            </>
-          ) : null}
-          {kind === "income" || kind === "late" ? (
-            <Field id={`${id}-inc`} label="Income">
-              <select id={`${id}-inc`} value={stream} onChange={(e) => setStream(e.target.value)}>
-                {income.map((s) => (
-                  <option key={s.income_stream_id} value={s.income_stream_id}>
-                    {s.source} · {s.amount.display}
-                  </option>
-                ))}
-              </select>
-            </Field>
-          ) : null}
-          {kind === "income" ? (
-            <Field id={`${id}-chg`} label="Change">
-              <select id={`${id}-chg`} value={pct} onChange={(e) => setPct(e.target.value)}>
-                {[-50, -25, -10, 5, 10, 20].map((n) => (
-                  <option key={n} value={n}>
-                    {n > 0 ? `+${n}` : n}%
-                  </option>
-                ))}
-              </select>
-            </Field>
-          ) : null}
-          {kind === "late" ? (
-            <Field id={`${id}-days`} label="Days late">
-              <select id={`${id}-days`} value={days} onChange={(e) => setDays(e.target.value)}>
-                {[2, 3, 5, 7, 10, 14].map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
-            </Field>
-          ) : null}
-          <div className="lab-actions">
-            <Button type="submit" variant="primary" disabled={busy} iconEnd="arrowright">
-              {busy ? "Running the simulation…" : "Test it"}
-            </Button>
-          </div>
-          {problem ? (
-            <p className="form-error" role="alert">
-              {problem}
-            </p>
-          ) : null}
+            ) : null}
+            <div className="lab-actions">
+              <Button type="submit" variant="primary" disabled={busy} iconEnd="arrowright">
+                {busy ? "Running the simulation…" : "Test it"}
+              </Button>
+            </div>
+            {problem ? (
+              <p className="form-error" role="alert">
+                {problem}
+              </p>
+            ) : null}
+          </fieldset>
         </form>
       </section>
 

@@ -716,7 +716,7 @@ button.um-item { width: 100%; border: 0; background: none; font: inherit; cursor
 .lab-kind input { grid-row: span 2; margin: 0; }
 .lab-kind-label { font-weight: var(--font-weight-medium); color: var(--color-text-primary); }
 .lab-kind-hint { font-size: var(--font-size-xs); color: var(--color-text-secondary); }
-.lab-fields { display: grid; gap: var(--space-3); grid-template-columns: 1fr; }
+.lab-fields { display: grid; gap: var(--space-3); grid-template-columns: 1fr; min-inline-size: 0; margin: 0; padding: 0; border: 0; }
 .lab-field { display: grid; gap: var(--space-1); margin: 0; }
 .lab-field input, .lab-field select { min-height: 44px; padding: 0 var(--space-3); border: 1px solid var(--color-border-secondary); border-radius: var(--border-radius-sm); background: var(--color-bg-secondary); color: var(--color-text-primary); font: inherit; }
 .lab-actions, .lab-fields .form-error { grid-column: 1 / -1; }
