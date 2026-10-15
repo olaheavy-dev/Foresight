@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { Icon } from "@/components/icons/Icon";
-import { deleteMyData, signOut } from "@/lib/api";
+import { deleteMyData, resetDemo, signOut } from "@/lib/api";
 import type { SessionAccount } from "@/ui-contracts/types";
 import { ThemeControl } from "./ThemeControl";
 
@@ -14,20 +14,23 @@ export function initials(name: string): string {
 }
 
 /**
- * Avatar → menu: who is signed in, Switch profile, Settings, Quality checks, Privacy, Theme, then Sign in
- * with Google (guests), Sign out (a guest confirms first: it deletes their profiles) and Delete my data (inline confirm). Esc and outside click close.
+ * Avatar → menu: who is signed in, Switch profile, Settings, Quality checks, Privacy, Theme, then
+ * Reset demo (demo profiles), Sign in with Google (guests), Sign out (a guest confirms first: it
+ * deletes their profiles) and Delete my data (inline confirms). Esc and outside click close.
  */
 export function AvatarMenu({
   name,
   subtitle,
   account = null,
+  demo = false,
 }: {
   name: string | null;
   subtitle: string;
   account?: SessionAccount | null;
+  demo?: boolean;
 }) {
   const [open, setOpen] = useState(false);
-  const [confirming, setConfirming] = useState<"delete" | "signout" | null>(null);
+  const [confirming, setConfirming] = useState<"delete" | "reset" | "signout" | null>(null);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
@@ -58,7 +61,7 @@ export function AvatarMenu({
     };
   }, [open]);
 
-  const leave = async (action: typeof signOut, to: string) => {
+  const leave = async (action: () => Promise<unknown>, to: string) => {
     setBusy(true);
     setFailed(false);
     if (await action()) {
@@ -124,6 +127,28 @@ export function AvatarMenu({
               <a className="um-item" href="/api/auth/google/start?next=%2Fhome">
                 Sign in with Google to keep your profiles
               </a>
+            ) : null}
+            {demo && confirming === "reset" ? (
+              <div className="um-confirm calm" role="group" aria-label="Confirm resetting the demo">
+                <p>Start the demo again? Your category changes, balances and conversations on it go.</p>
+                <div className="um-actions">
+                  <button
+                    type="button"
+                    className="btn primary"
+                    disabled={busy}
+                    onClick={() => leave(resetDemo, "/home")}
+                  >
+                    {busy ? "Resetting…" : "Reset demo"}
+                  </button>
+                  <button type="button" className="btn" disabled={busy} onClick={() => setConfirming(null)}>
+                    Keep it
+                  </button>
+                </div>
+              </div>
+            ) : demo ? (
+              <button type="button" className="um-item" onClick={() => setConfirming("reset")}>
+                Reset demo
+              </button>
             ) : null}
             {confirming === "signout" ? (
               <div className="um-confirm" role="group" aria-label="Confirm signing out as a guest">

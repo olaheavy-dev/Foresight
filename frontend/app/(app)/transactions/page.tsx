@@ -24,6 +24,9 @@ export default async function TransactionsPage({
     <main className="page section-page" id="main">
       <h1>Transactions</h1>
       <p className="lede">{LEDE}</p>
+      {profile?.kind === "demo" ? (
+        <p className="note-line">Changes here only affect your copy of the demo. Reset it from the account menu.</p>
+      ) : null}
       {profile ? (
         <Transactions tab={tab} readOnly={Boolean(profile.read_only)} locale={profile.locale} />
       ) : (

@@ -171,7 +171,7 @@ class ProfileView(Contract):
     locale: Locale
     timezone: NonEmpty
     data_version: Annotated[int, Field(ge=0)]
-    read_only: bool  # demo profiles refuse imports
+    read_only: bool  # edits refused (the shared template only); demo profiles never take imports
     account: SessionAccount | None = None
 
 

@@ -154,7 +154,7 @@ export function importStatements(
   );
 }
 
-/** Choose the seeded demo profile (browser only: stores the session cookie). */
+/** Open this browser's private copy of the demo (browser only: stores the session cookie). */
 export function startDemo(persona: "P1" | "P2" = "P1", options: ApiOptions = {}): Promise<ProfileView | null> {
   const query = new URLSearchParams({ persona });
   return request(
@@ -314,7 +314,7 @@ export function fetchAccounts(options: ApiOptions = {}): Promise<AccountList | n
   return request("/api/accounts", okAnd(isAccountList), options);
 }
 
-/** Declare an account's balance on a day (browser; the demo profile is read-only). */
+/** Declare an account's balance on a day (browser). */
 export function declareBalance(
   accountId: string,
   asOf: string,
@@ -373,6 +373,18 @@ export function fetchAuthProviders(options: ApiOptions = {}): Promise<AuthProvid
       return status === 200 && typeof b?.google === "boolean" ? { google: b.google, guest: b.guest !== false } : null;
     },
     options,
+  );
+}
+
+/** Swap this browser's private demo copy for a fresh one (browser). */
+export function resetDemo(options: ApiOptions = {}): Promise<ProfileView | null> {
+  return request(
+    "/api/session/demo/reset",
+    okAnd(isProfileView),
+    { timeoutMs: TIMEOUTS.seed, ...options },
+    {
+      method: "POST",
+    },
   );
 }
 
