@@ -183,3 +183,44 @@ def test_a_demo_copy_checks_on_request_once_a_day(
     assert started.json()["status"] == "checking"
     monkeypatch.setattr(proactive, "advice_blocked", lambda db, ws: "daily_limit")
     assert api.post("/api/home/check").status_code == 409
+
+
+def test_a_demo_edit_refreshes_findings_but_never_runs_advice_by_itself(
+    api: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#43 (Codex): a demo copy spends only from its button, never because of an edit."""
+    profile = demo(api)
+    row = api.get("/api/transactions?limit=1").json()["items"][0]
+    api.post(
+        f"/api/transactions/{row['transaction_id']}/category", json={"category_key": "groceries"}
+    )
+    _due_now(profile["workspace_id"])
+    called: list[str] = []
+
+    def record(store: Any, **kwargs: Any) -> None:
+        called.append(store.ctx.workspace_id)
+        raise RuntimeError("stub: no run")  # other tests' due jobs simply fail here
+
+    monkeypatch.setattr(proactive, "advice_blocked", lambda db, ws: None)  # AI would be available
+    monkeypatch.setattr(runner, "run_workflow", record)
+    proactive.drain(get_settings().database_url)
+    assert profile["workspace_id"] not in called
+    (job,) = _jobs(profile["workspace_id"])
+    assert (job.status, job.note) == ("skipped", "manual_only")
+    body = _insights(api)
+    assert body["status"] == "empty"
+    assert body["can_check"] is True  # the button is still there
+
+
+def test_advice_from_an_older_data_version_is_not_shown(
+    api: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#43 (Codex): after a newer change, the previous run's cards describe a ledger that no
+    longer exists; they're withheld whatever the newer job's state."""
+    test_a_finished_run_shows_its_checked_recommendations(api, monkeypatch)
+    assert _insights(api)["recommendations"]  # shown while they match the data
+    row = api.get("/api/transactions?limit=1").json()["items"][0]
+    api.post(
+        f"/api/transactions/{row['transaction_id']}/category", json={"category_key": "groceries"}
+    )
+    assert _insights(api)["recommendations"] == []

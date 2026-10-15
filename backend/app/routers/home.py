@@ -136,6 +136,9 @@ def insights(ctx: WorkspaceContext) -> HomeInsights:
         state = "checking"
     elif latest.status == "failed":
         state = "failed"
+    elif latest.status == "skipped" and latest.note == "manual_only":
+        state = "empty"  # a demo edit: findings refreshed, advice waits for the button
+        reason = "not_run"
     elif latest.status == "skipped":
         state = "paused"
         reason = latest.note if latest.note in ("ai_paused", "daily_limit") else None
@@ -149,7 +152,11 @@ def insights(ctx: WorkspaceContext) -> HomeInsights:
         checked_data_version=run.data_version if run else None,
         checked_at=ran.finished_at if ran else None,
         findings=_findings(ctx),
-        recommendations=_cards(ctx, run.id) if run else [],
+        # Advice is shown only for the data it was checked against: after a newer change it
+        # would describe a ledger that no longer exists, whatever the newer job's state.
+        recommendations=(
+            _cards(ctx, run.id) if run and run.data_version == int(ws.data_version or 0) else []
+        ),
         can_check=blocked is None and state != "checking",
     )
 

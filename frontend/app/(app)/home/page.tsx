@@ -71,17 +71,25 @@ export default async function HomePage() {
         </Suspense>
       )}
 
-      {isShipped(features, "briefing") ? (
-        <Suspense fallback={<InsightsLoading />}>
-          <HomeInsightsCard
-            options={options}
-            demo={profile.kind === "demo"}
-            currency={profile.home_currency}
-            locale={profile.locale}
-            timeZone={profile.timezone}
-            checkedAdvice={isShipped(features, "checked_advice")}
-          />
-        </Suspense>
+      {/* Proactive insights show only what shipped, measured features cover: findings
+          (anomaly_detection, E-ANOM) and advice the Verifier checked (checked_advice). The
+          morning briefing has its own flag and stays "not shipped" until it's built. */}
+      {isShipped(features, "anomaly_detection") ? (
+        <>
+          <Suspense fallback={<InsightsLoading />}>
+            <HomeInsightsCard
+              options={options}
+              demo={profile.kind === "demo"}
+              currency={profile.home_currency}
+              locale={profile.locale}
+              timeZone={profile.timezone}
+              checkedAdvice={isShipped(features, "checked_advice")}
+            />
+          </Suspense>
+          {!isShipped(features, "briefing") ? (
+            <NotShipped title="Financial briefing" compact detail="A short morning summary of what changed." />
+          ) : null}
+        </>
       ) : (
         /* Until the briefing and insights ship, one compact card says what comes next (the
           forecast keeps the full width instead of sharing it with an empty column). */

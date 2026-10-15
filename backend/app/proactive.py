@@ -125,6 +125,10 @@ def run_job(job_id: str, database_url: str) -> None:
             findings.refresh(ctx)
             db.commit()
             blocked = advice_blocked(db, ctx.workspace)
+            if blocked is None and ctx.workspace.kind == "sample" and job.event != "manual_check":
+                # A demo copy runs advice only from its button (owner decision): an edit there
+                # refreshes the findings but never spends on its own.
+                blocked = "manual_only"
             if blocked is None:
                 outcome = run_workflow(
                     AgentStore(ctx),

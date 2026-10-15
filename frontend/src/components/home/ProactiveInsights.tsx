@@ -127,7 +127,7 @@ export function ProactiveInsights({
         <p className="insights-empty">Nothing stands out in your data right now.</p>
       ) : null}
 
-      {cards.length ? (
+      {cards.length && checkedAdvice ? (
         <div className="insight-recs">
           <h3 className="insight-recs-h">Checked advice</h3>
           <BlockEnvProvider value={env}>
