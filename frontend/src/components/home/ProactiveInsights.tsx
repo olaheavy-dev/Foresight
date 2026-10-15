@@ -12,6 +12,8 @@ import { useCallback, useEffect, useState } from "react";
 import { Icon } from "@/components/icons/Icon";
 import { Badge, Button, CardHead } from "@/components/ui/primitives";
 import { BlockEnvProvider, InterventionBlock } from "@/components/workspace/blocks";
+// The blocks reused from the Workspace bring their styles with them.
+import "@/components/workspace/workspace.css";
 import { fetchHomeInsights, startProactiveCheck } from "@/lib/api";
 import type { HomeInsights, InsightFinding } from "@/ui-contracts/types";
 
@@ -128,7 +130,7 @@ export function ProactiveInsights({
       ) : null}
 
       {cards.length && checkedAdvice ? (
-        <div className="insight-recs">
+        <div className="insight-recs ws-body block-host">
           <h3 className="insight-recs-h">Checked advice</h3>
           <BlockEnvProvider value={env}>
             {cards.map((card) => (

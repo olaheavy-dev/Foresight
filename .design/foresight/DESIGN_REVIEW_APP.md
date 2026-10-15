@@ -86,3 +86,16 @@ Found and fixed in this review:
 Checked and kept: the account menu fits at 375 px with the inline Reset demo confirm reachable. The destructive actions (Delete my data, guest "Sign out and delete") use the error colour and stand apart from the calm reset confirm. The column form stacks to one column on mobile and two from 768 px. Each choice shows an example cell, with identifiers withheld or masked. The privacy page reads at a comfortable measure in both themes.
 
 Could improve (open): the column choices show normalised, lower-case names (`value (gbp)`) rather than the file's own headings; and the menu is long on small phones, so it could group Sign out and Delete under a divider.
+
+## Decision Lab, reviewed 15 Oct 2026
+
+Captured by `e2e/app.screenshots.spec.ts` at 375, 768 and 1280 px in light and dark: `review-lab-*` (the empty form) and `review-lab-result-*` (a spread purchase compared with the current path). All 102 captures: **0 axe violations and 0 horizontal overflow** after the fixes below.
+
+Found and fixed while reviewing:
+- **The comparison chart rendered solid black areas and the page lost its block styles.** The Workspace's block styles were loaded only on the Workspace page. They're now imported where reused blocks appear (Decision Lab, and Home's checked-advice card, which had the same latent problem), inside `.ws-body.block-host`.
+- **The page stopped scrolling.** The Workspace page lock (`.frame:has(.ws-body)`) caught any page with a reused block; it now skips `.block-host`.
+- **98 px of horizontal overflow at 375 px.** The chart's hidden data table for screen readers ignored `width: 1px` (tables size to their content). It's now wrapped in a clipping `div.sr-only`, which fixes every page that draws a chart.
+
+Checked and kept: six template cards in a grid from 768 px and stacked on mobile; labelled fields in two columns from 768 px; the result reuses the Workspace's comparison block (current path, dashed scenario line, likely range, a verdict badge and its reason) with a plain note that no AI was used. Refusals appear inline under the form, and a new run clears the previous result.
+
+Could improve (open): the result could also show the scenario's key numbers (lowest balance before and after) as text above the chart.

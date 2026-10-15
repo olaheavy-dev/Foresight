@@ -707,6 +707,26 @@ button.um-item { width: 100%; border: 0; background: none; font: inherit; cursor
 
 .note-line { margin: calc(-1 * var(--space-2)) 0 var(--space-4); font-size: var(--font-size-sm); color: var(--color-text-secondary); }
 
+/* Decision Lab (R8) */
+.lab { display: grid; gap: var(--space-4); }
+.lab-form { padding: var(--space-4); }
+.lab-kinds { display: grid; gap: var(--space-2); grid-template-columns: 1fr; margin: var(--space-3) 0 var(--space-4); }
+.lab-kind { display: grid; grid-template-columns: auto 1fr; column-gap: var(--space-2); align-items: center; padding: var(--space-3); border: 1px solid var(--color-border-primary); border-radius: var(--border-radius-md); background: var(--color-bg-secondary); cursor: pointer; }
+.lab-kind.on { border-color: var(--color-accent-primary); background: var(--color-accent-primary-tint); }
+.lab-kind input { grid-row: span 2; margin: 0; }
+.lab-kind-label { font-weight: var(--font-weight-medium); color: var(--color-text-primary); }
+.lab-kind-hint { font-size: var(--font-size-xs); color: var(--color-text-secondary); }
+.lab-fields { display: grid; gap: var(--space-3); grid-template-columns: 1fr; }
+.lab-field { display: grid; gap: var(--space-1); margin: 0; }
+.lab-field input, .lab-field select { min-height: 44px; padding: 0 var(--space-3); border: 1px solid var(--color-border-secondary); border-radius: var(--border-radius-sm); background: var(--color-bg-secondary); color: var(--color-text-primary); font: inherit; }
+.lab-actions, .lab-fields .form-error { grid-column: 1 / -1; }
+.lab-result { display: grid; gap: var(--space-2); }
+.lab-note { margin: 0; font-size: var(--font-size-xs); color: var(--color-text-secondary); }
+@media (min-width: 768px) {
+  .lab-form { padding: var(--space-5) var(--space-6); }
+  .lab-kinds { grid-template-columns: repeat(3, 1fr); }
+  .lab-fields { grid-template-columns: repeat(2, 1fr); }
+}
 /* Income confirmation (R4): the stream's state and the user's controls, under the row. */
 .income-controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
 .income-controls .btn.sm { min-height: 36px; padding: 0 var(--space-3); font-size: var(--font-size-xs); }
