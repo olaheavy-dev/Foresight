@@ -7,7 +7,10 @@ from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import Engine, text
+from sqlalchemy.orm import Session
 
+from backend.storage.repositories import WorkspaceContext
 from tests.integration.api.contract import checked
 from tests.integration.api.test_engine_api import P1_CSV, demo, new_profile, upload
 
@@ -66,3 +69,26 @@ def test_a_correction_applies_to_the_payee_and_leaves_the_review_queue(api: Test
     assert bad.status_code == 422
     missing = FIX.format(transaction_id="txn_01JAAAAAAAAAAAAAAAAAAAAAAA")
     assert api.post(missing, json={"category_key": "groceries"}).status_code == 404
+
+
+def test_a_fresh_import_pages_fast_even_when_planner_statistics_predate_it(
+    api: TestClient, seeded: Engine
+) -> None:
+    """#41 (Codex review, then CI): statistics gathered while a new profile was still empty made
+    the planner expect one row, and a grouped "latest categorisation" subquery got a nested-loop
+    plan that ran for minutes on a 1,126-row import. Recreate exactly that, then require every
+    page variant within a statement timeout. Each row's categorisation must be its own
+    workspace's."""
+    profile = new_profile(api)
+    with Session(seeded) as db:  # statistics now say this workspace has no rows at all
+        db.execute(text("ANALYZE transaction"))
+        db.execute(text("ANALYZE categorisation"))
+        db.commit()
+    upload(api, P1_CSV)
+    with Session(seeded) as db:
+        db.execute(text("SET statement_timeout = '3s'"))
+        ctx = WorkspaceContext.open(db, profile["workspace_id"])
+        for kwargs in ({}, {"review": True, "limit": 1}, {"query": "deliveroo"}):
+            total, rows = ctx.transaction_page(**kwargs)  # type: ignore[arg-type]
+            assert total > 0
+            assert all(c is None or c.workspace_id == profile["workspace_id"] for _, c in rows)
