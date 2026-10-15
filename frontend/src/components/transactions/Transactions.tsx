@@ -224,7 +224,7 @@ function Ledger({
           }
         />
       </div>
-      <div className="ledger-tools" role="search">
+      <div className="ledger-tools" role="search" aria-label="Search and filter transactions">
         <label className="tool grow">
           <span className="sr-only">Search transactions</span>
           <Icon name="search" />

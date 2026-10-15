@@ -51,3 +51,7 @@ frontend/next-env.d.ts
 frontend/test-results/
 frontend/playwright-report/
 *.tsbuildinfo
+
+# Design-review captures stay local (CI keeps them as Playwright artifacts); the curated final
+# set for the README lives in docs/screenshots/.
+.design/foresight/screenshots/review-*

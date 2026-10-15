@@ -1,4 +1,4 @@
-// Design-review screenshots of every page on a real local stack (docker compose, demo profile).
+// Design-review screenshots of every page, and the states added since, on a real local stack.
 //   SCREENSHOTS=1 npx playwright test app.screenshots --project=desktop
 // Files: .design/foresight/screenshots/review-<page>-<device>-<width>[-dark-mode].png
 // Full-page captures; axe and horizontal-overflow results are written next to them as JSON.
@@ -21,7 +21,15 @@ const PAGES = ["home", "workspace", "lab", "transactions", "activity", "quality"
 const PUBLIC = [
   { name: "landing", path: "/" },
   { name: "start", path: "/start" },
+  { name: "privacy", path: "/privacy" },
 ] as const;
+// An unrecognised bank's CSV (fictional), for the column-mapping state on /start.
+const ODD_BANK = [
+  "Posted On,Payee Text,Value (GBP),Running Total,Ref",
+  "01/10/2026,SALARY ACME LTD,2100.00,2600.00,A1",
+  "02/10/2026,TESCO STORES,-42.10,2557.90,A2",
+  "15/10/2026,DELIVEROO,-18.40,2539.50,A3",
+].join("\n");
 
 const file = (name: string, s: (typeof SIZES)[number], theme: string, ext = "png") =>
   `${OUT}/review-${name}-${s.device}-${s.width}${theme === "dark" ? "-dark-mode" : ""}.${ext}`;
@@ -55,6 +63,27 @@ for (const theme of THEMES) {
         await page.waitForLoadState("networkidle");
         await capture(page, p, s, theme);
       }
+
+      // States added 15 Oct: the account menu and its Reset demo confirm (demo profile).
+      await page.goto(`/home?theme=${theme}`);
+      await page.waitForLoadState("networkidle");
+      await page.getByRole("button", { name: /account menu/i }).click();
+      await capture(page, "menu-open", s, theme);
+      await page.getByRole("button", { name: "Reset demo" }).click();
+      await capture(page, "menu-reset-confirm", s, theme);
+      await page.keyboard.press("Escape");
+
+      // The column-mapping form for an unrecognised bank, then its validation message.
+      await page.goto(`/start?theme=${theme}`);
+      await page
+        .getByLabel("Choose statement files")
+        .setInputFiles({ name: "odd-bank.csv", mimeType: "text/csv", buffer: Buffer.from(ODD_BANK) });
+      const form = page.getByRole("form", { name: "Columns in odd-bank.csv" });
+      await form.waitFor({ timeout: 30_000 });
+      await capture(page, "start-columns", s, theme);
+      await form.getByRole("button", { name: "Import with these columns" }).click();
+      await form.getByRole("alert").waitFor();
+      await capture(page, "start-columns-error", s, theme);
     });
   }
 }
