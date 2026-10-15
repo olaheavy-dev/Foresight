@@ -64,6 +64,11 @@ for (const theme of THEMES) {
         await capture(page, p, s, theme);
       }
 
+      // Income confirmation (R4) on Transactions › Recurring and income.
+      await page.goto(`/transactions?tab=recurring&theme=${theme}`);
+      await page.waitForLoadState("networkidle");
+      await capture(page, "transactions-recurring", s, theme);
+
       // States added 15 Oct: the account menu and its Reset demo confirm (demo profile).
       await page.goto(`/home?theme=${theme}`);
       await page.waitForLoadState("networkidle");
@@ -84,6 +89,17 @@ for (const theme of THEMES) {
       await form.getByRole("button", { name: "Import with these columns" }).click();
       await form.getByRole("alert").waitFor();
       await capture(page, "start-columns-error", s, theme);
+
+      // The import check step with its income controls (R4), after a recognised export.
+      await page.goto(`/start?theme=${theme}`);
+      await page.getByLabel("Choose statement files").setInputFiles("../evals/datasets/P1-base/exports/monzo.csv");
+      await page.getByRole("list", { name: "Your files" }).getByText("Imported").first().waitFor({ timeout: 30_000 });
+      await page.goto(`/start?step=check&theme=${theme}`);
+      await page
+        .getByRole("group", { name: /your income\?/ })
+        .first()
+        .waitFor();
+      await capture(page, "start-check", s, theme);
     });
   }
 }

@@ -286,22 +286,36 @@ class WorkspaceContext:
         model: type[m.IncomeStream] | type[m.RecurringObligation],
         rows: Sequence[m.IncomeStream] | Sequence[m.RecurringObligation],
     ) -> None:
-        """Swap detected rows for a fresh detection; confirmed and declared rows are kept, and a
-        detection never overwrites a key the user has confirmed or declared."""
-        kept = set(
-            self.session.scalars(
-                select(model.key).where(
+        """Swap detected rows for a fresh detection. A key the user has confirmed, rejected or
+        declared keeps its row and its provenance (their word survives), but a confirmed or
+        rejected row takes the fresh detection's figures, so new payments, a pay change or a
+        moved payday still reach the forecast. Declared rows are the user's own and stay as
+        entered."""
+        kept: dict[str, m.IncomeStream | m.RecurringObligation] = {
+            row.key: row  # type: ignore[attr-defined,misc]
+            for row in self.session.scalars(
+                select(model).where(
                     model.workspace_id == self.workspace_id, model.provenance != "detected"
                 )
             )
-        )
+        }
         self.session.execute(
             delete(model).where(
                 model.workspace_id == self.workspace_id, model.provenance == "detected"
             )
         )
         self.session.flush()
-        self.add_all(r for r in rows if r.key not in kept)
+        refreshed = ("amount_minor", "currency", "cadence", "payday_rule", "member_ids",
+                     "irregular_amounts_minor", "source_label", "label", "category_key",
+                     "flow_kind", "anchor_day", "active_months", "working_day_shift")  # fmt: skip
+        for fresh in rows:
+            mine = kept.get(fresh.key)
+            if mine is None:
+                self.add(fresh)
+            elif mine.provenance != "declared":
+                for name in refreshed:
+                    if hasattr(fresh, name) and hasattr(mine, name):
+                        setattr(mine, name, getattr(fresh, name))
 
     # ----------------------------------------------------------------- calculations
 

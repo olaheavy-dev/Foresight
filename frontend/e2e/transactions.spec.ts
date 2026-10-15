@@ -102,3 +102,33 @@ test("Reset demo swaps a corrected demo for a fresh copy", async ({ page }) => {
   await expect(page.locator(".lr-payee").first()).toContainText(/deliveroo/i);
   await expect(page.locator(".lr-category").first()).not.toContainText("You");
 });
+
+test("an own profile confirms its income or says it isn't income (R4)", async ({ page }) => {
+  await page.context().clearCookies();
+  await page.goto("/start");
+  await page.getByLabel("Choose statement files").setInputFiles(CSV);
+  await expect(page.getByRole("list", { name: "Your files" })).toContainText("Imported", { timeout: 30_000 });
+  await page.goto("/transactions?tab=recurring");
+  const income = page.getByRole("region", { name: "Income" });
+  const first = income.getByRole("group", { name: /your income\?/ }).first();
+  await expect(first).toContainText("Detected");
+  // A failed save says so and leaves the controls usable (#44 review: the error path).
+  await page.route("**/api/income/**", (route) => route.fulfill({ status: 500, body: "{}" }));
+  await first.getByRole("button", { name: "Yes, it’s my income" }).click();
+  await expect(first.getByRole("alert")).toContainText("That didn’t save");
+  await expect(first.getByRole("button", { name: "Yes, it’s my income" })).toBeEnabled();
+  await expect(first).toContainText("Detected");
+  await page.unroute("**/api/income/**");
+  await first.getByRole("button", { name: "Yes, it’s my income" }).click();
+  await expect(first).toContainText("Confirmed by you");
+  await noSeriousA11yIssues(page);
+  await first.getByRole("button", { name: "Undo" }).click();
+  await expect(first).toContainText("Detected");
+  await first.getByRole("button", { name: "Not income" }).click();
+  await expect(first).toContainText("Not counted as income");
+  // The decision survives a reload: it's stored, not just shown.
+  await page.reload();
+  await expect(page.getByRole("region", { name: "Income" }).getByRole("group").first()).toContainText(
+    "Not counted as income",
+  );
+});

@@ -11,6 +11,7 @@ import Link from "next/link";
 import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Icon } from "@/components/icons/Icon";
+import { IncomeControls } from "@/components/income/IncomeControls";
 import { Badge, Button, ButtonLink, CardHead } from "@/components/ui/primitives";
 import {
   correctCategory,
@@ -462,10 +463,21 @@ function Recurring({ locale }: { locale: string }) {
                     {s.last_paid ? ` · last ${formatLongDate(s.last_paid, locale)}` : ""}
                   </span>
                 </div>
-                <Badge tone={s.provenance === "detected" ? "grey" : "green"}>
-                  {s.provenance === "detected" ? "Detected" : "Confirmed"}
-                </Badge>
-                <span className="lr-amount num in">+{s.amount.display}</span>
+                <span className={`lr-amount num ${s.provenance === "rejected" ? "muted" : "in"}`}>
+                  +{s.amount.display}
+                </span>
+                <IncomeControls
+                  stream={s}
+                  onChange={(next) =>
+                    setFlows(
+                      (f) =>
+                        f && {
+                          ...f,
+                          income: f.income.map((x) => (x.income_stream_id === next.income_stream_id ? next : x)),
+                        },
+                    )
+                  }
+                />
               </li>
             ))}
           </ul>

@@ -250,6 +250,7 @@ def forecaster_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
         income = [
             {"income_stream_id": s.key, "label": s.source_label}
             for s in ctx.store.ctx.all(m.IncomeStream)
+            if s.provenance != "rejected"  # the user said it isn't income (R4)
         ]
         categories = sorted(packs.categorisation_pack(ctx.store.ctx.workspace.country).categories)
     parsed = parse_scenario(

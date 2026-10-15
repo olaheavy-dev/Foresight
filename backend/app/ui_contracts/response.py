@@ -284,9 +284,16 @@ class IncomeStreamView(Contract):
     source: NonEmpty
     amount: MoneyValue
     cadence: NonEmpty
-    provenance: Literal["detected", "confirmed", "declared"]
+    # rejected: the user said "this isn't income", so the forecast doesn't count it (R4)
+    provenance: Literal["detected", "confirmed", "declared", "rejected"]
     payments: Annotated[int, Field(ge=0)]
     last_paid: dt.date | None = None
+
+
+class IncomeDecision(Contract):
+    """The user's word on a detected income stream (review R4)."""
+
+    decision: Literal["confirm", "reject", "undo"]
 
 
 class RecurringView(Contract):

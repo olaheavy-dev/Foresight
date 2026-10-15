@@ -22,6 +22,7 @@ import {
   isForecastView,
   isHealthz,
   isImportSummary,
+  isIncomeStreamView,
   isHomeInsights,
   isProfileView,
   isSimulationView,
@@ -44,6 +45,7 @@ import type {
   ImportSummary,
   Placement,
   HomeInsights,
+  IncomeStreamView,
   ProfileView,
   ScenarioSpecPayload,
   SimulationView,
@@ -413,5 +415,18 @@ export function fetchHomeInsights(options: ApiOptions = {}): Promise<HomeInsight
 export function startProactiveCheck(options: ApiOptions = {}): Promise<HomeInsights | null> {
   return request("/api/home/check", (body, status) => (status === 200 && isHomeInsights(body) ? body : null), options, {
     method: "POST",
+  });
+}
+
+/** Confirm a detected income stream, say it isn't income, or undo either (browser; R4). */
+export function decideIncome(
+  incomeStreamId: string,
+  decision: "confirm" | "reject" | "undo",
+  options: ApiOptions = {},
+): Promise<IncomeStreamView | null> {
+  return request(`/api/income/${encodeURIComponent(incomeStreamId)}`, okAnd(isIncomeStreamView), options, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ decision }),
   });
 }

@@ -535,6 +535,35 @@ def detect(ctx: WorkspaceContext) -> tuple[int, int]:
 # ------------------------------------------------------------------------- balances
 
 
+REJECTED = "rejected"  # IncomeStream.provenance when the user says "this isn't income"
+INCOME_DECISIONS = {"confirm": "confirmed", "reject": REJECTED, "undo": "detected"}
+
+
+def decide_income(ctx: WorkspaceContext, stream_id: str, decision: str) -> m.IncomeStream:
+    """The user's word on a detected income stream (review R4): confirm it, say it isn't income
+    (the forecast stops counting it), or undo either. Confirmed and rejected streams survive
+    re-detection (`replace_detected` keeps every key that isn't `detected`). A real change is
+    audited and bumps the data version, so the forecast and Home's insights follow."""
+    stream = next((s for s in ctx.all(m.IncomeStream) if s.id == stream_id), None)
+    if stream is None:
+        raise LookupError(stream_id)
+    before = stream.provenance
+    after = INCOME_DECISIONS[decision]
+    if before == "declared" or before == after:
+        return stream  # a declared stream is the user's own entry; an unchanged answer is a no-op
+    stream.provenance = after
+    ctx.append_audit(
+        "income_decision",
+        "income_stream",
+        stream.id,
+        actor="user",
+        before={"provenance": before},
+        after={"provenance": after},
+    )
+    ctx.bump_data_version()
+    return stream
+
+
 def declare_balance(
     ctx: WorkspaceContext,
     account_id: str,
