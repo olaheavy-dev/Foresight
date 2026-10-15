@@ -89,3 +89,42 @@ def test_income_decisions_are_scoped_and_validated(api: TestClient) -> None:
     new_profile(api)  # another profile of the same browser cannot reach the first one's income
     other = api.post(f"/api/income/{salary['income_stream_id']}", json={"decision": "confirm"})
     assert other.status_code == 404
+
+
+def test_redetection_keeps_the_decision_but_refreshes_the_figures(api: TestClient) -> None:
+    """#44 (Codex): a confirmed salary still takes new payments and amount changes; only the
+    user's word (its provenance) is preserved."""
+    profile = new_profile(api)
+    upload(api, P1_CSV)
+    (salary, *_) = api.get("/api/detected").json()["income"]
+    _decide(api, salary["income_stream_id"], "confirm")
+    with _db() as db:
+        row = db.get(m.IncomeStream, salary["income_stream_id"])
+        assert row is not None
+        detected_amount = row.amount_minor
+        row.amount_minor, row.member_ids = 1, []  # pretend the figures went stale
+        db.commit()
+        detect(WorkspaceContext.open(db, profile["workspace_id"]))
+        db.commit()
+        db.refresh(row)
+        assert row.provenance == "confirmed"  # the decision survives
+        assert row.amount_minor == detected_amount  # the figures follow the data
+        assert row.member_ids
+
+
+def test_another_visitor_cannot_decide_my_income(make_client: type[TestClient]) -> None:
+    """#44 (Codex): two browsers, each with a private copy of the same demo persona."""
+    from backend.app.main import create_app
+    from tests.integration.api.test_engine_api import demo
+
+    with (
+        make_client(create_app(), base_url="https://testserver") as alice,
+        make_client(create_app(), base_url="https://testserver") as bob,
+    ):
+        demo(alice)
+        demo(bob)
+        (mine, *_) = alice.get("/api/detected").json()["income"]
+        attempt = bob.post(f"/api/income/{mine['income_stream_id']}", json={"decision": "reject"})
+        assert attempt.status_code == 404
+        (still, *_) = alice.get("/api/detected").json()["income"]
+        assert still["provenance"] == "detected"

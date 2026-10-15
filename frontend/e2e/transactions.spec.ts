@@ -112,6 +112,13 @@ test("an own profile confirms its income or says it isn't income (R4)", async ({
   const income = page.getByRole("region", { name: "Income" });
   const first = income.getByRole("group", { name: /your income\?/ }).first();
   await expect(first).toContainText("Detected");
+  // A failed save says so and leaves the controls usable (#44 review: the error path).
+  await page.route("**/api/income/**", (route) => route.fulfill({ status: 500, body: "{}" }));
+  await first.getByRole("button", { name: "Yes, it’s my income" }).click();
+  await expect(first.getByRole("alert")).toContainText("That didn’t save");
+  await expect(first.getByRole("button", { name: "Yes, it’s my income" })).toBeEnabled();
+  await expect(first).toContainText("Detected");
+  await page.unroute("**/api/income/**");
   await first.getByRole("button", { name: "Yes, it’s my income" }).click();
   await expect(first).toContainText("Confirmed by you");
   await noSeriousA11yIssues(page);
