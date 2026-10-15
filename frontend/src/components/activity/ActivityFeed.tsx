@@ -23,8 +23,9 @@ const TRIGGER: Record<string, string> = {
 };
 
 const seconds = (ms: number | null | undefined) => (ms == null ? "—" : `${(ms / 1000).toFixed(ms < 10_000 ? 1 : 0)} s`);
+// Estimated: Mesh-reported usage × catalogue prices, not a bill (docs/00 §7, owner decision 13 Oct).
 const dollars = (usd: number | null | undefined) =>
-  usd == null ? "—" : `$${usd < 0.01 ? usd.toFixed(4) : usd.toFixed(3)}`;
+  usd == null ? "—" : `about $${usd < 0.01 ? usd.toFixed(4) : usd.toFixed(3)}`;
 const when = (iso: string, locale: string, timeZone: string) =>
   new Date(iso).toLocaleString(locale, {
     day: "numeric",
@@ -62,7 +63,7 @@ function Run({ run, locale, timeZone }: { run: ActivityRun; locale: string; time
         </summary>
         <div className="scroll-x" tabIndex={0} role="region" aria-label="Steps of this run">
           <table className="data act-steps">
-            <caption className="sr-only">Steps: agent, model, time, tokens and cost</caption>
+            <caption className="sr-only">Steps: agent, model, time, tokens and estimated cost</caption>
             <thead>
               <tr>
                 <th scope="col">Step</th>
@@ -75,7 +76,7 @@ function Run({ run, locale, timeZone }: { run: ActivityRun; locale: string; time
                   Tokens in / out
                 </th>
                 <th scope="col" className="num">
-                  Cost
+                  Est. cost
                 </th>
               </tr>
             </thead>
@@ -95,7 +96,7 @@ function Run({ run, locale, timeZone }: { run: ActivityRun; locale: string; time
                   <td data-label="Tokens in / out" className="num">
                     {s.kind === "llm" ? `${s.tokens_in} / ${s.tokens_out}` : "—"}
                   </td>
-                  <td data-label="Cost" className="num">
+                  <td data-label="Est. cost" className="num">
                     {dollars(s.cost_usd)}
                   </td>
                 </tr>
@@ -123,7 +124,7 @@ export function ActivityFeed({ feed, locale, timeZone }: { feed: Feed; locale: s
           icon="pulse"
           title="Agent runs"
           titleId="runs-h"
-          sub="Each run with its steps: which agent ran, on which model, how long it took and what it cost."
+          sub="Each run with its steps: which agent ran, on which model, how long it took and its estimated cost."
         />
         {runs.length ? (
           <ul className="act-runs">

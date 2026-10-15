@@ -92,6 +92,9 @@ describe("ActivityFeed", () => {
     expect(within(steps).getByText("no model")).toBeInTheDocument();
     expect(within(steps).getByText(/retried/)).toBeInTheDocument();
     expect(screen.getByText(/Audit chain intact · 12 entries/)).toBeInTheDocument();
+    // Costs are estimates (usage × catalogue prices), never shown as a bill (docs/00 §7).
+    expect(screen.getByText("about $0.041")).toBeInTheDocument();
+    expect(within(steps).getByRole("columnheader", { name: "Est. cost" })).toBeInTheDocument();
     expect(screen.getByText("Changed the category of 23 transactions")).toBeInTheDocument();
   });
 });
