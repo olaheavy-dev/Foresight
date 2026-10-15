@@ -7,6 +7,7 @@ from datetime import date
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
+from starlette.concurrency import run_in_threadpool
 
 from backend.app.session import Profile, read_only
 from backend.app.ui_contracts.primitives import DateRange
@@ -126,6 +127,22 @@ def _answers(raw: str | None) -> dict[str, str] | None:
     return parsed
 
 
+def _ingest_all(
+    ctx: WorkspaceContext, payloads: list[tuple[str, bytes]], given: dict[str, str] | None
+) -> list[ImportedFile]:
+    results = []
+    session = ctx.session
+    for name, data in payloads:
+        # Each file is its own transaction: a refused file never undoes an accepted one.
+        try:
+            results.append(imported_file(ctx, ingest_file(ctx, name, data, answers=given)))
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
+    return results
+
+
 @router.post("", response_model=ImportSummary)
 async def import_statements(
     ctx: Profile,
@@ -154,16 +171,9 @@ async def import_statements(
             )
         payloads.append((upload.filename or "statement.csv", data))
 
-    results = []
-    session = ctx.session
-    for name, data in payloads:
-        # Each file is its own transaction: a refused file never undoes an accepted one.
-        try:
-            results.append(imported_file(ctx, ingest_file(ctx, name, data, answers=given)))
-            session.commit()
-        except Exception:
-            session.rollback()
-            raise
+    # Parsing, categorising and forecasting are CPU work: run them on the thread pool, never on
+    # the event loop, or every other request to the API waits for this import.
+    results = await run_in_threadpool(_ingest_all, ctx, payloads, given)
     first = next((i for f in results for i in f.import_ids), None)
     return ImportSummary(
         import_id=first,

@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from typing import Any, TypeVar
 
-from sqlalchemy import Select, and_, delete, func, or_, select
+from sqlalchemy import Select, and_, delete, func, or_, select, true
 from sqlalchemy.orm import Session, aliased
 
 from backend.storage import models as m
@@ -163,22 +163,22 @@ class WorkspaceContext:
     ) -> tuple[int, list[tuple[m.Transaction, m.Categorisation | None]]]:
         """Active transactions, newest first, each with its latest categorisation; and the total
         number matching the filters (for pagination)."""
+        # The latest categorisation of each row, looked up per row on (transaction_id, seq): its
+        # cost follows the page, whatever the planner believes. A grouped "max(seq) per
+        # transaction" subquery let a freshly imported workspace (statistics still saying empty)
+        # get a nested-loop plan that re-ran the aggregate for every row and took minutes.
         latest = (
-            select(m.Categorisation.transaction_id, func.max(m.Categorisation.seq).label("seq"))
-            .where(m.Categorisation.workspace_id == self.workspace_id)
-            .group_by(m.Categorisation.transaction_id)
-            .subquery()
-        )
-        current = (
             select(m.Categorisation)
-            .where(m.Categorisation.workspace_id == self.workspace_id)  # not every workspace's rows
-            .join(latest, m.Categorisation.seq == latest.c.seq)
-            .subquery()
+            .where(m.Categorisation.transaction_id == m.Transaction.id)
+            .where(m.Categorisation.workspace_id == self.workspace_id)
+            .order_by(m.Categorisation.seq.desc())
+            .limit(1)
+            .lateral("current_categorisation")
         )
-        cat = aliased(m.Categorisation, current)
+        cat = aliased(m.Categorisation, latest)
         stmt = (
             select(m.Transaction, cat)
-            .outerjoin(cat, cat.transaction_id == m.Transaction.id)
+            .outerjoin(cat, true())
             .where(m.Transaction.workspace_id == self.workspace_id)
             .where(m.Transaction.status == "active")
         )
