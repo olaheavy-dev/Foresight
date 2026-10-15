@@ -11,6 +11,7 @@ An agent-native personal-finance workspace (Agent Arena 2026). Next.js frontend 
 | Task | Command |
 |---|---|
 | Lint, types, import contracts, unit tests | `make check` |
+| Git hooks: quick checks on commit, CI's fast checks on push (~30 s) | `make install` (Python and frontend dependencies, then `pre-commit install`) |
 | PostgreSQL integration tests | `DATABASE_URL=… make test-db` |
 | Fast eval and regression gate (before every push) | `make eval-fast` |
 | Full eval (replay, no model spend) | `make eval` |
@@ -33,6 +34,8 @@ Review every change against these rules. A finding names the rule, the file and 
 - Seeded demo templates (`kind = "demo"`) are never served to a browser; guests get private `sample` copies. `demo` and `sample` workspaces are read-only for imports and edits.
 - State-changing `/api/*` calls must carry the `X-Foresight-Client` header (CSRF). New frontend writes must send it.
 - Session tokens, OAuth secrets and account numbers never appear in logs, responses, fixtures or commits. Deleting user data goes through the purge path (`foresight.purge`) so the audit chain is removed with it.
+
+- A migration states what happens to existing rows, sessions and cookies on a live database, and the PR shows it was run against data shaped like production. Never treat rows a migration leaves without an owner as disposable (the 15 Oct purge bug).
 
 ### 2. Money: figures come from the engine, advice is checked
 
@@ -57,7 +60,9 @@ Review every change against these rules. A finding names the rule, the file and 
 
 - A bug fix comes with a regression test that fails without it. Isolation changes come with a two-browser test.
 - UI changes pass axe with no serious issues and no horizontal overflow at 375, 768 and 1280 px, light and dark, and match the Atelier design brief.
+- A UI change ships with end-to-end journeys for its main and error states, and with screenshots of each new or changed surface at 375, 768 and 1280 px, light and dark (`SCREENSHOTS=1` specs), reviewed against `.design/foresight/DESIGN_BRIEF.md` before merge. The PR lists what was captured and any findings, and `.design/foresight/DESIGN_REVIEW_APP.md` gets a dated note.
 - Copy: "Checked", not "Verified"; no regulated financial-product advice; no claims bank data can't support (say "overlap", not "unused subscription"); fictional data is labelled.
+- CPU or bulk-write work added to a request path (seeding, imports, forecasts) is timed alone and under concurrent load on constrained resources (e.g. `docker update --cpus 1` on the API and `--cpus 0.5` on Postgres), with the numbers in the PR. Move it out of the request if it slows other users.
 
 ## Working rules
 

@@ -73,10 +73,12 @@ def test_logout_and_delete_my_data(make_client: type[TestClient]) -> None:
             assert db.get(m.Workspace, first) is None
             assert db.get(m.Workspace, own) is None
     with make_client(create_app(), base_url=BASE) as other:
-        demo(other)
+        copy = demo(other)["workspace_id"]
         assert other.post("/api/session/logout").status_code == 204
         assert other.get("/api/session").status_code == 401
         assert not other.cookies.get(COOKIE)
+        with _db() as db:  # Codex review on #38: a guest's data goes at sign-out, not later
+            assert db.get(m.Workspace, copy) is None
 
 
 def test_the_landing_preview_needs_no_session(api: TestClient) -> None:

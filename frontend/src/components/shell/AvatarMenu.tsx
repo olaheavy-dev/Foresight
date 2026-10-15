@@ -14,8 +14,8 @@ export function initials(name: string): string {
 }
 
 /**
- * Avatar → menu: who is signed in, Switch profile, Settings, Quality checks, Theme, then Sign in
- * with Google (guests), Sign out and Delete my data (inline confirm). Esc and outside click close.
+ * Avatar → menu: who is signed in, Switch profile, Settings, Quality checks, Privacy, Theme, then Sign in
+ * with Google (guests), Sign out (a guest confirms first: it deletes their profiles) and Delete my data (inline confirm). Esc and outside click close.
  */
 export function AvatarMenu({
   name,
@@ -27,7 +27,7 @@ export function AvatarMenu({
   account?: SessionAccount | null;
 }) {
   const [open, setOpen] = useState(false);
-  const [confirming, setConfirming] = useState(false);
+  const [confirming, setConfirming] = useState<"delete" | "signout" | null>(null);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
@@ -36,7 +36,7 @@ export function AvatarMenu({
 
   useEffect(() => {
     if (!open) {
-      setConfirming(false);
+      setConfirming(null);
       setFailed(false);
       return;
     }
@@ -108,6 +108,9 @@ export function AvatarMenu({
         <Link className="um-item" href="/quality">
           Quality checks
         </Link>
+        <Link className="um-item" href="/privacy">
+          Privacy
+        </Link>
         <div className="um-sep" role="separator" />
         <p className="um-label" id={`${id}-theme`}>
           Theme
@@ -122,15 +125,36 @@ export function AvatarMenu({
                 Sign in with Google to keep your profiles
               </a>
             ) : null}
-            <button
-              type="button"
-              className="um-item"
-              disabled={busy}
-              onClick={() => leave(signOut, "/?auth=signedout")}
-            >
-              Sign out
-            </button>
-            {confirming ? (
+            {confirming === "signout" ? (
+              <div className="um-confirm" role="group" aria-label="Confirm signing out as a guest">
+                <p>Signing out as a guest deletes your guest profiles. Sign in with Google first to keep them.</p>
+                <div className="um-actions">
+                  <button
+                    type="button"
+                    className="btn danger"
+                    disabled={busy}
+                    onClick={() => leave(signOut, "/?auth=signedout")}
+                  >
+                    {busy ? "Signing out…" : "Sign out and delete"}
+                  </button>
+                  <button type="button" className="btn" disabled={busy} onClick={() => setConfirming(null)}>
+                    Keep them
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                className="um-item"
+                disabled={busy}
+                onClick={() =>
+                  account.kind === "guest" ? setConfirming("signout") : leave(signOut, "/?auth=signedout")
+                }
+              >
+                Sign out
+              </button>
+            )}
+            {confirming === "delete" ? (
               <div className="um-confirm" role="group" aria-label="Confirm deleting your data">
                 <p>
                   Delete every profile, import and conversation{" "}
@@ -145,13 +169,13 @@ export function AvatarMenu({
                   >
                     {busy ? "Deleting…" : "Delete my data"}
                   </button>
-                  <button type="button" className="btn" disabled={busy} onClick={() => setConfirming(false)}>
+                  <button type="button" className="btn" disabled={busy} onClick={() => setConfirming(null)}>
                     Keep it
                   </button>
                 </div>
               </div>
             ) : (
-              <button type="button" className="um-item danger" onClick={() => setConfirming(true)}>
+              <button type="button" className="um-item danger" onClick={() => setConfirming("delete")}>
                 Delete my data
               </button>
             )}
