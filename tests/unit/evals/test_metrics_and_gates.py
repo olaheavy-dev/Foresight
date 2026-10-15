@@ -70,19 +70,53 @@ def test_gate_rules() -> None:
     later_stage = {"targets": [target("t1", "t", 0.1, ">=", 0.9, "d", stage1=False)], "error": None}
     assert gate(measured_fail)["status"] == "fail"
     assert gate(measured_fail)["failed"] == ["t1"]
+    # Review R7: an unmeasured required target is not a pass.
     assert gate(only_null) == {
-        "status": "pass",
-        "rule": "ran without errors",
+        "status": "fail",
+        "rule": "docs/09 targets (0 measured, 1 unmeasured)",
         "failed": [],
         "unmeasured": ["t1"],
     }
+    explained = {
+        "targets": [
+            {**target("t1", "t", None, ">=", 0.9, "d"), "gated": False,
+             "not_gated_kind": "dataset_missing",
+             "not_gated_because": "dataset doesn't exist yet"},
+            target("t2", "t", 0.95, ">=", 0.9, "d"),
+        ],
+        "error": None,
+    }  # fmt: skip
+    assert gate(explained)["status"] == "pass"  # excluded explicitly, the rest measured and met
     # Since Stage 2 every measured target gates, whatever stage it was written for.
     assert gate(later_stage)["status"] == "fail"
     opted_out = {
         "targets": [{**target("t1", "t", 0.1, ">=", 0.9, "d"), "gated": False}],
         "error": None,
     }
-    assert gate(opted_out)["status"] == "pass"
+    # dataset_missing holds only for an unmeasured target: a value proves the dataset exists.
+    measured_missing = {**opted_out["targets"][0], "not_gated_kind": "dataset_missing",
+                        "not_gated_because": "no dataset"}  # fmt: skip
+    assert gate({**opted_out, "targets": [measured_missing]})["status"] == "fail"
+    # feature_not_built holds only beside a companion target that gates.
+    all_cases = {**target("all", "t", 0.93, ">=", 1.0, "31"), "gated": False,
+                 "not_gated_kind": "feature_not_built", "not_gated_because": "later stages",
+                 "gated_by": "built"}  # fmt: skip
+    built_ok = target("built", "t", 1.0, ">=", 1.0, "29")
+    assert gate({"targets": [all_cases, built_ok], "error": None})["status"] == "pass"
+    assert gate({"targets": [all_cases], "error": None})["status"] == "fail"  # no companion
+    built_excluded = {**built_ok, "gated": False, "not_gated_kind": "feature_not_built",
+                      "not_gated_because": "x", "gated_by": "all"}  # fmt: skip
+    assert gate({"targets": [all_cases, built_excluded], "error": None})["status"] == "fail"
+    # An opt-out without an allowed kind and a reason is ignored: the target still gates.
+    any_reason = {**opted_out["targets"][0], "not_gated_because": "it's hard to meet"}
+    assert gate({**opted_out, "targets": [any_reason]})["status"] == "fail"
+    assert gate(opted_out)["status"] == "fail"
+    assert (
+        gate({**opted_out, "targets": [{**opted_out["targets"][0], "not_gated_because": " "}]})[
+            "status"
+        ]
+        == "fail"
+    )
     assert gate({"targets": [], "error": "boom"})["status"] == "fail"
     assert gate(None)["status"] == "fail"
 

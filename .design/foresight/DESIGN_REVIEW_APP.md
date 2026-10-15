@@ -100,6 +100,12 @@ Checked and kept: six template cards in a grid from 768 px and stacked on mobile
 
 Could improve (open): the result could also show the scenario's key numbers (lowest balance before and after) as text above the chart.
 
+## Quality run label, reviewed 15 Oct 2026
+
+The Core metrics note now names its run in words ("From the evaluation run of 14 Oct 2026 (commit 21b5e1e)"), with the raw run id kept in a tooltip, instead of `evalrun_20261014T162812Z_21b5e1e`. Captured `review-quality-*` at 375, 768 and 1280 px in light and dark (`SCREENSHOTS=1`, real local stack): **0 axe violations and 0 horizontal overflow** on all six. At 375 px the longer note wraps to three lines within the measure and pushes nothing sideways. This closes the "raw run id on Quality" item left open on 14 Oct.
+
+Could improve (open): the fast tier lists its model twice ("gpt-6-luna, openai/gpt-6-luna") because older recordings stored the name without its provider prefix; the label could normalise names before joining them.
+
 ## Activity, reviewed 15 Oct 2026
 
 Captured by `e2e/app.screenshots.spec.ts` (`SCREENSHOTS=1`, real local stack) at 375, 768 and 1280 px in light and dark: `review-activity-*`, with the demo's empty run list and, in an earlier capture, a profile with an advice run. All six: **0 axe violations and 0 horizontal overflow**. Journeys: `e2e/activity.spec.ts` (no profile yet; an import plus a payee-wide correction shown as one line, audit chain intact).

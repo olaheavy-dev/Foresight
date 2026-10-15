@@ -69,6 +69,26 @@ def test_render_headline_order_and_nulls() -> None:
     assert "Not run yet: E-VER." in block
 
 
+def test_an_excluded_miss_shows_why_it_does_not_gate() -> None:
+    excluded = {
+        "id": "ORC-pass", "label": "Case pass rate", "dataset": "31 cases", "value": 0.9355,
+        "target": ">= 1.0", "met": False, "stage1": True, "gated": False,
+        "not_gated_kind": "feature_not_built", "gated_by": "ORC-pass-built",
+        "not_gated_because": "includes cases for features of later stages not built yet",
+    }  # fmt: skip
+    built = {"id": "ORC-pass-built", "label": "Built cases", "dataset": "29 cases", "value": 1.0,
+             "target": ">= 1.0", "met": True, "stage1": True}  # fmt: skip
+    block = render({**SUMMARY, "targets": {"E-ORC": [excluded, built]}})
+    assert (
+        "ORC-pass: Case pass rate = 0.935 (target >= 1.0, 31 cases); not gated: includes cases "
+        "for features of later stages not built yet" in block
+    )
+    assert "FC-coverage-P1: Coverage = 0.500 (target 0.72–0.88, P1)\n" in render(SUMMARY)
+    # An older result's bare opt-out (no allowed kind) gates, so it isn't labelled "not gated".
+    bare = {k: v for k, v in excluded.items() if k != "not_gated_kind"}
+    assert "not gated" not in render({**SUMMARY, "targets": {"E-ORC": [bare]}})
+
+
 def test_check_mode_detects_drift(tmp_path: Path) -> None:
     import json
 
