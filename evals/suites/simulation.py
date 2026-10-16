@@ -130,29 +130,36 @@ def _sim6(base: ForecastInputs, rng: random.Random, ctx: dict[str, int]) -> bool
 
 def _sim11(base: ForecastInputs, rng: random.Random, ctx: dict[str, int]) -> bool:
     """Goal consistency (docs/09 §8, docs/07 §6.7, `residual`): the shortfall is the target less
-    P50 progress to the penny; P50 progress is the forecast's own target-cycle low above the
-    buffer whenever the zero floor can't reach the median; the required change is whole steps;
-    and the projection is deterministic."""
+    P50 progress to the penny; for a target on the day before a payday (half the cases), P50
+    progress is the forecast's own pre-salary low of that cycle above the buffer whenever the
+    zero floor can't reach the median; the required change is whole steps; and the projection is
+    deterministic."""
     target_date = base.as_of + timedelta(days=rng.randint(30, 300))
     inputs = dataclasses.replace(
         base,
         seed=rng.randrange(2**31),
         horizon_days=horizon_for(base.as_of, target_date),
     )
+    forecast = build_forecast(inputs)
+    paydays = [c.payday for c in forecast.pay_cycles if c.payday - timedelta(days=1) > base.as_of]
+    cycle_end = rng.random() < 0.5 and paydays
+    if cycle_end:
+        target_date = rng.choice(paydays) - timedelta(days=1)
     goal = GoalSpec("goal_sim11", "Goal", inputs.currency, rng.randint(1, 1_000_000), target_date)
     r = project_goal(inputs, goal)
     ok = r.shortfall_minor == goal.target_minor - r.progress.p50
     ok = ok and r == project_goal(inputs, goal)
-    forecast = build_forecast(inputs)
-    paydays = [c.payday for c in forecast.pay_cycles if c.payday <= target_date]
     buffer = int(inputs.buffer_minor or 0)
-    if paydays:
-        cycle = next(c for c in forecast.pay_cycles if c.payday == paydays[-1])
-        # Exact only when the zero floor can't reach the median's order statistics: clearly
-        # fewer than half the paths end the cycle below the buffer.
-        if cycle.chance_below_buffer is not None and cycle.chance_below_buffer < 0.45:
-            ctx["cross_checked"] = ctx.get("cross_checked", 0) + 1
-            ok = ok and r.progress.p50 == cycle.low.p50 - buffer
+    cycle = next((c for c in forecast.pay_cycles if c.payday == target_date + timedelta(1)), None)
+    # Exact only when the zero floor can't reach the median's order statistics: clearly fewer
+    # than half the paths end the cycle below the buffer.
+    if (
+        cycle is not None
+        and cycle.chance_below_buffer is not None
+        and cycle.chance_below_buffer < 0.45
+    ):
+        ctx["cross_checked"] = ctx.get("cross_checked", 0) + 1
+        ok = ok and r.progress.p50 == cycle.low.p50 - buffer
     step = change_increment(inputs.currency)
     return ok and (r.required_monthly_minor is None or r.required_monthly_minor % step == 0)
 
@@ -229,7 +236,8 @@ def run(fast: bool = False) -> dict[str, Any]:
         "SIM-11 projects a goal (target £0.01–£10,000, 30–300 days out, residual funding): the "
         "shortfall must equal target − P50 progress to the penny, the projection must repeat "
         "exactly, the required monthly change must be whole £10 steps, and P50 progress must equal "
-        "the forecast's own target-cycle low above the buffer whenever under 45% of paths dip "
-        "below the buffer (otherwise the zero floor reaches the median and the two may differ).",
+        "the forecast's own target-cycle low above the buffer for targets on the day before a "
+        "payday (half the cases) whenever under 45% of paths dip below the buffer (otherwise the "
+        "zero floor reaches the median and the two may differ).",
     ]
     return {"metrics": metrics, "targets": targets, "notes": notes}

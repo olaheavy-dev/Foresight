@@ -3,8 +3,9 @@ the cash above the buffer at the target month's pre-salary low,
 
     progress[p] = max(0, pre_salary_low[p, target cycle] − buffer)
 
-where the target cycle is the window that ends the day before the last payday on or before the
-target date (or, with no payday in reach, the window from tomorrow to the target date). Paths
+where the target cycle is the pay cycle containing the target date, measured from its payday (or
+tomorrow) up to the target date: every change before the goal's date counts, nothing after it
+does, and a target on the day before a payday measures exactly that cycle's pre-salary low. Paths
 are the forecast's own (same seed, prior and calibration), so a goal never disagrees with the
 forecast it sits beside.
 
@@ -101,15 +102,13 @@ def change_increment(currency: str) -> int:
 
 
 def _window(dates: tuple[date, ...], paydays: tuple[date, ...], target: date) -> tuple[int, int]:
-    """[lo, hi] day indices of the target cycle (see the module docstring)."""
+    """[lo, hi] day indices of the target cycle (see the module docstring): from the last payday
+    on or before the target (or tomorrow) up to the target date itself, so every change before
+    the goal's date counts and nothing after it does."""
     index = {d: i for i, d in enumerate(dates)}
-    before = [p for p in paydays if p <= target and index.get(p, 0) > 1]
-    if before:
-        last = before[-1]
-        earlier = [p for p in paydays if p < last and p in index]
-        lo = index[earlier[-1]] if earlier else 1
-        return lo, index[last] - 1
-    return 1, index[target]
+    started = [p for p in paydays if p <= target and index.get(p, 0) >= 1]
+    lo = index[started[-1]] if started else 1
+    return lo, index[target]
 
 
 def _band(p: float, p50: int, target: int) -> str:

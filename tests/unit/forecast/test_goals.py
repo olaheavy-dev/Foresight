@@ -92,3 +92,21 @@ def test_on_track_needs_the_median_to_meet_the_target_as_well() -> None:
     assert _band(0.5, 149_999, 150_000) == "at_risk"
     assert _band(0.5, 150_000, 150_000) == "on_track"
     assert _band(0.2, 0, 150_000) == "off_track"
+
+
+def test_spending_between_the_last_payday_and_the_target_lowers_progress(base) -> None:  # type: ignore[no-untyped-def]
+    """#54 (Codex): the target cycle runs from its payday up to the goal's date, so a purchase in
+    between counts (it used to be measured over the cycle before, and was left out)."""
+    from backend.finance_core.forecast.engine import build_forecast
+    from backend.finance_core.types import KnownFlow
+
+    rich = dataclasses.replace(base, starting_balance_minor=base.starting_balance_minor + 900_000)
+    paydays = [c.payday for c in build_forecast(rich).pay_cycles]
+    payday = paydays[2]
+    target = payday + timedelta(days=12)
+    goal = GoalSpec("goal_x", "Trip", base.currency, 150_000, target)
+    before = project_goal(rich, goal)
+    spend = KnownFlow(payday + timedelta(days=5), -60_000, "Laptop")
+    after = project_goal(dataclasses.replace(rich, known_flows=(spend,)), goal)
+    assert after.progress.p50 == before.progress.p50 - 60_000
+    assert after.measured_on == target
