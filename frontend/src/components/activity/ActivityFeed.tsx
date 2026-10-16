@@ -14,6 +14,7 @@ const WORKFLOW: Record<string, string> = {
   scenario: "Ran a what-if",
   ingestion: "Checked an import",
   risk_detection: "Proactive check",
+  advice_followup: "Finished checking advice",
 };
 const TRIGGER: Record<string, string> = {
   user: "You asked",
@@ -44,7 +45,7 @@ function Run({ run, locale, timeZone }: { run: ActivityRun; locale: string; time
       <details>
         <summary>
           <span className="act-run-main">
-            <span className="act-run-title">{WORKFLOW[run.workflow] ?? run.workflow}</span>
+            <span className="act-run-title">{WORKFLOW[run.workflow] ?? "Background run"}</span>
             <span className="act-run-sub">
               {TRIGGER[run.trigger] ?? run.trigger} · {when(run.started_at, locale, timeZone)}
               {run.question ? ` · “${run.question}”` : ""}

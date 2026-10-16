@@ -83,6 +83,18 @@ export const ACTIVITY_FIXTURE: Feed = {
 };
 
 describe("ActivityFeed", () => {
+  it("names every workflow in plain words, never an internal id (#50 review)", () => {
+    const runs = ["advice_followup", "some_future_workflow"].map((workflow, i) => ({
+      ...ACTIVITY_FIXTURE.runs![0],
+      run_id: `${ACTIVITY_FIXTURE.runs![0].run_id.slice(0, -1)}${i}`,
+      workflow,
+    }));
+    render(<ActivityFeed feed={{ ...ACTIVITY_FIXTURE, runs }} locale="en-GB" timeZone="Europe/London" />);
+    expect(screen.getByText("Finished checking advice")).toBeInTheDocument();
+    expect(screen.getByText("Background run")).toBeInTheDocument();
+    expect(screen.queryByText(/advice_followup|some_future_workflow/)).not.toBeInTheDocument();
+  });
+
   it("shows each run as a trace: steps, models, time, cost and the Verifier's verdicts", () => {
     render(<ActivityFeed feed={ACTIVITY_FIXTURE} locale="en-GB" timeZone="Europe/London" />);
     expect(screen.getByText("Advised on a question")).toBeInTheDocument();
