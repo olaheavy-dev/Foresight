@@ -54,9 +54,16 @@ function Run({ run, locale, timeZone }: { run: ActivityRun; locale: string; time
           <span className="act-run-facts">
             <Badge tone={tone}>{run.partial ? "Partial" : run.status === "succeeded" ? "Done" : run.status}</Badge>
             {(run.approved ?? 0) + (run.rejected ?? 0) > 0 ? (
-              <Badge tone="green" icon="checkcircle">
-                {run.approved} checked{run.rejected ? ` · ${run.rejected} rejected` : ""}
-              </Badge>
+              run.approved ? (
+                <Badge tone="green" icon="checkcircle">
+                  {run.approved} checked{run.rejected ? ` · ${run.rejected} rejected` : ""}
+                </Badge>
+              ) : (
+                // Nothing passed the Verifier: a caution, never the green of a positive outcome.
+                <Badge tone="amber" icon="alert">
+                  None passed · {run.rejected} rejected
+                </Badge>
+              )
             ) : null}
             <span className="num">{seconds(run.duration_ms)}</span>
             <span className="num">{dollars(run.cost_usd)}</span>
@@ -139,7 +146,12 @@ export function ActivityFeed({ feed, locale, timeZone }: { feed: Feed; locale: s
       </section>
 
       <section className="card act-card" aria-labelledby="changes-h">
-        <CardHead icon="shield" title="Changes" titleId="changes-h" sub="Every change to this profile, in order." />
+        <CardHead
+          icon="shield"
+          title="Changes"
+          titleId="changes-h"
+          sub="The latest changes to this profile, newest first."
+        />
         <p className="act-chain">
           {feed.audit_chain_intact ? (
             <Badge tone="green" icon="checkcircle">

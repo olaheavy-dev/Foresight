@@ -8,7 +8,8 @@ import { loadShell } from "@/lib/server";
 export const metadata = { title: "Activity · Foresight" };
 export const dynamic = "force-dynamic";
 
-const LEDE = "What Foresight did and when: every agent run with its steps, and every change to this profile.";
+const LEDE =
+  "What Foresight did recently: the latest agent runs with their steps, and the latest changes to this profile.";
 
 export default async function ActivityPage() {
   const { profile, features, options } = await loadShell();

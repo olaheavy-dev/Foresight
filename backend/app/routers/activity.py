@@ -34,6 +34,8 @@ PHRASES = {
     ),
     "forecast.rebuilt": ("Rebuilt the forecast", "Rebuilt the forecast {n} times"),
     "balance.declared": ("Added a balance", "Added {n} balances"),
+    "profile.renamed": ("Renamed the profile", "Renamed the profile {n} times"),
+    "profile.buffer_set": ("Changed the buffer", "Changed the buffer {n} times"),
     "recommendation_approved": (
         "A recommendation passed the Verifier’s checks",
         "{n} recommendations passed the Verifier’s checks",

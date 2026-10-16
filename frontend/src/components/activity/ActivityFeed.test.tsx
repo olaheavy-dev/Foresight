@@ -95,6 +95,13 @@ describe("ActivityFeed", () => {
     expect(screen.queryByText(/advice_followup|some_future_workflow/)).not.toBeInTheDocument();
   });
 
+  it("marks a run where no draft passed as a caution, not a success (#50 review)", () => {
+    const runs = [{ ...ACTIVITY_FIXTURE.runs![0], approved: 0, rejected: 2 }];
+    render(<ActivityFeed feed={{ ...ACTIVITY_FIXTURE, runs }} locale="en-GB" timeZone="Europe/London" />);
+    expect(screen.getByText("None passed · 2 rejected")).toBeInTheDocument();
+    expect(screen.queryByText(/0 checked/)).not.toBeInTheDocument();
+  });
+
   it("shows each run as a trace: steps, models, time, cost and the Verifier's verdicts", () => {
     render(<ActivityFeed feed={ACTIVITY_FIXTURE} locale="en-GB" timeZone="Europe/London" />);
     expect(screen.getByText("Advised on a question")).toBeInTheDocument();

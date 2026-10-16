@@ -124,6 +124,10 @@ def test_runs_are_traces_and_the_audit_log_reads_in_words(
         changed = [e for e in _activity(alice)["events"] if e["action"] == "txn.recategorised"]
         assert [e["summary"] for e in changed[:2]] == ["Changed a transaction’s category"] * 2
 
+        # Settings changes read in words too.
+        alice.patch("/api/session", json={"buffer_minor": 40_000})
+        assert _activity(alice)["events"][0]["summary"] == "Changed the buffer"
+
         run_id = _seed_run(mine)
         body = _activity(alice)
         (run,) = [r for r in body["runs"] if r["run_id"] == run_id]
