@@ -33,7 +33,7 @@ import dataclasses
 from collections.abc import Iterator
 from datetime import date, timedelta
 
-from backend.finance_core.calendar import next_working_day, obligation_dates
+from backend.finance_core.calendar import next_working_day, obligation_dates, paydays_between
 from backend.finance_core.forecast.calibration import Calibration
 from backend.finance_core.forecast.engine import (
     Flow,
@@ -210,6 +210,9 @@ def _apply(
         if not hit:
             raise ScenarioError(f"no paydays for income stream {key!r}")
         scaled = {id(f) for f in hit if _in_period(dates[f.day], mod)}
+        if not scaled:
+            # No payday of it falls in the period: never answer "no difference" (#55 review).
+            raise ScenarioError(f"income_change_pct: no {key!r} payday falls in the period")
         out = []
         for f in flows:
             if id(f) not in scaled:
@@ -282,6 +285,18 @@ def horizon_covering(inputs: ForecastInputs, spec: ScenarioSpec) -> int:
             begin = max(start or as_of, as_of + timedelta(days=1))
             due = obligation_dates(ob, begin, cap, inputs.holidays) if ob else []
             start = next((d for d in due if d >= begin), start)
+        if mod.type == "income_change_pct" and mod.from_date is not None:
+            # The first payday of the stream on or after the change (shifted paydays can sit
+            # more than a month apart), so the change is applied, never answered as no change.
+            begin = max(mod.from_date, as_of + timedelta(days=1))
+            key = mod.income_stream_key or ALL_INCOME
+            pays = [
+                d
+                for stream in inputs.income_streams
+                if stream.payday_rule is not None and key in (ALL_INCOME, stream.key)
+                for d in paydays_between(stream.payday_rule, begin, cap, inputs.holidays)
+            ]
+            start = min(pays, default=start)
         if start is None:
             continue
         if mod.type == "split_outflow" and mod.instalments and mod.instalments > 1:

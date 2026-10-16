@@ -147,3 +147,27 @@ def test_a_cancellation_reaches_the_bills_next_payment_or_is_refused(base) -> No
     assert res.simulated.p50[-1] > res.baseline.p50[-1]  # April's bill is gone
     with pytest.raises(ScenarioError, match="no .* payment falls in the forecast"):
         simulate(short, dataclasses.replace(spec, horizon_days=150))  # ends before April
+
+
+def test_an_income_change_reaches_its_first_payday_or_is_refused(base) -> None:  # type: ignore[no-untyped-def]
+    """#55 review: a pay cut from a date past the forecast runs until the stream's first payday on
+    or after it (shifted paydays can be over a month apart); one that scales no payday is
+    refused, never "no change"."""
+    from backend.finance_core.calendar import paydays_between
+
+    short = dataclasses.replace(base, horizon_days=90)
+    stream = next(s for s in short.income_streams if s.payday_rule is not None)
+    start = short.as_of + timedelta(days=100)
+    cut = ScenarioModifier(
+        type="income_change_pct", income_stream_key=stream.key, pct=-50, from_date=start
+    )
+    spec = ScenarioSpec("t", base.currency, (cut,))
+    window = (start, start + timedelta(days=62), short.holidays)
+    first = paydays_between(stream.payday_rule, *window)[0]
+    horizon = horizon_covering(short, spec)
+    assert short.as_of + timedelta(days=horizon) >= first
+    res = simulate(short, dataclasses.replace(spec, horizon_days=horizon))
+    assert res.simulated.p50[-1] < res.baseline.p50[-1]  # the cut payday is in the forecast
+    narrow = dataclasses.replace(cut, from_date=first + timedelta(1), to_date=first + timedelta(2))
+    with pytest.raises(ScenarioError, match="no .* payday falls in the period"):
+        simulate(short, ScenarioSpec("t", base.currency, (narrow,), horizon_days=horizon))
