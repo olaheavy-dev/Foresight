@@ -20,6 +20,8 @@ import {
   isDetectedFlows,
   isFeaturesPayload,
   isForecastView,
+  isGoalList,
+  isGoalView,
   isHealthz,
   isImportSummary,
   isIncomeStreamView,
@@ -42,6 +44,8 @@ import type {
   Feature,
   FollowUpAction,
   ForecastView,
+  GoalList,
+  GoalView,
   Healthz,
   ImportSummary,
   Placement,
@@ -471,4 +475,55 @@ export function decideIncome(
 /** The profile's agent runs as traces, and its audit log in words (server or browser). */
 export function fetchActivity(options: ApiOptions = {}): Promise<ActivityFeed | null> {
   return request("/api/activity", okAnd(isActivityFeed), options);
+}
+
+/** The profile's goals, each with its projection (the first read of a new goal runs the engine). */
+export function fetchGoals(options: ApiOptions = {}): Promise<GoalList | null> {
+  return request("/api/goals", okAnd(isGoalList), { timeoutMs: TIMEOUTS.simulate, ...options });
+}
+
+export type GoalOutcome = { goal: GoalView } | { error: string };
+
+function goalOutcome(body: unknown, status: number): GoalOutcome | null {
+  if ((status === 200 || status === 201) && isGoalView(body)) return { goal: body };
+  const detail = (body as { detail?: unknown } | null)?.detail;
+  if (status === 422 && typeof detail === "string") return { error: detail };
+  if (status === 422) return { error: "Check the name, amount and date, then try again." };
+  return null;
+}
+
+/** Set a save-by-date goal (browser); a refusal comes back with its reason. */
+export function createGoal(
+  goal: { name: string; targetMinor: number; targetDate: string },
+  options: ApiOptions = {},
+): Promise<GoalOutcome | null> {
+  return request(
+    "/api/goals",
+    goalOutcome,
+    { timeoutMs: TIMEOUTS.simulate, ...options },
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ name: goal.name, target_minor: goal.targetMinor, target_date: goal.targetDate }),
+    },
+  );
+}
+
+/** Edit or archive a goal (browser); fields left out are unchanged. */
+export function updateGoal(
+  goalId: string,
+  changes: { name?: string; targetMinor?: number; targetDate?: string; status?: GoalView["status"] },
+  options: ApiOptions = {},
+): Promise<GoalOutcome | null> {
+  const body: Record<string, unknown> = {};
+  if (changes.name !== undefined) body.name = changes.name;
+  if (changes.targetMinor !== undefined) body.target_minor = changes.targetMinor;
+  if (changes.targetDate !== undefined) body.target_date = changes.targetDate;
+  if (changes.status !== undefined) body.status = changes.status;
+  return request(
+    `/api/goals/${encodeURIComponent(goalId)}`,
+    goalOutcome,
+    { timeoutMs: TIMEOUTS.simulate, ...options },
+    { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify(body) },
+  );
 }

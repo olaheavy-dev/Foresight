@@ -29,12 +29,13 @@ Features ship behind flags ([`features.yaml`](features.yaml)). A feature is list
 - AI Workspace — conversational analysis with generated answers
 - Decision Lab scenario comparison
 - Transactions, imports and categorisation review
+- Goal tracking (save by a date, projected on the forecast)
 
 ### Not shipped (planned)
 
 - Stage 3: Home (cached financial briefing and proactive insights)
 - Stage 3: Scheduled Telegram digest
-- Stage 3: Goal tracking with adaptive advice
+- Stage 3: Adaptive advice when a goal falls behind
 - Stage 3: Instant answers to repeated questions on unchanged data
 - Stage 3: Checking whether accepted advice worked
 - Stage 4: Multi-account and joint household layer

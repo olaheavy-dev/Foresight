@@ -48,6 +48,8 @@ from backend.finance_core.forecast.engine import (
 )
 from backend.finance_core.forecast.prior import IrregularPrior, load_irregular_prior
 from backend.finance_core.forecast.prior import to_jsonable as prior_json
+from backend.finance_core.goals import ENGINE_VERSION as GOAL_ENGINE_VERSION
+from backend.finance_core.goals import GoalSpec, horizon_for, project_goal
 from backend.finance_core.importers.anchors import balance_on
 from backend.finance_core.simulate import SIMULATOR_VERSION, check_cycle_closes, simulate
 from backend.finance_core.types import (
@@ -583,3 +585,53 @@ def verify(ctx: WorkspaceContext, calc_id: str) -> bool:
         stored, inputs, lambda i: build_forecast(i, prior=prior, calibration=calibration)
     )
     return same
+
+
+@dataclass(frozen=True)
+class StoredGoalProjection:
+    calculation: m.Calculation
+    result: dict[str, Any]  # the engine's GoalResult as stored JSON
+    created: bool
+
+
+def run_goal_projection(
+    ctx: WorkspaceContext,
+    goal: m.Goal,
+    *,
+    n_paths: int = 500,
+    window_days: int = HISTORY_DAYS,
+) -> StoredGoalProjection:
+    """A goal on the forecast's own paths (docs/07 §6.7), stored as a `goal_projection`
+    calculation. The horizon runs through the goal's date (at least 90 days, at most 365); the
+    seed, prior and calibration are the forecast's, so the two never disagree. The same goal on
+    the same data is read back, never recomputed (docs/05 A5)."""
+    as_of = forecast_inputs(ctx, n_paths=n_paths, window_days=window_days).as_of
+    inputs = forecast_inputs(
+        ctx,
+        as_of=as_of,
+        horizon_days=horizon_for(as_of, goal.target_date),
+        n_paths=n_paths,
+        window_days=window_days,
+    )
+    spec = GoalSpec(goal.id, goal.name, goal.currency, goal.target_minor, goal.target_date)
+    prior = irregular_prior(inputs.currency)
+    params = {**_params(ctx, inputs, window_days), "goal": spec}
+    want = to_jsonable(params)
+    for row in ctx.calculations("goal_projection", content_hash(inputs)):
+        if row.engine_version == GOAL_ENGINE_VERSION and all(
+            row.params.get(k) == v for k, v in want.items()
+        ):
+            return StoredGoalProjection(row, row.result, False)
+    started = time.perf_counter()
+    calibration = calibration_for(ctx, inputs, prior, window_days)
+    result = project_goal(inputs, spec, prior=prior, calibration=calibration)
+    elapsed = int((time.perf_counter() - started) * 1000)
+    rec = record(
+        "goal_projection",
+        inputs,
+        {**params, **_model_params(prior, calibration)},
+        result,
+        GOAL_ENGINE_VERSION,
+    )
+    row, created = _store(ctx, rec, elapsed)
+    return StoredGoalProjection(row, row.result, created)

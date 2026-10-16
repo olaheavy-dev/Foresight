@@ -19,6 +19,8 @@ from backend.app.ui_contracts.response import (
     DetectedFlows,
     FeaturesPayload,
     ForecastView,
+    GoalList,
+    GoalView,
     Healthz,
     HomeInsights,
     ImportHistory,
@@ -50,6 +52,8 @@ ROOTS: tuple[type[BaseModel], ...] = (
     HomeInsights,
     IncomeStreamView,
     ActivityFeed,
+    GoalList,
+    GoalView,
 )
 
 

@@ -12,6 +12,7 @@ from typing import Any
 from sqlalchemy import (
     BigInteger,
     Boolean,
+    CheckConstraint,
     Date,
     DateTime,
     Float,
@@ -607,6 +608,27 @@ class AnswerCacheEntry(Base):
     hits: Mapped[int] = mapped_column(Integer, server_default="0")
     created_at: Mapped[datetime] = _created_at()
     last_hit_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class Goal(Base):
+    """A save-by-date goal (migration 0009; docs/07 §3.1, §6.7). `residual` funding: no money
+    moves; progress is the cash above the buffer at the target month's pre-salary low."""
+
+    __tablename__ = "goal"
+    __table_args__ = (CheckConstraint("target_minor > 0", name="ck_goal_target_positive"),)
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)  # goal_
+    workspace_id: Mapped[str] = _workspace_fk()
+    name: Mapped[str] = mapped_column(String(80))
+    currency: Mapped[str] = mapped_column(String(3))  # the home currency at creation, then fixed
+    kind: Mapped[str] = mapped_column(String(16), server_default="save_by_date")
+    target_minor: Mapped[int] = mapped_column(BigInteger)
+    target_date: Mapped[date] = mapped_column(Date)
+    funding_rule: Mapped[str] = mapped_column(String(16), server_default="residual")
+    status: Mapped[str] = mapped_column(
+        String(12), server_default="active"
+    )  # or achieved, abandoned
+    created_at: Mapped[datetime] = _created_at()
 
 
 class AnalysisJob(Base):

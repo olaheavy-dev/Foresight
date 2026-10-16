@@ -613,8 +613,10 @@ export function GoalBlock({ block }: { block: GoalProjection }) {
       />
       <dl className="keynums">
         <div>
-          <dt>Saved now</dt>
+          {/* Residual funding: nothing is set aside, so this is what's spare above the buffer. */}
+          <dt>Spare now</dt>
           <dd className="v num">{block.progress_now.display}</dd>
+          <dd className="n">above your buffer, at the next low</dd>
         </div>
         <div>
           <dt>Likely by {block.goal.target_date.display}</dt>
@@ -639,11 +641,11 @@ export function GoalBlock({ block }: { block: GoalProjection }) {
         locale={locale}
         target={block.goal.target.minor}
         targetLabel={`Target ${block.goal.target.display}`}
-        ariaLabel={`${block.goal.name}: projected savings to ${formatLongDate(block.goal.target_date.value, locale)}, with the likely range.`}
+        ariaLabel={`${block.goal.name}: what's spare above your buffer at each pay-cycle low to ${formatLongDate(block.goal.target_date.value, locale)}, with the likely range.`}
         lines={[
           {
             key: "trajectory",
-            label: "Projected",
+            label: "Spare at each low",
             kind: "forecast",
             dates: block.trajectory.dates,
             values: block.trajectory.p50,

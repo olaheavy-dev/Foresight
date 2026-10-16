@@ -10,6 +10,7 @@ from pydantic import Field, StringConstraints
 from backend.app.ui_contracts.blocks import (
     Block,
     CashFlowForecastData,
+    GoalProjection,
     InterventionCard,
     ScenarioComparisonData,
 )
@@ -23,6 +24,7 @@ from backend.app.ui_contracts.primitives import (
     FindingId,
     FollowUpAction,
     ForecastId,
+    GoalId,
     ImportId,
     IncomeStreamId,
     Locale,
@@ -450,3 +452,43 @@ class ActivityFeed(Contract):
     events: list[ActivityEvent] = []
     audit_events: Annotated[int, Field(ge=0)] = 0
     audit_chain_intact: bool
+
+
+GoalName = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=80)]
+GoalStatus = Literal["active", "achieved", "abandoned"]
+
+
+class GoalCreate(Contract):
+    """A save-by-date goal in the home currency, funded from what's left above the buffer."""
+
+    name: GoalName
+    target_minor: Annotated[int, Field(gt=0, le=10_000_000_000)]
+    target_date: dt.date
+
+
+class GoalUpdate(Contract):
+    """Edit or archive a goal; fields left out are unchanged."""
+
+    name: GoalName | None = None
+    target_minor: Annotated[int, Field(gt=0, le=10_000_000_000)] | None = None
+    target_date: dt.date | None = None
+    status: GoalStatus | None = None
+
+
+class GoalView(Contract):
+    goal_id: GoalId
+    name: NonEmpty
+    status: GoalStatus
+    target: MoneyValue
+    target_date: dt.date
+    # The engine's projection (docs/07 §6.7) as the Workspace's block; None with `problem` when
+    # it can't be projected honestly (no known balance yet, a date past a year).
+    projection: GoalProjection | None = None
+    problem: str | None = None
+    lower_confidence: bool = False  # the target is more than 90 days out
+    calc_id: CalcId | None = None
+
+
+class GoalList(Contract):
+    workspace_id: WorkspaceId
+    goals: list[GoalView]

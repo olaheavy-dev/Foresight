@@ -108,6 +108,8 @@ export interface UiContracts {
   HomeInsights?: HomeInsights;
   IncomeStreamView?: IncomeStreamView;
   ActivityFeed?: ActivityFeed;
+  GoalList?: GoalList;
+  GoalView?: GoalView;
 }
 /**
  * This interface was referenced by `UiContracts`'s JSON-Schema
@@ -2098,4 +2100,27 @@ export interface ActivityStep {
   status: string;
   tokens_in?: number;
   tokens_out?: number;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "GoalList".
+ */
+export interface GoalList {
+  goals: GoalView[];
+  workspace_id: string;
+}
+/**
+ * This interface was referenced by `UiContracts`'s JSON-Schema
+ * via the `definition` "GoalView".
+ */
+export interface GoalView {
+  calc_id?: string | null;
+  goal_id: string;
+  lower_confidence?: boolean;
+  name: string;
+  problem?: string | null;
+  projection?: GoalProjection | null;
+  status: "active" | "achieved" | "abandoned";
+  target: MoneyValue;
+  target_date: string;
 }

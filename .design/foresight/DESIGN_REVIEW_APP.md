@@ -129,3 +129,16 @@ Found and fixed in this review:
 Checked and kept: run summaries read as plain outcomes ("Advised on a question", Done, time, cost), with steps behind a disclosure so the page stays calm. The audit chain badge uses the success colour only when the hash chain checks out, and states plainly what that means. Consecutive identical changes collapse to one line, and the "Traces stay on Foresight's own servers" note says where traces live without technical names.
 
 Could improve (open): a run's steps could show a small time bar so the slow step stands out; the Changes list could page past its latest 40 lines.
+
+## Goals (Decision Lab), reviewed 16 Oct 2026
+
+Captured by `e2e/app.screenshots.spec.ts` (`SCREENSHOTS=1`, real local stack) at 375, 768 and 1280 px in light and dark: `review-lab-goal-*` (the demo with one goal, "Trip home", £1,500 in six months). All six: **0 axe violations and 0 horizontal overflow**. Journeys: `e2e/goals.spec.ts` (add, project, edit, reload, mark achieved, archive; a missing name and a past date refused with the reason; a profile with no known balance told why its goal can't be projected; a failed load says so).
+
+Found and fixed in this review:
+- **The chart contradicted the figures.** It drew weekly cash above the buffer, a sawtooth peaking near £4K after each payday, beside "0% chance" and "£0 likely". The engine's trajectory is now progress itself, each pay cycle's low above the buffer up to the target cycle, so the line ends at the projection shown above it (unit test `test_the_trajectory_ends_at_the_progress_it_reports`). The series is labelled "Spare at each low".
+- **"Saved now" claimed savings that don't exist.** With residual funding nothing is set aside, so the block reads "Spare now · above your buffer, at the next low".
+- **The add form kept the last goal's values** after a successful add. It now starts again.
+
+Checked and kept: the goal block is the Workspace's own (one component, two places). The band badge uses the caution colour for at risk and off track. The required monthly change reads as a plain sentence ("£310.00 more a month would close the gap"). A goal more than 90 days out carries one quiet line about the wider range. Fields lock while the engine projects, as in the Lab.
+
+Could improve (open): goals sit below the what-if on one long page; a "Goals" view switch (`/lab?view=goals`, docs/00 §9) would let each be found directly. The Workspace doesn't answer about stored goals yet.
