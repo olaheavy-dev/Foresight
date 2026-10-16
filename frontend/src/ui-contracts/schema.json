@@ -6073,6 +6073,19 @@
           ],
           "default": null
         },
+        "buffer_minor": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Buffer Minor"
+        },
         "country": {
           "pattern": "^[A-Z]{2}$",
           "title": "Country",

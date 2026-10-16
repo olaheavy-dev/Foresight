@@ -1822,6 +1822,7 @@ export interface ScenarioComparisonData {
  */
 export interface ProfileView {
   account?: SessionAccount | null;
+  buffer_minor?: number | null;
   country: string;
   data_version: number;
   home_currency: string;

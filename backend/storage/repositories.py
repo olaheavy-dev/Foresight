@@ -375,6 +375,20 @@ class WorkspaceContext:
         self.session.flush()
         return event
 
+    def prefs_version(self) -> int:
+        """Bumped by every buffer change (each one audited): preferences that change advice but
+        not the ledger, so cached answers and checks know they're stale while the ledger-derived
+        forecast seed (`data_version`) stays put."""
+        count = self.session.scalar(
+            select(func.count())
+            .select_from(m.AuditEvent)
+            .where(
+                m.AuditEvent.workspace_id == self.workspace_id,
+                m.AuditEvent.action == "profile.buffer_set",
+            )
+        )
+        return int(count or 0)
+
     def audit_chain_valid(self) -> bool:
         events = self.session.scalars(self.select(m.AuditEvent).order_by(m.AuditEvent.seq))
         prev = GENESIS_HASH

@@ -224,3 +224,18 @@ def test_advice_from_an_older_data_version_is_not_shown(
         f"/api/transactions/{row['transaction_id']}/category", json={"category_key": "groceries"}
     )
     assert _insights(api)["recommendations"] == []
+
+
+def test_advice_checked_against_an_older_buffer_is_not_shown(
+    api: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#53 (Codex): a new buffer leaves the ledger (and the forecast's seed) alone but changes
+    what counts as a risk, so the previous run's cards are withheld and a refresh is queued."""
+    test_a_finished_run_shows_its_checked_recommendations(api, monkeypatch)
+    before = _insights(api)
+    assert before["recommendations"]
+    api.patch("/api/session", json={"buffer_minor": 123_400})
+    after = _insights(api)
+    assert after["recommendations"] == []
+    assert after["data_version"] == before["data_version"]
+    assert after["status"] == "checking"  # the buffer_set refresh is queued

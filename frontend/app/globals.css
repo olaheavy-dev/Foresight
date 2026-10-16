@@ -732,6 +732,24 @@ button.um-item { width: 100%; border: 0; background: none; font: inherit; cursor
 .income-controls .btn.sm { min-height: 36px; padding: 0 var(--space-3); font-size: var(--font-size-xs); }
 .income-controls .link-btn { min-height: 36px; padding: 0 var(--space-2); border: 0; background: none; font: inherit; font-size: var(--font-size-xs); color: var(--color-accent-primary); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
 .income-controls .form-error { flex-basis: 100%; margin: 0; }
+/* Settings: one card per concern; each form saves on its own. */
+.settings { display: grid; gap: var(--space-4); max-width: 760px; }
+.set-card { padding: var(--space-4); display: grid; gap: var(--space-3); }
+.set-row { display: grid; gap: var(--space-3); align-items: end; }
+.set-row .form-error, .set-saved { margin: 0; font-size: var(--font-size-sm); }
+.set-saved { color: var(--color-status-success); }
+.set-card .btns { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.set-facts { display: grid; gap: var(--space-2); margin: 0; }
+.set-facts div { display: flex; justify-content: space-between; gap: var(--space-3); padding: var(--space-2) 0; border-top: 1px solid var(--color-border-primary); }
+.set-facts dt { color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+.set-facts dd { margin: 0; color: var(--color-text-primary); }
+.set-note { margin: 0; font-size: var(--font-size-xs); color: var(--color-text-secondary); }
+.set-note a { color: var(--color-accent-primary); text-decoration: underline; text-underline-offset: 2px; }
+@media (min-width: 768px) {
+  .set-card { padding: var(--space-5) var(--space-6); }
+  .set-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .set-row .form-error, .set-row .set-saved { grid-column: 1 / -1; }
+}
 
 /* Activity: agent runs as traces, and the audit log */
 .activity { display: grid; gap: var(--space-4); }
