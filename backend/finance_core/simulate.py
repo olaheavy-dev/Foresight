@@ -74,9 +74,9 @@ ALL_INCOME = "all_income"
 CADENCE_DAYS = {"weekly": 7, "fortnightly": 14}
 
 
-# A what-if dated past the usual horizon extends it, up to 180 days (docs/00 §6: the 365-day
-# maximum is for goals only), so it shows at least this many days of the change; never further,
-# so a change dated later is still refused.
+# A what-if dated past the usual horizon extends it through the pay cycle its latest change falls
+# in, up to 180 days (docs/00 §6: the 365-day maximum is for goals only); a change whose pay cycle
+# can't close by then is refused. With no projected payday, it shows this many days instead.
 SHOW_DAYS = 31
 MAX_HORIZON_DAYS = 180
 
@@ -282,41 +282,63 @@ def _apply(
 
 
 def horizon_covering(inputs: ForecastInputs, spec: ScenarioSpec) -> int:
-    """The horizon a what-if needs: the forecast's own, or long enough to show `SHOW_DAYS` of its
-    latest dated change (the last instalment of a split; the first payment a recurring change or
-    cancellation affects, so a quarterly or annual bill is reached), at most `MAX_HORIZON_DAYS`."""
+    """The horizon a what-if needs: the forecast's own, or through the first payday after its
+    latest affected date (a one-off's date, a split's last instalment, the first payment a
+    recurring change or cancellation affects, an income change's first payday on each stream),
+    so the pay cycle it lands in closes and its low is reported (docs/00 §6, #55 review). At most
+    `MAX_HORIZON_DAYS`; a change whose cycle can't close by then is refused."""
     as_of, cap = inputs.as_of, inputs.as_of + timedelta(days=MAX_HORIZON_DAYS)
-    last = as_of
+    affected = as_of
+    until = as_of  # a period's end only stretches the horizon, never refuses
     for mod in spec.modifiers:
         start = mod.date or mod.from_date
         if mod.to_date is not None:
-            last = max(last, mod.to_date)
+            until = max(until, min(mod.to_date, cap))
         if mod.type in ("recurring_change", "recurring_cancel"):
             ob = next((o for o in inputs.obligations if o.key == mod.recurring_id), None)
             begin = max(start or as_of, as_of + timedelta(days=1))
-            due = obligation_dates(ob, begin, cap, inputs.holidays) if ob else []
+            due = obligation_dates(ob, begin, cap, inputs.holidays) if ob and begin < cap else []
             start = next((d for d in due if d >= begin), start)
         if mod.type == "income_change_pct" and mod.from_date is not None:
-            # The first payday of the stream on or after the change (shifted paydays can sit
-            # more than a month apart), so the change is applied, never answered as no change.
+            # Each stream's first payday on or after the change (shifted paydays can sit more
+            # than a month apart), so the change shows on every stream it targets.
             begin = max(mod.from_date, as_of + timedelta(days=1))
             key = mod.income_stream_key or ALL_INCOME
             firsts = [
                 pays[0]
                 for stream in inputs.income_streams
                 if stream.payday_rule is not None and key in (ALL_INCOME, stream.key)
+                if begin < cap
                 if (pays := paydays_between(stream.payday_rule, begin, cap, inputs.holidays))
             ]
-            start = max(firsts, default=start)  # every stream's first changed payday is shown
+            start = max(firsts, default=start)
         if start is None:
             continue
-        if start >= cap:  # past what can be shown (even 9999-12-31): simulate() refuses it
-            last = cap
-            continue
+        if start >= cap:  # even 9999-12-31: refused before any date arithmetic
+            raise ScenarioError(
+                f"{mod.type} on {start} is more than {MAX_HORIZON_DAYS} days after the forecast "
+                "starts"
+            )
         if mod.type == "split_outflow" and mod.instalments and mod.instalments > 1:
             *_, start = _series_dates(start, mod.cadence or "monthly", cap, mod.instalments)
-        last = max(last, min(start, cap) + timedelta(days=SHOW_DAYS))
-    return min(MAX_HORIZON_DAYS, max(inputs.horizon_days, (last - as_of).days))
+        affected = max(affected, start)
+    end = as_of + timedelta(days=inputs.horizon_days)
+    if affected <= as_of and until <= end:
+        return inputs.horizon_days  # nothing dated: the forecast's own horizon
+    rules = [s.payday_rule for s in inputs.income_streams if s.payday_rule is not None]
+    if not rules:  # no projected payday to close a cycle: show a month of the change
+        reach = min(cap, max(affected + timedelta(days=SHOW_DAYS), until))
+        return max(inputs.horizon_days, (reach - as_of).days)
+    after = affected + timedelta(days=1)
+    closing = min(
+        (p for r in rules for p in paydays_between(r, after, cap, inputs.holidays)), default=None
+    )
+    if closing is None:
+        raise ScenarioError(
+            f"the pay cycle after {affected} ends more than {MAX_HORIZON_DAYS} days after the "
+            "forecast starts"
+        )
+    return max(inputs.horizon_days, (max(closing, until) - as_of).days)
 
 
 def simulate(
