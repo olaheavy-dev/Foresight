@@ -316,3 +316,22 @@ def test_without_paydays_a_month_of_the_change_is_shown_or_it_is_refused(base) -
     assert horizon_covering(bare, cap_from(100)) == 131
     with pytest.raises(ScenarioError, match="a month after"):
         horizon_covering(bare, cap_from(170))
+
+
+def test_a_bounded_bill_change_closes_its_last_changed_payment_not_its_end_date(base) -> None:  # type: ignore[no-untyped-def]
+    """#55 review: a rent change ending 30 Mar (day 170) last changed the 1 Mar rent; the cycle to
+    close is that payment's (payday 25 Mar), which fits in 180 days, not 30 Mar's (28 Apr),
+    which wouldn't."""
+    short = dataclasses.replace(base, horizon_days=90)
+    rent = ScenarioModifier(
+        type="recurring_change",
+        recurring_id="rob_northside_lettings",
+        amount_minor=130_000,
+        from_date=short.as_of + timedelta(days=100),
+        to_date=short.as_of + timedelta(days=170),
+    )
+    spec = ScenarioSpec("t", base.currency, (rent,))
+    horizon = horizon_covering(short, spec)  # refused before: 30 Mar's cycle closes after 180
+    assert horizon <= 180
+    res = simulate(short, dataclasses.replace(spec, horizon_days=horizon))
+    assert res.simulated.p50[-1] < res.baseline.p50[-1]

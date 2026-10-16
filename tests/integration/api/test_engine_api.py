@@ -357,3 +357,21 @@ def test_an_explicit_spread_horizon_is_lengthened_to_close_the_last_cycle(api: T
     last = date.fromisoformat(body["comparison"]["scenarios"][0]["series"]["dates"][-1])
     assert last > date(start.year, 3, 15)  # past the second instalment, to its cycle's payday
     assert (last - as_of).days > sent
+
+
+def test_an_explicit_horizon_never_runs_past_180_days(api: TestClient) -> None:
+    """#55 review: a `horizon_days` of 181–365 (the contract still accepts it) is clamped to the
+    what-ifs' 180 days (docs/00 §6), so it can't stretch an ordinary what-if to a year."""
+    demo(api)
+    as_of = date.fromisoformat(
+        checked(api, api.get("/api/forecast"), "/api/forecast")["chart"]["as_of"]
+    )
+    response = api.post("/api/simulate", json={
+        "schema": "scenario_spec/1", "name": "Repair", "scope": "mine", "currency": "GBP",
+        "horizon_days": 365,
+        "modifiers": [{"type": "one_off_outflow", "date": (as_of + timedelta(days=5)).isoformat(),
+                       "amount_minor": 10000, "label": "Repair"}],
+    })  # fmt: skip
+    body = checked(api, response, "/api/simulate")
+    last = date.fromisoformat(body["comparison"]["scenarios"][0]["series"]["dates"][-1])
+    assert (last - as_of).days <= 180

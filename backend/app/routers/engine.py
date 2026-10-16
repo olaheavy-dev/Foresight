@@ -14,7 +14,7 @@ from backend.app.session import Db, Profile
 from backend.app.ui_contracts.primitives import ScenarioSpecPayload
 from backend.app.ui_contracts.response import CalculationView, ForecastView, SimulationView
 from backend.finance_core.calc import content_hash
-from backend.finance_core.simulate import ScenarioError, horizon_covering
+from backend.finance_core.simulate import MAX_HORIZON_DAYS, ScenarioError, horizon_covering
 from backend.finance_core.types import ScenarioModifier, ScenarioSpec
 from backend.pipeline.forecast import (
     NoLedgerData,
@@ -200,12 +200,13 @@ def simulate(ctx: Profile, body: ScenarioSpecPayload) -> SimulationView:
     def run() -> tuple[StoredForecast, StoredSimulation, ScenarioSpec]:
         # The horizon the Workspace uses, through the payday closing the cycle the latest
         # change lands in, at most 180 days (#55 review), so a what-if the Workspace answers is
-        # answered here too. A horizon asked for (the Lab's spreads) is only ever lengthened to
-        # that, so the last change is always in a reported low.
+        # answered here too. A horizon asked for (the Lab's spreads) is lengthened to that, so
+        # the last change is always in a reported low.
         covering = horizon_covering(
             forecast_inputs(ctx), ScenarioSpec(body.name, body.currency, modifiers)
         )
-        horizon = max(body.horizon_days or 0, covering)
+        # Never past what-ifs' 180 days (docs/00 §6), whatever is asked for (#55 review).
+        horizon = max(min(body.horizon_days or 0, MAX_HORIZON_DAYS), covering)
         spec = ScenarioSpec(body.name, body.currency, modifiers, horizon_days=horizon)
         baseline = run_forecast(ctx, horizon_days=horizon)
         return baseline, run_simulation(ctx, spec, horizon_days=horizon), spec

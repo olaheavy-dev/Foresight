@@ -291,28 +291,39 @@ def horizon_covering(inputs: ForecastInputs, spec: ScenarioSpec) -> int:
     affected = as_of
     for mod in spec.modifiers:
         start = mod.date or mod.from_date
-        if mod.to_date is not None and mod.to_date < cap:
-            # A bounded change's last affected flow is on or before its end: close that cycle
-            # (#55 review). One ending past the cap runs to the forecast's end, like an open one.
-            affected = max(affected, mod.to_date)
+        # A bounded change (a `to_date` before the cap) closes the cycle of the last flow it
+        # actually changes, not of its raw end date (#55 review); one ending past the cap runs
+        # to the forecast's end, like an open one.
+        bound = mod.to_date if mod.to_date is not None and mod.to_date < cap else None
         if mod.type in ("recurring_change", "recurring_cancel"):
             ob = next((o for o in inputs.obligations if o.key == mod.recurring_id), None)
             begin = max(start or as_of, as_of + timedelta(days=1))
             due = obligation_dates(ob, begin, cap, inputs.holidays) if ob and begin < cap else []
             start = next((d for d in due if d >= begin), start)
-        if mod.type == "income_change_pct" and mod.from_date is not None:
+            if bound is not None:
+                affected = max([affected, *(d for d in due if begin <= d <= bound)])
+        elif mod.type == "income_change_pct":
             # Each stream's first payday on or after the change (shifted paydays can sit more
             # than a month apart), so the change shows on every stream it targets.
-            begin = max(mod.from_date, as_of + timedelta(days=1))
+            begin = max(mod.from_date or as_of, as_of + timedelta(days=1))
             key = mod.income_stream_key or ALL_INCOME
-            firsts = [
-                pays[0]
+            streams = [
+                pays
                 for stream in inputs.income_streams
                 if stream.payday_rule is not None and key in (ALL_INCOME, stream.key)
                 if begin < cap
                 if (pays := paydays_between(stream.payday_rule, begin, cap, inputs.holidays))
             ]
-            start = max(firsts, default=start)
+            if mod.from_date is not None:
+                start = max((pays[0] for pays in streams), default=start)
+            if bound is not None:
+                affected = max([affected, *(d for pays in streams for d in pays if d <= bound)])
+        elif mod.type == "recurring_add" and bound is not None and start is not None:
+            if start < cap:
+                series = _series_dates(start, mod.cadence or "monthly", bound)
+                affected = max([affected, *series])
+        elif bound is not None:
+            affected = max(affected, bound)  # a daily change (a category cut) runs to its end
         if start is None:
             continue
         if start >= cap:  # even 9999-12-31: refused before any date arithmetic
