@@ -371,6 +371,7 @@ foresight/
 11. Whether to seek a consented real Indian sample (default no; India remains synthetic-only).
 12. Pinned upstream revisions and independent annotator for the external India set (`09` §3.4b; EVL-20).
 13. Same-currency absolute detector/materiality thresholds and goal-change rounding increments for INR and other non-GBP currencies. UK defaults remain £25 spike / £40 strong finding / £100 forecast change / £10 intervention or goal increment / £50 coverage-gap total. Never reuse GBP minor units or infer an FX rate; freeze and version each supported currency configuration before its advice/detector evals.
+14. Model providers after the hackathon (evaluated 16 Oct 2026, [`11`](11-MODEL-PROVIDERS.md)). Mesh charges the providers' list prices, so it is not cheaper. Calling providers directly allows prompt caching on the Advisor, about 20% less per advice answer. **Default (PROPOSED):** once Foresight is no longer bound by the hackathon's Mesh-only rule (§2), call Anthropic directly for the Advisor, with caching, and OpenAI directly for the fast tier and the Verifier. Keep the single model gateway module, so swapping a provider stays a configuration change. While Foresight is entered in Agent Arena 2026, Mesh stays.
 
 
 ## 13. Shared implementation rules (DECIDED — rev 3.5 alignment)
@@ -407,5 +408,6 @@ Open-decision ownership (defaults remain proposals until resolved):
 | 11 Consented Indian sample | Owner | Before Stage 4(c); default remains no |
 | 12 External India revisions/labels | Owner + independent annotator | EVL-20, before LOC-02 tuning |
 | 13 Non-GBP absolute thresholds | Owner | Before LOC-02 / non-GBP advice evals |
+| 14 Model providers after the hackathon | Owner | When Foresight leaves the hackathon or it ends |
 
 Human-review checkpoint/resume is required for `06` H1/H4/H5/H10/H11/H13; production crash recovery is deferred. Joint default is decided (§6a). Additional CSV profiles beyond Monzo/Revolut are optional data additions; no further architectural decision is needed.
