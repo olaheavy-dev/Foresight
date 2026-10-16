@@ -289,11 +289,12 @@ def horizon_covering(inputs: ForecastInputs, spec: ScenarioSpec) -> int:
     `MAX_HORIZON_DAYS`; a change whose cycle can't close by then is refused."""
     as_of, cap = inputs.as_of, inputs.as_of + timedelta(days=MAX_HORIZON_DAYS)
     affected = as_of
-    until = as_of  # a period's end only stretches the horizon, never refuses
     for mod in spec.modifiers:
         start = mod.date or mod.from_date
-        if mod.to_date is not None:
-            until = max(until, min(mod.to_date, cap))
+        if mod.to_date is not None and mod.to_date < cap:
+            # A bounded change's last affected flow is on or before its end: close that cycle
+            # (#55 review). One ending past the cap runs to the forecast's end, like an open one.
+            affected = max(affected, mod.to_date)
         if mod.type in ("recurring_change", "recurring_cancel"):
             ob = next((o for o in inputs.obligations if o.key == mod.recurring_id), None)
             begin = max(start or as_of, as_of + timedelta(days=1))
@@ -322,12 +323,16 @@ def horizon_covering(inputs: ForecastInputs, spec: ScenarioSpec) -> int:
         if mod.type == "split_outflow" and mod.instalments and mod.instalments > 1:
             *_, start = _series_dates(start, mod.cadence or "monthly", cap, mod.instalments)
         affected = max(affected, start)
-    end = as_of + timedelta(days=inputs.horizon_days)
-    if affected <= as_of and until <= end:
+    if affected <= as_of:
         return inputs.horizon_days  # nothing dated: the forecast's own horizon
     rules = [s.payday_rule for s in inputs.income_streams if s.payday_rule is not None]
     if not rules:  # no projected payday to close a cycle: show a month of the change
-        reach = min(cap, max(affected + timedelta(days=SHOW_DAYS), until))
+        reach = affected + timedelta(days=SHOW_DAYS)
+        if reach > cap:  # a shorter window would understate it (#55 review)
+            raise ScenarioError(
+                f"a month after {affected} is more than {MAX_HORIZON_DAYS} days after the "
+                "forecast starts"
+            )
         return max(inputs.horizon_days, (reach - as_of).days)
     after = affected + timedelta(days=1)
     closing = min(
@@ -338,7 +343,7 @@ def horizon_covering(inputs: ForecastInputs, spec: ScenarioSpec) -> int:
             f"the pay cycle after {affected} ends more than {MAX_HORIZON_DAYS} days after the "
             "forecast starts"
         )
-    return max(inputs.horizon_days, (max(closing, until) - as_of).days)
+    return max(inputs.horizon_days, (closing - as_of).days)
 
 
 def simulate(

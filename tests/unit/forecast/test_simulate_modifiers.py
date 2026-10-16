@@ -277,3 +277,42 @@ def test_a_change_inside_the_forecast_after_its_last_payday_still_closes_its_cyc
     assert short.as_of + timedelta(days=horizon) == date(short.as_of.year + 1, 1, 28)
     early = dataclasses.replace(late, date=short.as_of + timedelta(days=5))
     assert horizon_covering(short, ScenarioSpec("t", base.currency, (early,))) == 90
+
+
+def test_a_bounded_change_closes_the_cycle_after_it_ends(base) -> None:  # type: ignore[no-untyped-def]
+    """#55 review: a pay cut from day 100 to day 150 runs through the payday after day 150, not
+    just after the first cut payday, so its last changed cycle is in a reported low."""
+    short = dataclasses.replace(base, horizon_days=90)
+    stream = next(s for s in short.income_streams if s.payday_rule is not None)
+    first, last = short.as_of + timedelta(days=100), short.as_of + timedelta(days=150)
+    cut = ScenarioModifier(
+        type="income_change_pct",
+        income_stream_key=stream.key,
+        pct=-50,
+        from_date=first,
+        to_date=last,
+    )
+    end = short.as_of + timedelta(
+        days=horizon_covering(short, ScenarioSpec("t", base.currency, (cut,)))
+    )
+    assert end > last
+    assert end in _paydays(short, last, end)
+
+
+def test_without_paydays_a_month_of_the_change_is_shown_or_it_is_refused(base) -> None:  # type: ignore[no-untyped-def]
+    """#55 review: with no projected payday the horizon shows 31 days of the change; when the
+    180-day cap would cut that short, the what-if is refused rather than understated."""
+    bare = dataclasses.replace(base, horizon_days=90, income_streams=())
+
+    def cap_from(days: int) -> ScenarioSpec:
+        mod = ScenarioModifier(
+            type="category_cap",
+            category_key="groceries",
+            monthly_cap_minor=10_000,
+            from_date=bare.as_of + timedelta(days=days),
+        )
+        return ScenarioSpec("t", base.currency, (mod,))
+
+    assert horizon_covering(bare, cap_from(100)) == 131
+    with pytest.raises(ScenarioError, match="a month after"):
+        horizon_covering(bare, cap_from(170))
