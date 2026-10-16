@@ -29,6 +29,7 @@ import numpy as np
 from backend.finance_core.forecast.calibration import Calibration
 from backend.finance_core.forecast.engine import (
     QUANTILES,
+    IntArray,
     balance_paths,
     calibrate_paths,
     forecast_hash,
@@ -95,7 +96,7 @@ def horizon_for(as_of: date, target_date: date) -> int:
 
 def change_increment(currency: str) -> int:
     """The step a required monthly change is rounded up to (docs/07 §6.7)."""
-    unit = 10 ** exponent(currency)
+    unit = int(10 ** exponent(currency))
     return 10 * unit if currency == "GBP" else unit
 
 
@@ -115,7 +116,7 @@ def _band(p: float) -> str:
     return "on_track" if p >= 0.5 else "at_risk" if p >= 0.25 else "off_track"
 
 
-def _q(values: np.ndarray) -> Quantiles:
+def _q(values: IntArray) -> Quantiles:
     return Quantiles(*(int(quantile_minor(values, q)) for q in QUANTILES.values()))
 
 
@@ -142,12 +143,12 @@ def project_goal(
     buffer = int(inputs.buffer_minor or 0)
     lo, hi = _window(prep.dates, prep.paydays, goal.target_date)
 
-    def progress_with(uplift: int) -> np.ndarray:
+    def progress_with(uplift: int) -> IntArray:
         window = balances[:, lo : hi + 1]
         if uplift:
             days = np.arange(lo, hi + 1)
             window = window + uplift * (1 + (days - 1) // MONTH_DAYS)  # saved from tomorrow on
-        return np.maximum(0, window.min(axis=1) - buffer)
+        return np.asarray(np.maximum(0, window.min(axis=1) - buffer), dtype=np.int64)
 
     progress = progress_with(0)
     p_achieve = round(float(np.mean(progress >= goal.target_minor)), 4)
