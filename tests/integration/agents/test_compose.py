@@ -606,6 +606,10 @@ def test_a_what_if_past_the_forecast_runs_long_enough_and_says_where_it_is_less_
     (comparison,) = _blocks(_body(p1, out.response_id), "ScenarioComparison")
     labels = {a["label"]: a["value"] for a in comparison["assumptions"]}
     assert labels["Lower confidence"] == "From 9 Jan"
+    # The longer baseline the comparison cites is in the answer's evidence (#55 review).
+    body = _body(p1, out.response_id)
+    cited = {r.split("#")[0] for r in json.dumps(comparison).split('"') if r.startswith("calc_")}
+    assert cited <= set(body["provenance"]["calc_ids"]), cited - set(body["provenance"]["calc_ids"])
 
     ctx = RunContext(store=p1, run_id="run_t", workflow="scenario", deadline_at=datetime.now(UTC))
     state = cast(ForesightState, {"scenario_spec": {"modifiers": [], "horizon_days": 140}})

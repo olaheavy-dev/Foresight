@@ -469,6 +469,9 @@ class Composer:
             evidence=[sim.calculation.id + "#simulated.min_balance_p50_minor"],
             **data.model_dump(by_alias=True),
         )
+        # The baseline the comparison cites: the usual forecast, or a longer one when the what-if
+        # was extended past 90 days, so its figures are in the answer's evidence too (#55 review).
+        self.sources.calcs.setdefault(baseline.calculation.id, baseline.calculation)
         self.sources.calcs[sim.calculation.id] = sim.calculation
         self.sources.simulations.append((sim.calculation, block))
 
