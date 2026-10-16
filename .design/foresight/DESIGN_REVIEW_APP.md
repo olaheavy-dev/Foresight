@@ -155,3 +155,20 @@ Checked and kept:
 - With only achieved goals, the empty state now says "No goals in progress", not "No goals yet".
 
 Could improve (open): letting the person choose the order goals are funded in, rather than by date.
+
+## Guest network allowance, reviewed 16 Oct 2026
+
+Captured with `SCREENSHOTS=1`:
+- `app-workspace-network-limit-*` (`e2e/workspace.screenshots.spec.ts`, mock API) at 375, 768, 1280 and 1440 px, light and dark: a guest question refused because the network has used today's allowance.
+- `review-privacy-*` (`e2e/app.screenshots.spec.ts`, real local stack) at 375, 768 and 1280 px, light and dark: the new privacy line about the allowance.
+
+Journeys:
+- `e2e/workspace.spec.ts`: the refusal is said plainly with no "Try again", because a network's day is used until tomorrow. It points to signing in and to what still works.
+- `e2e/smoke.spec.ts`: the privacy page states how the allowance is counted.
+
+Both pass axe with no serious issues.
+
+Found and fixed in this review:
+- **A long question title ran past the Recent list** at 1280 px. The time was pushed out of view and the row overflowed the panel. The list's grid column grew to fit its content. It's now `minmax(0, 1fr)`, so titles end with an ellipsis and the time stays visible. The refusal journey checks that the row stays inside the list.
+
+Checked and kept: the refusal uses the Workspace's existing failure card and caution icon. The thread keeps the person's question. The rate-limit refusal (a burst of questions) still offers a retry.

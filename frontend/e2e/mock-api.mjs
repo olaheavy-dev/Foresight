@@ -139,6 +139,12 @@ createServer(async (req, res) => {
     const body = await readBody(req);
     const runId = nextId("run");
     const text = String(body.text ?? "");
+    // A guest whose network has used today's allowance (backend/app/network_cap.py REFUSED).
+    if (/allowance/i.test(text))
+      return json(res, 429, {
+        detail:
+          "Today’s guest allowance for your network is used. Sign in with Google to keep going, or come back tomorrow.",
+      });
     const script = scriptFor(text);
     runs.set(runId, script);
     const thread = threads.get(msg[1]) ?? { title: "", created_at: new Date().toISOString(), messages: [] };

@@ -40,6 +40,8 @@ test("the privacy page is public and says how to delete your data", async ({ pag
   await page.getByRole("link", { name: /^Privacy/ }).click();
   await expect(page.getByRole("heading", { level: 1, name: "How Foresight handles your data" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: "Deleting your data" })).toBeVisible();
+  // The guest allowance is counted with a one-way code, in memory only (backend/app/network_cap.py).
+  await expect(page.getByText(/Guests share a daily allowance of AI questions and checks per network/)).toBeVisible();
   await noHorizontalScroll(page);
   await noSeriousA11yIssues(page);
 });
