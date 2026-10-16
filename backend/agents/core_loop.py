@@ -15,6 +15,7 @@ an honest skipped step and changes nothing.
 from __future__ import annotations
 
 import dataclasses
+from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, timedelta
 from typing import Any
@@ -30,7 +31,7 @@ from backend.agents.contracts import PAY_TODAY
 from backend.agents.forecaster import drivers, parse_scenario, to_engine_spec
 from backend.agents.runtime import NodeOutput, NodeSpec, RunContext, concurrent_ms
 from backend.agents.state import ForesightState
-from backend.finance_core.simulate import ScenarioError
+from backend.finance_core.simulate import ScenarioError, horizon_covering
 from backend.finance_core.types import ForecastInputs, ScenarioModifier, ScenarioSpec
 from backend.pipeline import ledger, packs
 from backend.pipeline.forecast import (
@@ -140,6 +141,10 @@ def world_from_store(
     ctx: RunContext, state: ForesightState, inputs: ForecastInputs | None
 ) -> AdviceWorld:
     w = ctx.store.ctx
+    horizon = (state.get("scenario_spec") or {}).get("horizon_days")
+    if inputs is not None and horizon and horizon != inputs.horizon_days:
+        # The what-if ran on a longer horizon to reach its dates; advice on it uses the same one.
+        inputs = dataclasses.replace(inputs, horizon_days=int(horizon))
     with ctx.lock:
         ws = w.workspace
         latest = w.latest_categorisations()
@@ -222,7 +227,7 @@ def forecaster_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
         spec, assumptions = default, [PAY_TODAY]
         try:
             with ctx.lock:
-                sim = run_simulation(ctx.store.ctx, spec, assumptions=assumptions)
+                spec, sim = _simulate(ctx, spec, inputs, assumptions)
         except ScenarioError as exc:
             return NodeOutput(
                 update=update, output={"forecast_id": forecast_id, "scenario_error": str(exc)},
@@ -236,7 +241,7 @@ def forecaster_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
         # fast-tier call on the advice path; docs/05 §6.4 latency).
         try:
             with ctx.lock:
-                sim = run_simulation(ctx.store.ctx, dated)
+                dated, sim = _simulate(ctx, dated, inputs)
         except ScenarioError:
             pass
         else:
@@ -270,7 +275,7 @@ def forecaster_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
         # date): never ask again what the question answered; simulate that one payment.
         try:
             with ctx.lock:
-                sim = run_simulation(ctx.store.ctx, dated)
+                dated, sim = _simulate(ctx, dated, inputs)
         except ScenarioError:
             pass
         else:
@@ -289,7 +294,7 @@ def forecaster_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
     spec = to_engine_spec(parsed.parse.spec)
     try:
         with ctx.lock:
-            sim = run_simulation(ctx.store.ctx, spec)
+            spec, sim = _simulate(ctx, spec, inputs)
     except ScenarioError as exc:
         return NodeOutput(
             update=update,
@@ -301,6 +306,18 @@ def forecaster_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
             prompt_version=parsed.prompt_version,
         )
     return _simulated(state, update, forecast_id, spec, sim, [], parsed.llm, parsed.prompt_version)
+
+
+def _simulate(
+    ctx: RunContext, spec: ScenarioSpec, inputs: ForecastInputs, assumptions: Sequence[str] = ()
+) -> tuple[ScenarioSpec, Any]:
+    """Simulate on a horizon that reaches the what-if: "rent goes up from February" on a 90-day
+    forecast ending in January is run long enough to show it, instead of being refused."""
+    horizon = horizon_covering(inputs.as_of, spec, inputs.horizon_days)
+    if horizon != inputs.horizon_days:
+        spec = dataclasses.replace(spec, horizon_days=horizon)
+    sim = run_simulation(ctx.store.ctx, spec, horizon_days=horizon, assumptions=assumptions)
+    return spec, sim
 
 
 def _simulated(
@@ -317,6 +334,8 @@ def _simulated(
     spec_dict: dict[str, Any] = {"name": spec.name, "modifiers": modifiers}
     if assumptions:
         spec_dict["assumptions"] = list(assumptions)
+    if spec.horizon_days is not None:
+        spec_dict["horizon_days"] = spec.horizon_days
     # docs/06 W3: a what-if that takes a pay cycle below the buffer asks the Advisor ⇄ Verifier
     # loop for advice (the scenario workflow has no separate risk check).
     breach = [

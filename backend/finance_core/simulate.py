@@ -74,6 +74,12 @@ ALL_INCOME = "all_income"
 CADENCE_DAYS = {"weekly": 7, "fortnightly": 14}
 
 
+# A what-if dated past the usual horizon extends it, up to a year (as goals do), so it shows at
+# least this many days of the change; never further, so a change dated later is still refused.
+SHOW_DAYS = 31
+MAX_HORIZON_DAYS = 365
+
+
 class ScenarioError(ValueError):
     """A scenario that cannot be simulated as specified (never guessed or silently fixed)."""
 
@@ -254,6 +260,22 @@ def _apply(
     if mod.type == "buffer_override":
         return flows  # threshold only; applied in simulate()
     raise ScenarioError(f"unsupported modifier {mod.type!r}; supported: {sorted(SUPPORTED)}")
+
+
+def horizon_covering(as_of: date, spec: ScenarioSpec, default: int) -> int:
+    """The horizon a what-if needs: `default`, or long enough to show `SHOW_DAYS` of its latest
+    dated change (the last instalment of a split), at most `MAX_HORIZON_DAYS`."""
+    last = as_of
+    for mod in spec.modifiers:
+        start = mod.date or mod.from_date
+        if mod.to_date is not None:
+            last = max(last, mod.to_date)
+        if start is None:
+            continue
+        if mod.type == "split_outflow" and mod.instalments and mod.instalments > 1:
+            *_, start = _series_dates(start, mod.cadence or "monthly", date.max, mod.instalments)
+        last = max(last, start + timedelta(days=SHOW_DAYS))
+    return min(MAX_HORIZON_DAYS, max(default, (last - as_of).days))
 
 
 def simulate(

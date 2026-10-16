@@ -8,7 +8,7 @@ from datetime import date, timedelta
 
 import pytest
 
-from backend.finance_core.simulate import ScenarioError, simulate
+from backend.finance_core.simulate import ScenarioError, horizon_covering, simulate
 from backend.finance_core.types import ScenarioModifier, ScenarioSpec
 from evals.common import build_ledger, load_dataset
 from evals.suites.forecast import inputs_at
@@ -103,3 +103,30 @@ def test_split_outflow_refuses_instalments_past_the_horizon(base) -> None:  # ty
     )
     with pytest.raises(ScenarioError, match="after the forecast horizon"):
         _end_shift(base, mod)
+
+
+def test_a_what_if_dated_past_the_horizon_extends_it_to_show_the_change(base) -> None:  # type: ignore[no-untyped-def]
+    """E-EFF UIQ-007: "rent goes up to £1,300 from February" on a 90-day forecast ending in
+    January was refused; the horizon now reaches a month past the change, at most a year."""
+    short = dataclasses.replace(base, horizon_days=90)
+    ob = next(o for o in base.obligations if o.key == "rob_northside_lettings")
+    feb = short.as_of + timedelta(days=113)
+    rent = ScenarioModifier(
+        type="recurring_change", recurring_id=ob.key, amount_minor=130_000, from_date=feb
+    )
+    spec = ScenarioSpec("t", base.currency, (rent,))
+    with pytest.raises(ScenarioError, match="outside the forecast horizon"):
+        simulate(short, spec)
+    horizon = horizon_covering(short.as_of, spec, short.horizon_days)
+    assert horizon == 113 + 31
+    res = simulate(short, dataclasses.replace(spec, horizon_days=horizon))
+    assert res.simulated.p50[-1] < res.baseline.p50[-1]  # the higher rent shows
+    soon = ScenarioModifier(type="one_off_outflow", amount_minor=1, date=short.as_of + timedelta(5))
+    assert horizon_covering(short.as_of, dataclasses.replace(spec, modifiers=(soon,)), 90) == 90
+    split = ScenarioModifier(
+        type="split_outflow", date=feb, amount_minor=900, instalments=3, cadence="monthly"
+    )
+    covered = horizon_covering(short.as_of, dataclasses.replace(spec, modifiers=(split,)), 90)
+    assert covered >= 113 + 59 + 31  # the last instalment and a month after it
+    late = dataclasses.replace(rent, from_date=short.as_of + timedelta(days=500))
+    assert horizon_covering(short.as_of, dataclasses.replace(spec, modifiers=(late,)), 90) == 365
