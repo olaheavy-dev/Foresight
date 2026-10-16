@@ -107,7 +107,8 @@ def test_split_outflow_refuses_instalments_past_the_horizon(base) -> None:  # ty
 
 def test_a_what_if_dated_past_the_horizon_extends_it_to_show_the_change(base) -> None:  # type: ignore[no-untyped-def]
     """E-EFF UIQ-007: "rent goes up to £1,300 from February" on a 90-day forecast ending in
-    January was refused; the horizon now reaches a month past the change, at most a year."""
+    January was refused; the horizon now reaches a month past the change, at most 180 days
+    (docs/00 §6: 365 is for goals)."""
     short = dataclasses.replace(base, horizon_days=90)
     ob = next(o for o in base.obligations if o.key == "rob_northside_lettings")
     feb = short.as_of + timedelta(days=113)
@@ -124,29 +125,35 @@ def test_a_what_if_dated_past_the_horizon_extends_it_to_show_the_change(base) ->
     soon = ScenarioModifier(type="one_off_outflow", amount_minor=1, date=short.as_of + timedelta(5))
     assert horizon_covering(short, dataclasses.replace(spec, modifiers=(soon,))) == 90
     split = ScenarioModifier(
-        type="split_outflow", date=feb, amount_minor=900, instalments=3, cadence="monthly"
+        type="split_outflow", date=feb, amount_minor=900, instalments=2, cadence="monthly"
     )
     covered = horizon_covering(short, dataclasses.replace(spec, modifiers=(split,)))
-    assert covered >= 113 + 59 + 31  # the last instalment and a month after it
+    assert covered >= 113 + 28 + 31  # the last instalment and a month after it
     late = dataclasses.replace(rent, from_date=short.as_of + timedelta(days=500))
-    assert horizon_covering(short, dataclasses.replace(spec, modifiers=(late,))) == 365
+    assert horizon_covering(short, dataclasses.replace(spec, modifiers=(late,))) == 180
 
 
 def test_a_cancellation_reaches_the_bills_next_payment_or_is_refused(base) -> None:  # type: ignore[no-untyped-def]
-    """#55 review: council tax is paid April to January, so cancelling it from 1 February must
-    run until April's payment; a change that touches no payment is refused, never "no change"."""
+    """#55 review: council tax is paid on the 15th, April to January. Cancelling it from 10 Jan
+    (past the 90-day forecast) runs until the 15 Jan payment; from 1 Feb its next payment is
+    15 Apr, past the 180-day cap, so the what-if is refused, never answered as no change."""
     short = dataclasses.replace(base, horizon_days=90)
-    feb = date(short.as_of.year + 1, 2, 1)
-    cancel = ScenarioModifier(
-        type="recurring_cancel", recurring_id="rob_leeds_city_council", from_date=feb
-    )
-    spec = ScenarioSpec("t", base.currency, (cancel,))
-    horizon = horizon_covering(short, spec)
-    assert short.as_of + timedelta(days=horizon) >= date(feb.year, 4, 1)
-    res = simulate(short, dataclasses.replace(spec, horizon_days=horizon))
-    assert res.simulated.p50[-1] > res.baseline.p50[-1]  # April's bill is gone
+    year = short.as_of.year + 1
+
+    def spec(on: date) -> ScenarioSpec:
+        mod = ScenarioModifier(
+            type="recurring_cancel", recurring_id="rob_leeds_city_council", from_date=on
+        )
+        return ScenarioSpec("t", base.currency, (mod,))
+
+    jan = spec(date(year, 1, 10))
+    horizon = horizon_covering(short, jan)
+    assert short.as_of + timedelta(days=horizon) >= date(year, 1, 15)
+    res = simulate(short, dataclasses.replace(jan, horizon_days=horizon))
+    assert res.simulated.p50[-1] > res.baseline.p50[-1]  # January's bill is gone
+    feb = spec(date(year, 2, 1))
     with pytest.raises(ScenarioError, match="no .* payment falls in the forecast"):
-        simulate(short, dataclasses.replace(spec, horizon_days=150))  # ends before April
+        simulate(short, dataclasses.replace(feb, horizon_days=horizon_covering(short, feb)))
 
 
 def test_an_income_change_reaches_its_first_payday_or_is_refused(base) -> None:  # type: ignore[no-untyped-def]
@@ -171,3 +178,20 @@ def test_an_income_change_reaches_its_first_payday_or_is_refused(base) -> None: 
     narrow = dataclasses.replace(cut, from_date=first + timedelta(1), to_date=first + timedelta(2))
     with pytest.raises(ScenarioError, match="no .* payday falls in the period"):
         simulate(short, ScenarioSpec("t", base.currency, (narrow,), horizon_days=horizon))
+
+
+def test_an_all_income_change_reaches_every_streams_first_payday(base) -> None:  # type: ignore[no-untyped-def]
+    """#55 review: with two streams, the horizon runs past the later of their first changed
+    paydays, so the change is applied to both, not just the earlier one."""
+    from backend.finance_core.types import PaydayRule
+
+    short = dataclasses.replace(base, horizon_days=90)
+    (salary,) = short.income_streams
+    side = dataclasses.replace(
+        salary, key="inc_side", payday_rule=PaydayRule(kind="fixed_day", day_of_month=15)
+    )
+    two = dataclasses.replace(short, income_streams=(salary, side))
+    start = date(short.as_of.year + 1, 1, 29)  # after the 28 Jan salary: next is 15 Feb, 26 Feb
+    cut = ScenarioModifier(type="income_change_pct", pct=-50, from_date=start)
+    horizon = horizon_covering(two, ScenarioSpec("t", base.currency, (cut,)))
+    assert two.as_of + timedelta(days=horizon) >= date(start.year, 2, 26) + timedelta(days=31)

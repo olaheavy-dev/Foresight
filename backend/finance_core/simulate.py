@@ -74,10 +74,11 @@ ALL_INCOME = "all_income"
 CADENCE_DAYS = {"weekly": 7, "fortnightly": 14}
 
 
-# A what-if dated past the usual horizon extends it, up to a year (as goals do), so it shows at
-# least this many days of the change; never further, so a change dated later is still refused.
+# A what-if dated past the usual horizon extends it, up to 180 days (docs/00 §6: the 365-day
+# maximum is for goals only), so it shows at least this many days of the change; never further,
+# so a change dated later is still refused.
 SHOW_DAYS = 31
-MAX_HORIZON_DAYS = 365
+MAX_HORIZON_DAYS = 180
 
 
 class ScenarioError(ValueError):
@@ -290,13 +291,13 @@ def horizon_covering(inputs: ForecastInputs, spec: ScenarioSpec) -> int:
             # more than a month apart), so the change is applied, never answered as no change.
             begin = max(mod.from_date, as_of + timedelta(days=1))
             key = mod.income_stream_key or ALL_INCOME
-            pays = [
-                d
+            firsts = [
+                pays[0]
                 for stream in inputs.income_streams
                 if stream.payday_rule is not None and key in (ALL_INCOME, stream.key)
-                for d in paydays_between(stream.payday_rule, begin, cap, inputs.holidays)
+                if (pays := paydays_between(stream.payday_rule, begin, cap, inputs.holidays))
             ]
-            start = min(pays, default=start)
+            start = max(firsts, default=start)  # every stream's first changed payday is shown
         if start is None:
             continue
         if mod.type == "split_outflow" and mod.instalments and mod.instalments > 1:
