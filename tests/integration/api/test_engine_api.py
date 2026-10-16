@@ -304,10 +304,35 @@ def test_every_modifier_type_runs_through_the_api(api: TestClient) -> None:
                    "from_date": "2099-01-01"}  # fmt: skip
     late = api.post("/api/simulate", json={**base, "modifiers": [cancel_late]})
     assert late.status_code == 422
-    assert "outside the forecast horizon" in late.text
+    assert "more than 180 days after the forecast starts" in late.text  # #55: past what can run
     documented = api.post(
         "/api/simulate",
         json={**base, "modifiers": [{"type": "income_delay", "income_stream_id": income_id,
                                      "days": 3, "occurrences": "all"}]},
     )  # fmt: skip
     assert documented.status_code == 200, documented.text
+
+
+def test_a_lab_what_if_past_the_forecast_runs_as_it_does_in_the_workspace(api: TestClient) -> None:
+    """#55 review: with no `horizon_days`, /api/simulate extends the horizon the way the Ask
+    Forecaster does (through the payday closing the change's cycle, at most 180 days), so a
+    purchase in February works in the Decision Lab too; one past 180 days is refused."""
+    demo(api)
+    as_of = date.fromisoformat(
+        checked(api, api.get("/api/forecast"), "/api/forecast")["chart"]["as_of"]
+    )
+
+    def purchase(days: int) -> Any:
+        on = (as_of + timedelta(days=days)).isoformat()
+        return api.post("/api/simulate", json={
+            "schema": "scenario_spec/1", "name": "Laptop", "scope": "mine", "currency": "GBP",
+            "modifiers": [{"type": "one_off_outflow", "date": on, "amount_minor": 90000,
+                           "label": "Laptop"}],
+        })  # fmt: skip
+
+    later = purchase(120)
+    assert later.status_code == 200, later.text
+    body = checked(api, later, "/api/simulate")
+    labels = {a["label"] for a in body["comparison"]["assumptions"]}
+    assert "Lower confidence" in labels  # past 90 days
+    assert purchase(200).status_code == 422

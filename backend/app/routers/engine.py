@@ -14,12 +14,13 @@ from backend.app.session import Db, Profile
 from backend.app.ui_contracts.primitives import ScenarioSpecPayload
 from backend.app.ui_contracts.response import CalculationView, ForecastView, SimulationView
 from backend.finance_core.calc import content_hash
-from backend.finance_core.simulate import ScenarioError
+from backend.finance_core.simulate import ScenarioError, horizon_covering
 from backend.finance_core.types import ScenarioModifier, ScenarioSpec
 from backend.pipeline.forecast import (
     NoLedgerData,
     StoredForecast,
     StoredSimulation,
+    forecast_inputs,
     run_forecast,
     run_simulation,
 )
@@ -194,20 +195,20 @@ def simulate(ctx: Profile, body: ScenarioSpecPayload) -> SimulationView:
         raise _unprocessable("A scenario needs at least one change.")
     accounts = resolve_scope(ctx, body.scope, body.scope_account_id)
     keys = _engine_keys(ctx)
-    horizon = body.horizon_days or DEFAULT_HORIZON
-    spec = ScenarioSpec(
-        name=body.name,
-        currency=body.currency,
-        modifiers=tuple(_modifier(mod.model_dump(), keys) for mod in body.modifiers),
-        horizon_days=horizon,
-    )
+    modifiers = tuple(_modifier(mod.model_dump(), keys) for mod in body.modifiers)
 
-    def run() -> tuple[StoredForecast, StoredSimulation]:
-        return run_forecast(ctx, horizon_days=horizon), run_simulation(
-            ctx, spec, horizon_days=horizon
+    def run() -> tuple[StoredForecast, StoredSimulation, ScenarioSpec]:
+        # No horizon asked for: the one the Workspace uses, through the payday closing the
+        # cycle the latest change lands in, at most 180 days (#55 review), so a what-if the
+        # Workspace answers is answered here too.
+        horizon = body.horizon_days or horizon_covering(
+            forecast_inputs(ctx), ScenarioSpec(body.name, body.currency, modifiers)
         )
+        spec = ScenarioSpec(body.name, body.currency, modifiers, horizon_days=horizon)
+        baseline = run_forecast(ctx, horizon_days=horizon)
+        return baseline, run_simulation(ctx, spec, horizon_days=horizon), spec
 
-    baseline, sim = _persisting(ctx, run)
+    baseline, sim, spec = _persisting(ctx, run)
     return SimulationView(
         simulation_id=views.content_id("sim", sim.calculation.id),
         scenario_id=views.scenario_id(spec),
