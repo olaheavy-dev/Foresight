@@ -54,6 +54,11 @@ features:
     title: Evidence and audit trail for every recommendation
     enabled: true
     suites: [E-AUD]
+  activity:
+    stage: 2
+    title: Activity — agent runs as traces and the audit log in words
+    enabled: true
+    suites: [E-AUD]
   ask:
     stage: 2
     title: AI Workspace — conversational analysis with generated answers

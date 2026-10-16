@@ -750,3 +750,29 @@ button.um-item { width: 100%; border: 0; background: none; font: inherit; cursor
   .set-row { grid-template-columns: minmax(0, 1fr) auto; }
   .set-row .form-error, .set-row .set-saved { grid-column: 1 / -1; }
 }
+
+/* Activity: agent runs as traces, and the audit log */
+.activity { display: grid; gap: var(--space-4); }
+.act-card { padding: var(--space-4); }
+.act-runs, .act-events { list-style: none; margin: var(--space-3) 0 0; padding: 0; }
+.act-run { border-top: 1px solid var(--color-border-primary); }
+.act-run:first-child { border-top: 0; }
+.act-run summary { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-2) var(--space-3); padding: var(--space-3) 0; cursor: pointer; list-style: none; }
+.act-run summary::-webkit-details-marker { display: none; }
+.act-run summary:focus-visible { outline: 2px solid var(--color-accent-primary); outline-offset: 2px; border-radius: var(--border-radius-sm); }
+.act-run-main { display: grid; gap: 2px; min-width: 0; flex: 1 1 260px; }
+.act-run-title { font-weight: var(--font-weight-medium); color: var(--color-text-primary); }
+.act-run-sub { font-size: var(--font-size-xs); color: var(--color-text-secondary); overflow-wrap: anywhere; }
+.act-run-facts { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.act-steps { margin: 0 0 var(--space-2); }
+.act-status { color: var(--color-text-secondary); font-size: var(--font-size-xs); }
+.act-note, .act-empty { margin: 0 0 var(--space-3); font-size: var(--font-size-xs); color: var(--color-text-secondary); }
+.act-empty { margin-top: var(--space-3); }
+.act-chain { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin: var(--space-3) 0; font-size: var(--font-size-xs); color: var(--color-text-secondary); }
+.act-events li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-1) var(--space-3); padding: var(--space-2) 0; border-top: 1px solid var(--color-border-primary); }
+.act-events li:first-child { border-top: 0; }
+.act-event { color: var(--color-text-primary); }
+.act-when { font-size: var(--font-size-xs); color: var(--color-text-secondary); }
+.act-foot { display: flex; align-items: center; gap: var(--space-2); margin: 0; font-size: var(--font-size-xs); color: var(--color-text-secondary); }
+.act-foot svg { width: 14px; height: 14px; }
+@media (min-width: 768px) { .act-card { padding: var(--space-5) var(--space-6); } }

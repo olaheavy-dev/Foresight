@@ -467,6 +467,8 @@ def correct_categories(
     latest = ctx.latest_categorisations()
     rows: list[m.Categorisation] = []
     taught: set[str] = set()
+    # One correction applied to several rows shares a batch id, so Activity shows it as one change.
+    batch = {"batch": transaction_ids[0]} if len(transaction_ids) > 1 else {}
     for transaction_id in transaction_ids:
         txn = ctx.get(m.Transaction, transaction_id)
         if txn is None:
@@ -494,7 +496,7 @@ def correct_categories(
         ctx.append_audit(
             "txn.recategorised", "transaction", transaction_id, actor=actor,
             before={"category_key": previous.category_key} if previous else None,
-            after={"category_key": category_key},
+            after={"category_key": category_key, **batch},
         )  # fmt: skip
     ctx.bump_data_version()
     detect(ctx)

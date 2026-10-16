@@ -23,6 +23,7 @@ import {
   isHealthz,
   isImportSummary,
   isIncomeStreamView,
+  isActivityFeed,
   isHomeInsights,
   isProfileView,
   isSimulationView,
@@ -44,6 +45,7 @@ import type {
   Healthz,
   ImportSummary,
   Placement,
+  ActivityFeed,
   HomeInsights,
   IncomeStreamView,
   ProfileView,
@@ -464,4 +466,9 @@ export function decideIncome(
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ decision }),
   });
+}
+
+/** The profile's agent runs as traces, and its audit log in words (server or browser). */
+export function fetchActivity(options: ApiOptions = {}): Promise<ActivityFeed | null> {
+  return request("/api/activity", okAnd(isActivityFeed), options);
 }

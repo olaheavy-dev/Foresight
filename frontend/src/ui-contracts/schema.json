@@ -193,6 +193,315 @@
       "title": "AccountView",
       "type": "object"
     },
+    "ActivityEvent": {
+      "additionalProperties": false,
+      "description": "One entry of the profile's hash-chained audit log, in words.",
+      "properties": {
+        "action": {
+          "minLength": 1,
+          "title": "Action",
+          "type": "string"
+        },
+        "actor": {
+          "minLength": 1,
+          "title": "Actor",
+          "type": "string"
+        },
+        "occurred_at": {
+          "minLength": 1,
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "seq": {
+          "minimum": 1,
+          "title": "Seq",
+          "type": "integer"
+        },
+        "summary": {
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "seq",
+        "occurred_at",
+        "actor",
+        "action",
+        "summary"
+      ],
+      "title": "ActivityEvent",
+      "type": "object"
+    },
+    "ActivityFeed": {
+      "additionalProperties": false,
+      "properties": {
+        "audit_chain_intact": {
+          "title": "Audit Chain Intact",
+          "type": "boolean"
+        },
+        "audit_events": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Audit Events",
+          "type": "integer"
+        },
+        "events": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ActivityEvent"
+          },
+          "title": "Events",
+          "type": "array"
+        },
+        "runs": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ActivityRun"
+          },
+          "title": "Runs",
+          "type": "array"
+        },
+        "workspace_id": {
+          "pattern": "^wsp_[0-9A-HJKMNP-TV-Z]{26}$",
+          "title": "Workspace Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "audit_chain_intact"
+      ],
+      "title": "ActivityFeed",
+      "type": "object"
+    },
+    "ActivityRun": {
+      "additionalProperties": false,
+      "description": "An agent run as a trace (docs/05 \"Traces stay in-house\"): its steps are the spans.",
+      "properties": {
+        "approved": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Approved",
+          "type": "integer"
+        },
+        "cost_usd": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cost Usd"
+        },
+        "duration_ms": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Duration Ms"
+        },
+        "llm_calls": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Llm Calls",
+          "type": "integer"
+        },
+        "partial": {
+          "default": false,
+          "title": "Partial",
+          "type": "boolean"
+        },
+        "question": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Question"
+        },
+        "rejected": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Rejected",
+          "type": "integer"
+        },
+        "revisions": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Revisions",
+          "type": "integer"
+        },
+        "run_id": {
+          "pattern": "^run_[0-9A-HJKMNP-TV-Z]{26}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "status": {
+          "minLength": 1,
+          "title": "Status",
+          "type": "string"
+        },
+        "steps": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ActivityStep"
+          },
+          "title": "Steps",
+          "type": "array"
+        },
+        "tokens_in": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Tokens In",
+          "type": "integer"
+        },
+        "tokens_out": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Tokens Out",
+          "type": "integer"
+        },
+        "trigger": {
+          "minLength": 1,
+          "title": "Trigger",
+          "type": "string"
+        },
+        "workflow": {
+          "minLength": 1,
+          "title": "Workflow",
+          "type": "string"
+        }
+      },
+      "required": [
+        "run_id",
+        "workflow",
+        "trigger",
+        "status",
+        "started_at"
+      ],
+      "title": "ActivityRun",
+      "type": "object"
+    },
+    "ActivityStep": {
+      "additionalProperties": false,
+      "description": "One step of an agent run: what ran and what it cost. Never the prompt or the output.",
+      "properties": {
+        "agent": {
+          "minLength": 1,
+          "title": "Agent",
+          "type": "string"
+        },
+        "cached": {
+          "default": false,
+          "title": "Cached",
+          "type": "boolean"
+        },
+        "cost_usd": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cost Usd"
+        },
+        "kind": {
+          "minLength": 1,
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "default": "",
+          "title": "Label",
+          "type": "string"
+        },
+        "latency_ms": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Latency Ms"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model"
+        },
+        "node": {
+          "minLength": 1,
+          "title": "Node",
+          "type": "string"
+        },
+        "seq": {
+          "minimum": 0,
+          "title": "Seq",
+          "type": "integer"
+        },
+        "status": {
+          "minLength": 1,
+          "title": "Status",
+          "type": "string"
+        },
+        "tokens_in": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Tokens In",
+          "type": "integer"
+        },
+        "tokens_out": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Tokens Out",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "seq",
+        "node",
+        "agent",
+        "kind",
+        "status"
+      ],
+      "title": "ActivityStep",
+      "type": "object"
+    },
     "AdjustScenarioAction": {
       "additionalProperties": false,
       "properties": {
@@ -9089,6 +9398,7 @@
     "CategoryCorrected",
     "ImportHistory",
     "HomeInsights",
-    "IncomeStreamView"
+    "IncomeStreamView",
+    "ActivityFeed"
   ]
 }

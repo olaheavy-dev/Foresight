@@ -394,3 +394,59 @@ class HomeInsights(Contract):
     findings: list[InsightFinding] = []
     recommendations: list[InterventionCard] = []
     can_check: bool = False
+
+
+class ActivityStep(Contract):
+    """One step of an agent run: what ran and what it cost. Never the prompt or the output."""
+
+    seq: Annotated[int, Field(ge=0)]
+    node: NonEmpty
+    agent: NonEmpty
+    kind: NonEmpty  # llm | tool | control
+    label: str = ""
+    model: str | None = None  # vendor/model behind the Mesh gateway, for model calls
+    status: NonEmpty
+    cached: bool = False
+    latency_ms: Annotated[int, Field(ge=0)] | None = None
+    tokens_in: Annotated[int, Field(ge=0)] = 0
+    tokens_out: Annotated[int, Field(ge=0)] = 0
+    cost_usd: Annotated[float, Field(ge=0)] | None = None
+
+
+class ActivityRun(Contract):
+    """An agent run as a trace (docs/05 "Traces stay in-house"): its steps are the spans."""
+
+    run_id: RunId
+    workflow: NonEmpty
+    trigger: NonEmpty  # user | event | cron | eval
+    status: NonEmpty
+    partial: bool = False
+    question: str | None = None  # the user's own question, for a conversation run
+    started_at: dt.datetime
+    duration_ms: Annotated[int, Field(ge=0)] | None = None
+    llm_calls: Annotated[int, Field(ge=0)] = 0
+    tokens_in: Annotated[int, Field(ge=0)] = 0
+    tokens_out: Annotated[int, Field(ge=0)] = 0
+    cost_usd: Annotated[float, Field(ge=0)] | None = None
+    revisions: Annotated[int, Field(ge=0)] = 0
+    approved: Annotated[int, Field(ge=0)] = 0  # Verifier verdicts in this run
+    rejected: Annotated[int, Field(ge=0)] = 0
+    steps: list[ActivityStep] = []
+
+
+class ActivityEvent(Contract):
+    """One entry of the profile's hash-chained audit log, in words."""
+
+    seq: Annotated[int, Field(ge=1)]
+    occurred_at: NonEmpty
+    actor: NonEmpty
+    action: NonEmpty
+    summary: NonEmpty
+
+
+class ActivityFeed(Contract):
+    workspace_id: WorkspaceId
+    runs: list[ActivityRun] = []
+    events: list[ActivityEvent] = []
+    audit_events: Annotated[int, Field(ge=0)] = 0
+    audit_chain_intact: bool

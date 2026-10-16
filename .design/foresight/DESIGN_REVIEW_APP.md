@@ -117,3 +117,15 @@ Found and fixed in this review:
 Checked and kept: one card per concern (Profile, Buffer, Your data), each form saving on its own with a quiet "Saved." beside it. The fixed details (country, currency, time zone) read as facts, with one line on why they can't change. The buffer copy promises only what the forecast does ("once Foresight knows your balance"). From 768 px each field and its button share a row; on mobile they stack full width. The page replaces the dashed placeholder flagged open on 14 Oct.
 
 Could improve (open): Settings is reached from the account menu only (the mobile tab bar has five slots); goals and digest delivery will join this page when those features ship.
+
+## Activity, reviewed 15 Oct 2026
+
+Captured by `e2e/app.screenshots.spec.ts` (`SCREENSHOTS=1`, real local stack) at 375, 768 and 1280 px in light and dark: `review-activity-*`, with the demo's empty run list and, in an earlier capture, a profile with an advice run. All six: **0 axe violations and 0 horizontal overflow**. Journeys: `e2e/activity.spec.ts` (no profile yet; an import plus a payee-wide correction shown as one line, audit chain intact).
+
+Found and fixed in this review:
+- **The step table on mobile showed bare values** ("coordinator", "1.8 s", "900 / 120") with no column names. Each step now stacks as its label (`td.lead`) and labelled rows (`data-label`), like the other data tables.
+- **The empty "No agent runs yet" line sat tight against the card heading.** It now has the same gap as the chain badge below "Changes".
+
+Checked and kept: run summaries read as plain outcomes ("Advised on a question", Done, time, cost), with steps behind a disclosure so the page stays calm. The audit chain badge uses the success colour only when the hash chain checks out, and states plainly what that means. Consecutive identical changes collapse to one line, and the "Traces stay on Foresight's own servers" note says where traces live without technical names.
+
+Could improve (open): a run's steps could show a small time bar so the slow step stands out; the Changes list could page past its latest 40 lines.

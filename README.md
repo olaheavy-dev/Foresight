@@ -25,6 +25,7 @@ Features ship behind flags ([`features.yaml`](features.yaml)). A feature is list
 - Behaviour trends and anomaly detection
 - Advisor and Verifier loop (advice checked before you see it)
 - Evidence and audit trail for every recommendation
+- Activity — agent runs as traces and the audit log in words
 - AI Workspace — conversational analysis with generated answers
 - Decision Lab scenario comparison
 - Transactions, imports and categorisation review
