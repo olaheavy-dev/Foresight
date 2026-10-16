@@ -616,7 +616,10 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
             v.verdict, "withdrawn" if last_round else "in_review"
         )
         with ctx.lock:
-            impact_refs = [*world.forecast_ids, *_store_impact(ctx, world, inputs, outcome.impact)]
+            impact_refs = [
+                *world.forecast_ids,
+                *_store_impact(ctx, world, world.forecast_inputs, outcome.impact),
+            ]
             rec_id = raw.get("rec_id")
             if rec_id is None:
                 rec = ctx.store.add_recommendation(
