@@ -117,16 +117,33 @@ def test_a_what_if_dated_past_the_horizon_extends_it_to_show_the_change(base) ->
     spec = ScenarioSpec("t", base.currency, (rent,))
     with pytest.raises(ScenarioError, match="outside the forecast horizon"):
         simulate(short, spec)
-    horizon = horizon_covering(short.as_of, spec, short.horizon_days)
-    assert horizon == 113 + 31
+    horizon = horizon_covering(short, spec)
+    assert 113 + 31 <= horizon <= 113 + 31 + 31  # a month past the first new rent payment
     res = simulate(short, dataclasses.replace(spec, horizon_days=horizon))
     assert res.simulated.p50[-1] < res.baseline.p50[-1]  # the higher rent shows
     soon = ScenarioModifier(type="one_off_outflow", amount_minor=1, date=short.as_of + timedelta(5))
-    assert horizon_covering(short.as_of, dataclasses.replace(spec, modifiers=(soon,)), 90) == 90
+    assert horizon_covering(short, dataclasses.replace(spec, modifiers=(soon,))) == 90
     split = ScenarioModifier(
         type="split_outflow", date=feb, amount_minor=900, instalments=3, cadence="monthly"
     )
-    covered = horizon_covering(short.as_of, dataclasses.replace(spec, modifiers=(split,)), 90)
+    covered = horizon_covering(short, dataclasses.replace(spec, modifiers=(split,)))
     assert covered >= 113 + 59 + 31  # the last instalment and a month after it
     late = dataclasses.replace(rent, from_date=short.as_of + timedelta(days=500))
-    assert horizon_covering(short.as_of, dataclasses.replace(spec, modifiers=(late,)), 90) == 365
+    assert horizon_covering(short, dataclasses.replace(spec, modifiers=(late,))) == 365
+
+
+def test_a_cancellation_reaches_the_bills_next_payment_or_is_refused(base) -> None:  # type: ignore[no-untyped-def]
+    """#55 review: council tax is paid April to January, so cancelling it from 1 February must
+    run until April's payment; a change that touches no payment is refused, never "no change"."""
+    short = dataclasses.replace(base, horizon_days=90)
+    feb = date(short.as_of.year + 1, 2, 1)
+    cancel = ScenarioModifier(
+        type="recurring_cancel", recurring_id="rob_leeds_city_council", from_date=feb
+    )
+    spec = ScenarioSpec("t", base.currency, (cancel,))
+    horizon = horizon_covering(short, spec)
+    assert short.as_of + timedelta(days=horizon) >= date(feb.year, 4, 1)
+    res = simulate(short, dataclasses.replace(spec, horizon_days=horizon))
+    assert res.simulated.p50[-1] > res.baseline.p50[-1]  # April's bill is gone
+    with pytest.raises(ScenarioError, match="no .* payment falls in the forecast"):
+        simulate(short, dataclasses.replace(spec, horizon_days=150))  # ends before April

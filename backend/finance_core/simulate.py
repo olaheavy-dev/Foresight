@@ -238,6 +238,11 @@ def _apply(
             if d >= start and _in_period(d, mod):
                 # Cancel the baseline occurrence, then add the new amount (0 when cancelled).
                 out.append(Flow(index[d], new_amount - ob.amount_minor, f"{mod.type}:{ob.label}"))
+        if len(out) == len(flows):
+            # No payment of it falls in the period: never answer "no difference" (#55 review).
+            raise ScenarioError(
+                f"{mod.type}: no {ob.label} payment falls in the forecast from {start}"
+            )
         return out
     if mod.type in ("category_cut_pct", "category_cap"):
         daily = _category_daily(prep, mod.category_key)
@@ -262,20 +267,27 @@ def _apply(
     raise ScenarioError(f"unsupported modifier {mod.type!r}; supported: {sorted(SUPPORTED)}")
 
 
-def horizon_covering(as_of: date, spec: ScenarioSpec, default: int) -> int:
-    """The horizon a what-if needs: `default`, or long enough to show `SHOW_DAYS` of its latest
-    dated change (the last instalment of a split), at most `MAX_HORIZON_DAYS`."""
+def horizon_covering(inputs: ForecastInputs, spec: ScenarioSpec) -> int:
+    """The horizon a what-if needs: the forecast's own, or long enough to show `SHOW_DAYS` of its
+    latest dated change (the last instalment of a split; the first payment a recurring change or
+    cancellation affects, so a quarterly or annual bill is reached), at most `MAX_HORIZON_DAYS`."""
+    as_of, cap = inputs.as_of, inputs.as_of + timedelta(days=MAX_HORIZON_DAYS)
     last = as_of
     for mod in spec.modifiers:
         start = mod.date or mod.from_date
         if mod.to_date is not None:
             last = max(last, mod.to_date)
+        if mod.type in ("recurring_change", "recurring_cancel"):
+            ob = next((o for o in inputs.obligations if o.key == mod.recurring_id), None)
+            begin = max(start or as_of, as_of + timedelta(days=1))
+            due = obligation_dates(ob, begin, cap, inputs.holidays) if ob else []
+            start = next((d for d in due if d >= begin), start)
         if start is None:
             continue
         if mod.type == "split_outflow" and mod.instalments and mod.instalments > 1:
             *_, start = _series_dates(start, mod.cadence or "monthly", date.max, mod.instalments)
         last = max(last, start + timedelta(days=SHOW_DAYS))
-    return min(MAX_HORIZON_DAYS, max(default, (last - as_of).days))
+    return min(MAX_HORIZON_DAYS, max(inputs.horizon_days, (last - as_of).days))
 
 
 def simulate(

@@ -313,7 +313,7 @@ def _simulate(
 ) -> tuple[ScenarioSpec, Any]:
     """Simulate on a horizon that reaches the what-if: "rent goes up from February" on a 90-day
     forecast ending in January is run long enough to show it, instead of being refused."""
-    horizon = horizon_covering(inputs.as_of, spec, inputs.horizon_days)
+    horizon = horizon_covering(inputs, spec)
     if horizon != inputs.horizon_days:
         spec = dataclasses.replace(spec, horizon_days=horizon)
     sim = run_simulation(ctx.store.ctx, spec, horizon_days=horizon, assumptions=assumptions)
