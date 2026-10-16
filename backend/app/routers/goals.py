@@ -142,6 +142,14 @@ def _check_date(on: date) -> None:
         )
 
 
+def _below_cap(ctx: WorkspaceContext) -> None:
+    if sum(g.status == "active" for g in ctx.all(m.Goal)) >= MAX_ACTIVE:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            f"A profile can follow up to {MAX_ACTIVE} goals at once. Archive one first.",
+        )
+
+
 @router.get("", response_model=GoalList)
 def list_goals(ctx: Profile) -> GoalList:
     out = GoalList(workspace_id=ctx.workspace_id, goals=[_view(ctx, g) for g in _goals(ctx)])
@@ -153,11 +161,7 @@ def list_goals(ctx: Profile) -> GoalList:
 def create_goal(ctx: Profile, body: GoalCreate) -> GoalView:
     _writable(ctx)
     _check_date(body.target_date)
-    if sum(g.status == "active" for g in ctx.all(m.Goal)) >= MAX_ACTIVE:
-        raise HTTPException(
-            status.HTTP_422_UNPROCESSABLE_ENTITY,
-            f"A profile can follow up to {MAX_ACTIVE} goals at once. Archive one first.",
-        )
+    _below_cap(ctx)
     goal = m.Goal(
         id=new_id("goal"),
         workspace_id=ctx.workspace_id,
@@ -194,6 +198,8 @@ def update_goal(ctx: Profile, goal_id: str, body: GoalUpdate) -> GoalView:
     if "target_minor" in sent and body.target_minor is not None:
         goal.target_minor = body.target_minor
     if "status" in sent and body.status is not None:
+        if body.status == "active" and goal.status != "active":
+            _below_cap(ctx)  # reactivating counts like creating (#54 review)
         goal.status = body.status
     after = {"name": goal.name, "target_minor": goal.target_minor,
              "target_date": goal.target_date.isoformat(), "status": goal.status}  # fmt: skip

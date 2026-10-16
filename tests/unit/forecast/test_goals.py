@@ -83,3 +83,12 @@ def test_the_trajectory_ends_at_the_progress_it_reports(base) -> None:  # type: 
     last = (r.trajectory_p10[-1], r.trajectory_p50[-1], r.trajectory_p90[-1])
     assert last == (r.progress.p10, r.progress.p50, r.progress.p90)
     assert list(r.trajectory_dates) == sorted(r.trajectory_dates)
+
+
+def test_on_track_needs_the_median_to_meet_the_target_as_well() -> None:
+    """#54 (Codex): with an even split, p can be exactly 0.5 while the interpolated P50 misses."""
+    from backend.finance_core.goals import _band
+
+    assert _band(0.5, 149_999, 150_000) == "at_risk"
+    assert _band(0.5, 150_000, 150_000) == "on_track"
+    assert _band(0.2, 0, 150_000) == "off_track"

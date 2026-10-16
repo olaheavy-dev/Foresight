@@ -12,8 +12,8 @@ Output: progress P10/P50/P90 at the target, `p_achieve` (the share of paths reac
 the band (`on_track` p ≥ 0.5, `at_risk` 0.25–0.5, `off_track` < 0.25), the shortfall
 (target − P50 progress; negative is a surplus), `progress_now` (P50 of the next pre-salary low −
 buffer, floored at 0: what is genuinely spare today), the trajectory (each pay cycle's low
-above the buffer, up to the target cycle), and the
-required monthly change to reach p ≥ 0.5: bisection on a uniform monthly saving uplift (≤ 20
+above the buffer, up to the target cycle), and the required monthly change to be on track
+(p ≥ 0.5 and the P50 at the target): bisection on a uniform monthly saving uplift (≤ 20
 iterations), rounded up to the currency's goal-change increment (GBP: £10; otherwise one major
 unit, never an FX conversion). Beyond 90 days the projection is labelled lower-confidence.
 """
@@ -112,8 +112,12 @@ def _window(dates: tuple[date, ...], paydays: tuple[date, ...], target: date) ->
     return 1, index[target]
 
 
-def _band(p: float) -> str:
-    return "on_track" if p >= 0.5 else "at_risk" if p >= 0.25 else "off_track"
+def _band(p: float, p50: int, target: int) -> str:
+    """docs/07 §6.7: on track needs p ≥ 0.5 *and* a P50 that meets the target (with an even
+    split, the interpolated median can fall short while p is exactly 0.5)."""
+    if p >= 0.5 and p50 >= target:
+        return "on_track"
+    return "at_risk" if p >= 0.25 else "off_track"
 
 
 def _q(values: IntArray) -> Quantiles:
@@ -150,6 +154,12 @@ def project_goal(
             window = window + uplift * (1 + (days - 1) // MONTH_DAYS)  # saved from tomorrow on
         return np.asarray(np.maximum(0, window.min(axis=1) - buffer), dtype=np.int64)
 
+    def reaches(uplift: int) -> bool:
+        """On track with this monthly saving: p ≥ 0.5 and the P50 meets the target."""
+        moved = progress_with(uplift)
+        p50 = int(quantile_minor(moved, QUANTILES["p50"]))
+        return float(np.mean(moved >= goal.target_minor)) >= 0.5 and p50 >= goal.target_minor
+
     progress = progress_with(0)
     p_achieve = round(float(np.mean(progress >= goal.target_minor)), 4)
     quantiles = _q(progress)
@@ -162,18 +172,18 @@ def project_goal(
     progress_now = max(0, int(quantile_minor(next_low, QUANTILES["p50"])) - buffer)
 
     required: int | None = 0
-    if p_achieve < 0.5:
+    if p_achieve < 0.5 or quantiles.p50 < goal.target_minor:
         step = change_increment(goal.currency)
         # Saving this much every month lifts even the worst path's low past the buffer and the
         # target, so the answer lies in [0, top] whenever it exists.
         top = goal.target_minor + buffer + max(0, -int(balances[:, lo : hi + 1].min()))
-        if float(np.mean(progress_with(top) >= goal.target_minor)) < 0.5:
+        if not reaches(top):
             required = None
         else:
             low, high = 0, top
             for _ in range(ITERATIONS):
                 mid = (low + high) // 2
-                if float(np.mean(progress_with(mid) >= goal.target_minor)) >= 0.5:
+                if reaches(mid):
                     high = mid
                 else:
                     low = mid
@@ -207,7 +217,7 @@ def project_goal(
         progress_now_minor=progress_now,
         progress=quantiles,
         p_achieve=p_achieve,
-        status_band=_band(p_achieve),
+        status_band=_band(p_achieve, quantiles.p50, goal.target_minor),
         shortfall_minor=goal.target_minor - quantiles.p50,
         required_monthly_minor=required,
         trajectory_dates=tuple(prep.dates[i] for i in ends),

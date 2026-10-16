@@ -82,3 +82,8 @@ def test_goals_refuse_what_cant_be_projected_honestly(make_client: type[TestClie
             "/api/goals", json={"name": "6", "target_minor": 1, "target_date": later}
         )
         assert sixth.status_code == 422  # five active goals at most
+        # Reactivating an archived goal counts like creating one (#54 review).
+        alice.patch(f"/api/goals/{goal['goal_id']}", json={"status": "abandoned"})
+        _create(alice, name="g5", target_minor=1_000, target_date=later)
+        back = alice.patch(f"/api/goals/{goal['goal_id']}", json={"status": "active"})
+        assert back.status_code == 422
