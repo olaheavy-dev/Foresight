@@ -310,9 +310,12 @@ def horizon_covering(inputs: ForecastInputs, spec: ScenarioSpec) -> int:
             start = max(firsts, default=start)  # every stream's first changed payday is shown
         if start is None:
             continue
+        if start >= cap:  # past what can be shown (even 9999-12-31): simulate() refuses it
+            last = cap
+            continue
         if mod.type == "split_outflow" and mod.instalments and mod.instalments > 1:
-            *_, start = _series_dates(start, mod.cadence or "monthly", date.max, mod.instalments)
-        last = max(last, start + timedelta(days=SHOW_DAYS))
+            *_, start = _series_dates(start, mod.cadence or "monthly", cap, mod.instalments)
+        last = max(last, min(start, cap) + timedelta(days=SHOW_DAYS))
     return min(MAX_HORIZON_DAYS, max(inputs.horizon_days, (last - as_of).days))
 
 

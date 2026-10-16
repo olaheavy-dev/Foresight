@@ -214,3 +214,19 @@ def test_an_all_income_change_one_stream_cant_reach_is_refused(base) -> None:  #
     cut = ScenarioModifier(type="income_change_pct", pct=-50, from_date=start)
     with pytest.raises(ScenarioError, match="forecast ends before the first changed payday"):
         simulate(two, ScenarioSpec("t", base.currency, (cut,)))
+
+
+def test_a_date_far_past_the_cap_is_refused_not_crashed(base) -> None:  # type: ignore[no-untyped-def]
+    """#55 review: 9999-12-31 overflowed `date + timedelta` before the cap applied; it now caps
+    the horizon and the engine refuses the what-if with a ScenarioError."""
+    short = dataclasses.replace(base, horizon_days=90)
+    far = date(9999, 12, 31)
+    for mod in (
+        ScenarioModifier(type="one_off_outflow", date=far, amount_minor=100),
+        ScenarioModifier(type="split_outflow", date=far, amount_minor=900, instalments=3),
+    ):
+        spec = ScenarioSpec("t", base.currency, (mod,))
+        horizon = horizon_covering(short, spec)
+        assert horizon == 180
+        with pytest.raises(ScenarioError):
+            simulate(short, dataclasses.replace(spec, horizon_days=horizon))
