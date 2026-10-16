@@ -110,3 +110,11 @@ def test_spending_between_the_last_payday_and_the_target_lowers_progress(base) -
     after = project_goal(dataclasses.replace(rich, known_flows=(spend,)), goal)
     assert after.progress.p50 == before.progress.p50 - 60_000
     assert after.measured_on == target
+
+
+def test_a_missing_buffer_is_refused_rather_than_read_as_zero(base) -> None:  # type: ignore[no-untyped-def]
+    """#54 review: with no buffer set, all cash above zero would look spare (docs/07)."""
+    with pytest.raises(GoalError, match="needs a buffer"):
+        project_goal(dataclasses.replace(base, buffer_minor=None), _goal(base, 10_000))
+    zero = project_goal(dataclasses.replace(base, buffer_minor=0), _goal(base, 10_000))
+    assert zero.progress.p50 >= project_goal(base, _goal(base, 10_000)).progress.p50

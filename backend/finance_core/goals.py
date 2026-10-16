@@ -139,11 +139,14 @@ def project_goal(
         raise GoalError("a goal needs a positive target")
     if inputs.starting_balance_provenance == "relative":
         raise GoalError("a goal needs a known balance: add today's balance first")
+    if inputs.buffer_minor is None:
+        # A missing buffer isn't a zero one: nothing above £0 is spare until one is set (docs/07).
+        raise GoalError("a goal needs a buffer: set one in Settings first")
     prep = prepare(inputs, prior)
     if goal.target_date not in set(prep.dates):
         raise GoalError("the goal's date is outside the forecast horizon")
     balances = calibrate_paths(balance_paths(prep, prep.flows), calibration)
-    buffer = int(inputs.buffer_minor or 0)
+    buffer = int(inputs.buffer_minor)
     lo, hi = _window(prep.dates, prep.paydays, goal.target_date)
 
     def progress_with(uplift: int) -> IntArray:

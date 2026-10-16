@@ -87,3 +87,17 @@ def test_goals_refuse_what_cant_be_projected_honestly(make_client: type[TestClie
         _create(alice, name="g5", target_minor=1_000, target_date=later)
         back = alice.patch(f"/api/goals/{goal['goal_id']}", json={"status": "active"})
         assert back.status_code == 422
+
+
+def test_a_goal_waits_for_a_buffer_and_follows_a_new_one(make_client: type[TestClient]) -> None:
+    """#54 review: with no buffer, cash above zero isn't all spare; setting one projects it."""
+    with make_client(create_app(), base_url=BASE) as alice:
+        demo(alice)
+        assert alice.patch("/api/session", json={"buffer_minor": None}).status_code == 200
+        later = (date.today() + timedelta(days=60)).isoformat()
+        goal = _create(alice, name="Rainy day", target_minor=50_000, target_date=later)
+        assert goal["projection"] is None
+        assert "needs a buffer" in goal["problem"]
+        assert alice.patch("/api/session", json={"buffer_minor": 50_000}).status_code == 200
+        listed = _goals(alice)["goals"][0]
+        assert listed["projection"] is not None  # the buffer is part of the projection's inputs
