@@ -195,3 +195,22 @@ def test_an_all_income_change_reaches_every_streams_first_payday(base) -> None: 
     cut = ScenarioModifier(type="income_change_pct", pct=-50, from_date=start)
     horizon = horizon_covering(two, ScenarioSpec("t", base.currency, (cut,)))
     assert two.as_of + timedelta(days=horizon) >= date(start.year, 2, 26) + timedelta(days=31)
+
+
+def test_an_all_income_change_one_stream_cant_reach_is_refused(base) -> None:  # type: ignore[no-untyped-def]
+    """#55 review: when one stream's first changed payday is past the forecast's end, the change
+    would apply to the other stream only; it is refused instead of shown as partial."""
+    from backend.finance_core.types import PaydayRule
+
+    short = dataclasses.replace(base, horizon_days=90)
+    (salary,) = short.income_streams
+    side = dataclasses.replace(
+        salary, key="inc_side", payday_rule=PaydayRule(kind="fixed_day", day_of_month=15)
+    )
+    two = dataclasses.replace(short, income_streams=(salary, side))
+    # From 16 Dec: the salary (paid early, 18 Dec) is cut; the side income's next payday, 15 Jan,
+    # is after the forecast ends on 9 Jan.
+    start = date(two.as_of.year, 12, 16)
+    cut = ScenarioModifier(type="income_change_pct", pct=-50, from_date=start)
+    with pytest.raises(ScenarioError, match="forecast ends before the first changed payday"):
+        simulate(two, ScenarioSpec("t", base.currency, (cut,)))

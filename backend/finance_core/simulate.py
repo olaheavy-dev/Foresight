@@ -211,6 +211,16 @@ def _apply(
         if not hit:
             raise ScenarioError(f"no paydays for income stream {key!r}")
         scaled = {id(f) for f in hit if _in_period(dates[f.day], mod)}
+        if mod.to_date is None or mod.to_date > dates[-1]:
+            # The change runs past the forecast: a stream with no changed payday in it would be
+            # shown unchanged, a partial answer (#55 review). Refuse it instead.
+            changed = {f.income_key for f in hit if id(f) in scaled}
+            missed = sorted({f.income_key for f in hit if f.income_key} - changed)
+            if scaled and missed:
+                raise ScenarioError(
+                    "income_change_pct: the forecast ends before the first changed payday "
+                    f"of {missed[0]!r}"
+                )
         if not scaled:
             # No payday of it falls in the period: never answer "no difference" (#55 review).
             raise ScenarioError(f"income_change_pct: no {key!r} payday falls in the period")
