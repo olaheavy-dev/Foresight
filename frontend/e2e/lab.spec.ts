@@ -40,7 +40,7 @@ test("Decision Lab compares a spread purchase with the current path, and explain
   await form.getByLabel("Amount", { exact: true }).fill("100");
   await form.getByLabel("Date").fill("2031-01-01");
   await form.getByRole("button", { name: "Test it" }).click();
-  await expect(form.getByRole("alert")).toContainText("outside the forecast horizon");
+  await expect(form.getByRole("alert")).toContainText("more than 180 days after the forecast starts");
   await expect(result).toHaveCount(0); // the income result isn't left beside the refusal
 });
 

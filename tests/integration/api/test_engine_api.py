@@ -336,3 +336,24 @@ def test_a_lab_what_if_past_the_forecast_runs_as_it_does_in_the_workspace(api: T
     labels = {a["label"] for a in body["comparison"]["assumptions"]}
     assert "Lower confidence" in labels  # past 90 days
     assert purchase(200).status_code == 422
+
+
+def test_an_explicit_spread_horizon_is_lengthened_to_close_the_last_cycle(api: TestClient) -> None:
+    """#55 review: the Lab sends its own horizon for a spread, which could end just before the
+    payday closing the last instalment's cycle; the server lengthens it to that payday."""
+    demo(api)
+    as_of = date.fromisoformat(
+        checked(api, api.get("/api/forecast"), "/api/forecast")["chart"]["as_of"]
+    )
+    start = date(as_of.year + 1, 2, 15)
+    sent = (start - as_of).days + 20  # ends before the second instalment's cycle closes
+    response = api.post("/api/simulate", json={
+        "schema": "scenario_spec/1", "name": "Laptop", "scope": "mine", "currency": "GBP",
+        "horizon_days": sent,
+        "modifiers": [{"type": "split_outflow", "date": start.isoformat(), "amount_minor": 90000,
+                       "instalments": 2, "cadence": "monthly", "label": "Laptop"}],
+    })  # fmt: skip
+    body = checked(api, response, "/api/simulate")
+    last = date.fromisoformat(body["comparison"]["scenarios"][0]["series"]["dates"][-1])
+    assert last > date(start.year, 3, 15)  # past the second instalment, to its cycle's payday
+    assert (last - as_of).days > sent

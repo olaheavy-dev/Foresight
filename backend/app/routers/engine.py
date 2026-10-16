@@ -198,12 +198,14 @@ def simulate(ctx: Profile, body: ScenarioSpecPayload) -> SimulationView:
     modifiers = tuple(_modifier(mod.model_dump(), keys) for mod in body.modifiers)
 
     def run() -> tuple[StoredForecast, StoredSimulation, ScenarioSpec]:
-        # No horizon asked for: the one the Workspace uses, through the payday closing the
-        # cycle the latest change lands in, at most 180 days (#55 review), so a what-if the
-        # Workspace answers is answered here too.
-        horizon = body.horizon_days or horizon_covering(
+        # The horizon the Workspace uses, through the payday closing the cycle the latest
+        # change lands in, at most 180 days (#55 review), so a what-if the Workspace answers is
+        # answered here too. A horizon asked for (the Lab's spreads) is only ever lengthened to
+        # that, so the last change is always in a reported low.
+        covering = horizon_covering(
             forecast_inputs(ctx), ScenarioSpec(body.name, body.currency, modifiers)
         )
+        horizon = max(body.horizon_days or 0, covering)
         spec = ScenarioSpec(body.name, body.currency, modifiers, horizon_days=horizon)
         baseline = run_forecast(ctx, horizon_days=horizon)
         return baseline, run_simulation(ctx, spec, horizon_days=horizon), spec
