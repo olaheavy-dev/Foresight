@@ -251,6 +251,8 @@ const ERRORS: Record<string, string> = {
   model_unavailable: "AI explanations are unavailable right now.",
   spend_limit: "AI explanations are unavailable right now.",
   budget_exceeded: "This question needed more work than one answer allows.",
+  network_limit: "Today’s guest allowance for your network is used.",
+  rate_limit: "Too many questions in a short time.",
 };
 
 const errorText = (code: string) => ERRORS[code] ?? "Something went wrong with this answer.";
@@ -451,6 +453,10 @@ export function Workspace({
         dispatch({ type: "thread_id", key, threadId });
       }
       const runId = await postMessage(threadId, question, turnId, { action });
+      if (runId && typeof runId !== "string") {
+        const retryable = runId.refused === "rate_limit"; // a network's day is used until tomorrow
+        return dispatch({ type: "fail", key, turnId, code: runId.refused, retryable });
+      }
       if (!runId) return dispatch({ type: "fail", key, turnId, code: "unavailable", retryable: true });
       dispatch({ type: "run_id", key, turnId, runId });
       follow(key, turnId, runId);
@@ -770,9 +776,13 @@ export function Workspace({
                     <p className="card-sub">
                       {turn.run.error.code === "ai_unavailable"
                         ? "Your forecast and numbers still work. Try the Decision Lab for a what-if, or ask again later."
-                        : turn.partial
-                          ? "Part of the answer was checked before it stopped; it’s shown below."
-                          : "No figures were shown, because none were checked. Your question is kept."}
+                        : turn.run.error.code === "network_limit"
+                          ? "Sign in with Google to keep going, or come back tomorrow. Your forecast, the Decision Lab and goals still work."
+                          : turn.run.error.code === "rate_limit"
+                            ? "Please wait a few minutes, then ask again. Your question is kept."
+                            : turn.partial
+                              ? "Part of the answer was checked before it stopped; it’s shown below."
+                              : "No figures were shown, because none were checked. Your question is kept."}
                     </p>
                   </div>
                 </div>

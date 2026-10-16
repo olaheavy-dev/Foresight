@@ -253,6 +253,25 @@ describe("AI status", () => {
     vi.useRealTimers();
   });
 
+  it("a guest network's used allowance says why and how to go on, with no retry (hardening)", async () => {
+    const original = fetchMock.getMockImplementation() as (url: string, init?: RequestInit) => Promise<Response>;
+    fetchMock.mockImplementation(async (url: string, init?: RequestInit) =>
+      url.endsWith("/messages")
+        ? new Response(JSON.stringify({ detail: "Today’s guest allowance for your network is used. Sign in…" }), {
+            status: 429,
+          })
+        : original(url, init),
+    );
+    render(<Workspace {...props} />);
+    fireEvent.change(screen.getByLabelText("Ask a question"), { target: { value: "How am I doing?" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    const alert = await screen.findByRole("alert");
+    expect(alert).toHaveTextContent("Today’s guest allowance for your network is used.");
+    expect(alert).toHaveTextContent("Sign in with Google to keep going");
+    expect(screen.queryByRole("button", { name: "Try again" })).not.toBeInTheDocument();
+    expect(FakeEventSource.all).toHaveLength(0); // no run was started
+  });
+
   it("an ai_unavailable error pauses AI answers without mentioning the provider", async () => {
     render(<Workspace {...props} />);
     await askViaComposer("Can I afford a trip?");

@@ -13,16 +13,17 @@ import re
 from datetime import date
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import ValidationError
 from sqlalchemy import select
 
-from backend.app import proactive, views
+from backend.app import network_cap, proactive, views
 from backend.app.session import Profile, read_only
 from backend.app.ui_contracts.blocks import InterventionCard
 from backend.app.ui_contracts.money import money_value
 from backend.app.ui_contracts.primitives import MoneyAmount
 from backend.app.ui_contracts.response import HomeInsights, InsightFinding
+from backend.settings import get_settings
 from backend.storage import models as m
 from backend.storage.repositories import WorkspaceContext
 
@@ -171,7 +172,7 @@ def get_insights(ctx: Profile) -> HomeInsights:
 
 
 @router.post("/check", response_model=HomeInsights, status_code=status.HTTP_202_ACCEPTED)
-def check_now(ctx: Profile) -> HomeInsights:
+def check_now(request: Request, ctx: Profile) -> HomeInsights:
     """Start a proactive check now (counts against the profile's daily allowance)."""
     if read_only(ctx.workspace):
         raise HTTPException(status.HTTP_403_FORBIDDEN, "This profile is read-only.")
@@ -182,6 +183,11 @@ def check_now(ctx: Profile) -> HomeInsights:
         raise HTTPException(
             status.HTTP_409_CONFLICT, "This profile has used today's proactive checks."
         )
+    # A guest's checks also count per network, which a fresh guest profile doesn't reset.
+    if ctx.workspace.owner_user_id is None and not network_cap.allowance.take(
+        request, "check", get_settings().guest_network_daily_checks
+    ):
+        raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, network_cap.REFUSED)
     proactive.enqueue(ctx, "manual_check", immediate=True)
     ctx.session.commit()
     return insights(ctx)

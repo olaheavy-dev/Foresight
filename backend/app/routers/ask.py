@@ -31,6 +31,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import StringConstraints
 
 from backend.agents.runner import ask, run_followup
+from backend.app import network_cap
 from backend.app.session import Profile
 from backend.app.ui_contracts.primitives import Contract
 from backend.app.ui_contracts.response import AgentResponse
@@ -302,7 +303,9 @@ def _run_in_background(
     status_code=status.HTTP_202_ACCEPTED,
     response_model=RunAccepted,
 )
-def post_message(ctx: Profile, mesh: Mesh, thread_id: str, body: MessageBody) -> RunAccepted:
+def post_message(
+    request: Request, ctx: Profile, mesh: Mesh, thread_id: str, body: MessageBody
+) -> RunAccepted:
     thread = _thread(ctx, thread_id)
     store = AgentStore(ctx)
     existing = store.message_by_client_id(thread.id, body.client_msg_id)
@@ -310,6 +313,11 @@ def post_message(ctx: Profile, mesh: Mesh, thread_id: str, body: MessageBody) ->
         # A retried POST returns the run already started (docs/05 §6.4).
         return RunAccepted(run_id=existing.run_id, thread_id=thread.id, reused=True)
     text, action = _question(body)
+    # A guest's questions also count per network, which a fresh guest profile doesn't reset.
+    if ctx.workspace.owner_user_id is None and not network_cap.allowance.take(
+        request, "question", get_settings().guest_network_daily_questions
+    ):
+        raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, network_cap.REFUSED)
     refusal = limits.admit(ctx.workspace_id, datetime.now(timezone.utc))
     if refusal is not None:
         raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, refusal)

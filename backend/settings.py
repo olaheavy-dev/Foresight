@@ -48,6 +48,9 @@ class Settings(BaseSettings):
     mesh_question_worst_case_usd: float = 0.30
     # Project-wide cap on model spend per UTC day (backend/mesh/spend_guard.py); 0 disables it.
     mesh_daily_budget_usd: float = 0.50
+    # Guests' AI work per network per UTC day (backend/app/network_cap.py); 0 disables a cap.
+    guest_network_daily_questions: int = 20
+    guest_network_daily_checks: int = 3
 
     database_url: str = ""
     # Baked into the image at build time (backend/Dockerfile). Deliberately a name that no
