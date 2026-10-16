@@ -6,6 +6,7 @@
  * saves on its own and says when it's saved; a demo copy changes only this browser's copy.
  */
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { type FormEvent, useId, useState } from "react";
 
 import { Button, CardHead } from "@/components/ui/primitives";
@@ -17,6 +18,7 @@ const COUNTRY: Record<string, string> = { GB: "United Kingdom", IN: "India" };
 
 export function Settings({ initial }: { initial: ProfileView }) {
   const id = useId();
+  const router = useRouter();
   const [profile, setProfile] = useState(initial);
   const [name, setName] = useState(initial.name);
   const [buffer, setBuffer] = useState(
@@ -44,6 +46,7 @@ export function Settings({ initial }: { initial: ProfileView }) {
     }
     setProfile(next);
     setSaved(on);
+    router.refresh(); // the shell (account menu, Home) re-reads the profile it shows
   };
 
   const saveName = (e: FormEvent) => {

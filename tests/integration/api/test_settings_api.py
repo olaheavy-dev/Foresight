@@ -6,8 +6,13 @@ from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import Session
 
 from backend.app.main import create_app
+from backend.settings import get_settings
+from backend.storage import models as m
+from backend.storage.repositories import WorkspaceContext
 from tests.integration.api.contract import checked
 from tests.integration.api.test_engine_api import demo, new_profile
 
@@ -19,7 +24,17 @@ def _patch(client: TestClient, body: dict[str, Any]) -> Any:
     return checked(client, client.patch("/api/session", json=body), "/api/session")
 
 
-def test_settings_rename_and_buffer_bump_the_data_version_once(
+def _prefs_and_job(workspace_id: str) -> tuple[int, str | None]:
+    with Session(create_engine(get_settings().database_url)) as db:
+        job = db.scalars(
+            select(m.AnalysisJob).where(
+                m.AnalysisJob.workspace_id == workspace_id, m.AnalysisJob.status == "queued"
+            )
+        ).first()
+        return WorkspaceContext.open(db, workspace_id).prefs_version(), job.event if job else None
+
+
+def test_settings_rename_and_buffer_leave_the_ledger_version_alone(
     make_client: type[TestClient],
 ) -> None:
     with (
@@ -36,15 +51,19 @@ def test_settings_rename_and_buffer_bump_the_data_version_once(
 
         buffered = _patch(alice, {"buffer_minor": 50_000})
         assert buffered["buffer_minor"] == 50_000
-        assert buffered["data_version"] == start["data_version"] + 1  # the forecast depends on it
-        again = _patch(alice, {"buffer_minor": 50_000})
-        assert again["data_version"] == buffered["data_version"]  # unchanged changes nothing
+        # A preference, not ledger data: the forecast's seed (data_version) stays put, while
+        # prefs_version moves so cached answers and advice go stale, and a refresh is queued.
+        assert buffered["data_version"] == start["data_version"]
+        assert _prefs_and_job(start["workspace_id"]) == (1, "buffer_set")
+        _patch(alice, {"buffer_minor": 50_000})
+        assert _prefs_and_job(start["workspace_id"])[0] == 1  # unchanged changes nothing
 
         kept = _patch(alice, {"name": "Home"})  # a field left out stays as it was
         assert kept["buffer_minor"] == 50_000
         cleared = _patch(alice, {"buffer_minor": None})
         assert cleared["buffer_minor"] is None
-        assert cleared["data_version"] == buffered["data_version"] + 1
+        assert cleared["data_version"] == start["data_version"]
+        assert _prefs_and_job(start["workspace_id"])[0] == 2
 
         # Refused: a negative buffer, an empty name; another visitor is untouched.
         assert alice.patch("/api/session", json={"buffer_minor": -1}).status_code == 422

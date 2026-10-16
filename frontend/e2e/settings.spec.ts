@@ -21,6 +21,7 @@ test("an own profile renames itself and sets, keeps and clears its buffer", asyn
   await profile.getByLabel("Name").fill("Household");
   await profile.getByRole("button", { name: "Save name" }).click();
   await expect(profile.getByRole("status")).toHaveText("Saved.");
+  await expect(page.getByRole("button", { name: "Account menu for Household" })).toBeVisible(); // the shell too
 
   const buffer = page.getByRole("form", { name: "Buffer amount" });
   await buffer.getByLabel(/Amount/).fill("abc");

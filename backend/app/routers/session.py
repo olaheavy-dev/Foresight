@@ -15,7 +15,7 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException, Request, Response, status
 from sqlalchemy import delete, or_, text, update
 
-from backend.app import demo_pool
+from backend.app import demo_pool, proactive
 from backend.app import session as sess
 from backend.app.session import Db, Profile
 from backend.app.ui_contracts.response import ProfileUpdate, ProfileView, SessionAccount
@@ -180,9 +180,11 @@ def current(request: Request, ctx: Profile, db: Db) -> ProfileView:
 
 @router.patch("", response_model=ProfileView)
 def update_profile(request: Request, ctx: Profile, db: Db, body: ProfileUpdate) -> ProfileView:
-    """Settings: the profile's name and buffer. A new buffer changes the forecast's chance of
-    going below it, so it bumps the data version like any ledger change; an unchanged value
-    changes nothing. Country and currency stay as created: imports and figures depend on them."""
+    """Settings: the profile's name and buffer. A buffer is a preference, not ledger data: it
+    leaves `data_version` (and so the forecast's seed and paths) alone, bumps `prefs_version`
+    through its audit event so cached answers and checked advice go stale, and queues a risk
+    refresh. An unchanged value changes nothing. Country and currency stay as created: imports
+    and figures depend on them."""
     ws = ctx.workspace
     if sess.read_only(ws):
         raise HTTPException(status.HTTP_403_FORBIDDEN, "This profile is read-only.")
@@ -199,7 +201,7 @@ def update_profile(request: Request, ctx: Profile, db: Db, body: ProfileUpdate) 
             before={"buffer_minor": ws.buffer_minor}, after={"buffer_minor": body.buffer_minor},
         )  # fmt: skip
         ws.buffer_minor = body.buffer_minor
-        ctx.bump_data_version()
+        proactive.enqueue(ctx, "buffer_set")  # findings refresh; a demo copy's advice waits
     db.commit()
     return profile_view(ws, account_view(db, sess.current(request, db)))
 

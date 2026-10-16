@@ -152,10 +152,14 @@ def insights(ctx: WorkspaceContext) -> HomeInsights:
         checked_data_version=run.data_version if run else None,
         checked_at=ran.finished_at if ran else None,
         findings=_findings(ctx),
-        # Advice is shown only for the data it was checked against: after a newer change it
-        # would describe a ledger that no longer exists, whatever the newer job's state.
+        # Advice is shown only for the data and buffer it was checked against: after a newer
+        # change it would describe a ledger or a threshold that no longer holds.
         recommendations=(
-            _cards(ctx, run.id) if run and run.data_version == int(ws.data_version or 0) else []
+            _cards(ctx, run.id)
+            if run
+            and run.data_version == int(ws.data_version or 0)
+            and run.prefs_version == ctx.prefs_version()  # checked against the current buffer
+            else []
         ),
         can_check=blocked is None and state != "checking",
     )
