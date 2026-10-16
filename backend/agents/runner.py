@@ -38,7 +38,7 @@ def _initial_state(store: AgentStore, run_id: str, workflow: str, trigger: str) 
         "workflow": workflow,  # type: ignore[typeddict-item]
         "trigger": trigger,  # type: ignore[typeddict-item]
         "data_version": int(ws.data_version or 0),
-        "prefs_version": 0,
+        "prefs_version": store.ctx.prefs_version(),
         "currency": ws.home_currency,
         "home_currency": ws.home_currency,
         "locale_pack": LOCALE_PACKS.get(ws.country.upper(), "uk"),
@@ -73,7 +73,7 @@ def run_workflow(
         workflow=workflow,
         trigger=trigger,
         data_version=int(ws.data_version or 0),
-        prefs_version=0,
+        prefs_version=store.ctx.prefs_version(),
         deadline_at=deadline_for(workflow, clock()),
         thread_id=thread_id,
     )

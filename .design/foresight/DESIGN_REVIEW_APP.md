@@ -105,3 +105,15 @@ Could improve (open): the result could also show the scenario's key numbers (low
 The Core metrics note now names its run in words ("From the evaluation run of 14 Oct 2026 (commit 21b5e1e)"), with the raw run id kept in a tooltip, instead of `evalrun_20261014T162812Z_21b5e1e`. Captured `review-quality-*` at 375, 768 and 1280 px in light and dark (`SCREENSHOTS=1`, real local stack): **0 axe violations and 0 horizontal overflow** on all six. At 375 px the longer note wraps to three lines within the measure and pushes nothing sideways. This closes the "raw run id on Quality" item left open on 14 Oct.
 
 Could improve (open): the fast tier lists its model twice ("gpt-6-luna, openai/gpt-6-luna") because older recordings stored the name without its provider prefix; the label could normalise names before joining them.
+
+## Settings, reviewed 16 Oct 2026
+
+Captured by `e2e/app.screenshots.spec.ts` (`SCREENSHOTS=1`, real local stack) at 375, 768 and 1280 px in light and dark: `review-settings-*` (the demo copy, with its £500 buffer). All six: **0 axe violations and 0 horizontal overflow**. Journeys: `e2e/settings.spec.ts` (rename and a buffer that is set, survives a reload and is cleared; a bad amount refused; a failed save keeps what was typed; delete and guest sign-out each ask first and can be kept).
+
+Found and fixed in this review:
+- **The privacy link in "Your data" was told apart from its sentence by colour alone** (axe `link-in-text-block`, serious). It is now underlined.
+- **"Sign out" and "Delete my data" touched**, with no gap between the buttons. They now sit apart, and the destructive one keeps the error colour.
+
+Checked and kept: one card per concern (Profile, Buffer, Your data), each form saving on its own with a quiet "Saved." beside it. The fixed details (country, currency, time zone) read as facts, with one line on why they can't change. The buffer copy promises only what the forecast does ("once Foresight knows your balance"). From 768 px each field and its button share a row; on mobile they stack full width. The page replaces the dashed placeholder flagged open on 14 Oct.
+
+Could improve (open): Settings is reached from the account menu only (the mobile tab bar has five slots); goals and digest delivery will join this page when those features ship.

@@ -182,6 +182,18 @@ class ProfileView(Contract):
     data_version: Annotated[int, Field(ge=0)]
     read_only: bool  # edits refused (the shared template only); demo profiles never take imports
     account: SessionAccount | None = None
+    # The balance the forecast keeps above (home-currency minor units); None when not set.
+    buffer_minor: Annotated[int, Field(ge=0)] | None = None
+
+
+class ProfileUpdate(Contract):
+    """Settings: rename the profile or set its buffer. Fields left out are unchanged; an explicit
+    `buffer_minor: null` clears the buffer."""
+
+    name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=60)] | (
+        None
+    ) = None
+    buffer_minor: Annotated[int, Field(ge=0, le=10_000_000_000)] | None = None
 
 
 class TransactionRow(Contract):
