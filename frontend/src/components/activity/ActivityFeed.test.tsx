@@ -77,7 +77,7 @@ export const ACTIVITY_FIXTURE: Feed = {
       occurred_at: "2026-10-14T18:00:00Z",
       actor: "system",
       action: "import.committed",
-      summary: "Imported transactions for an account",
+      summary: "Imported a table of transactions",
     },
   ],
 };

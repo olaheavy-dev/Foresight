@@ -103,7 +103,9 @@ test("navigation reaches each section; unshipped ones say so honestly", async ({
   await expect(page.getByRole("heading", { level: 1, name: "Activity" })).toBeVisible();
   // Activity ships: agent runs as traces and the audit log, chain intact.
   await expect(page.getByRole("region", { name: "Changes" })).toContainText("Audit chain intact");
-  await expect(page.getByRole("region", { name: "Changes" })).toContainText("Imported transactions for");
+  await expect(page.getByRole("region", { name: "Changes" })).toContainText(
+    /Imported (a table|\d+ tables) of transactions/,
+  );
   await noSeriousA11yIssues(page);
   // Transactions ships with the ledger flag: real rows, no placeholder.
   await nav.getByRole("link", { name: "Transactions" }).click();
