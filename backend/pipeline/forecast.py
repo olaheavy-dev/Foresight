@@ -615,7 +615,13 @@ def run_goal_projection(
     )
     spec = GoalSpec(goal.id, goal.name, goal.currency, goal.target_minor, goal.target_date)
     prior = irregular_prior(inputs.currency)
-    params = {**_params(ctx, inputs, window_days), "goal": spec}
+    # The prior is part of the match, as for the forecast: a changed locale pack's prior must
+    # not read back a projection computed with the old one (#54 review).
+    params = {
+        **_params(ctx, inputs, window_days),
+        "goal": spec,
+        "prior": _model_params(prior, None)["prior"],
+    }
     want = to_jsonable(params)
     for row in ctx.calculations("goal_projection", content_hash(inputs)):
         if row.engine_version == GOAL_ENGINE_VERSION and all(

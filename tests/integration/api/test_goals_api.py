@@ -101,3 +101,76 @@ def test_a_goal_waits_for_a_buffer_and_follows_a_new_one(make_client: type[TestC
         assert alice.patch("/api/session", json={"buffer_minor": 50_000}).status_code == 200
         listed = _goals(alice)["goals"][0]
         assert listed["projection"] is not None  # the buffer is part of the projection's inputs
+
+
+def test_a_new_prior_gives_a_new_projection(
+    make_client: type[TestClient], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#54 review: the prior is part of the cache match, so a changed locale pack's prior isn't
+    answered with a projection computed on the old one."""
+    import dataclasses
+
+    from backend.pipeline import forecast as fc
+
+    with make_client(create_app(), base_url=BASE) as alice:
+        demo(alice)
+        on = (date.today() + timedelta(days=120)).isoformat()
+        first = _create(alice, name="Trip", target_minor=150_000, target_date=on)["calc_id"]
+        assert _goals(alice)["goals"][0]["calc_id"] == first  # read back
+        old = fc.irregular_prior
+
+        def changed(currency: str) -> Any:
+            prior = old(currency)
+            return prior and dataclasses.replace(prior, strength_days=prior.strength_days + 7)
+
+        monkeypatch.setattr(fc, "irregular_prior", changed)
+        assert _goals(alice)["goals"][0]["calc_id"] != first
+
+
+def test_a_projection_race_is_retried_not_a_500(
+    make_client: type[TestClient], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#54 review: two requests projecting the same goal insert the same calculation id; the
+    loser rolls back and reads the winner's row instead of failing."""
+    from sqlalchemy.exc import IntegrityError
+
+    from backend.app.routers import goals as router
+
+    with make_client(create_app(), base_url=BASE) as alice:
+        demo(alice)
+        on = (date.today() + timedelta(days=60)).isoformat()
+        _create(alice, name="Trip", target_minor=50_000, target_date=on)
+        real, calls = router._view, []
+
+        def racing(ctx: Any, goal: Any) -> Any:
+            calls.append(goal.id)
+            if len(calls) == 1:
+                raise IntegrityError("insert calculation", {}, Exception("duplicate key"))
+            return real(ctx, goal)
+
+        monkeypatch.setattr(router, "_view", racing)
+        listed = alice.get("/api/goals")
+        assert listed.status_code == 200, listed.text
+        assert len(calls) == 2  # retried once
+
+
+def test_concurrent_creates_never_pass_the_five_goal_cap(make_client: type[TestClient]) -> None:
+    """#54 review: the cap check holds the workspace row until commit, so two creates at four
+    active goals can't both succeed."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    with make_client(create_app(), base_url=BASE) as alice:
+        demo(alice)
+        later = (date.today() + timedelta(days=60)).isoformat()
+        for i in range(4):
+            _create(alice, name=f"g{i}", target_minor=1_000, target_date=later)
+
+        def create(i: int) -> int:
+            body = {"name": f"race{i}", "target_minor": 1_000, "target_date": later}
+            return alice.post("/api/goals", json=body).status_code
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            codes = sorted(pool.map(create, range(2)))
+        assert codes == [201, 422]
+        active = [g for g in _goals(alice)["goals"] if g["status"] == "active"]
+        assert len(active) == 5
