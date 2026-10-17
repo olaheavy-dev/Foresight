@@ -261,9 +261,33 @@ def calibration_for(
 ) -> Calibration | None:
     """Fit the band calibration (docs/07 §6.8a) from raw forecasts at weekly origins in the last
     MAX_LOOKBACK_DAYS, scored on the ledger's balances up to `inputs.as_of`. None when the
-    balance is relative or there is too little history for a single past forecast."""
+    balance is relative or there is too little history for a single past forecast.
+
+    The fit doesn't depend on the horizon, so within one request it is computed once and reused
+    (listing five goals after a data change refitted it five times, #54 review)."""
     if inputs.starting_balance_provenance == "relative":
         return None
+    key = content_hash(
+        {
+            "data_version": ctx.workspace.data_version,
+            "as_of": inputs.as_of,
+            "window_days": window_days,
+            "prior": None if prior is None else prior_json(prior),
+        }
+    )
+    key = f"calibration:{key}"
+    if key not in ctx.memo:  # a WorkspaceContext lives for one request or one run
+        ctx.memo[key] = _fit_calibration(ctx, inputs, prior, window_days)
+    cached: Calibration | None = ctx.memo[key]
+    return cached
+
+
+def _fit_calibration(
+    ctx: WorkspaceContext,
+    inputs: ForecastInputs,
+    prior: IrregularPrior | None,
+    window_days: int,
+) -> Calibration | None:
     first_day = min((d for d, _c, _a in inputs.discretionary_history), default=inputs.as_of)
     earliest = max(
         inputs.as_of - timedelta(days=MAX_LOOKBACK_DAYS),

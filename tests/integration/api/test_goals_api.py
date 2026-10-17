@@ -240,3 +240,28 @@ def test_a_goal_past_its_date_isnt_shown_as_a_chance(
         (goal,) = _goals(alice)["goals"]
         assert goal["projection"] is None
         assert "date has passed" in goal["problem"]
+
+
+def test_rebuilding_the_goal_list_fits_the_calibration_once(
+    make_client: type[TestClient], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#54 review: after a data change every goal is projected again in one GET; the calibration
+    fit doesn't depend on the horizon, so it runs once per request, not once per goal (5 goals
+    on 1 CPU: 2.5 s → 0.8 s)."""
+    from backend.pipeline import forecast as fc
+
+    with make_client(create_app(), base_url=BASE) as alice:
+        demo(alice)
+        for i, days in enumerate((60, 90, 120)):
+            on = (date.today() + timedelta(days=days)).isoformat()
+            _create(alice, name=f"g{i}", target_minor=10_000 + i, target_date=on)
+        assert alice.patch("/api/session", json={"buffer_minor": 50_100}).status_code == 200
+        real, fits = fc._fit_calibration, []
+
+        def counting(*args: Any, **kwargs: Any) -> Any:
+            fits.append(1)
+            return real(*args, **kwargs)
+
+        monkeypatch.setattr(fc, "_fit_calibration", counting)
+        assert all(g["projection"] for g in _goals(alice)["goals"])
+        assert len(fits) == 1
