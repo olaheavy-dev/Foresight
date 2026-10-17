@@ -35,21 +35,22 @@ const KINDS: { id: Kind; label: string; hint: string }[] = [
 ];
 
 const DEFAULT_HORIZON = 90;
-const MAX_HORIZON = 365;
+const MAX_HORIZON = 180; // what-ifs run at most 180 days (docs/00 §6); 365 is for goals
 const CADENCE_DAYS: Record<string, number> = { weekly: 7, fortnightly: 14, monthly: 31 };
 
 const dayNumber = (iso: string) => Date.parse(`${iso}T00:00:00Z`) / 86_400_000;
 
 /**
- * A forecast long enough to include a spread purchase's last payment; null past a year. Measured
+ * A forecast long enough to include a spread purchase's last payment, at most 180 days. It's an
+ * estimate (months as 31 days): the engine lengthens it to the exact schedule's closing payday or
+ * refuses a plan past 180 days with the reason (#55 review), so it never refuses here. Measured
  * from the forecast's own date (`asOf`, the last day of the statements), as the engine measures
  * `horizon_days`, not from today.
  */
-export function spreadHorizon(start: string, instalments: number, cadence: string, asOf: string): number | null {
+export function spreadHorizon(start: string, instalments: number, cadence: string, asOf: string): number {
   const days = dayNumber(start) - dayNumber(asOf);
   const last = days + (instalments - 1) * (CADENCE_DAYS[cadence] ?? 31) + 7;
-  if (last > MAX_HORIZON) return null;
-  return Math.max(DEFAULT_HORIZON, last);
+  return Math.min(MAX_HORIZON, Math.max(DEFAULT_HORIZON, last));
 }
 
 const isoInDays = (days: number) => {
@@ -111,8 +112,6 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
           return "Your forecast couldn’t load, so a spread can’t be checked against it. Reload the page and try again.";
         if (date <= from) return `Choose a first payment after ${from}, the day your forecast starts from.`;
         const horizon = spreadHorizon(date, Number(instalments), cadence, from);
-        if (horizon === null)
-          return "That plan runs past the year the forecast covers. Choose fewer payments or a shorter gap.";
         return {
           name: `Spread over ${instalments} payments`,
           modifier: {

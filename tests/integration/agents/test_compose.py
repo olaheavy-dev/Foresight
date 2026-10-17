@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import json
 from collections.abc import Iterator
-from datetime import date, timedelta
-from typing import Any
+from datetime import UTC, date, datetime, timedelta
+from typing import Any, cast
 from urllib.parse import urlsplit
 
 import pytest
@@ -575,3 +575,44 @@ def test_an_amount_with_no_date_assumes_today_and_offers_change_date(p1: AgentSt
     # The first forecast day: the earliest a payment can land after the latest known balance.
     as_of = date.fromisoformat(sim.params["as_of"])
     assert mod["date"] == (as_of + timedelta(days=1)).isoformat()
+
+
+def _blocks(node: Any, kind: str) -> list[dict[str, Any]]:
+    if isinstance(node, dict):
+        found = [node] if node.get("type") == kind else []
+        return found + [b for v in node.values() for b in _blocks(v, kind)]
+    if isinstance(node, list):
+        return [b for v in node for b in _blocks(v, kind)]
+    return []
+
+
+def test_a_what_if_past_the_forecast_runs_long_enough_and_says_where_it_is_less_certain(
+    p1: AgentStore,
+) -> None:
+    """#55: a purchase in February on a 90-day forecast ending in January was refused; it now
+    runs on a longer horizon, labels the part past 90 days lower-confidence (docs/00 §3), and
+    advice on it simulates on the same horizon."""
+    from backend.agents.core_loop import _inputs, world_from_store
+
+    nodes = {k: v for k, v in _stand_ins().items() if k != "forecaster"}
+    amount = 120000 + next(_CASE)
+    intent = _intent(slots={"amount_minor": amount, "date": "2027-02-15", "purpose": "holiday"})
+    out, _ = _ask_with(p1, nodes, json_ok(intent))
+    step = next(s for s in p1.steps(out.run_id) if s.node == "forecaster")
+    assert step.status != "failed", step.error
+    sim = p1.ctx.calculation(step.output["simulation_id"])
+    assert sim is not None
+    assert sim.params["horizon_days"] > 90
+    (comparison,) = _blocks(_body(p1, out.response_id), "ScenarioComparison")
+    labels = {a["label"]: a["value"] for a in comparison["assumptions"]}
+    assert labels["Lower confidence"] == "From 10 Jan"  # day 91: day 90 (9 Jan) is still usual
+    # The longer baseline the comparison cites is in the answer's evidence (#55 review).
+    body = _body(p1, out.response_id)
+    cited = {r.split("#")[0] for r in json.dumps(comparison).split('"') if r.startswith("calc_")}
+    assert cited <= set(body["provenance"]["calc_ids"]), cited - set(body["provenance"]["calc_ids"])
+
+    ctx = RunContext(store=p1, run_id="run_t", workflow="scenario", deadline_at=datetime.now(UTC))
+    state = cast(ForesightState, {"scenario_spec": {"modifiers": [], "horizon_days": 140}})
+    world = world_from_store(ctx, state, _inputs(ctx))
+    assert world.forecast_inputs is not None
+    assert world.forecast_inputs.horizon_days == 140

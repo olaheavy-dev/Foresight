@@ -304,10 +304,111 @@ def test_every_modifier_type_runs_through_the_api(api: TestClient) -> None:
                    "from_date": "2099-01-01"}  # fmt: skip
     late = api.post("/api/simulate", json={**base, "modifiers": [cancel_late]})
     assert late.status_code == 422
-    assert "outside the forecast horizon" in late.text
+    assert "more than 180 days after the forecast starts" in late.text  # #55: past what can run
     documented = api.post(
         "/api/simulate",
         json={**base, "modifiers": [{"type": "income_delay", "income_stream_id": income_id,
                                      "days": 3, "occurrences": "all"}]},
     )  # fmt: skip
     assert documented.status_code == 200, documented.text
+
+
+def test_a_lab_what_if_past_the_forecast_runs_as_it_does_in_the_workspace(api: TestClient) -> None:
+    """#55 review: with no `horizon_days`, /api/simulate extends the horizon the way the Ask
+    Forecaster does (through the payday closing the change's cycle, at most 180 days), so a
+    purchase in February works in the Decision Lab too; one past 180 days is refused."""
+    demo(api)
+    as_of = date.fromisoformat(
+        checked(api, api.get("/api/forecast"), "/api/forecast")["chart"]["as_of"]
+    )
+
+    def purchase(days: int) -> Any:
+        on = (as_of + timedelta(days=days)).isoformat()
+        return api.post("/api/simulate", json={
+            "schema": "scenario_spec/1", "name": "Laptop", "scope": "mine", "currency": "GBP",
+            "modifiers": [{"type": "one_off_outflow", "date": on, "amount_minor": 90000,
+                           "label": "Laptop"}],
+        })  # fmt: skip
+
+    later = purchase(120)
+    assert later.status_code == 200, later.text
+    body = checked(api, later, "/api/simulate")
+    labels = {a["label"] for a in body["comparison"]["assumptions"]}
+    assert "Lower confidence" in labels  # past 90 days
+    assert purchase(200).status_code == 422
+
+
+def test_an_explicit_spread_horizon_is_lengthened_to_close_the_last_cycle(api: TestClient) -> None:
+    """#55 review: the Lab sends its own horizon for a spread, which could end just before the
+    payday closing the last instalment's cycle; the server lengthens it to that payday."""
+    demo(api)
+    as_of = date.fromisoformat(
+        checked(api, api.get("/api/forecast"), "/api/forecast")["chart"]["as_of"]
+    )
+    start = date(as_of.year + 1, 2, 15)
+    sent = (start - as_of).days + 20  # ends before the second instalment's cycle closes
+    response = api.post("/api/simulate", json={
+        "schema": "scenario_spec/1", "name": "Laptop", "scope": "mine", "currency": "GBP",
+        "horizon_days": sent,
+        "modifiers": [{"type": "split_outflow", "date": start.isoformat(), "amount_minor": 90000,
+                       "instalments": 2, "cadence": "monthly", "label": "Laptop"}],
+    })  # fmt: skip
+    body = checked(api, response, "/api/simulate")
+    last = date.fromisoformat(body["comparison"]["scenarios"][0]["series"]["dates"][-1])
+    assert last > date(start.year, 3, 15)  # past the second instalment, to its cycle's payday
+    assert (last - as_of).days > sent
+
+
+def test_an_explicit_horizon_never_runs_past_180_days(api: TestClient) -> None:
+    """#55 review: a `horizon_days` of 181–365 (the contract still accepts it) is clamped to the
+    what-ifs' 180 days (docs/00 §6), so it can't stretch an ordinary what-if to a year."""
+    demo(api)
+    as_of = date.fromisoformat(
+        checked(api, api.get("/api/forecast"), "/api/forecast")["chart"]["as_of"]
+    )
+    response = api.post("/api/simulate", json={
+        "schema": "scenario_spec/1", "name": "Repair", "scope": "mine", "currency": "GBP",
+        "horizon_days": 365,
+        "modifiers": [{"type": "one_off_outflow", "date": (as_of + timedelta(days=5)).isoformat(),
+                       "amount_minor": 10000, "label": "Repair"}],
+    })  # fmt: skip
+    body = checked(api, response, "/api/simulate")
+    last = date.fromisoformat(body["comparison"]["scenarios"][0]["series"]["dates"][-1])
+    assert (last - as_of).days <= 180
+
+
+def test_a_short_explicit_horizon_is_kept(api: TestClient) -> None:
+    """#55 review: an allowed 30-day `horizon_days` with an early change stays 30 days; it's only
+    lengthened when the change's cycle needs it."""
+    demo(api)
+    as_of = date.fromisoformat(
+        checked(api, api.get("/api/forecast"), "/api/forecast")["chart"]["as_of"]
+    )
+    response = api.post("/api/simulate", json={
+        "schema": "scenario_spec/1", "name": "Repair", "scope": "mine", "currency": "GBP",
+        "horizon_days": 30,
+        "modifiers": [{"type": "one_off_outflow", "date": (as_of + timedelta(days=5)).isoformat(),
+                       "amount_minor": 10000, "label": "Repair"}],
+    })  # fmt: skip
+    body = checked(api, response, "/api/simulate")
+    last = date.fromisoformat(body["comparison"]["scenarios"][0]["series"]["dates"][-1])
+    assert (last - as_of).days == 30
+
+
+def test_a_stored_simulation_records_its_simulator_version(api: TestClient) -> None:
+    """#55 review: a change to the simulator's semantics (sim-2: zeroed paydays kept) gives new
+    calculation keys, so an older stored result can't be served in its place."""
+    from backend.finance_core.simulate import SIMULATOR_VERSION
+
+    demo(api)
+    as_of = date.fromisoformat(
+        checked(api, api.get("/api/forecast"), "/api/forecast")["chart"]["as_of"]
+    )
+    body = checked(api, api.post("/api/simulate", json={
+        "schema": "scenario_spec/1", "name": "Repair", "scope": "mine", "currency": "GBP",
+        "modifiers": [{"type": "one_off_outflow", "date": (as_of + timedelta(days=5)).isoformat(),
+                       "amount_minor": 10000, "label": "Repair"}],
+    }), "/api/simulate")  # fmt: skip
+    calc_id = "calc_" + body["simulation_id"].removeprefix("sim_")
+    calc = checked(api, api.get(f"/api/calculations/{calc_id}"), "/api/calculations/{calc_id}")
+    assert calc["params"]["simulator"] == SIMULATOR_VERSION

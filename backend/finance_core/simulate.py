@@ -33,7 +33,7 @@ import dataclasses
 from collections.abc import Iterator
 from datetime import date, timedelta
 
-from backend.finance_core.calendar import next_working_day, obligation_dates
+from backend.finance_core.calendar import next_working_day, obligation_dates, paydays_between
 from backend.finance_core.forecast.calibration import Calibration
 from backend.finance_core.forecast.engine import (
     Flow,
@@ -72,6 +72,18 @@ SUPPORTED = frozenset(
 )
 ALL_INCOME = "all_income"
 CADENCE_DAYS = {"weekly": 7, "fortnightly": 14}
+
+
+# The simulator's own semantics, stored with every simulation so a change here can't be shadowed
+# by an older stored result under the same key (the forecast engine keeps ENGINE_VERSION).
+# sim-2 (#55): a zeroed payday stays as a zero flow, so lost income keeps its pay cycles.
+SIMULATOR_VERSION = "sim-2"
+
+# A what-if dated past the usual horizon extends it through the pay cycle its latest change falls
+# in, up to 180 days (docs/00 §6: the 365-day maximum is for goals only); a change whose pay cycle
+# can't close by then is refused. With no projected payday, it shows this many days instead.
+SHOW_DAYS = 31
+MAX_HORIZON_DAYS = 180
 
 
 class ScenarioError(ValueError):
@@ -204,14 +216,27 @@ def _apply(
         if not hit:
             raise ScenarioError(f"no paydays for income stream {key!r}")
         scaled = {id(f) for f in hit if _in_period(dates[f.day], mod)}
+        if mod.to_date is None or mod.to_date > dates[-1]:
+            # The change runs past the forecast: a stream with no changed payday in it would be
+            # shown unchanged, a partial answer (#55 review). Refuse it instead.
+            changed = {f.income_key for f in hit if id(f) in scaled}
+            missed = sorted({f.income_key for f in hit if f.income_key} - changed)
+            if scaled and missed:
+                raise ScenarioError(
+                    "income_change_pct: the forecast ends before the first changed payday "
+                    f"of {missed[0]!r}"
+                )
+        if not scaled:
+            # No payday of it falls in the period: never answer "no difference" (#55 review).
+            raise ScenarioError(f"income_change_pct: no {key!r} payday falls in the period")
         out = []
         for f in flows:
             if id(f) not in scaled:
                 out.append(f)
                 continue
-            amount = f.amount_minor * (100 + mod.pct) // 100
-            if amount:
-                out.append(dataclasses.replace(f, amount_minor=amount))
+            # Kept at zero (−100%, income lost) so the payday still closes its pay cycle: no
+            # pay is not the same as the forecast ending (#55 review).
+            out.append(dataclasses.replace(f, amount_minor=f.amount_minor * (100 + mod.pct) // 100))
         return out
     if mod.type == "recurring_add":
         amount = _positive_amount(mod)
@@ -232,6 +257,11 @@ def _apply(
             if d >= start and _in_period(d, mod):
                 # Cancel the baseline occurrence, then add the new amount (0 when cancelled).
                 out.append(Flow(index[d], new_amount - ob.amount_minor, f"{mod.type}:{ob.label}"))
+        if len(out) == len(flows):
+            # No payment of it falls in the period: never answer "no difference" (#55 review).
+            raise ScenarioError(
+                f"{mod.type}: no {ob.label} payment falls in the forecast from {start}"
+            )
         return out
     if mod.type in ("category_cut_pct", "category_cap"):
         daily = _category_daily(prep, mod.category_key)
@@ -254,6 +284,162 @@ def _apply(
     if mod.type == "buffer_override":
         return flows  # threshold only; applied in simulate()
     raise ScenarioError(f"unsupported modifier {mod.type!r}; supported: {sorted(SUPPORTED)}")
+
+
+def _shifted_income(inputs: ForecastInputs, spec: ScenarioSpec) -> tuple[list[date], list[date]]:
+    """Where paydays land once the what-if's income delays apply, on one path over the longest
+    horizon: the simulated paydays, and for each income change the date of its first changed
+    payday (its last when the change is bounded), each change measured on its own against the
+    delays alone, in the what-if's order (#55 review)."""
+    wide = dataclasses.replace(inputs, horizon_days=MAX_HORIZON_DAYS, n_paths=1)
+    prep = prepare(wide)
+    index = {d: i for i, d in enumerate(prep.dates)}
+    cap = inputs.as_of + timedelta(days=MAX_HORIZON_DAYS)
+
+    def run(mods: list[ScenarioModifier]) -> dict[str, list[Flow]]:
+        flows = list(prep.flows)
+        for mod in mods:
+            flows = _apply(flows, mod, prep, index)
+        out: dict[str, list[Flow]] = {}
+        for f in sorted(flows, key=lambda f: f.day):
+            if f.income_key is not None:
+                out.setdefault(f.income_key, []).append(f)
+        return out
+
+    delays = [m for m in spec.modifiers if m.type == "income_delay"]
+    delayed = run(delays)
+    paydays = sorted({prep.dates[f.day] for fs in delayed.values() for f in fs})
+    anchors: list[date] = []
+    for change in (m for m in spec.modifiers if m.type == "income_change_pct"):
+        moved = run([m for m in spec.modifiers if m is change or m.type == "income_delay"])
+        changed = sorted(
+            prep.dates[m.day]
+            for k, fs in delayed.items()
+            # strict=False: zero-amount flows keep counts equal; a guard for odd inputs
+            for b, m in zip(fs, moved.get(k, []), strict=False)
+            if m.amount_minor != b.amount_minor
+        )
+        if changed:
+            bounded = change.to_date is not None and change.to_date < cap
+            anchors.append(changed[-1] if bounded else changed[0])
+    return paydays, anchors
+
+
+def latest_affected(inputs: ForecastInputs, spec: ScenarioSpec) -> date:
+    """The latest date a what-if changes something that must sit in a reported pay-cycle low: a
+    one-off's date, a split's last instalment, the first payment a recurring change or
+    cancellation affects (or its last, when bounded), each income stream's first changed payday,
+    a daily change's end. `as_of` when nothing is dated. A start past `MAX_HORIZON_DAYS` is
+    refused before any date arithmetic."""
+    as_of, cap = inputs.as_of, inputs.as_of + timedelta(days=MAX_HORIZON_DAYS)
+    affected = as_of
+    for mod in spec.modifiers:
+        start = mod.date or mod.from_date
+        # A bounded change (a `to_date` before the cap) closes the cycle of the last flow it
+        # actually changes, not of its raw end date (#55 review); one ending past the cap runs
+        # to the forecast's end, like an open one.
+        bound = mod.to_date if mod.to_date is not None and mod.to_date < cap else None
+        if mod.type in ("recurring_change", "recurring_cancel"):
+            ob = next((o for o in inputs.obligations if o.key == mod.recurring_id), None)
+            begin = max(start or as_of, as_of + timedelta(days=1))
+            due = obligation_dates(ob, begin, cap, inputs.holidays) if ob and begin < cap else []
+            start = next((d for d in due if d >= begin), start)
+            if bound is not None:
+                affected = max([affected, *(d for d in due if begin <= d <= bound)])
+        elif mod.type == "income_change_pct":
+            # Each stream's first payday on or after the change (shifted paydays can sit more
+            # than a month apart), so the change shows on every stream it targets.
+            begin = max(mod.from_date or as_of, as_of + timedelta(days=1))
+            key = mod.income_stream_key or ALL_INCOME
+            streams = [
+                pays
+                for stream in inputs.income_streams
+                if stream.payday_rule is not None and key in (ALL_INCOME, stream.key)
+                if begin < cap
+                if (pays := paydays_between(stream.payday_rule, begin, cap, inputs.holidays))
+            ]
+            if mod.from_date is not None:
+                start = max((pays[0] for pays in streams), default=start)
+            if bound is not None:
+                affected = max([affected, *(d for pays in streams for d in pays if d <= bound)])
+        elif mod.type == "recurring_add" and bound is not None and start is not None:
+            if start < cap:
+                series = _series_dates(start, mod.cadence or "monthly", bound)
+                affected = max([affected, *series])
+        elif bound is not None:
+            affected = max(affected, bound)  # a daily change (a category cut) runs to its end
+        if start is None:
+            continue
+        if start >= cap:  # even 9999-12-31: refused before any date arithmetic
+            raise ScenarioError(
+                f"{mod.type} on {start} is more than {MAX_HORIZON_DAYS} days after the forecast "
+                "starts"
+            )
+        if mod.type == "split_outflow" and mod.instalments and mod.instalments > 1:
+            *_, start = _series_dates(start, mod.cadence or "monthly", cap, mod.instalments)
+        affected = max(affected, start)
+    income = [m for m in spec.modifiers if m.type == "income_change_pct"]
+    if income and any(m.type == "income_delay" for m in spec.modifiers):
+        # A delay in the same what-if moves the paydays an income change touches: use where
+        # they actually land (#55 review), each change's first changed payday, or its last
+        # when that change is bounded.
+        _, anchors = _shifted_income(inputs, spec)
+        affected = max([affected, *anchors])
+    return affected
+
+
+def horizon_covering(inputs: ForecastInputs, spec: ScenarioSpec) -> int:
+    """The horizon a what-if needs: the forecast's own, or through the first payday after its
+    `latest_affected` date, so the pay cycle it lands in closes and its low is reported (docs/00
+    §6, #55 review). At most `MAX_HORIZON_DAYS`; a change whose cycle can't close by then is
+    refused."""
+    as_of, cap = inputs.as_of, inputs.as_of + timedelta(days=MAX_HORIZON_DAYS)
+    affected = latest_affected(inputs, spec)
+    if affected <= as_of:
+        return inputs.horizon_days  # nothing dated: the forecast's own horizon
+    rules = [s.payday_rule for s in inputs.income_streams if s.payday_rule is not None]
+    if not rules:  # no projected payday to close a cycle: show a month of the change
+        reach = affected + timedelta(days=SHOW_DAYS)
+        if reach > cap:  # a shorter window would understate it (#55 review)
+            raise ScenarioError(
+                f"a month after {affected} is more than {MAX_HORIZON_DAYS} days after the "
+                "forecast starts"
+            )
+        return max(inputs.horizon_days, (reach - as_of).days)
+    after = affected + timedelta(days=1)
+    closing = min(
+        (p for r in rules for p in paydays_between(r, after, cap, inputs.holidays)), default=None
+    )
+    if closing is not None and any(m.type == "income_delay" for m in spec.modifiers):
+        # The simulated paths' paydays are delayed: their cycle must close too.
+        paydays, _ = _shifted_income(inputs, spec)
+        moved = next((p for p in paydays if p > affected), None)
+        closing = None if moved is None else max(closing, moved)
+    if closing is None or closing > cap:
+        raise ScenarioError(
+            f"the pay cycle after {affected} ends more than {MAX_HORIZON_DAYS} days after the "
+            "forecast starts"
+        )
+    return max(inputs.horizon_days, (closing - as_of).days)
+
+
+def check_cycle_closes(
+    inputs: ForecastInputs, spec: ScenarioSpec, result: SimulationResult
+) -> None:
+    """Refuse a simulated what-if whose latest affected date sits after the last payday of the
+    baseline or of the simulated paths (an income delay moves paydays), so no reported low
+    includes it and the verdict could call it comfortable (#55 review). Not applied without
+    projected paydays, nor when nothing is dated."""
+    affected = latest_affected(inputs, spec)
+    if affected <= inputs.as_of or not result.baseline.pay_cycles:
+        return  # nothing dated, or no projected payday at all
+    for line in (result.baseline, result.simulated):
+        # No simulated cycle left (a delay moved every payday out) closes nothing either.
+        if not line.pay_cycles or line.pay_cycles[-1].payday <= affected:
+            raise ScenarioError(
+                f"the forecast ends before the pay cycle with {affected} in it closes; "
+                "a later payday is needed to show it"
+            )
 
 
 def simulate(

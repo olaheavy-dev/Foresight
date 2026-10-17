@@ -29,6 +29,12 @@ test("Decision Lab compares a spread purchase with the current path, and explain
   await expect(result).toContainText("No AI was used");
   await noSeriousA11yIssues(page);
 
+  // A plan past what-ifs' 180 days is refused by the engine, with its reason (#55 review).
+  await form.getByLabel("Payments").selectOption("12");
+  await form.getByRole("button", { name: "Test it" }).click();
+  await expect(form.getByRole("alert")).toContainText("forecast", { timeout: 15_000 });
+  await form.getByLabel("Payments").selectOption("3");
+
   // Income from /api/detected, sent as the documented income_stream_id.
   await page.getByRole("radio", { name: /My income changes/ }).check();
   await form.getByLabel("Change").selectOption("-10");
@@ -40,7 +46,7 @@ test("Decision Lab compares a spread purchase with the current path, and explain
   await form.getByLabel("Amount", { exact: true }).fill("100");
   await form.getByLabel("Date").fill("2031-01-01");
   await form.getByRole("button", { name: "Test it" }).click();
-  await expect(form.getByRole("alert")).toContainText("outside the forecast horizon");
+  await expect(form.getByRole("alert")).toContainText("more than 180 days after the forecast starts");
   await expect(result).toHaveCount(0); // the income result isn't left beside the refusal
 });
 

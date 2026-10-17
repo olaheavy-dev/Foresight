@@ -19,10 +19,11 @@ from typing import Any
 
 from backend.agents.advice.models import InterventionProposal
 from backend.agents.advice.world import AdviceWorld
-from backend.finance_core.simulate import ScenarioError, simulate
+from backend.finance_core.simulate import ScenarioError, check_cycle_closes, simulate
 from backend.finance_core.types import ScenarioModifier, ScenarioSpec
 
 TIMING_ACTIONS = frozenset({"move_purchase_date", "defer_purchase", "reschedule_transfer"})
+USUAL_HORIZON_DAYS = 90  # the forecast's own horizon; what-ifs may extend it to 180
 
 
 @dataclass(frozen=True)
@@ -226,7 +227,13 @@ def recompute_impact(p: InterventionProposal, world: AdviceWorld) -> Impact:
     try:
         mods = proposal_modifiers(p, world)
         before = simulate(inputs, ScenarioSpec("before", inputs.currency, pending))
-        after = simulate(inputs, ScenarioSpec("after", inputs.currency, (*pending, *mods)))
+        after_spec = ScenarioSpec("after", inputs.currency, (*pending, *mods))
+        after = simulate(inputs, after_spec)
+        if inputs.horizon_days > USUAL_HORIZON_DAYS:
+            # On a horizon a what-if extended (#55), a payment moved to its closing payday sits
+            # in no reported low, so its improvement would be the payment vanishing: refused
+            # before verification. The usual 90-day forecast's case is #57.
+            check_cycle_closes(inputs, after_spec, after)
     except ScenarioError as exc:
         return Impact(monthly, basis, error=str(exc))
     return Impact(

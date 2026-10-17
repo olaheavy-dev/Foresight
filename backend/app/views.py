@@ -305,8 +305,24 @@ def comparison_data(
                        source=PROVENANCE[inputs.starting_balance_provenance]),
             Assumption(label="Same random seed", value=str(simulated.seed),
                        source="Baseline and scenario share it, so the gap is the scenario's"),
+            *_beyond_confident(simulated),
         ],
     )  # fmt: skip
+
+
+CONFIDENT_DAYS = 90  # the usual horizon; past it the band is lower-confidence
+
+
+def _beyond_confident(result: ForecastResult) -> list[Assumption]:
+    """A what-if extended past 90 days to reach its dates says where the range gets less certain
+    (docs/00 §3: beyond 90 days the band is labelled lower-confidence)."""
+    if result.horizon_days <= CONFIDENT_DAYS:
+        return []
+    start = result.as_of + timedelta(days=CONFIDENT_DAYS + 1)  # beyond day 90, not on it
+    return [
+        Assumption(label="Lower confidence", value=f"From {short_date(start)}",
+                   source="More than 90 days out, the range is wider and less certain"),
+    ]  # fmt: skip
 
 
 def calc_currency(calc: m.Calculation) -> str | None:
