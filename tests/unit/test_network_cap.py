@@ -87,3 +87,21 @@ def test_a_use_that_never_started_is_given_back() -> None:
     assert not cap.take(req, "question", 1, now=now)
     cap.give_back(req, "question", now=now)  # the run failed to start
     assert cap.take(req, "question", 1, now=now)
+
+
+def test_without_a_configured_secret_the_code_uses_a_random_process_key(monkeypatch: Any) -> None:
+    """#59 review: an empty HMAC key would let anyone enumerate the few possible networks."""
+    import hashlib
+    import hmac as hmac_mod
+
+    from backend.settings import get_settings
+
+    monkeypatch.setenv("SESSION_SECRET", "")
+    monkeypatch.setenv("GOOGLE_OAUTH_CLIENT_SECRET", "")
+    get_settings.cache_clear()
+    cap = NetworkAllowance()
+    day = datetime(2026, 10, 17, tzinfo=timezone.utc).date()
+    key = cap._key("81.2.69.0/24", "question", day)
+    public = hmac_mod.new(b"", f"{day}|question|81.2.69.0/24".encode(), hashlib.sha256).hexdigest()
+    assert key != public
+    get_settings.cache_clear()

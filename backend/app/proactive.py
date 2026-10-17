@@ -82,6 +82,14 @@ def enqueue(ctx: WorkspaceContext, event: str, *, immediate: bool = False) -> No
     ctx.session.execute(stmt)
 
 
+def queued(ctx: WorkspaceContext) -> bool:
+    """Whether this profile already has a check waiting to run."""
+    stmt = select(m.AnalysisJob.id).where(
+        m.AnalysisJob.workspace_id == ctx.workspace_id, m.AnalysisJob.status == "queued"
+    )
+    return ctx.session.scalars(stmt.limit(1)).first() is not None
+
+
 def runs_today(db: Session, workspace_id: str) -> int:
     start = utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
     count: int | None = db.scalar(

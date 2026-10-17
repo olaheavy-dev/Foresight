@@ -22,6 +22,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import ipaddress
+import secrets
 import threading
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -76,6 +77,9 @@ def _trusted(cidrs: str) -> list[ipaddress.IPv4Network | ipaddress.IPv6Network]:
     return out
 
 
+_PROCESS_KEY = secrets.token_bytes(32)
+
+
 @dataclass
 class NetworkAllowance:
     lock: threading.Lock = field(default_factory=threading.Lock)
@@ -84,7 +88,11 @@ class NetworkAllowance:
 
     def _key(self, network: str, kind: str, today: date) -> str:
         settings = get_settings()
-        secret = (settings.session_secret or settings.google_oauth_client_secret).encode()
+        # No configured secret (a guest-only setup): a random key for this process, so the code
+        # can't be reversed by trying every network (#59 review). Counts are per process anyway.
+        secret = (settings.session_secret or settings.google_oauth_client_secret).encode() or (
+            _PROCESS_KEY
+        )
         return hmac.new(secret, f"{today}|{kind}|{network}".encode(), hashlib.sha256).hexdigest()
 
     def take(self, request: Request, kind: str, limit: int, now: datetime | None = None) -> bool:

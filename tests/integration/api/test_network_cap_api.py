@@ -138,3 +138,54 @@ def test_only_an_admitted_question_counts_and_a_refusal_frees_its_slot(
         assert refused.status_code == 429  # now the network's day is used
         ws = second.get("/api/session").json()["workspace_id"]
         assert ask_router.limits.active[ws] == 0  # its admitted slot was released
+
+
+def test_a_second_check_while_one_waits_counts_nothing(make_client: type[TestClient]) -> None:
+    """#59 review: another tab asking for the same profile's check while one is queued joins it,
+    so only one check is counted against the network's day."""
+    with (
+        make_client(create_app(), base_url=BASE) as tab,
+        make_client(create_app(), base_url=BASE) as other_guest,
+    ):
+        demo(tab)
+        demo(other_guest)
+        assert tab.post("/api/home/check", headers=HOME).status_code == 202
+        assert tab.post("/api/home/check", headers=HOME).status_code == 202  # joins the queued one
+        assert sum(network_cap.allowance.counts.values()) == 1
+
+
+def test_a_slow_start_isnt_given_back_but_a_failed_one_is(
+    make_client: type[TestClient], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#59 review: a run that only timed out may still start and do the work, so its use isn't
+    returned; one that failed to start is."""
+    from backend.app.routers import ask as ask_router
+
+    monkeypatch.setenv("GUEST_NETWORK_DAILY_QUESTIONS", "1")
+    get_settings.cache_clear()
+    monkeypatch.setattr(ask_router, "RUN_START_TIMEOUT_S", 0.05)
+    outcome: dict[str, Any] = {"fail": False}
+
+    def background(**kwargs: Any) -> None:  # never starts a run (and never calls a model)
+        if outcome["fail"]:
+            kwargs["failed"](RuntimeError("could not start"))
+        ask_router.limits.release(kwargs["workspace_id"])
+
+    monkeypatch.setattr(ask_router, "_run_in_background", background)
+    with make_client(create_app(), base_url=BASE) as guest:
+        demo(guest)
+
+        def ask(msg: str) -> int:
+            thread = guest.post("/api/threads").json()["thread_id"]
+            body = {"text": "How does next month look?", "client_msg_id": msg}
+            return int(
+                guest.post(f"/api/threads/{thread}/messages", json=body, headers=HOME).status_code
+            )
+
+        assert ask("slow") == 503  # timed out: the use stays counted
+        assert ask("next") == 429
+        network_cap.allowance.reset()
+        outcome["fail"] = True
+        assert ask("failed") == 503  # failed to start: given back
+        outcome["fail"] = False
+        assert ask("after") == 503  # the use was there to take (then timed out again)

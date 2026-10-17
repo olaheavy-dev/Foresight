@@ -355,7 +355,9 @@ def post_message(
     started.wait(RUN_START_TIMEOUT_S)
     run_id = holder.get("run_id")
     if run_id is None:
-        if counted:
+        if counted and "error" in holder:
+            # Given back only when the run failed to start, not when it's merely slow: a timed
+            # out start may still create its run and do the work (#59 review).
             network_cap.allowance.give_back(request, "question")
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE, "The question couldn't be started. Try again."
