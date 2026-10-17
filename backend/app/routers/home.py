@@ -208,7 +208,10 @@ def check_now(request: Request, ctx: Profile) -> HomeInsights:
     ):
         raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, network_cap.REFUSED)
     try:
-        proactive.enqueue(ctx, "manual_check", immediate=True)
+        # An import whose ingestion hasn't run yet (skipped for a guest, or just claimed) gets
+        # it from this check, so its rows aren't left without the ledger step (#59 review).
+        workflow = "ingestion" if proactive.ingestion_owed(ctx) else None
+        proactive.enqueue(ctx, "manual_check", immediate=True, workflow=workflow)
         ctx.session.commit()
     except Exception:
         if counted:  # no check was queued: the network's use is given back (#59 review)

@@ -52,10 +52,13 @@ def utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 
-def enqueue(ctx: WorkspaceContext, event: str, *, immediate: bool = False) -> None:
+def enqueue(
+    ctx: WorkspaceContext, event: str, *, immediate: bool = False, workflow: str | None = None
+) -> None:
     """Queue (or refresh) this profile's analysis job. The caller commits, so the job is written
-    with the change that caused it. An import's workflow wins over a later correction's."""
-    workflow = WORKFLOWS[event]
+    with the change that caused it. An import's workflow wins over a later correction's.
+    `workflow` overrides the event's own (a manual check that owes an import its ingestion)."""
+    workflow = workflow or WORKFLOWS[event]
     ws = ctx.workspace
     not_before = utcnow() + (timedelta(0) if immediate else DEBOUNCE)
     table = m.AnalysisJob.__table__
@@ -98,6 +101,24 @@ def manual_check_queued(ctx: WorkspaceContext) -> bool:
         m.AnalysisJob.event == "manual_check",
     )
     return ctx.session.scalars(stmt.limit(1)).first() is not None
+
+
+def ingestion_owed(ctx: WorkspaceContext) -> bool:
+    """Whether this profile's latest import hasn't had its ingestion workflow (it was skipped
+    for a guest, failed, or the worker has only just claimed it): a manual check then runs the
+    ingestion workflow, so imported rows still get it (#59 review)."""
+    stmt = (
+        select(m.AnalysisJob.status)
+        .where(
+            m.AnalysisJob.workspace_id == ctx.workspace_id, m.AnalysisJob.workflow == "ingestion"
+        )
+        .order_by(m.AnalysisJob.created_at.desc())
+        .limit(1)
+    )
+    latest = ctx.session.scalars(stmt).first()
+    if latest == "running":  # a signed-in person's running import does its own ingestion
+        return advice_on_request_only(ctx.workspace)
+    return latest in ("skipped", "failed")
 
 
 def runs_today(db: Session, workspace_id: str) -> int:

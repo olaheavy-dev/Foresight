@@ -361,3 +361,37 @@ def test_a_check_during_an_imports_wait_runs_the_advice_it_paid_for(
             assert (job.workflow, job.event) == ("ingestion", "manual_check")
         proactive.drain(get_settings().database_url)  # other tests' due jobs run here too
         assert [c for c in called if c.startswith(ws)] == [f"{ws}:ingestion:manual_check"]
+
+
+@pytest.mark.parametrize("claimed", [True, False])
+def test_a_check_after_an_import_left_its_queue_still_runs_ingestion(
+    make_client: type[TestClient], claimed: bool
+) -> None:
+    """#59 review: if the worker has already claimed the import's job (or skipped it as a guest's
+    manual-only job), the counted check runs the ingestion workflow, so imported rows still get
+    the ledger step."""
+    from sqlalchemy import select, update
+
+    from backend.storage import models as m
+    from backend.storage.db import session_factory
+    from tests.integration.api.test_engine_api import P1_CSV, new_profile, upload
+
+    with make_client(create_app(), base_url=BASE) as guest:
+        ws = new_profile(guest)["workspace_id"]
+        upload(guest, P1_CSV)
+        with session_factory(get_settings().database_url)() as db:
+            values = (
+                {"status": "running"} if claimed else {"status": "skipped", "note": "manual_only"}
+            )
+            db.execute(
+                update(m.AnalysisJob).where(m.AnalysisJob.workspace_id == ws).values(**values)
+            )
+            db.commit()
+        assert guest.post("/api/home/check", headers=HOME).status_code == 202
+        with session_factory(get_settings().database_url)() as db:
+            queued = db.scalars(
+                select(m.AnalysisJob).where(
+                    m.AnalysisJob.workspace_id == ws, m.AnalysisJob.status == "queued"
+                )
+            ).one()
+            assert (queued.workflow, queued.event) == ("ingestion", "manual_check")
