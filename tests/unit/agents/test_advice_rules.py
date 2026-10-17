@@ -151,3 +151,37 @@ def test_scn_scoring_ignores_labels_and_unscored_one_off_categories() -> None:
         )
 
     assert score_case(case, Parsed())["exact"] is True
+
+
+def test_moving_a_purchase_onto_the_last_payday_is_refused_before_verification() -> None:
+    """#55 review: on a horizon a what-if extended past 90 days, a payment moved to its closing
+    payday sits in no reported low, so its impact would show the payment vanishing. The impact
+    check refuses it; a move into a closed cycle still works."""
+    import dataclasses
+    from datetime import timedelta
+
+    from backend.agents.advice.impact import recompute_impact
+    from backend.finance_core.simulate import simulate
+    from backend.finance_core.types import ScenarioSpec
+
+    base = case_world(CASE)
+    assert base.forecast_inputs is not None
+    inputs = dataclasses.replace(base.forecast_inputs, horizon_days=140)  # extended by a what-if
+    world = dataclasses.replace(base, forecast_inputs=inputs)
+    cycles = simulate(inputs, ScenarioSpec("b", inputs.currency, ())).baseline.pay_cycles
+    last = cycles[-1].payday
+
+    def move(to: Any) -> Any:
+        return recompute_impact(
+            _proposal(
+                action="move_purchase_date",
+                params={"amount_minor": 50_000, "from_date": str(inputs.as_of + timedelta(3)),
+                        "to_date": str(to), "label": "Laptop"},
+            ),
+            world,
+        )  # fmt: skip
+
+    refused = move(last).error
+    assert refused is not None
+    assert "forecast ends before the pay cycle" in refused
+    assert move(last - timedelta(days=3)).error is None
