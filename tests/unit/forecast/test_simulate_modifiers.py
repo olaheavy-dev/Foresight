@@ -376,3 +376,22 @@ def test_a_delay_that_moves_every_payday_out_is_refused(base) -> None:  # type: 
     assert not result.simulated.pay_cycles  # every payday moved past the end
     with pytest.raises(ScenarioError, match="forecast ends before the pay cycle"):
         check_cycle_closes(short, both, result)
+
+
+def test_losing_all_income_keeps_the_pay_cycles(base) -> None:  # type: ignore[no-untyped-def]
+    """#55 review (SCN-030, "no income at all from December"): −100% income keeps each payday as
+    a zero flow, so the cycles still close and the what-if isn't refused as unclosed."""
+    from backend.finance_core.simulate import check_cycle_closes
+
+    short = dataclasses.replace(base, horizon_days=90)
+    lost = ScenarioModifier(
+        type="income_change_pct", pct=-100, from_date=date(short.as_of.year, 12, 1)
+    )
+    spec = ScenarioSpec("t", base.currency, (lost,))
+    spec = dataclasses.replace(spec, horizon_days=horizon_covering(short, spec))
+    res = simulate(short, spec)
+    assert [c.payday for c in res.simulated.pay_cycles] == [
+        c.payday for c in res.baseline.pay_cycles
+    ]
+    assert res.simulated.p50[-1] < res.baseline.p50[-1]
+    check_cycle_closes(short, spec, res)  # not refused

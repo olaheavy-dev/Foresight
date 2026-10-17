@@ -229,9 +229,9 @@ def _apply(
             if id(f) not in scaled:
                 out.append(f)
                 continue
-            amount = f.amount_minor * (100 + mod.pct) // 100
-            if amount:
-                out.append(dataclasses.replace(f, amount_minor=amount))
+            # Kept at zero (−100%, income lost) so the payday still closes its pay cycle: no
+            # pay is not the same as the forecast ending (#55 review).
+            out.append(dataclasses.replace(f, amount_minor=f.amount_minor * (100 + mod.pct) // 100))
         return out
     if mod.type == "recurring_add":
         amount = _positive_amount(mod)
