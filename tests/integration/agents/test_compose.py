@@ -605,7 +605,7 @@ def test_a_what_if_past_the_forecast_runs_long_enough_and_says_where_it_is_less_
     assert sim.params["horizon_days"] > 90
     (comparison,) = _blocks(_body(p1, out.response_id), "ScenarioComparison")
     labels = {a["label"]: a["value"] for a in comparison["assumptions"]}
-    assert labels["Lower confidence"] == "From 9 Jan"
+    assert labels["Lower confidence"] == "From 10 Jan"  # day 91: day 90 (9 Jan) is still usual
     # The longer baseline the comparison cites is in the answer's evidence (#55 review).
     body = _body(p1, out.response_id)
     cited = {r.split("#")[0] for r in json.dumps(comparison).split('"') if r.startswith("calc_")}

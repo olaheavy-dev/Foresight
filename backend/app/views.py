@@ -318,7 +318,7 @@ def _beyond_confident(result: ForecastResult) -> list[Assumption]:
     (docs/00 §3: beyond 90 days the band is labelled lower-confidence)."""
     if result.horizon_days <= CONFIDENT_DAYS:
         return []
-    start = result.as_of + timedelta(days=CONFIDENT_DAYS)
+    start = result.as_of + timedelta(days=CONFIDENT_DAYS + 1)  # beyond day 90, not on it
     return [
         Assumption(label="Lower confidence", value=f"From {short_date(start)}",
                    source="More than 90 days out, the range is wider and less certain"),
