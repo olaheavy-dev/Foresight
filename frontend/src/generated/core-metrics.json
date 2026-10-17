@@ -1,5 +1,5 @@
 {
-  "run_id": "evalrun_20261014T162812Z_21b5e1e",
+  "run_id": "evalrun_20261017T092618Z_6770a22",
   "gate": "pass",
   "tiers": [
     {
@@ -54,10 +54,10 @@
       "count": 47,
       "cost_mean_usd": 0.00061,
       "cost_p95_usd": 0.00063,
-      "latency_p50_s": 2.21,
-      "latency_p95_s": 7.3,
-      "latency_estimated_p50_s": 2.21,
-      "latency_estimated_p95_s": 7.3
+      "latency_p50_s": 2.31,
+      "latency_p95_s": 7.95,
+      "latency_estimated_p50_s": 2.31,
+      "latency_estimated_p95_s": 7.95
     },
     {
       "type": "advice",
@@ -65,10 +65,10 @@
       "count": 13,
       "cost_mean_usd": 0.04361,
       "cost_p95_usd": 0.08247,
-      "latency_p50_s": 19.12,
-      "latency_p95_s": 41.84,
-      "latency_estimated_p50_s": 19.12,
-      "latency_estimated_p95_s": 41.84
+      "latency_p50_s": 21.87,
+      "latency_p95_s": 45.76,
+      "latency_estimated_p50_s": 21.87,
+      "latency_estimated_p95_s": 45.76
     },
     {
       "type": "all",
@@ -76,10 +76,10 @@
       "count": 60,
       "cost_mean_usd": 0.00993,
       "cost_p95_usd": 0.06753,
-      "latency_p50_s": 3.43,
-      "latency_p95_s": 35.01,
-      "latency_estimated_p50_s": 3.43,
-      "latency_estimated_p95_s": 35.01
+      "latency_p50_s": 3.74,
+      "latency_p95_s": 38.46,
+      "latency_estimated_p50_s": 3.74,
+      "latency_estimated_p95_s": 38.46
     }
   ],
   "targets": [
@@ -107,28 +107,28 @@
     {
       "id": "EFF-4",
       "label": "Time to first progress step, p95 (s)",
-      "value": 0.02,
+      "value": 0.05,
       "target": "<= 2.0",
       "met": true
     },
     {
       "id": "EFF-5",
       "label": "Simple answer latency p50 (s)",
-      "value": 2.21,
+      "value": 2.31,
       "target": "<= 10.0",
       "met": true
     },
     {
       "id": "EFF-6",
       "label": "Advice answer latency p50 (s)",
-      "value": 19.12,
+      "value": 21.87,
       "target": "<= 35.0",
       "met": true
     },
     {
       "id": "EFF-7",
       "label": "Advice answer latency p95 (s)",
-      "value": 41.84,
+      "value": 45.76,
       "target": "<= 60.0",
       "met": true
     }
