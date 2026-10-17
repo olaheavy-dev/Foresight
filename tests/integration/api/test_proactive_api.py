@@ -100,6 +100,8 @@ def test_a_finished_run_shows_its_checked_recommendations(
     api: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     profile = new_profile(api)
+    # A signed-in person's import runs advice by itself (a guest's waits for the button, #59).
+    monkeypatch.setattr(proactive, "advice_on_request_only", lambda ws: False)
     upload(api, P1_CSV)
     _due_now(profile["workspace_id"])
     seen: dict[str, Any] = {}
@@ -239,3 +241,27 @@ def test_advice_checked_against_an_older_buffer_is_not_shown(
     assert after["recommendations"] == []
     assert after["data_version"] == before["data_version"]
     assert after["status"] == "checking"  # the buffer_set refresh is queued
+
+
+def test_a_guests_own_import_refreshes_findings_but_never_runs_advice_by_itself(
+    api: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#59 review: a guest can make fresh profiles and import into them; advice there runs only
+    from the button, which counts against the network's allowance, so imports can't spend
+    uncounted."""
+    profile = new_profile(api)
+    upload(api, P1_CSV)
+    _due_now(profile["workspace_id"])
+    called: list[str] = []
+
+    def record(store: Any, **kwargs: Any) -> None:
+        called.append(store.ctx.workspace_id)
+        raise RuntimeError("stub: no run")
+
+    monkeypatch.setattr(proactive, "advice_blocked", lambda db, ws: None)  # AI would be available
+    monkeypatch.setattr(runner, "run_workflow", record)
+    proactive.drain(get_settings().database_url)
+    assert profile["workspace_id"] not in called
+    (job,) = _jobs(profile["workspace_id"])
+    assert (job.status, job.note) == ("skipped", "manual_only")
+    assert _insights(api)["can_check"] is True

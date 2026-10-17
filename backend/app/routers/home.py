@@ -194,6 +194,13 @@ def check_now(request: Request, ctx: Profile) -> HomeInsights:
         # worker); nothing new is queued, so no second workflow can run uncounted (#59 review).
         ctx.session.commit()  # releases the row lock
         return insights(ctx)
+    if proactive.advice_blocked(ctx.session, ctx.workspace) == "daily_limit":
+        # A manual check may have finished between the first look and the lock: it used the
+        # profile's day, so nothing is counted for one that would only be skipped (#59 review).
+        ctx.session.commit()
+        raise HTTPException(
+            status.HTTP_409_CONFLICT, "This profile has used today's proactive checks."
+        )
     # A guest's checks also count per network, which a fresh guest profile doesn't reset.
     counted = ctx.workspace.owner_user_id is None
     if counted and not network_cap.allowance.take(

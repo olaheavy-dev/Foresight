@@ -317,3 +317,16 @@ def test_a_manual_check_the_worker_just_claimed_counts_as_counted(
         with session_factory(get_settings().database_url)() as db:  # and nothing new is queued
             jobs = db.scalars(select(m.AnalysisJob.status).where(m.AnalysisJob.workspace_id == ws))
             assert sorted(jobs) == ["running"]
+
+
+def test_a_check_finished_meanwhile_is_rechecked_before_counting(
+    make_client: type[TestClient], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#59 review: if a manual check finishes between the first look and the lock, the profile's
+    day is used; the request is refused without counting a check that would only be skipped."""
+    looks = iter([None, "daily_limit"])  # before the lock, then under it
+    monkeypatch.setattr(proactive, "advice_blocked", lambda db, ws: next(looks, "daily_limit"))
+    with make_client(create_app(), base_url=BASE) as guest:
+        demo(guest)
+        assert guest.post("/api/home/check", headers=HOME).status_code == 409
+        assert sum(network_cap.allowance.counts.values()) == 0

@@ -125,6 +125,14 @@ def advice_blocked(db: Session, ws: m.Workspace) -> str | None:
     return None
 
 
+def advice_on_request_only(ws: m.Workspace) -> bool:
+    """A guest's profile (a demo copy, or one they imported into) runs advice only from its
+    button, which counts against the network's allowance: an edit or import refreshes the
+    findings but never spends on its own, so fresh guest profiles can't run AI uncounted (owner
+    decision for demo copies; #59 review for guests). A signed-in person's run by themselves."""
+    return ws.kind == "sample" or ws.owner_user_id is None
+
+
 def run_job(job_id: str, database_url: str) -> None:
     """Run one claimed job to completion (never raises; the outcome is recorded on the job)."""
     from backend.agents.runner import run_workflow
@@ -139,9 +147,11 @@ def run_job(job_id: str, database_url: str) -> None:
             findings.refresh(ctx)
             db.commit()
             blocked = advice_blocked(db, ctx.workspace)
-            if blocked is None and ctx.workspace.kind == "sample" and job.event != "manual_check":
-                # A demo copy runs advice only from its button (owner decision): an edit there
-                # refreshes the findings but never spends on its own.
+            if (
+                blocked is None
+                and advice_on_request_only(ctx.workspace)
+                and job.event != "manual_check"
+            ):
                 blocked = "manual_only"
             if blocked is None:
                 outcome = run_workflow(
