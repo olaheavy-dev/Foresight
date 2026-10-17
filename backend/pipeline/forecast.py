@@ -49,7 +49,7 @@ from backend.finance_core.forecast.engine import (
 from backend.finance_core.forecast.prior import IrregularPrior, load_irregular_prior
 from backend.finance_core.forecast.prior import to_jsonable as prior_json
 from backend.finance_core.importers.anchors import balance_on
-from backend.finance_core.simulate import simulate
+from backend.finance_core.simulate import check_cycle_closes, simulate
 from backend.finance_core.types import (
     BalanceAnchor,
     FlowKind,
@@ -449,6 +449,7 @@ def run_simulation(
     prior = irregular_prior(inputs.currency)
     calibration = calibration_for(ctx, inputs, prior, window_days)
     result = simulate(inputs, spec, prior=prior, calibration=calibration)
+    check_cycle_closes(inputs, spec, result)  # its change is in a reported low (#55 review)
     elapsed = int((time.perf_counter() - started) * 1000)
     params = {
         **_params(ctx, inputs, window_days),

@@ -335,3 +335,23 @@ def test_a_bounded_bill_change_closes_its_last_changed_payment_not_its_end_date(
     assert horizon <= 180
     res = simulate(short, dataclasses.replace(spec, horizon_days=horizon))
     assert res.simulated.p50[-1] < res.baseline.p50[-1]
+
+
+def test_a_delay_that_moves_the_closing_payday_out_is_refused(base) -> None:  # type: ignore[no-untyped-def]
+    """#55 review: a purchase plus a pay delay on every payday. The horizon closes the purchase's
+    cycle on the normal schedule, but the delay pushes that payday out of the forecast, so no
+    simulated low includes the purchase; that what-if is refused, not called comfortable."""
+    from backend.finance_core.simulate import check_cycle_closes
+
+    short = dataclasses.replace(base, horizon_days=90)
+    stream = next(s for s in short.income_streams if s.payday_rule is not None)
+    on = date(short.as_of.year + 1, 1, 29)  # after the 28 Jan payday; its cycle closes 26 Feb
+    buy = ScenarioModifier(type="one_off_outflow", date=on, amount_minor=50_000)
+    spec = ScenarioSpec("t", base.currency, (buy,))
+    spec = dataclasses.replace(spec, horizon_days=horizon_covering(short, spec))
+    check_cycle_closes(short, spec, simulate(short, spec))  # alone: its cycle closes
+    # 40 days: 18 Dec pay lands 27 Jan (before the purchase), 28 Jan pay leaves the forecast.
+    delay = ScenarioModifier(type="income_delay", income_stream_key=stream.key, days=40)
+    both = dataclasses.replace(spec, modifiers=(buy, delay))
+    with pytest.raises(ScenarioError, match="forecast ends before the pay cycle"):
+        check_cycle_closes(short, both, simulate(short, both))

@@ -281,12 +281,12 @@ def _apply(
     raise ScenarioError(f"unsupported modifier {mod.type!r}; supported: {sorted(SUPPORTED)}")
 
 
-def horizon_covering(inputs: ForecastInputs, spec: ScenarioSpec) -> int:
-    """The horizon a what-if needs: the forecast's own, or through the first payday after its
-    latest affected date (a one-off's date, a split's last instalment, the first payment a
-    recurring change or cancellation affects, an income change's first payday on each stream),
-    so the pay cycle it lands in closes and its low is reported (docs/00 §6, #55 review). At most
-    `MAX_HORIZON_DAYS`; a change whose cycle can't close by then is refused."""
+def latest_affected(inputs: ForecastInputs, spec: ScenarioSpec) -> date:
+    """The latest date a what-if changes something that must sit in a reported pay-cycle low: a
+    one-off's date, a split's last instalment, the first payment a recurring change or
+    cancellation affects (or its last, when bounded), each income stream's first changed payday,
+    a daily change's end. `as_of` when nothing is dated. A start past `MAX_HORIZON_DAYS` is
+    refused before any date arithmetic."""
     as_of, cap = inputs.as_of, inputs.as_of + timedelta(days=MAX_HORIZON_DAYS)
     affected = as_of
     for mod in spec.modifiers:
@@ -334,6 +334,16 @@ def horizon_covering(inputs: ForecastInputs, spec: ScenarioSpec) -> int:
         if mod.type == "split_outflow" and mod.instalments and mod.instalments > 1:
             *_, start = _series_dates(start, mod.cadence or "monthly", cap, mod.instalments)
         affected = max(affected, start)
+    return affected
+
+
+def horizon_covering(inputs: ForecastInputs, spec: ScenarioSpec) -> int:
+    """The horizon a what-if needs: the forecast's own, or through the first payday after its
+    `latest_affected` date, so the pay cycle it lands in closes and its low is reported (docs/00
+    §6, #55 review). At most `MAX_HORIZON_DAYS`; a change whose cycle can't close by then is
+    refused."""
+    as_of, cap = inputs.as_of, inputs.as_of + timedelta(days=MAX_HORIZON_DAYS)
+    affected = latest_affected(inputs, spec)
     if affected <= as_of:
         return inputs.horizon_days  # nothing dated: the forecast's own horizon
     rules = [s.payday_rule for s in inputs.income_streams if s.payday_rule is not None]
@@ -355,6 +365,24 @@ def horizon_covering(inputs: ForecastInputs, spec: ScenarioSpec) -> int:
             "forecast starts"
         )
     return max(inputs.horizon_days, (closing - as_of).days)
+
+
+def check_cycle_closes(
+    inputs: ForecastInputs, spec: ScenarioSpec, result: SimulationResult
+) -> None:
+    """Refuse a simulated what-if whose latest affected date sits after the last payday of the
+    baseline or of the simulated paths (an income delay moves paydays), so no reported low
+    includes it and the verdict could call it comfortable (#55 review). Not applied without
+    projected paydays, nor when nothing is dated."""
+    affected = latest_affected(inputs, spec)
+    if affected <= inputs.as_of:
+        return
+    for line in (result.baseline, result.simulated):
+        if line.pay_cycles and line.pay_cycles[-1].payday <= affected:
+            raise ScenarioError(
+                f"the forecast ends before the pay cycle with {affected} in it closes; "
+                "a later payday is needed to show it"
+            )
 
 
 def simulate(
