@@ -67,8 +67,11 @@ export async function createThread(options: ApiOptions = {}): Promise<string | n
 
 export type StructuredAction = { kind: string; payload: unknown; action_id?: string };
 
-/** Why a question wasn't taken: today's guest allowance for the network, or too many at once. */
-export type Refusal = { refused: "network_limit" | "rate_limit" };
+/**
+ * Why a question wasn't taken: today's guest allowance for the network, too many in a short
+ * time, or two questions already running for the profile (#59 review).
+ */
+export type Refusal = { refused: "network_limit" | "rate_limit" | "busy" };
 
 /** Post a question (or a structured follow-up). Idempotent on `clientMsgId`. */
 export async function postMessage(
@@ -85,7 +88,8 @@ export async function postMessage(
   );
   if (res?.status === 429) {
     const detail = String((res.body as { detail?: unknown } | null)?.detail ?? "");
-    return { refused: /network/i.test(detail) ? "network_limit" : "rate_limit" };
+    if (/network/i.test(detail)) return { refused: "network_limit" };
+    return { refused: /already running/i.test(detail) ? "busy" : "rate_limit" };
   }
   const id = (res?.ok ? (res.body as { run_id?: unknown } | null) : null)?.run_id;
   return isRunId(id) ? id : null;

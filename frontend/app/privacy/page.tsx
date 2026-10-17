@@ -54,7 +54,8 @@ export default function PrivacyPage() {
           <li>
             Guests share a daily allowance of AI questions and checks per network, so one visitor can’t use up
             everyone’s. To count it, Foresight keeps a one-way code made from your network and the date, in memory only,
-            never your address; it’s forgotten at the end of the day.
+            never your address. It’s never written to disk, and it’s cleared on the first count after midnight (UTC) or
+            when the app restarts.
           </li>
         </ul>
 

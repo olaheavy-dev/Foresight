@@ -11,8 +11,8 @@ and any configured trusted proxies, so the first public address is the one the p
 proxy replaces any `X-Forwarded-For` a client sends. Behind a CDN, `CLIENT_IP_HEADER` names the
 header the CDN sets instead (the origin must accept traffic from the CDN alone). IPv4 is grouped
 by /24 and IPv6 by /48, so one household or office counts once. No address is stored: only an
-HMAC of the day and the network, kept in memory, which forgets everything at the end of the day
-or on a restart.
+HMAC of the day and the network, kept in memory and never written anywhere; it's cleared on the
+first count after midnight (UTC) or on a restart.
 When no public address is found (local development, a misconfigured proxy), nothing is counted:
 a mistake here can never lock out every visitor at once.
 """

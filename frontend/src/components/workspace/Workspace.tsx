@@ -253,6 +253,7 @@ const ERRORS: Record<string, string> = {
   budget_exceeded: "This question needed more work than one answer allows.",
   network_limit: "Today’s guest allowance for your network is used.",
   rate_limit: "Too many questions in a short time.",
+  busy: "Two questions are already running for this profile.",
 };
 
 const errorText = (code: string) => ERRORS[code] ?? "Something went wrong with this answer.";
@@ -454,7 +455,7 @@ export function Workspace({
       }
       const runId = await postMessage(threadId, question, turnId, { action });
       if (runId && typeof runId !== "string") {
-        const retryable = runId.refused === "rate_limit"; // a network's day is used until tomorrow
+        const retryable = runId.refused !== "network_limit"; // a network's day is used until tomorrow
         return dispatch({ type: "fail", key, turnId, code: runId.refused, retryable });
       }
       if (!runId) return dispatch({ type: "fail", key, turnId, code: "unavailable", retryable: true });
@@ -780,9 +781,11 @@ export function Workspace({
                           ? "Sign in with Google to keep going, or come back tomorrow. Your forecast, the Decision Lab and goals still work."
                           : turn.run.error.code === "rate_limit"
                             ? "Please wait a few minutes, then ask again. Your question is kept."
-                            : turn.partial
-                              ? "Part of the answer was checked before it stopped; it’s shown below."
-                              : "No figures were shown, because none were checked. Your question is kept."}
+                            : turn.run.error.code === "busy"
+                              ? "Wait for one to finish, then ask again. Your question is kept."
+                              : turn.partial
+                                ? "Part of the answer was checked before it stopped; it’s shown below."
+                                : "No figures were shown, because none were checked. Your question is kept."}
                     </p>
                   </div>
                 </div>
