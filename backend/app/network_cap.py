@@ -49,18 +49,28 @@ def client_network(request: Request) -> str | None:
         hops.append(request.client.host)
     for raw in reversed(hops):
         try:
-            ip = ipaddress.ip_address(raw)
+            ip = _plain(ipaddress.ip_address(raw))
         except ValueError:
             continue
         if not ip.is_global or any(ip in net for net in trusted):
             continue  # a container hop, a private network, or a trusted proxy
-        return _network(raw)
+        return _network(str(ip))
     return None
+
+
+def _plain(
+    ip: ipaddress.IPv4Address | ipaddress.IPv6Address,
+) -> ipaddress.IPv4Address | ipaddress.IPv6Address:
+    """An IPv4-mapped IPv6 address (::ffff:81.2.69.160) as the IPv4 address it carries, so it's
+    grouped by /24 like any IPv4 visitor, never into one shared IPv6 /48 (#59 review)."""
+    if isinstance(ip, ipaddress.IPv6Address) and ip.ipv4_mapped is not None:
+        return ip.ipv4_mapped
+    return ip
 
 
 def _network(raw: str) -> str | None:
     try:
-        ip = ipaddress.ip_address(raw)
+        ip = _plain(ipaddress.ip_address(raw))
     except ValueError:
         return None
     if not ip.is_global:

@@ -226,3 +226,46 @@ def test_a_check_that_promotes_an_edits_queued_job_counts(make_client: type[Test
         assert guest.post("/api/home/check", headers=HOME).status_code == 202
         assert sum(network_cap.allowance.counts.values()) == 1  # counted
         assert neighbour.post("/api/home/check", headers=NEIGHBOUR).status_code == 429
+
+
+def test_a_raced_retry_returns_the_existing_run_and_gives_its_count_back(
+    make_client: type[TestClient], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#59 review: the same question raced in twice makes one run; the second request returns it
+    (through `reused`) and its extra count is given back."""
+    from backend.app.routers import ask as ask_router
+
+    monkeypatch.setenv("GUEST_NETWORK_DAILY_QUESTIONS", "1")
+    get_settings.cache_clear()
+    existing = "run_01ARZ3NDEKTSV4RRFFQ69G5FAV"
+
+    def raced(**kwargs: Any) -> None:  # the other request's run already exists
+        kwargs["reused"](existing)
+        ask_router.limits.release(kwargs["workspace_id"])
+
+    monkeypatch.setattr(ask_router, "_run_in_background", raced)
+    with make_client(create_app(), base_url=BASE) as guest:
+        demo(guest)
+        thread = guest.post("/api/threads").json()["thread_id"]
+        body = {"text": "How does next month look?", "client_msg_id": "dup"}
+        posted = guest.post(f"/api/threads/{thread}/messages", json=body, headers=HOME)
+        assert posted.status_code == 202
+        assert posted.json()["run_id"] == existing
+        assert sum(network_cap.allowance.counts.values()) == 0  # the duplicate's use came back
+
+
+def test_a_check_that_fails_to_queue_gives_its_use_back(
+    make_client: type[TestClient], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#59 review: when queueing the check fails, nothing will run, so the network's use is
+    returned."""
+
+    def broken(*args: Any, **kwargs: Any) -> None:
+        raise RuntimeError("database unavailable")
+
+    with make_client(create_app(), base_url=BASE) as guest:
+        demo(guest)
+        monkeypatch.setattr(proactive, "enqueue", broken)
+        with pytest.raises(RuntimeError):
+            guest.post("/api/home/check", headers=HOME)
+        assert sum(network_cap.allowance.counts.values()) == 0

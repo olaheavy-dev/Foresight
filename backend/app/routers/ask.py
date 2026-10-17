@@ -273,6 +273,7 @@ def _run_in_background(
     mesh: MeshClient | None,
     created: Callable[[str], None],
     failed: Callable[[BaseException], None],
+    reused: Callable[[str], None] = lambda _run_id: None,
 ) -> None:
     def work() -> None:
         try:
@@ -287,6 +288,8 @@ def _run_in_background(
                     action=action,
                     on_run_created=created,
                 )
+                if outcome.reused:  # a concurrent retry already started this question's run
+                    reused(outcome.run_id)
                 # The answer is saved and streamed; a question that ran out of time for its
                 # advice loop carries it on here (docs/06 §13), its answer added to the thread.
                 run_followup(store, outcome, mesh=mesh)
@@ -335,6 +338,14 @@ def post_message(
         holder["run_id"] = run_id
         started.set()
 
+    def reused(run_id: str) -> None:
+        # The same question raced in twice: one run exists, so this request returns it and
+        # gives back the second count (#59 review).
+        if counted and "run_id" not in holder:
+            network_cap.allowance.give_back(request, "question")
+        holder.setdefault("run_id", run_id)
+        started.set()
+
     def failed(exc: BaseException) -> None:
         holder.setdefault("error", exc)
         if counted and "run_id" not in holder:
@@ -355,6 +366,7 @@ def post_message(
         mesh=mesh,
         created=created,
         failed=failed,
+        reused=reused,
     )
     started.wait(RUN_START_TIMEOUT_S)
     run_id = holder.get("run_id")

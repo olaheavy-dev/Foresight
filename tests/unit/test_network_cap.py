@@ -105,3 +105,10 @@ def test_without_a_configured_secret_the_code_uses_a_random_process_key(monkeypa
     public = hmac_mod.new(b"", f"{day}|question|81.2.69.0/24".encode(), hashlib.sha256).hexdigest()
     assert key != public
     get_settings.cache_clear()
+
+
+def test_an_ipv4_mapped_address_is_grouped_as_the_ipv4_it_carries() -> None:
+    """#59 review: ::ffff:81.2.69.160 is the IPv4 visitor 81.2.69.160, so its /24, never ::/48
+    shared by every such visitor."""
+    assert _net("::ffff:81.2.69.160") == "81.2.69.0/24"
+    assert _net("::ffff:10.0.0.1") is None  # a private IPv4 carried the same way counts nothing

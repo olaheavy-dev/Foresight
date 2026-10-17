@@ -199,6 +199,12 @@ def check_now(request: Request, ctx: Profile) -> HomeInsights:
         )
     ):
         raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, network_cap.REFUSED)
-    proactive.enqueue(ctx, "manual_check", immediate=True)
-    ctx.session.commit()
+    counted = not joins and ctx.workspace.owner_user_id is None
+    try:
+        proactive.enqueue(ctx, "manual_check", immediate=True)
+        ctx.session.commit()
+    except Exception:
+        if counted:  # no check was queued: the network's use is given back (#59 review)
+            network_cap.allowance.give_back(request, "check")
+        raise
     return insights(ctx)
