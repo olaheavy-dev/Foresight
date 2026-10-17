@@ -202,11 +202,13 @@ def simulate(ctx: Profile, body: ScenarioSpecPayload) -> SimulationView:
         # change lands in, at most 180 days (#55 review), so a what-if the Workspace answers is
         # answered here too. A horizon asked for (the Lab's spreads) is lengthened to that, so
         # the last change is always in a reported low.
-        covering = horizon_covering(
-            forecast_inputs(ctx), ScenarioSpec(body.name, body.currency, modifiers)
+        # A horizon asked for (30–180 days) is kept, never past what-ifs' 180 (docs/00 §6), and
+        # only lengthened when a change's cycle needs it (#55 review).
+        asked = min(body.horizon_days or DEFAULT_HORIZON, MAX_HORIZON_DAYS)
+        horizon = horizon_covering(
+            forecast_inputs(ctx, horizon_days=asked),
+            ScenarioSpec(body.name, body.currency, modifiers),
         )
-        # Never past what-ifs' 180 days (docs/00 §6), whatever is asked for (#55 review).
-        horizon = max(min(body.horizon_days or 0, MAX_HORIZON_DAYS), covering)
         spec = ScenarioSpec(body.name, body.currency, modifiers, horizon_days=horizon)
         baseline = run_forecast(ctx, horizon_days=horizon)
         return baseline, run_simulation(ctx, spec, horizon_days=horizon), spec

@@ -355,3 +355,24 @@ def test_a_delay_that_moves_the_closing_payday_out_is_refused(base) -> None:  # 
     both = dataclasses.replace(spec, modifiers=(buy, delay))
     with pytest.raises(ScenarioError, match="forecast ends before the pay cycle"):
         check_cycle_closes(short, both, simulate(short, both))
+
+
+def test_a_delay_that_moves_every_payday_out_is_refused(base) -> None:  # type: ignore[no-untyped-def]
+    """#55 review: when a delay leaves no simulated payday at all, no cycle closes; the empty
+    set is refused, not skipped."""
+    from backend.finance_core.simulate import check_cycle_closes
+
+    short = dataclasses.replace(base, horizon_days=90)
+    stream = next(s for s in short.income_streams if s.payday_rule is not None)
+    buy = ScenarioModifier(
+        type="one_off_outflow", date=date(short.as_of.year + 1, 1, 29), amount_minor=50_000
+    )
+    delay = ScenarioModifier(type="income_delay", income_stream_key=stream.key, days=150)
+    spec = ScenarioSpec("t", base.currency, (buy,))
+    both = ScenarioSpec(
+        "t", base.currency, (buy, delay), horizon_days=horizon_covering(short, spec)
+    )
+    result = simulate(short, both)
+    assert not result.simulated.pay_cycles  # every payday moved past the end
+    with pytest.raises(ScenarioError, match="forecast ends before the pay cycle"):
+        check_cycle_closes(short, both, result)

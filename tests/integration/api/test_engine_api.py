@@ -375,3 +375,21 @@ def test_an_explicit_horizon_never_runs_past_180_days(api: TestClient) -> None:
     body = checked(api, response, "/api/simulate")
     last = date.fromisoformat(body["comparison"]["scenarios"][0]["series"]["dates"][-1])
     assert (last - as_of).days <= 180
+
+
+def test_a_short_explicit_horizon_is_kept(api: TestClient) -> None:
+    """#55 review: an allowed 30-day `horizon_days` with an early change stays 30 days; it's only
+    lengthened when the change's cycle needs it."""
+    demo(api)
+    as_of = date.fromisoformat(
+        checked(api, api.get("/api/forecast"), "/api/forecast")["chart"]["as_of"]
+    )
+    response = api.post("/api/simulate", json={
+        "schema": "scenario_spec/1", "name": "Repair", "scope": "mine", "currency": "GBP",
+        "horizon_days": 30,
+        "modifiers": [{"type": "one_off_outflow", "date": (as_of + timedelta(days=5)).isoformat(),
+                       "amount_minor": 10000, "label": "Repair"}],
+    })  # fmt: skip
+    body = checked(api, response, "/api/simulate")
+    last = date.fromisoformat(body["comparison"]["scenarios"][0]["series"]["dates"][-1])
+    assert (last - as_of).days == 30

@@ -375,10 +375,11 @@ def check_cycle_closes(
     includes it and the verdict could call it comfortable (#55 review). Not applied without
     projected paydays, nor when nothing is dated."""
     affected = latest_affected(inputs, spec)
-    if affected <= inputs.as_of:
-        return
+    if affected <= inputs.as_of or not result.baseline.pay_cycles:
+        return  # nothing dated, or no projected payday at all
     for line in (result.baseline, result.simulated):
-        if line.pay_cycles and line.pay_cycles[-1].payday <= affected:
+        # No simulated cycle left (a delay moved every payday out) closes nothing either.
+        if not line.pay_cycles or line.pay_cycles[-1].payday <= affected:
             raise ScenarioError(
                 f"the forecast ends before the pay cycle with {affected} in it closes; "
                 "a later payday is needed to show it"
