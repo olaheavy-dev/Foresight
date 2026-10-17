@@ -395,3 +395,33 @@ def test_losing_all_income_keeps_the_pay_cycles(base) -> None:  # type: ignore[n
     ]
     assert res.simulated.p50[-1] < res.baseline.p50[-1]
     check_cycle_closes(short, spec, res)  # not refused
+
+
+def test_a_delay_before_a_pay_cut_still_closes_the_cut_paydays_cycle(base) -> None:  # type: ignore[no-untyped-def]
+    """#55 review: a 10-day delay moves the first cut payday (26 Feb) to early March, and the
+    payday that closes its cycle later too. The horizon bounds both, so a simulated payday
+    follows the shifted cut; on a horizon that ends at the rule's payday, it's refused."""
+    from backend.finance_core.simulate import check_cycle_closes
+
+    short = dataclasses.replace(base, horizon_days=90)
+    stream = next(s for s in short.income_streams if s.payday_rule is not None)
+    delay = ScenarioModifier(type="income_delay", income_stream_key=stream.key, days=10)
+    cut = ScenarioModifier(
+        type="income_change_pct",
+        income_stream_key=stream.key,
+        pct=-50,
+        from_date=date(short.as_of.year + 1, 2, 1),
+    )
+    spec = ScenarioSpec("t", base.currency, (delay, cut))
+    covered = dataclasses.replace(spec, horizon_days=horizon_covering(short, spec))
+    res = simulate(short, covered)
+    check_cycle_closes(short, covered, res)
+    cut_payday = next(
+        c.payday for c in res.simulated.pay_cycles if c.payday > date(short.as_of.year + 1, 2, 26)
+    )
+    assert any(c.payday > cut_payday for c in res.simulated.pay_cycles)
+    tight = dataclasses.replace(
+        spec, horizon_days=(date(short.as_of.year + 1, 3, 25) - short.as_of).days
+    )
+    with pytest.raises(ScenarioError, match="forecast ends before the pay cycle"):
+        check_cycle_closes(short, tight, simulate(short, tight))

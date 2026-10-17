@@ -84,6 +84,7 @@ SIMULATOR_VERSION = "sim-2"
 # can't close by then is refused. With no projected payday, it shows this many days instead.
 SHOW_DAYS = 31
 MAX_HORIZON_DAYS = 180
+DELAY_SHIFT_DAYS = 4  # a delayed payday then moves to a working day: a weekend and a holiday
 
 
 class ScenarioError(ValueError):
@@ -339,6 +340,14 @@ def latest_affected(inputs: ForecastInputs, spec: ScenarioSpec) -> date:
         if mod.type == "split_outflow" and mod.instalments and mod.instalments > 1:
             *_, start = _series_dates(start, mod.cadence or "monthly", cap, mod.instalments)
         affected = max(affected, start)
+    income = tuple(m for m in spec.modifiers if m.type == "income_change_pct")
+    delays = [m.days for m in spec.modifiers if m.type == "income_delay" and m.days]
+    if income and delays:
+        # A delay in the same what-if can move the paydays an income change touches later than
+        # their rule says (#55 review): bound it by the longest delay plus a working-day shift.
+        changed = latest_affected(inputs, dataclasses.replace(spec, modifiers=income))
+        if changed > as_of:
+            affected = max(affected, changed + timedelta(days=max(delays) + DELAY_SHIFT_DAYS))
     return affected
 
 
@@ -364,7 +373,11 @@ def horizon_covering(inputs: ForecastInputs, spec: ScenarioSpec) -> int:
     closing = min(
         (p for r in rules for p in paydays_between(r, after, cap, inputs.holidays)), default=None
     )
-    if closing is None:
+    delays = [m.days for m in spec.modifiers if m.type == "income_delay" and m.days]
+    if closing is not None and delays:
+        # The closing payday is delayed too: run past where it can land.
+        closing += timedelta(days=max(delays) + DELAY_SHIFT_DAYS)
+    if closing is None or closing > cap:
         raise ScenarioError(
             f"the pay cycle after {affected} ends more than {MAX_HORIZON_DAYS} days after the "
             "forecast starts"
