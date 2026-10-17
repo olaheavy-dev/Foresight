@@ -393,3 +393,22 @@ def test_a_short_explicit_horizon_is_kept(api: TestClient) -> None:
     body = checked(api, response, "/api/simulate")
     last = date.fromisoformat(body["comparison"]["scenarios"][0]["series"]["dates"][-1])
     assert (last - as_of).days == 30
+
+
+def test_a_stored_simulation_records_its_simulator_version(api: TestClient) -> None:
+    """#55 review: a change to the simulator's semantics (sim-2: zeroed paydays kept) gives new
+    calculation keys, so an older stored result can't be served in its place."""
+    from backend.finance_core.simulate import SIMULATOR_VERSION
+
+    demo(api)
+    as_of = date.fromisoformat(
+        checked(api, api.get("/api/forecast"), "/api/forecast")["chart"]["as_of"]
+    )
+    body = checked(api, api.post("/api/simulate", json={
+        "schema": "scenario_spec/1", "name": "Repair", "scope": "mine", "currency": "GBP",
+        "modifiers": [{"type": "one_off_outflow", "date": (as_of + timedelta(days=5)).isoformat(),
+                       "amount_minor": 10000, "label": "Repair"}],
+    }), "/api/simulate")  # fmt: skip
+    calc_id = "calc_" + body["simulation_id"].removeprefix("sim_")
+    calc = checked(api, api.get(f"/api/calculations/{calc_id}"), "/api/calculations/{calc_id}")
+    assert calc["params"]["simulator"] == SIMULATOR_VERSION

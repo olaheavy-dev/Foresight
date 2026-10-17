@@ -74,6 +74,11 @@ ALL_INCOME = "all_income"
 CADENCE_DAYS = {"weekly": 7, "fortnightly": 14}
 
 
+# The simulator's own semantics, stored with every simulation so a change here can't be shadowed
+# by an older stored result under the same key (the forecast engine keeps ENGINE_VERSION).
+# sim-2 (#55): a zeroed payday stays as a zero flow, so lost income keeps its pay cycles.
+SIMULATOR_VERSION = "sim-2"
+
 # A what-if dated past the usual horizon extends it through the pay cycle its latest change falls
 # in, up to 180 days (docs/00 §6: the 365-day maximum is for goals only); a change whose pay cycle
 # can't close by then is refused. With no projected payday, it shows this many days instead.
