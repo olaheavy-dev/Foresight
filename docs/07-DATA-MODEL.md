@@ -713,6 +713,7 @@ Canonical P1 fixture: £1,200 on 6 Nov → P50 low **26 Nov −£148** (P10 −�
 
 - `fixed_monthly`: contributions on schedule, skipped in a path if they would take that path below buffer.
 - `residual` (earmarked): no money moves; `progress[p] = max(0, pre_salary_low[p, target cycle] − buffer)`. Any scenario outflow before the target lowers progress one-for-one and also appears in the cash dip — one pool of money seen two ways, not double counting. `progress_now` = P50 of the **next** pre-salary low − buffer (floored at 0) — honest "what is genuinely spare".
+- **Several residual goals share one pool, funded in date order** (owner-facing default, 17 Oct 2026, #54 review): a goal's progress is measured above the buffer **and** the targets of active goals due before it (ties: the earlier-created goal), `progress[p] = max(0, low[p] − buffer − reserved)`. Spare cash is never counted for two goals; the goal says how much was set aside for earlier ones. Achieved and archived goals reserve nothing.
 - Output: P10/P50/P90 at target, `p_achieve`, band `on_track` (p ≥ 0.5, P50 meets target), `at_risk` (0.25–0.5), `off_track` (< 0.25), **required monthly change** to reach p ≥ 0.5 (bisection on a uniform monthly saving uplift, ≤ 20 iterations, rounded to the locale pack’s same-currency goal-change increment (UK: £10); unsupported currencies use one major unit, never an FX conversion).
 - P1 fixture: no goal is defined. Goal behaviour is covered by unit tests and other personas; the P1 demo uses the March outlook (£8,388 with the checked plan vs £8,345 with no action).
 

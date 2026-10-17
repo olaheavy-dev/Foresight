@@ -27,6 +27,7 @@ PREFIXES = frozenset(
         "fmt",
         "bal",
         "inc",
+        "goal",
         "rob",
         "calc",
         "aud",

@@ -1,5 +1,6 @@
 import { SectionPage } from "@/components/SectionPage";
 import { DecisionLab } from "@/components/lab/DecisionLab";
+import { Goals } from "@/components/lab/Goals";
 import { isShipped } from "@/lib/flags";
 import { loadShell } from "@/lib/server";
 
@@ -19,7 +20,12 @@ export default async function LabPage() {
       <h1>Decision Lab</h1>
       <p className="lede">{LEDE}</p>
       {profile ? (
-        <DecisionLab currency={profile.home_currency} locale={profile.locale} timeZone={profile.timezone} />
+        <>
+          <DecisionLab currency={profile.home_currency} locale={profile.locale} timeZone={profile.timezone} />
+          {isShipped(features, "goals") ? (
+            <Goals currency={profile.home_currency} locale={profile.locale} timeZone={profile.timezone} />
+          ) : null}
+        </>
       ) : (
         <p className="lede">Choose the demo profile or import a statement first.</p>
       )}

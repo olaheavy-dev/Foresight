@@ -3824,6 +3824,29 @@
       "title": "FormatInference",
       "type": "object"
     },
+    "GoalList": {
+      "additionalProperties": false,
+      "properties": {
+        "goals": {
+          "items": {
+            "$ref": "#/$defs/GoalView"
+          },
+          "title": "Goals",
+          "type": "array"
+        },
+        "workspace_id": {
+          "pattern": "^wsp_[0-9A-HJKMNP-TV-Z]{26}$",
+          "title": "Workspace Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "goals"
+      ],
+      "title": "GoalList",
+      "type": "object"
+    },
     "GoalOutcome": {
       "additionalProperties": false,
       "properties": {
@@ -4151,6 +4174,99 @@
         "funding_rule"
       ],
       "title": "GoalSummary",
+      "type": "object"
+    },
+    "GoalView": {
+      "additionalProperties": false,
+      "properties": {
+        "calc_id": {
+          "anyOf": [
+            {
+              "pattern": "^calc_([0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{24})$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Calc Id"
+        },
+        "goal_id": {
+          "pattern": "^goal_[0-9A-HJKMNP-TV-Z]{26}$",
+          "title": "Goal Id",
+          "type": "string"
+        },
+        "lower_confidence": {
+          "default": false,
+          "title": "Lower Confidence",
+          "type": "boolean"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "problem": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Problem"
+        },
+        "projection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GoalProjection"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "reserved": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MoneyValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "status": {
+          "enum": [
+            "active",
+            "achieved",
+            "abandoned"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "target": {
+          "$ref": "#/$defs/MoneyValue"
+        },
+        "target_date": {
+          "format": "date",
+          "title": "Target Date",
+          "type": "string"
+        }
+      },
+      "required": [
+        "goal_id",
+        "name",
+        "status",
+        "target",
+        "target_date"
+      ],
+      "title": "GoalView",
       "type": "object"
     },
     "Healthz": {
@@ -9399,6 +9515,8 @@
     "ImportHistory",
     "HomeInsights",
     "IncomeStreamView",
-    "ActivityFeed"
+    "ActivityFeed",
+    "GoalList",
+    "GoalView"
   ]
 }

@@ -1,22 +1,22 @@
 {
   "durations_s": {
-    "E-ANOM": 0.83,
-    "E-AUD": 8.48,
-    "E-CAT": 0.44,
-    "E-CTX": 0.55,
+    "E-ANOM": 2.34,
+    "E-AUD": 21.04,
+    "E-CAT": 1.24,
+    "E-CTX": 1.18,
     "E-EFF": 0.0,
-    "E-FC": 10.32,
-    "E-GRD": 6.68,
-    "E-INC": 0.83,
-    "E-ING": 0.7,
-    "E-LOC": 0.32,
-    "E-ORC": 34.32,
-    "E-REC": 0.42,
-    "E-SCN": 0.25,
-    "E-SEC": 0.28,
-    "E-SIM": 15.87,
-    "E-UI": 34.32,
-    "E-VER": 16.69
+    "E-FC": 28.58,
+    "E-GRD": 18.25,
+    "E-INC": 2.1,
+    "E-ING": 1.78,
+    "E-LOC": 0.89,
+    "E-ORC": 85.66,
+    "E-REC": 1.18,
+    "E-SCN": 0.54,
+    "E-SEC": 0.65,
+    "E-SIM": 73.36,
+    "E-UI": 85.93,
+    "E-VER": 44.6
   },
   "engine_version": "fc-1.3.0",
   "errors": {},
@@ -36,113 +36,106 @@
     },
     "E-ANOM": {
       "failed": [],
-      "rule": "docs/09 targets (4 measured)",
+      "rule": "docs/09 targets (4 measured, 0 unmeasured)",
       "status": "pass",
       "unmeasured": []
     },
     "E-AUD": {
       "failed": [],
-      "rule": "docs/09 targets (5 measured)",
+      "rule": "docs/09 targets (5 measured, 0 unmeasured)",
       "status": "pass",
       "unmeasured": []
     },
     "E-CAT": {
       "failed": [],
-      "rule": "docs/09 targets (1 measured)",
+      "rule": "docs/09 targets (1 measured, 0 unmeasured)",
       "status": "pass",
-      "unmeasured": [
-        "CAT-hybrid-acc",
-        "CAT-hybrid-f1",
-        "CAT-hybrid-flow",
-        "CAT-selective"
-      ]
+      "unmeasured": []
     },
     "E-CTX": {
       "failed": [
         "CTX-2",
         "CTX-3"
       ],
-      "rule": "docs/09 targets (5 measured)",
+      "rule": "docs/09 targets (5 measured, 0 unmeasured)",
       "status": "fail",
       "unmeasured": []
     },
     "E-EFF": {
       "failed": [],
-      "rule": "docs/09 targets (7 measured)",
+      "rule": "docs/09 targets (7 measured, 0 unmeasured)",
       "status": "pass",
       "unmeasured": []
     },
     "E-FC": {
       "failed": [],
-      "rule": "docs/09 targets (6 measured)",
+      "rule": "docs/09 targets (6 measured, 0 unmeasured)",
       "status": "pass",
       "unmeasured": []
     },
     "E-GRD": {
       "failed": [],
-      "rule": "docs/09 targets (5 measured)",
+      "rule": "docs/09 targets (5 measured, 0 unmeasured)",
       "status": "pass",
       "unmeasured": []
     },
     "E-INC": {
       "failed": [],
-      "rule": "docs/09 targets (5 measured)",
+      "rule": "docs/09 targets (5 measured, 0 unmeasured)",
       "status": "pass",
       "unmeasured": []
     },
     "E-ING": {
       "failed": [],
-      "rule": "docs/09 targets (12 measured)",
+      "rule": "docs/09 targets (13 measured, 0 unmeasured)",
       "status": "pass",
-      "unmeasured": [
-        "ING-heuristic+llm"
-      ]
+      "unmeasured": []
     },
     "E-LOC": {
       "failed": [],
-      "rule": "docs/09 targets (6 measured)",
+      "rule": "docs/09 targets (6 measured, 0 unmeasured)",
       "status": "pass",
       "unmeasured": []
     },
     "E-ORC": {
       "failed": [],
-      "rule": "docs/09 targets (4 measured)",
+      "rule": "docs/09 targets (4 measured, 0 unmeasured)",
       "status": "pass",
       "unmeasured": []
     },
     "E-REC": {
       "failed": [],
-      "rule": "docs/09 targets (5 measured)",
+      "rule": "docs/09 targets (5 measured, 0 unmeasured)",
       "status": "pass",
       "unmeasured": []
     },
     "E-SCN": {
       "failed": [],
-      "rule": "docs/09 targets (4 measured)",
+      "rule": "docs/09 targets (4 measured, 0 unmeasured)",
       "status": "pass",
       "unmeasured": []
     },
     "E-SEC": {
       "failed": [],
-      "rule": "docs/09 targets (6 measured)",
+      "rule": "docs/09 targets (6 measured, 0 unmeasured)",
       "status": "pass",
       "unmeasured": []
     },
     "E-SIM": {
       "failed": [],
-      "rule": "docs/09 targets (1 measured)",
+      "rule": "docs/09 targets (1 measured, 0 unmeasured)",
       "status": "pass",
       "unmeasured": []
     },
     "E-UI": {
       "failed": [],
-      "rule": "docs/09 targets (8 measured)",
+      "rule": "docs/09 targets (8 measured, 0 unmeasured)",
       "status": "pass",
       "unmeasured": []
     },
     "E-VER": {
       "failed": [],
-      "rule": "docs/09 targets (3 measured)",
+      "rule": "docs/09 targets (3 measured, 0 unmeasured)",
       "status": "pass",
       "unmeasured": []
     },
@@ -177,7 +170,7 @@
   },
   "generator_version": "gen-1.1.0",
   "git_dirty": false,
-  "git_sha": "21b5e1e0d61c5298770da5dbe54f02c6e24485ec",
+  "git_sha": "6770a22cfd0b913a90faebb843f05aea8ee97cc0",
   "holdout_version": null,
   "home_currency_primary": "GBP",
   "layout_set_version": null,
@@ -196,7 +189,7 @@
     "null = not run. Gates: a suite that did not run is 'fail'; see gate_detail.rule."
   ],
   "prompt_versions": {},
-  "run_id": "evalrun_20261014T162812Z_21b5e1e",
+  "run_id": "evalrun_20261017T092618Z_6770a22",
   "schema_version": "1.1",
   "seeds": [
     1729
@@ -354,7 +347,7 @@
         "model_calls_per_cache_hit_after_understand": 0,
         "model_calls_per_cache_miss": 1,
         "recorded_tokens_total": 447216,
-        "replay_seconds": 0.55
+        "replay_seconds": 1.17
       },
       "followup_turns_scored": 45,
       "mode": "replay",
@@ -1106,39 +1099,39 @@
           "cost_p95_usd": 0.08247,
           "count": 13,
           "degraded_left_out": 0,
-          "first_step_p95_s": 0.02,
-          "latency_estimated_p50_s": 19.12,
-          "latency_estimated_p95_s": 41.84,
+          "first_step_p95_s": 0.06,
+          "latency_estimated_p50_s": 21.87,
+          "latency_estimated_p95_s": 45.76,
           "latency_measured": 13,
-          "latency_p50_s": 19.12,
-          "latency_p50_s_measured_only": 19.12,
-          "latency_p95_s": 41.84
+          "latency_p50_s": 21.87,
+          "latency_p50_s_measured_only": 21.87,
+          "latency_p95_s": 45.76
         },
         "all": {
           "cost_mean_usd": 0.00993,
           "cost_p95_usd": 0.06753,
           "count": 60,
           "degraded_left_out": 0,
-          "first_step_p95_s": 0.02,
-          "latency_estimated_p50_s": 3.43,
-          "latency_estimated_p95_s": 35.01,
+          "first_step_p95_s": 0.05,
+          "latency_estimated_p50_s": 3.74,
+          "latency_estimated_p95_s": 38.46,
           "latency_measured": 60,
-          "latency_p50_s": 3.43,
-          "latency_p50_s_measured_only": 3.43,
-          "latency_p95_s": 35.01
+          "latency_p50_s": 3.74,
+          "latency_p50_s_measured_only": 3.74,
+          "latency_p95_s": 38.46
         },
         "simple": {
           "cost_mean_usd": 0.00061,
           "cost_p95_usd": 0.00063,
           "count": 47,
           "degraded_left_out": 0,
-          "first_step_p95_s": 0.02,
-          "latency_estimated_p50_s": 2.21,
-          "latency_estimated_p95_s": 7.3,
+          "first_step_p95_s": 0.05,
+          "latency_estimated_p50_s": 2.31,
+          "latency_estimated_p95_s": 7.95,
           "latency_measured": 47,
-          "latency_p50_s": 2.21,
-          "latency_p50_s_measured_only": 2.21,
-          "latency_p95_s": 7.3
+          "latency_p50_s": 2.31,
+          "latency_p50_s_measured_only": 2.31,
+          "latency_p95_s": 7.95
         }
       },
       "by_tier": {
@@ -1622,7 +1615,7 @@
         "tool_calls_outside_allow_list": []
       },
       "mode": "replay",
-      "seconds": 34.3
+      "seconds": 85.7
     },
     "recurring": {
       "council_tax_months_exact": true,
@@ -1735,17 +1728,24 @@
         "SIM-8",
         "SIM-9",
         "SIM-10",
-        "SIM-11",
         "SIM-12",
         "SIM-13"
       ],
       "pass_rate": 1.0,
-      "passed": 800,
+      "passed": 1000,
       "properties": {
         "SIM-1": {
           "failed": 0,
           "first_failing_case": null,
           "label": "Determinism",
+          "passed": 200,
+          "skipped": 0
+        },
+        "SIM-11": {
+          "cross_checked": 14,
+          "failed": 0,
+          "first_failing_case": null,
+          "label": "Goal consistency",
           "passed": 200,
           "skipped": 0
         },
@@ -1772,7 +1772,7 @@
           "skipped": 0
         }
       },
-      "total": 800
+      "total": 1000
     },
     "ui": {
       "composition": {
@@ -1990,36 +1990,48 @@
       },
       {
         "dataset": "UK holdout",
+        "gated": false,
         "id": "CAT-hybrid-acc",
         "label": "Accuracy, hybrid (holdout)",
         "met": null,
+        "not_gated_because": "the independent, hand-labelled UK holdout doesn't exist yet; hybrid accuracy is measured on the generated test split (CAT-hybrid-acc-generated)",
+        "not_gated_kind": "dataset_missing",
         "stage1": false,
         "target": ">= 0.85",
         "value": null
       },
       {
         "dataset": "UK holdout",
+        "gated": false,
         "id": "CAT-hybrid-f1",
         "label": "Macro-F1, hybrid (holdout)",
         "met": null,
+        "not_gated_because": "the independent, hand-labelled UK holdout doesn't exist yet; hybrid accuracy is measured on the generated test split (CAT-hybrid-acc-generated)",
+        "not_gated_kind": "dataset_missing",
         "stage1": false,
         "target": ">= 0.8",
         "value": null
       },
       {
         "dataset": "UK holdout",
+        "gated": false,
         "id": "CAT-hybrid-flow",
         "label": "Flow-class accuracy, hybrid (holdout)",
         "met": null,
+        "not_gated_because": "the independent, hand-labelled UK holdout doesn't exist yet; hybrid accuracy is measured on the generated test split (CAT-hybrid-acc-generated)",
+        "not_gated_kind": "dataset_missing",
         "stage1": false,
         "target": ">= 0.95",
         "value": null
       },
       {
         "dataset": "UK holdout",
+        "gated": false,
         "id": "CAT-selective",
         "label": "Selective accuracy@0.85 (holdout)",
         "met": null,
+        "not_gated_because": "the independent, hand-labelled UK holdout doesn't exist yet; hybrid accuracy is measured on the generated test split (CAT-hybrid-acc-generated)",
+        "not_gated_kind": "dataset_missing",
         "stage1": false,
         "target": ">= 0.95",
         "value": null
@@ -2107,7 +2119,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 2.0",
-        "value": 0.02
+        "value": 0.05
       },
       {
         "dataset": "47 simple answers",
@@ -2116,7 +2128,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 10.0",
-        "value": 2.21
+        "value": 2.31
       },
       {
         "dataset": "13 advice answers",
@@ -2125,7 +2137,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 35.0",
-        "value": 19.12
+        "value": 21.87
       },
       {
         "dataset": "13 advice answers",
@@ -2134,7 +2146,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 60.0",
-        "value": 41.84
+        "value": 45.76
       }
     ],
     "E-FC": [
@@ -2400,10 +2412,10 @@
         "dataset": "C1\u2013C4",
         "id": "ING-heuristic+llm",
         "label": "FormatProfile success, heuristic+LLM",
-        "met": null,
+        "met": true,
         "stage1": false,
         "target": ">= 0.85",
-        "value": null
+        "value": 1.0
       }
     ],
     "E-LOC": [
@@ -2466,10 +2478,12 @@
       {
         "dataset": "31 cases",
         "gated": false,
+        "gated_by": "ORC-pass-built",
         "id": "ORC-pass",
         "label": "Case pass rate (all 30; not recorded or not built count as unmet)",
         "met": false,
         "not_gated_because": "includes cases for features of later stages not built yet",
+        "not_gated_kind": "feature_not_built",
         "stage1": true,
         "target": ">= 1.0",
         "value": 0.9355
@@ -2656,7 +2670,7 @@
       {
         "dataset": "P1-base",
         "id": "SIM",
-        "label": "Properties passed (SIM-1/2/3/6)",
+        "label": "Properties passed (SIM-1/2/3/6/11)",
         "met": true,
         "stage1": true,
         "target": ">= 1.0",
@@ -2767,5 +2781,5 @@
       }
     ]
   },
-  "timestamp_utc": "2026-10-14T16:28:12Z"
+  "timestamp_utc": "2026-10-17T09:26:18Z"
 }

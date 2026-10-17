@@ -2,7 +2,7 @@
 import type * as T from "./types";
 import { validate, type SchemaError } from "./validate";
 
-export const ROOT_TYPES = ["AgentResponse","ResponsePlan","Healthz","FeaturesPayload","ImportSummary","ForecastView","SimulationView","ProfileView","TransactionPage","CalculationView","AccountList","AccountView","DetectedFlows","CategoryList","CategoryCorrected","ImportHistory","HomeInsights","IncomeStreamView","ActivityFeed"] as const;
+export const ROOT_TYPES = ["AgentResponse","ResponsePlan","Healthz","FeaturesPayload","ImportSummary","ForecastView","SimulationView","ProfileView","TransactionPage","CalculationView","AccountList","AccountView","DetectedFlows","CategoryList","CategoryCorrected","ImportHistory","HomeInsights","IncomeStreamView","ActivityFeed","GoalList","GoalView"] as const;
 export const BLOCK_DEFS = ["Narrative","ClarifyingQuestion","FinancialMetricGroup","SpendingByCategory","SpendingOverTime","CashFlowForecastChart","ScenarioComparison","TransactionTable","RiskAssessment","InterventionCard","GoalProjection","EvidencePanel","AgentExecutionTimeline"] as const;
 
 export function isAgentResponse(value: unknown): value is T.AgentResponse {
@@ -136,6 +136,20 @@ export function isActivityFeed(value: unknown): value is T.ActivityFeed {
 }
 export function checkActivityFeed(value: unknown): SchemaError[] {
   return validate("ActivityFeed", value);
+}
+
+export function isGoalList(value: unknown): value is T.GoalList {
+  return validate("GoalList", value).length === 0;
+}
+export function checkGoalList(value: unknown): SchemaError[] {
+  return validate("GoalList", value);
+}
+
+export function isGoalView(value: unknown): value is T.GoalView {
+  return validate("GoalView", value).length === 0;
+}
+export function checkGoalView(value: unknown): SchemaError[] {
+  return validate("GoalView", value);
 }
 
 export function isNarrative(value: unknown): value is T.Narrative {

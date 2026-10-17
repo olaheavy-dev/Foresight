@@ -15,6 +15,7 @@ from backend.app.routers import (
     auth,
     engine,
     financial_data,
+    goals,
     home,
     imports,
     ledger,
@@ -101,6 +102,7 @@ def create_app() -> FastAPI:
         ask.router,
         home.router,
         activity.router,
+        goals.router,
     )
     for router in routers:
         app.include_router(router)

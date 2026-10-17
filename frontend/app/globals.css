@@ -776,3 +776,16 @@ button.um-item { width: 100%; border: 0; background: none; font: inherit; cursor
 .act-foot { display: flex; align-items: center; gap: var(--space-2); margin: 0; font-size: var(--font-size-xs); color: var(--color-text-secondary); }
 .act-foot svg { width: 14px; height: 14px; }
 @media (min-width: 768px) { .act-card { padding: var(--space-5) var(--space-6); } }
+
+/* Goals (Decision Lab): the add form, then one goal block per goal with its actions. */
+.goals { display: grid; gap: var(--space-4); margin-top: var(--space-6); }
+.goal-list { display: grid; gap: var(--space-4); }
+.goal-item { display: grid; gap: var(--space-2); }
+.goal-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.goal-problem h3, .goal-done h3 { margin: 0 0 var(--space-2); font-size: var(--font-size-md); }
+.goal-problem p { margin: 0 0 var(--space-1); }
+.goal-done { padding: var(--space-4); }
+.goal-done ul { margin: 0; padding-left: var(--space-5); color: var(--color-text-secondary); }
+@media (min-width: 768px) {
+  .goal-form .lab-fields { grid-template-columns: repeat(3, 1fr); }
+}
