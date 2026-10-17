@@ -440,3 +440,28 @@ def test_a_delay_of_an_earlier_payday_doesnt_push_a_later_closing_payday(base) -
     alone = horizon_covering(short, ScenarioSpec("t", base.currency, (buy,)))
     both = horizon_covering(short, ScenarioSpec("t", base.currency, (first_only, buy)))
     assert both == alone  # the 25 Mar payday still closes it
+
+
+def test_each_income_change_is_anchored_on_its_own_delayed_payday(base) -> None:  # type: ignore[no-untyped-def]
+    """#55 review: with a delay, an open-ended cut anchors on its first changed payday and a
+    bounded cut on its last, each measured on its own, not one choice for the group."""
+    from backend.finance_core.simulate import _shifted_income
+
+    short = dataclasses.replace(base, horizon_days=90)
+    stream = next(s for s in short.income_streams if s.payday_rule is not None)
+    year = short.as_of.year
+    delay = ScenarioModifier(type="income_delay", income_stream_key=stream.key, days=10)
+    open_cut = ScenarioModifier(
+        type="income_change_pct", income_stream_key=stream.key, pct=-10,
+        from_date=date(year, 11, 1),
+    )  # fmt: skip
+    bounded_cut = ScenarioModifier(
+        type="income_change_pct", income_stream_key=stream.key, pct=-20,
+        from_date=date(year, 12, 1), to_date=date(year + 1, 2, 15),
+    )  # fmt: skip
+    _, anchors = _shifted_income(
+        short, ScenarioSpec("t", base.currency, (delay, open_cut, bounded_cut))
+    )
+    # 28 Oct pay delayed to 9 Nov (7 Nov is a Saturday), after 1 Nov: the open cut's first.
+    # 28 Jan pay delayed to 8 Feb: the bounded cut's last.
+    assert anchors == [date(year, 11, 9), date(year + 1, 2, 8)]

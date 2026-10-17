@@ -286,38 +286,43 @@ def _apply(
     raise ScenarioError(f"unsupported modifier {mod.type!r}; supported: {sorted(SUPPORTED)}")
 
 
-def _shifted_income(
-    inputs: ForecastInputs, spec: ScenarioSpec
-) -> tuple[list[date], list[list[date]]]:
-    """Where paydays land once the what-if's income delays and changes apply, on one path over
-    the longest horizon: the simulated paydays, and per stream the dates of its changed ones."""
+def _shifted_income(inputs: ForecastInputs, spec: ScenarioSpec) -> tuple[list[date], list[date]]:
+    """Where paydays land once the what-if's income delays apply, on one path over the longest
+    horizon: the simulated paydays, and for each income change the date of its first changed
+    payday (its last when the change is bounded), each change measured on its own against the
+    delays alone, in the what-if's order (#55 review)."""
     wide = dataclasses.replace(inputs, horizon_days=MAX_HORIZON_DAYS, n_paths=1)
     prep = prepare(wide)
     index = {d: i for i, d in enumerate(prep.dates)}
-    flows = list(prep.flows)
-    for mod in spec.modifiers:
-        if mod.type in ("income_delay", "income_change_pct"):
-            flows = _apply(flows, mod, prep, index)
+    cap = inputs.as_of + timedelta(days=MAX_HORIZON_DAYS)
 
-    def by_stream(fs: list[Flow]) -> dict[str, list[Flow]]:
+    def run(mods: list[ScenarioModifier]) -> dict[str, list[Flow]]:
+        flows = list(prep.flows)
+        for mod in mods:
+            flows = _apply(flows, mod, prep, index)
         out: dict[str, list[Flow]] = {}
-        for f in sorted(fs, key=lambda f: f.day):
+        for f in sorted(flows, key=lambda f: f.day):
             if f.income_key is not None:
                 out.setdefault(f.income_key, []).append(f)
         return out
 
-    base, moved = by_stream(list(prep.flows)), by_stream(flows)
-    changed = [
-        [
+    delays = [m for m in spec.modifiers if m.type == "income_delay"]
+    delayed = run(delays)
+    paydays = sorted({prep.dates[f.day] for fs in delayed.values() for f in fs})
+    anchors: list[date] = []
+    for change in (m for m in spec.modifiers if m.type == "income_change_pct"):
+        moved = run([m for m in spec.modifiers if m is change or m.type == "income_delay"])
+        changed = sorted(
             prep.dates[m.day]
-            # strict=False: a delay can push a stream's last payday past the 180 days
-            for b, m in zip(base[k], moved.get(k, []), strict=False)
+            for k, fs in delayed.items()
+            # strict=False: zero-amount flows keep counts equal; a guard for odd inputs
+            for b, m in zip(fs, moved.get(k, []), strict=False)
             if m.amount_minor != b.amount_minor
-        ]
-        for k in base
-    ]
-    paydays = sorted({prep.dates[f.day] for f in flows if f.income_key is not None})
-    return paydays, changed
+        )
+        if changed:
+            bounded = change.to_date is not None and change.to_date < cap
+            anchors.append(changed[-1] if bounded else changed[0])
+    return paydays, anchors
 
 
 def latest_affected(inputs: ForecastInputs, spec: ScenarioSpec) -> date:
@@ -376,11 +381,10 @@ def latest_affected(inputs: ForecastInputs, spec: ScenarioSpec) -> date:
     income = [m for m in spec.modifiers if m.type == "income_change_pct"]
     if income and any(m.type == "income_delay" for m in spec.modifiers):
         # A delay in the same what-if moves the paydays an income change touches: use where
-        # they actually land (#55 review), the first changed one, or the last when every
-        # change is bounded.
-        _, changed = _shifted_income(inputs, spec)
-        bounded = all(m.to_date is not None and m.to_date < cap for m in income)
-        affected = max([affected, *((d[-1] if bounded else d[0]) for d in changed if d)])
+        # they actually land (#55 review), each change's first changed payday, or its last
+        # when that change is bounded.
+        _, anchors = _shifted_income(inputs, spec)
+        affected = max([affected, *anchors])
     return affected
 
 
