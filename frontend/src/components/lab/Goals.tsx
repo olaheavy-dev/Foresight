@@ -187,7 +187,11 @@ export function Goals({ currency, locale, timeZone }: { currency: string; locale
           Projecting your goals…
         </p>
       ) : active.length === 0 ? (
-        <p className="lab-note">No goals yet. Add one above to see how likely it is.</p>
+        <p className="lab-note">
+          {achieved.length
+            ? "No goals in progress. Add another above to see how likely it is."
+            : "No goals yet. Add one above to see how likely it is."}
+        </p>
       ) : null}
 
       {actionProblem ? (

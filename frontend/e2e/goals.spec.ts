@@ -43,6 +43,9 @@ test("a goal is projected on the forecast, then edited, achieved and archived", 
   await expect(page.getByRole("region", { name: "Trip home" })).toContainText("£900.00", { timeout: 20_000 });
   await page.getByRole("region", { name: "Trip home" }).getByRole("button", { name: "Mark achieved" }).click();
   await expect(page.getByText("Trip home: £900.00")).toBeVisible();
+  // Its only goal achieved: not "No goals yet" beside the Achieved list (#54 review).
+  await expect(page.getByText("No goals in progress.")).toBeVisible();
+  await expect(page.getByText("No goals yet.")).toHaveCount(0);
 
   await add.getByLabel("Goal").fill("Laptop");
   await add.getByLabel(/Amount/).fill("800");

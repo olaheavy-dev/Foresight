@@ -174,3 +174,16 @@ def test_concurrent_creates_never_pass_the_five_goal_cap(make_client: type[TestC
         assert codes == [201, 422]
         active = [g for g in _goals(alice)["goals"] if g["status"] == "active"]
         assert len(active) == 5
+
+
+def test_a_projection_records_the_forecast_engine_it_ran_on(make_client: type[TestClient]) -> None:
+    """#54 review: goals run on the forecast's paths, so the forecast engine version is part of
+    the projection's key; a forecast engine upgrade can't read back an old projection."""
+    from backend.finance_core.forecast.engine import ENGINE_VERSION
+
+    with make_client(create_app(), base_url=BASE) as alice:
+        demo(alice)
+        on = (date.today() + timedelta(days=60)).isoformat()
+        calc = _create(alice, name="Trip", target_minor=50_000, target_date=on)["calc_id"]
+        stored = alice.get(f"/api/calculations/{calc}").json()
+        assert stored["params"]["forecast_engine"] == ENGINE_VERSION

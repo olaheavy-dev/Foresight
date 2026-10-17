@@ -621,6 +621,8 @@ def run_goal_projection(
         **_params(ctx, inputs, window_days),
         "goal": spec,
         "prior": _model_params(prior, None)["prior"],
+        # Goals run on the forecast's paths: a new forecast engine is a new projection too.
+        "forecast_engine": ENGINE_VERSION,
     }
     want = to_jsonable(params)
     for row in ctx.calculations("goal_projection", content_hash(inputs)):
