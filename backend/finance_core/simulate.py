@@ -84,7 +84,6 @@ SIMULATOR_VERSION = "sim-2"
 # can't close by then is refused. With no projected payday, it shows this many days instead.
 SHOW_DAYS = 31
 MAX_HORIZON_DAYS = 180
-DELAY_SHIFT_DAYS = 4  # a delayed payday then moves to a working day: a weekend and a holiday
 
 
 class ScenarioError(ValueError):
@@ -287,6 +286,40 @@ def _apply(
     raise ScenarioError(f"unsupported modifier {mod.type!r}; supported: {sorted(SUPPORTED)}")
 
 
+def _shifted_income(
+    inputs: ForecastInputs, spec: ScenarioSpec
+) -> tuple[list[date], list[list[date]]]:
+    """Where paydays land once the what-if's income delays and changes apply, on one path over
+    the longest horizon: the simulated paydays, and per stream the dates of its changed ones."""
+    wide = dataclasses.replace(inputs, horizon_days=MAX_HORIZON_DAYS, n_paths=1)
+    prep = prepare(wide)
+    index = {d: i for i, d in enumerate(prep.dates)}
+    flows = list(prep.flows)
+    for mod in spec.modifiers:
+        if mod.type in ("income_delay", "income_change_pct"):
+            flows = _apply(flows, mod, prep, index)
+
+    def by_stream(fs: list[Flow]) -> dict[str, list[Flow]]:
+        out: dict[str, list[Flow]] = {}
+        for f in sorted(fs, key=lambda f: f.day):
+            if f.income_key is not None:
+                out.setdefault(f.income_key, []).append(f)
+        return out
+
+    base, moved = by_stream(list(prep.flows)), by_stream(flows)
+    changed = [
+        [
+            prep.dates[m.day]
+            # strict=False: a delay can push a stream's last payday past the 180 days
+            for b, m in zip(base[k], moved.get(k, []), strict=False)
+            if m.amount_minor != b.amount_minor
+        ]
+        for k in base
+    ]
+    paydays = sorted({prep.dates[f.day] for f in flows if f.income_key is not None})
+    return paydays, changed
+
+
 def latest_affected(inputs: ForecastInputs, spec: ScenarioSpec) -> date:
     """The latest date a what-if changes something that must sit in a reported pay-cycle low: a
     one-off's date, a split's last instalment, the first payment a recurring change or
@@ -340,14 +373,14 @@ def latest_affected(inputs: ForecastInputs, spec: ScenarioSpec) -> date:
         if mod.type == "split_outflow" and mod.instalments and mod.instalments > 1:
             *_, start = _series_dates(start, mod.cadence or "monthly", cap, mod.instalments)
         affected = max(affected, start)
-    income = tuple(m for m in spec.modifiers if m.type == "income_change_pct")
-    delays = [m.days for m in spec.modifiers if m.type == "income_delay" and m.days]
-    if income and delays:
-        # A delay in the same what-if can move the paydays an income change touches later than
-        # their rule says (#55 review): bound it by the longest delay plus a working-day shift.
-        changed = latest_affected(inputs, dataclasses.replace(spec, modifiers=income))
-        if changed > as_of:
-            affected = max(affected, changed + timedelta(days=max(delays) + DELAY_SHIFT_DAYS))
+    income = [m for m in spec.modifiers if m.type == "income_change_pct"]
+    if income and any(m.type == "income_delay" for m in spec.modifiers):
+        # A delay in the same what-if moves the paydays an income change touches: use where
+        # they actually land (#55 review), the first changed one, or the last when every
+        # change is bounded.
+        _, changed = _shifted_income(inputs, spec)
+        bounded = all(m.to_date is not None and m.to_date < cap for m in income)
+        affected = max([affected, *((d[-1] if bounded else d[0]) for d in changed if d)])
     return affected
 
 
@@ -373,10 +406,11 @@ def horizon_covering(inputs: ForecastInputs, spec: ScenarioSpec) -> int:
     closing = min(
         (p for r in rules for p in paydays_between(r, after, cap, inputs.holidays)), default=None
     )
-    delays = [m.days for m in spec.modifiers if m.type == "income_delay" and m.days]
-    if closing is not None and delays:
-        # The closing payday is delayed too: run past where it can land.
-        closing += timedelta(days=max(delays) + DELAY_SHIFT_DAYS)
+    if closing is not None and any(m.type == "income_delay" for m in spec.modifiers):
+        # The simulated paths' paydays are delayed: their cycle must close too.
+        paydays, _ = _shifted_income(inputs, spec)
+        moved = next((p for p in paydays if p > affected), None)
+        closing = None if moved is None else max(closing, moved)
     if closing is None or closing > cap:
         raise ScenarioError(
             f"the pay cycle after {affected} ends more than {MAX_HORIZON_DAYS} days after the "
