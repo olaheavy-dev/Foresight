@@ -269,3 +269,48 @@ def test_a_check_that_fails_to_queue_gives_its_use_back(
         with pytest.raises(RuntimeError):
             guest.post("/api/home/check", headers=HOME)
         assert sum(network_cap.allowance.counts.values()) == 0
+
+
+def test_setup_that_fails_before_launch_returns_the_reservation(
+    make_client: type[TestClient], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#59 review: if launching the run fails, no callback will ever give the use back or free
+    the run slot, so the request does it."""
+    from backend.app.routers import ask as ask_router
+
+    def broken(**kwargs: Any) -> None:
+        raise RuntimeError("thread could not start")
+
+    monkeypatch.setattr(ask_router, "_run_in_background", broken)
+    with make_client(create_app(), base_url=BASE) as guest:
+        ws = demo(guest)["workspace_id"]
+        thread = guest.post("/api/threads").json()["thread_id"]
+        body = {"text": "How does next month look?", "client_msg_id": "x"}
+        with pytest.raises(RuntimeError):
+            guest.post(f"/api/threads/{thread}/messages", json=body, headers=HOME)
+        assert sum(network_cap.allowance.counts.values()) == 0
+        assert ask_router.limits.active[ws] == 0
+
+
+def test_a_manual_check_the_worker_just_claimed_counts_as_counted(
+    make_client: type[TestClient],
+) -> None:
+    """#59 review: between the worker claiming a manual check (running) and creating its run,
+    another request joins it instead of counting a second time."""
+    from sqlalchemy import update
+
+    from backend.storage import models as m
+    from backend.storage.db import session_factory
+
+    with make_client(create_app(), base_url=BASE) as guest:
+        ws = demo(guest)["workspace_id"]
+        assert guest.post("/api/home/check", headers=HOME).status_code == 202
+        with session_factory(get_settings().database_url)() as db:  # the worker's claim
+            db.execute(
+                update(m.AnalysisJob)
+                .where(m.AnalysisJob.workspace_id == ws)
+                .values(status="running")
+            )
+            db.commit()
+        assert guest.post("/api/home/check", headers=HOME).status_code == 202
+        assert sum(network_cap.allowance.counts.values()) == 1

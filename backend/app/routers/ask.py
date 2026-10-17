@@ -327,9 +327,20 @@ def post_message(
     ):
         limits.release(ctx.workspace_id)  # admitted above, but no run will start
         raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, network_cap.REFUSED)
-    if not thread.title:
-        thread.title = text[:80]
-    ctx.session.commit()
+
+    def abandon() -> None:
+        """Setup failed before the run could launch: return what was reserved (#59 review)."""
+        if counted:
+            network_cap.allowance.give_back(request, "question")
+        limits.release(ctx.workspace_id)
+
+    try:
+        if not thread.title:
+            thread.title = text[:80]
+        ctx.session.commit()
+    except Exception:
+        abandon()
+        raise
 
     started = threading.Event()
     holder: dict[str, Any] = {}
@@ -356,18 +367,22 @@ def post_message(
 
     url = get_settings().database_url
     assert url  # db_session already refused requests without a database
-    _run_in_background(
-        database_url=url,
-        workspace_id=ctx.workspace_id,
-        thread_id=thread.id,
-        text=text,
-        client_msg_id=body.client_msg_id,
-        action=action,
-        mesh=mesh,
-        created=created,
-        failed=failed,
-        reused=reused,
-    )
+    try:
+        _run_in_background(
+            database_url=url,
+            workspace_id=ctx.workspace_id,
+            thread_id=thread.id,
+            text=text,
+            client_msg_id=body.client_msg_id,
+            action=action,
+            mesh=mesh,
+            created=created,
+            failed=failed,
+            reused=reused,
+        )
+    except Exception:  # the thread never started: nothing will release or give back
+        abandon()
+        raise
     started.wait(RUN_START_TIMEOUT_S)
     run_id = holder.get("run_id")
     if run_id is None:
