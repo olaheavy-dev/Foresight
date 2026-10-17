@@ -118,3 +118,14 @@ def test_a_missing_buffer_is_refused_rather_than_read_as_zero(base) -> None:  # 
         project_goal(dataclasses.replace(base, buffer_minor=None), _goal(base, 10_000))
     zero = project_goal(dataclasses.replace(base, buffer_minor=0), _goal(base, 10_000))
     assert zero.progress.p50 >= project_goal(base, _goal(base, 10_000)).progress.p50
+
+
+def test_a_goal_counts_only_whats_spare_after_earlier_goals(base) -> None:  # type: ignore[no-untyped-def]
+    """#54 review: residual goals share one pool, funded in date order, so cash set aside for
+    an earlier goal is never counted again: progress drops by exactly the amount reserved."""
+    rich = dataclasses.replace(base, starting_balance_minor=base.starting_balance_minor + 2_000_000)
+    alone = project_goal(rich, _goal(base, 100_000))
+    after = project_goal(rich, dataclasses.replace(_goal(base, 100_000), reserved_minor=50_000))
+    assert after.progress.p50 == alone.progress.p50 - 50_000
+    assert after.progress_now_minor == alone.progress_now_minor - 50_000
+    assert after.buffer_minor == alone.buffer_minor  # the buffer itself is unchanged

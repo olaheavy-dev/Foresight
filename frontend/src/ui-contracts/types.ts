@@ -2120,6 +2120,7 @@ export interface GoalView {
   name: string;
   problem?: string | null;
   projection?: GoalProjection | null;
+  reserved?: MoneyValue | null;
   status: "active" | "achieved" | "abandoned";
   target: MoneyValue;
   target_date: string;

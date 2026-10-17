@@ -82,6 +82,16 @@ for (const theme of THEMES) {
         .waitFor({ timeout: 20_000 });
       await page.getByRole("region", { name: "Trip home" }).scrollIntoViewIfNeeded();
       await capture(page, "lab-goal", s, theme);
+      // Two goals (17 Oct): the later one counts what the earlier leaves.
+      await addGoal.getByLabel("Goal").fill("Laptop");
+      await addGoal.getByLabel(/Amount/).fill("800");
+      await addGoal.getByRole("button", { name: "Add goal" }).click();
+      await page
+        .getByRole("region", { name: "Laptop" })
+        .getByText(/set aside for goals due earlier/)
+        .waitFor({ timeout: 20_000 });
+      await page.getByRole("region", { name: "Laptop" }).scrollIntoViewIfNeeded();
+      await capture(page, "lab-goals-shared", s, theme);
       // Income confirmation (R4) on Transactions › Recurring and income.
       await page.goto(`/transactions?tab=recurring&theme=${theme}`);
       await page.waitForLoadState("networkidle");

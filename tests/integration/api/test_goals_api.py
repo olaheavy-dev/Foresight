@@ -187,3 +187,39 @@ def test_a_projection_records_the_forecast_engine_it_ran_on(make_client: type[Te
         calc = _create(alice, name="Trip", target_minor=50_000, target_date=on)["calc_id"]
         stored = alice.get(f"/api/calculations/{calc}").json()
         assert stored["params"]["forecast_engine"] == ENGINE_VERSION
+
+
+def test_goals_due_later_count_what_earlier_ones_leave(make_client: type[TestClient]) -> None:
+    """#54 review: two goals can't both claim the same spare cash. The earlier-due goal (on a tie,
+    the earlier one made) is funded first; the later one shows what was set aside for it."""
+    with make_client(create_app(), base_url=BASE) as alice:
+        demo(alice)
+        on = (date.today() + timedelta(days=60)).isoformat()
+        first = _create(alice, name="Trip", target_minor=40_000, target_date=on)
+        second = _create(alice, name="Laptop", target_minor=30_000, target_date=on)
+        assert first["reserved"] is None
+        assert second["reserved"]["minor"] == 40_000
+        assert second["reserved"]["ref"] == f"{second['calc_id']}#goal.reserved_minor"
+        # Archiving the earlier goal frees its cash for the later one.
+        alice.patch(f"/api/goals/{first['goal_id']}", json={"status": "abandoned"})
+        (only,) = _goals(alice)["goals"]
+        assert only["reserved"] is None
+
+
+def test_a_goal_date_is_checked_against_the_profiles_today() -> None:
+    """#54 review: "today" is the profile's own, not the server's, so west of UTC near midnight
+    tomorrow isn't refused as past."""
+    from datetime import datetime
+    from types import SimpleNamespace
+    from zoneinfo import ZoneInfo
+
+    from fastapi import HTTPException
+
+    from backend.app.routers.goals import _check_date
+
+    tz = "Etc/GMT+12"  # UTC−12: often a day behind the server
+    ctx: Any = SimpleNamespace(workspace=SimpleNamespace(timezone=tz))
+    today = datetime.now(ZoneInfo(tz)).date()
+    _check_date(ctx, today + timedelta(days=1))  # tomorrow there: accepted
+    with pytest.raises(HTTPException):
+        _check_date(ctx, today)

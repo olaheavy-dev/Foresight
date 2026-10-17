@@ -1,13 +1,14 @@
 """Goal projection (docs/07 §6.7), `residual` funding: no money moves, and a path's progress is
 the cash above the buffer at the target month's pre-salary low,
 
-    progress[p] = max(0, pre_salary_low[p, target cycle] − buffer)
+    progress[p] = max(0, pre_salary_low[p, target cycle] − buffer − reserved)
 
 where the target cycle is the pay cycle containing the target date, measured from its payday (or
 tomorrow) up to the target date: every change before the goal's date counts, nothing after it
 does, and a target on the day before a payday measures exactly that cycle's pre-salary low. Paths
 are the forecast's own (same seed, prior and calibration), so a goal never disagrees with the
-forecast it sits beside.
+forecast it sits beside. `reserved` is the targets of active goals due earlier: residual goals
+share one pool, funded in date order, so spare cash is never counted for two goals (#54 review).
 
 Output: progress P10/P50/P90 at the target, `p_achieve` (the share of paths reaching the target),
 the band (`on_track` p ≥ 0.5, `at_risk` 0.25–0.5, `off_track` < 0.25), the shortfall
@@ -41,7 +42,7 @@ from backend.finance_core.forecast.prior import IrregularPrior
 from backend.finance_core.money import exponent
 from backend.finance_core.types import ForecastInputs, Quantiles
 
-ENGINE_VERSION = "goal-1.0.0"
+ENGINE_VERSION = "goal-1.1.0"  # 1.1: earlier goals set aside first (#54 review)
 MAX_HORIZON = 365
 CONFIDENT_DAYS = 90
 ITERATIONS = 20
@@ -59,6 +60,9 @@ class GoalSpec:
     currency: str
     target_minor: int
     target_date: date
+    # Residual goals share one pool of spare cash: those due earlier are set aside first, so
+    # this goal counts only what's spare above the buffer and their targets (docs/07 §6.7).
+    reserved_minor: int = 0
 
 
 @dataclass(frozen=True)
@@ -146,7 +150,11 @@ def project_goal(
     if goal.target_date not in set(prep.dates):
         raise GoalError("the goal's date is outside the forecast horizon")
     balances = calibrate_paths(balance_paths(prep, prep.flows), calibration)
+    if goal.reserved_minor < 0:
+        raise GoalError("the amount set aside for earlier goals can't be negative")
     buffer = int(inputs.buffer_minor)
+    # Spare for this goal starts above the buffer and what earlier goals have set aside.
+    floor = buffer + goal.reserved_minor
     lo, hi = _window(prep.dates, prep.paydays, goal.target_date)
 
     def progress_with(uplift: int) -> IntArray:
@@ -154,7 +162,7 @@ def project_goal(
         if uplift:
             days = np.arange(lo, hi + 1)
             window = window + uplift * (1 + (days - 1) // MONTH_DAYS)  # saved from tomorrow on
-        return np.asarray(np.maximum(0, window.min(axis=1) - buffer), dtype=np.int64)
+        return np.asarray(np.maximum(0, window.min(axis=1) - floor), dtype=np.int64)
 
     def reaches(uplift: int) -> bool:
         """On track with this monthly saving: p ≥ 0.5 and the P50 meets the target."""
@@ -171,14 +179,14 @@ def project_goal(
     first = next((p for p in prep.paydays if index.get(p, 0) > 1), None)
     next_hi = index[first] - 1 if first is not None else len(prep.dates) - 1
     next_low = balances[:, 1 : next_hi + 1].min(axis=1)
-    progress_now = max(0, int(quantile_minor(next_low, QUANTILES["p50"])) - buffer)
+    progress_now = max(0, int(quantile_minor(next_low, QUANTILES["p50"])) - floor)
 
     required: int | None = 0
     if p_achieve < 0.5 or quantiles.p50 < goal.target_minor:
         step = change_increment(goal.currency)
         # Saving this much every month lifts even the worst path's low past the buffer and the
         # target, so the answer lies in [0, top] whenever it exists.
-        top = goal.target_minor + buffer + max(0, -int(balances[:, lo : hi + 1].min()))
+        top = goal.target_minor + floor + max(0, -int(balances[:, lo : hi + 1].min()))
         if not reaches(top):
             required = None
         else:
@@ -210,7 +218,7 @@ def project_goal(
     lows = np.stack(
         [balances[:, a : e + 1].min(axis=1) for a, e in zip(starts, ends, strict=True)], 1
     )
-    above = np.maximum(0, lows - buffer)
+    above = np.maximum(0, lows - floor)
     return GoalResult(
         goal=goal,
         as_of=inputs.as_of,

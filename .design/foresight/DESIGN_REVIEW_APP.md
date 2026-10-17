@@ -142,3 +142,16 @@ Found and fixed in this review:
 Checked and kept: the goal block is the Workspace's own (one component, two places). The band badge uses the caution colour for at risk and off track. The required monthly change reads as a plain sentence ("£310.00 more a month would close the gap"). A goal more than 90 days out carries one quiet line about the wider range. Fields lock while the engine projects, as in the Lab.
 
 Could improve (open): goals sit below the what-if on one long page; a "Goals" view switch (`/lab?view=goals`, docs/00 §9) would let each be found directly. The Workspace doesn't answer about stored goals yet.
+
+## Goals sharing spare cash, reviewed 17 Oct 2026
+
+Captured by `e2e/app.screenshots.spec.ts` (`SCREENSHOTS=1`, real local stack) at 375, 768 and 1280 px, light and dark: `review-lab-goals-shared-*` (the demo with "Trip home", £1,500, and "Laptop", £800, both due in six months). All six have **0 axe violations and 0 horizontal overflow**.
+
+Journey: `e2e/goals.spec.ts` "two goals share what's spare". The later goal says what was set aside for the earlier one; archiving the earlier goal re-reads the list, and the note goes.
+
+Checked and kept:
+- The note is the Lab's quiet `lab-note` line under the goal block, like the lower-confidence line, so it explains without alarming.
+- The second goal's honest result (£0 likely, 0%, "Off track") reads clearly beside the first.
+- With only achieved goals, the empty state now says "No goals in progress", not "No goals yet".
+
+Could improve (open): letting the person choose the order goals are funded in, rather than by date.

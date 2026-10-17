@@ -613,7 +613,19 @@ def run_goal_projection(
         n_paths=n_paths,
         window_days=window_days,
     )
-    spec = GoalSpec(goal.id, goal.name, goal.currency, goal.target_minor, goal.target_date)
+    # Active residual goals share one pool, funded in date order (ties: the earlier goal, ids
+    # are time-ordered): those due first are set aside before this one (docs/07 §6.7).
+    reserved = sum(
+        g.target_minor
+        for g in ctx.all(m.Goal)
+        if g.id != goal.id
+        and g.status == "active"
+        and g.currency == goal.currency
+        and (g.target_date, g.id) < (goal.target_date, goal.id)
+    )
+    spec = GoalSpec(
+        goal.id, goal.name, goal.currency, goal.target_minor, goal.target_date, reserved
+    )
     prior = irregular_prior(inputs.currency)
     # The prior is part of the match, as for the forecast: a changed locale pack's prior must
     # not read back a projection computed with the old one (#54 review).

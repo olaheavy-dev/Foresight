@@ -88,3 +88,26 @@ test("goals that can't load say so", async ({ page }) => {
   await page.goto("/lab");
   await expect(page.getByRole("alert").filter({ hasText: "Your goals couldn’t load" })).toBeVisible();
 });
+
+test("two goals share what's spare: the later one counts what the earlier leaves (#54 review)", async ({ page }) => {
+  await openDemoLab(page);
+  const add = page.getByRole("form", { name: "Add goal" });
+  for (const [name, amount] of [
+    ["Trip home", "1500"],
+    ["Laptop", "800"],
+  ]) {
+    await add.getByLabel("Goal").fill(name);
+    await add.getByLabel(/Amount/).fill(amount);
+    await add.getByRole("button", { name: "Add goal" }).click();
+    await expect(page.getByRole("region", { name })).toContainText("Chance of reaching it", { timeout: 20_000 });
+  }
+  // Same date: the one made first is funded first, and the other says so.
+  const laptop = page.getByRole("region", { name: "Laptop" });
+  await expect(laptop).toContainText("After £1,500.00 set aside for goals due earlier", { timeout: 20_000 });
+  await expect(page.getByRole("region", { name: "Trip home" })).not.toContainText("set aside for goals");
+  await noSeriousA11yIssues(page);
+
+  // Archiving the earlier goal frees its cash: the other goal is read again.
+  await page.getByRole("region", { name: "Trip home" }).getByRole("button", { name: "Archive" }).click();
+  await expect(laptop).not.toContainText("set aside for goals", { timeout: 20_000 });
+});

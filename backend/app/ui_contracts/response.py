@@ -487,6 +487,9 @@ class GoalView(Contract):
     problem: str | None = None
     lower_confidence: bool = False  # the target is more than 90 days out
     calc_id: CalcId | None = None
+    # Set aside first for active goals due earlier (residual goals share one pool, docs/07
+    # §6.7); None when nothing is.
+    reserved: MoneyValue | None = None
 
 
 class GoalList(Contract):

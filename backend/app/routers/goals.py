@@ -10,8 +10,9 @@ there is nothing to make stale.
 from __future__ import annotations
 
 from collections.abc import Callable
-from datetime import date
+from datetime import date, datetime
 from typing import Any, TypeVar
+from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import select
@@ -49,7 +50,7 @@ def _money(minor: int, currency: str, locale: str, ref: str | None = None) -> An
     return money_value(MoneyAmount(amount_minor=minor, currency=currency), locale, "exact", ref)
 
 
-def _projection(ctx: WorkspaceContext, goal: m.Goal) -> tuple[GoalProjection, str, bool]:
+def _projection(ctx: WorkspaceContext, goal: m.Goal) -> tuple[GoalProjection, str, bool, int]:
     stored = run_goal_projection(ctx, goal)
     calc, r = stored.calculation.id, stored.result
     cur, loc = goal.currency, ctx.workspace.locale
@@ -100,7 +101,7 @@ def _projection(ctx: WorkspaceContext, goal: m.Goal) -> tuple[GoalProjection, st
             _money(required, cur, loc, f"{calc}#required_monthly_minor") if required else None
         ),
     )
-    return block, calc, bool(r["lower_confidence"])
+    return block, calc, bool(r["lower_confidence"]), int(r["goal"].get("reserved_minor") or 0)
 
 
 def _view(ctx: WorkspaceContext, goal: m.Goal) -> GoalView:
@@ -114,12 +115,22 @@ def _view(ctx: WorkspaceContext, goal: m.Goal) -> GoalView:
     if goal.status != "active":
         return GoalView(**view)
     try:
-        block, calc, lower = _projection(ctx, goal)
+        block, calc, lower, reserved = _projection(ctx, goal)
     except NoLedgerData:
         return GoalView(**view, problem="Import a statement first: a goal is projected on it.")
     except GoalError as exc:
         return GoalView(**view, problem=f"This goal can’t be projected: {exc}.")
-    return GoalView(**view, projection=block, calc_id=calc, lower_confidence=lower)
+    return GoalView(
+        **view,
+        projection=block,
+        calc_id=calc,
+        lower_confidence=lower,
+        reserved=(
+            _money(reserved, goal.currency, ctx.workspace.locale, f"{calc}#goal.reserved_minor")
+            if reserved
+            else None
+        ),
+    )
 
 
 def _goals(ctx: WorkspaceContext) -> list[m.Goal]:
@@ -139,8 +150,9 @@ def _writable(ctx: WorkspaceContext) -> None:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "This profile is read-only.")
 
 
-def _check_date(on: date) -> None:
-    if on <= date.today():
+def _check_date(ctx: WorkspaceContext, on: date) -> None:
+    # "Today" is the profile's, not the server's: west of UTC near midnight they differ.
+    if on <= datetime.now(ZoneInfo(ctx.workspace.timezone)).date():
         raise HTTPException(
             status.HTTP_422_UNPROCESSABLE_ENTITY, "A goal's date has to be in the future."
         )
@@ -186,7 +198,7 @@ def list_goals(ctx: Profile) -> GoalList:
 @router.post("", response_model=GoalView, status_code=status.HTTP_201_CREATED)
 def create_goal(ctx: Profile, body: GoalCreate) -> GoalView:
     _writable(ctx)
-    _check_date(body.target_date)
+    _check_date(ctx, body.target_date)
     _below_cap(ctx)
     goal = m.Goal(
         id=new_id("goal"),
@@ -219,7 +231,7 @@ def update_goal(ctx: Profile, goal_id: str, body: GoalUpdate) -> GoalView:
                   "target_date": goal.target_date.isoformat(), "status": goal.status}  # fmt: skip
         if "target_date" in sent and body.target_date is not None:
             if body.target_date != goal.target_date:
-                _check_date(body.target_date)
+                _check_date(ctx, body.target_date)
             goal.target_date = body.target_date
         if "name" in sent and body.name is not None:
             goal.name = body.name

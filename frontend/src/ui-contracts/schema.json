@@ -4230,6 +4230,17 @@
           ],
           "default": null
         },
+        "reserved": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MoneyValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "status": {
           "enum": [
             "active",

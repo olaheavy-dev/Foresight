@@ -130,13 +130,22 @@ export function Goals({ currency, locale, timeZone }: { currency: string; locale
         ? (all ?? []).filter((g) => g.goal_id !== goal.goal_id)
         : (all ?? []).map((g) => (g.goal_id === goal.goal_id ? goal : g)),
     );
+  // Goals share one pool of spare cash, funded in date order: a change to one moves what's set
+  // aside for the others, so every projection is read again (#54 review).
+  const refresh = () =>
+    void fetchGoals().then((list) => {
+      if (list) setGoals(list.goals);
+    });
 
   const reason = (outcome: GoalOutcome | null) =>
     !outcome ? "That couldn’t be saved just now. Please try again." : "error" in outcome ? outcome.error : null;
 
   const add = async (d: { name: string; targetMinor: number; targetDate: string }) => {
     const outcome = await createGoal(d);
-    if (outcome && "goal" in outcome) setGoals((all) => [...(all ?? []), outcome.goal]);
+    if (outcome && "goal" in outcome) {
+      setGoals((all) => [...(all ?? []), outcome.goal]);
+      refresh();
+    }
     return reason(outcome);
   };
 
@@ -145,6 +154,7 @@ export function Goals({ currency, locale, timeZone }: { currency: string; locale
     if (outcome && "goal" in outcome) {
       replace(outcome.goal);
       setEditing(null);
+      refresh();
     }
     return reason(outcome);
   };
@@ -152,8 +162,10 @@ export function Goals({ currency, locale, timeZone }: { currency: string; locale
   const setStatus = async (goal: GoalView, status: GoalView["status"]) => {
     setActionProblem(null);
     const outcome = await updateGoal(goal.goal_id, { status });
-    if (outcome && "goal" in outcome) replace(outcome.goal);
-    else setActionProblem(reason(outcome));
+    if (outcome && "goal" in outcome) {
+      replace(outcome.goal);
+      refresh();
+    } else setActionProblem(reason(outcome));
   };
 
   const env = { currency, locale, timeZone, checkedAdvice: false, ask: () => {} };
@@ -216,6 +228,12 @@ export function Goals({ currency, locale, timeZone }: { currency: string; locale
                   <p className="lab-note">{goal.problem}</p>
                 </article>
               )}
+              {goal.reserved ? (
+                <p className="lab-note">
+                  After {goal.reserved.display} set aside for goals due earlier: goals share what’s spare, in date
+                  order.
+                </p>
+              ) : null}
               {goal.lower_confidence ? (
                 <p className="lab-note">More than 90 days out: the range is wider and less certain.</p>
               ) : null}
