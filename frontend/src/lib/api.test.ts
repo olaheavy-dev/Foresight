@@ -421,6 +421,10 @@ describe("startProactiveCheck", () => {
   it("keeps the server's reason for a 429, so Home can say why (#59 review)", async () => {
     const detail = "Today’s guest allowance for your network is used.";
     expect(await startProactiveCheck({ ...base, fetchImpl: respond({ detail }, 429) })).toEqual({ refused: detail });
+    const used = "This profile has used today's proactive checks.";
+    expect(await startProactiveCheck({ ...base, fetchImpl: respond({ detail: used }, 409) })).toEqual({
+      refused: used,
+    });
     expect(await startProactiveCheck({ ...base, fetchImpl: respond({ detail: "x" }, 500) })).toBeNull();
   });
 });

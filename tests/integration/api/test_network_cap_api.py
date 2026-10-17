@@ -330,3 +330,34 @@ def test_a_check_finished_meanwhile_is_rechecked_before_counting(
         demo(guest)
         assert guest.post("/api/home/check", headers=HOME).status_code == 409
         assert sum(network_cap.allowance.counts.values()) == 0
+
+
+def test_a_check_during_an_imports_wait_runs_the_advice_it_paid_for(
+    make_client: type[TestClient], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#59 review: a guest presses Check while their import's job waits; the counted check joins
+    that job as a manual request (keeping its workflow), so the advice actually runs."""
+    from sqlalchemy import select
+
+    from backend.agents import runner
+    from backend.storage import models as m
+    from backend.storage.db import session_factory
+    from tests.integration.api.test_engine_api import P1_CSV, new_profile, upload
+
+    called: list[str] = []
+
+    def record(store: Any, **kwargs: Any) -> None:
+        called.append(f"{kwargs['workflow']}:{kwargs['event']}")
+        raise RuntimeError("stub: no model is called")
+
+    monkeypatch.setattr(runner, "run_workflow", record)
+    with make_client(create_app(), base_url=BASE) as guest:
+        ws = new_profile(guest)["workspace_id"]
+        upload(guest, P1_CSV)  # queues the import's job (debounced)
+        assert guest.post("/api/home/check", headers=HOME).status_code == 202
+        assert sum(network_cap.allowance.counts.values()) == 1
+        with session_factory(get_settings().database_url)() as db:
+            (job,) = db.scalars(select(m.AnalysisJob).where(m.AnalysisJob.workspace_id == ws))
+            assert (job.workflow, job.event) == ("ingestion", "manual_check")
+        proactive.drain(get_settings().database_url)
+        assert called == ["ingestion:manual_check"]  # ran, not skipped as manual_only

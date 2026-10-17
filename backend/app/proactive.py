@@ -76,7 +76,13 @@ def enqueue(ctx: WorkspaceContext, event: str, *, immediate: bool = False) -> No
             "data_version": stmt.excluded.data_version,
             "not_before": stmt.excluded.not_before,
             "workflow": case((keep_ingestion, table.c.workflow), else_=stmt.excluded.workflow),
-            "event": case((keep_ingestion, table.c.event), else_=stmt.excluded.event),
+            # A manual check joining a queued import keeps the import's workflow but becomes a
+            # manual request, so a guest's counted check runs its advice (#59 review).
+            "event": case(
+                (stmt.excluded.event == "manual_check", stmt.excluded.event),
+                (keep_ingestion, table.c.event),
+                else_=stmt.excluded.event,
+            ),
         },
     )
     ctx.session.execute(stmt)

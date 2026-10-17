@@ -436,15 +436,17 @@ export type CheckOutcome = HomeInsights | { refused: string };
 
 /**
  * Start a proactive check now (browser; counts against the profile's daily allowance and, for
- * guests, the network's). A 429 keeps the server's reason, so the page can say why (#59 review).
+ * guests, the network's). A 429 or 409 keeps the server's reason, so the page can say why (#59
+ * review).
  */
 export function startProactiveCheck(options: ApiOptions = {}): Promise<CheckOutcome | null> {
   return request<CheckOutcome>(
     "/api/home/check",
     (body, status) => {
       if (status === 200) return isHomeInsights(body) ? body : null;
+      // A limit (429) or the profile's day used / checks paused (409): a retry can't clear it.
       const detail = (body as { detail?: unknown } | null)?.detail;
-      return status === 429 && typeof detail === "string" ? { refused: detail } : null;
+      return (status === 429 || status === 409) && typeof detail === "string" ? { refused: detail } : null;
     },
     options,
     { method: "POST" },
