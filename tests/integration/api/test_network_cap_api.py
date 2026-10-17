@@ -347,7 +347,7 @@ def test_a_check_during_an_imports_wait_runs_the_advice_it_paid_for(
     called: list[str] = []
 
     def record(store: Any, **kwargs: Any) -> None:
-        called.append(f"{kwargs['workflow']}:{kwargs['event']}")
+        called.append(f"{store.ctx.workspace_id}:{kwargs['workflow']}:{kwargs['event']}")
         raise RuntimeError("stub: no model is called")
 
     monkeypatch.setattr(runner, "run_workflow", record)
@@ -359,5 +359,5 @@ def test_a_check_during_an_imports_wait_runs_the_advice_it_paid_for(
         with session_factory(get_settings().database_url)() as db:
             (job,) = db.scalars(select(m.AnalysisJob).where(m.AnalysisJob.workspace_id == ws))
             assert (job.workflow, job.event) == ("ingestion", "manual_check")
-        proactive.drain(get_settings().database_url)
-        assert called == ["ingestion:manual_check"]  # ran, not skipped as manual_only
+        proactive.drain(get_settings().database_url)  # other tests' due jobs run here too
+        assert [c for c in called if c.startswith(ws)] == [f"{ws}:ingestion:manual_check"]
