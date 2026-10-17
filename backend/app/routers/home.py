@@ -189,17 +189,17 @@ def check_now(request: Request, ctx: Profile) -> HomeInsights:
     ctx.session.execute(
         select(m.Workspace.id).where(m.Workspace.id == ctx.workspace_id).with_for_update()
     )
-    joins = proactive.manual_check_queued(ctx)
+    if proactive.manual_check_queued(ctx):
+        # Joins the profile's counted manual check (queued to run now, or just claimed by the
+        # worker); nothing new is queued, so no second workflow can run uncounted (#59 review).
+        ctx.session.commit()  # releases the row lock
+        return insights(ctx)
     # A guest's checks also count per network, which a fresh guest profile doesn't reset.
-    if (
-        not joins
-        and ctx.workspace.owner_user_id is None
-        and not network_cap.allowance.take(
-            request, "check", get_settings().guest_network_daily_checks
-        )
+    counted = ctx.workspace.owner_user_id is None
+    if counted and not network_cap.allowance.take(
+        request, "check", get_settings().guest_network_daily_checks
     ):
         raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, network_cap.REFUSED)
-    counted = not joins and ctx.workspace.owner_user_id is None
     try:
         proactive.enqueue(ctx, "manual_check", immediate=True)
         ctx.session.commit()

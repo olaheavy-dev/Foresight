@@ -297,7 +297,7 @@ def test_a_manual_check_the_worker_just_claimed_counts_as_counted(
 ) -> None:
     """#59 review: between the worker claiming a manual check (running) and creating its run,
     another request joins it instead of counting a second time."""
-    from sqlalchemy import update
+    from sqlalchemy import select, update
 
     from backend.storage import models as m
     from backend.storage.db import session_factory
@@ -314,3 +314,6 @@ def test_a_manual_check_the_worker_just_claimed_counts_as_counted(
             db.commit()
         assert guest.post("/api/home/check", headers=HOME).status_code == 202
         assert sum(network_cap.allowance.counts.values()) == 1
+        with session_factory(get_settings().database_url)() as db:  # and nothing new is queued
+            jobs = db.scalars(select(m.AnalysisJob.status).where(m.AnalysisJob.workspace_id == ws))
+            assert sorted(jobs) == ["running"]
