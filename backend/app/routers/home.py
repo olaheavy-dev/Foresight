@@ -183,12 +183,13 @@ def check_now(request: Request, ctx: Profile) -> HomeInsights:
         raise HTTPException(
             status.HTTP_409_CONFLICT, "This profile has used today's proactive checks."
         )
-    # One queued check per profile: a second request (another tab) while one waits joins it
-    # and counts nothing. The row lock keeps two such requests from both counting (#59 review).
+    # A second request (another tab) while this profile's manual check waits joins it and
+    # counts nothing; an automatic job queued by an edit becomes a manual check here, so that
+    # one counts (#59 review). The row lock keeps two requests from both counting.
     ctx.session.execute(
         select(m.Workspace.id).where(m.Workspace.id == ctx.workspace_id).with_for_update()
     )
-    joins = proactive.queued(ctx)  # still brought forward to run now below
+    joins = proactive.manual_check_queued(ctx)
     # A guest's checks also count per network, which a fresh guest profile doesn't reset.
     if (
         not joins

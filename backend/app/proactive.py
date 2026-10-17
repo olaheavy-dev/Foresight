@@ -82,10 +82,12 @@ def enqueue(ctx: WorkspaceContext, event: str, *, immediate: bool = False) -> No
     ctx.session.execute(stmt)
 
 
-def queued(ctx: WorkspaceContext) -> bool:
-    """Whether this profile already has a check waiting to run."""
+def manual_check_queued(ctx: WorkspaceContext) -> bool:
+    """Whether this profile already has a manual check waiting to run (one already counted)."""
     stmt = select(m.AnalysisJob.id).where(
-        m.AnalysisJob.workspace_id == ctx.workspace_id, m.AnalysisJob.status == "queued"
+        m.AnalysisJob.workspace_id == ctx.workspace_id,
+        m.AnalysisJob.status == "queued",
+        m.AnalysisJob.event == "manual_check",
     )
     return ctx.session.scalars(stmt.limit(1)).first() is not None
 

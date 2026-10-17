@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import threading
+import time
 from collections.abc import Iterator
 from typing import Any
 
@@ -189,3 +191,38 @@ def test_a_slow_start_isnt_given_back_but_a_failed_one_is(
         assert ask("failed") == 503  # failed to start: given back
         outcome["fail"] = False
         assert ask("after") == 503  # the use was there to take (then timed out again)
+
+        # A failure that arrives after the request stopped waiting is given back too, once.
+        network_cap.allowance.reset()
+        late = threading.Event()
+
+        def fails_late(**kwargs: Any) -> None:
+            def later() -> None:
+                late.wait(1)
+                kwargs["failed"](RuntimeError("could not start"))
+                ask_router.limits.release(kwargs["workspace_id"])
+
+            threading.Thread(target=later, daemon=True).start()
+
+        monkeypatch.setattr(ask_router, "_run_in_background", fails_late)
+        assert ask("late") == 503
+        late.set()
+        time.sleep(0.2)
+        outcome["fail"] = False
+        monkeypatch.setattr(ask_router, "_run_in_background", background)
+        assert ask("after-late") == 503  # not 429: the late failure gave the use back
+
+
+def test_a_check_that_promotes_an_edits_queued_job_counts(make_client: type[TestClient]) -> None:
+    """#59 review: an edit queues an automatic job; asking for a check turns it into a manual
+    (AI) check, so it counts, otherwise fresh guest profiles could bypass the daily cap."""
+    with (
+        make_client(create_app(), base_url=BASE) as guest,
+        make_client(create_app(), base_url=BASE) as neighbour,
+    ):
+        demo(guest)
+        demo(neighbour)
+        assert guest.patch("/api/session", json={"buffer_minor": 60_000}).status_code == 200
+        assert guest.post("/api/home/check", headers=HOME).status_code == 202
+        assert sum(network_cap.allowance.counts.values()) == 1  # counted
+        assert neighbour.post("/api/home/check", headers=NEIGHBOUR).status_code == 429

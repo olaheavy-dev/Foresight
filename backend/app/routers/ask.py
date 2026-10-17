@@ -337,6 +337,10 @@ def post_message(
 
     def failed(exc: BaseException) -> None:
         holder.setdefault("error", exc)
+        if counted and "run_id" not in holder:
+            # No run was created, whenever the failure came (even after the request gave up
+            # waiting): the use is given back here, once (#59 review).
+            network_cap.allowance.give_back(request, "question")
         started.set()
 
     url = get_settings().database_url
@@ -355,10 +359,8 @@ def post_message(
     started.wait(RUN_START_TIMEOUT_S)
     run_id = holder.get("run_id")
     if run_id is None:
-        if counted and "error" in holder:
-            # Given back only when the run failed to start, not when it's merely slow: a timed
-            # out start may still create its run and do the work (#59 review).
-            network_cap.allowance.give_back(request, "question")
+        # Not given back here: a slow start may still create its run; a failed one is given
+        # back by `failed` (#59 review).
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE, "The question couldn't be started. Try again."
         )
