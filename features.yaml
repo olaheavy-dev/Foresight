@@ -68,7 +68,7 @@ features:
   # Stage 3 — experiences, proactive delivery, goals
   briefing:
     stage: 3
-    title: Home (cached financial briefing and proactive insights)
+    title: Home morning briefing (a short summary of what changed)
     enabled: false
     suites: [E-ORC, E-UI]
   decision_lab:
@@ -88,9 +88,14 @@ features:
     suites: [E-ORC]
   goals:
     stage: 3
-    title: Goal tracking with adaptive advice
-    enabled: false
+    title: Goal tracking (save by a date, projected on the forecast)
+    enabled: true
     suites: [E-SIM, E-VER]
+  goal_advice:
+    stage: 3
+    title: Adaptive advice when a goal falls behind
+    enabled: false
+    suites: [E-VER, E-ORC]
   answer_cache:
     stage: 3
     title: Instant answers to repeated questions on unchanged data

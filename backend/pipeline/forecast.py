@@ -48,6 +48,8 @@ from backend.finance_core.forecast.engine import (
 )
 from backend.finance_core.forecast.prior import IrregularPrior, load_irregular_prior
 from backend.finance_core.forecast.prior import to_jsonable as prior_json
+from backend.finance_core.goals import ENGINE_VERSION as GOAL_ENGINE_VERSION
+from backend.finance_core.goals import GoalSpec, horizon_for, project_goal
 from backend.finance_core.importers.anchors import balance_on
 from backend.finance_core.simulate import SIMULATOR_VERSION, check_cycle_closes, simulate
 from backend.finance_core.types import (
@@ -259,9 +261,33 @@ def calibration_for(
 ) -> Calibration | None:
     """Fit the band calibration (docs/07 §6.8a) from raw forecasts at weekly origins in the last
     MAX_LOOKBACK_DAYS, scored on the ledger's balances up to `inputs.as_of`. None when the
-    balance is relative or there is too little history for a single past forecast."""
+    balance is relative or there is too little history for a single past forecast.
+
+    The fit doesn't depend on the horizon, so within one request it is computed once and reused
+    (listing five goals after a data change refitted it five times, #54 review)."""
     if inputs.starting_balance_provenance == "relative":
         return None
+    key = content_hash(
+        {
+            "data_version": ctx.workspace.data_version,
+            "as_of": inputs.as_of,
+            "window_days": window_days,
+            "prior": None if prior is None else prior_json(prior),
+        }
+    )
+    key = f"calibration:{key}"
+    if key not in ctx.memo:  # a WorkspaceContext lives for one request or one run
+        ctx.memo[key] = _fit_calibration(ctx, inputs, prior, window_days)
+    cached: Calibration | None = ctx.memo[key]
+    return cached
+
+
+def _fit_calibration(
+    ctx: WorkspaceContext,
+    inputs: ForecastInputs,
+    prior: IrregularPrior | None,
+    window_days: int,
+) -> Calibration | None:
     first_day = min((d for d, _c, _a in inputs.discretionary_history), default=inputs.as_of)
     earliest = max(
         inputs.as_of - timedelta(days=MAX_LOOKBACK_DAYS),
@@ -583,3 +609,73 @@ def verify(ctx: WorkspaceContext, calc_id: str) -> bool:
         stored, inputs, lambda i: build_forecast(i, prior=prior, calibration=calibration)
     )
     return same
+
+
+@dataclass(frozen=True)
+class StoredGoalProjection:
+    calculation: m.Calculation
+    result: dict[str, Any]  # the engine's GoalResult as stored JSON
+    created: bool
+
+
+def run_goal_projection(
+    ctx: WorkspaceContext,
+    goal: m.Goal,
+    *,
+    n_paths: int = 500,
+    window_days: int = HISTORY_DAYS,
+) -> StoredGoalProjection:
+    """A goal on the forecast's paths (docs/07 §6.7), stored as a `goal_projection` calculation.
+    The horizon runs through the goal's date (at least 90 days, at most 365); the seed, prior and
+    calibration are the forecast's (a horizon past 90 days draws its own paths, #58). The same
+    goal on the same data is read back, never recomputed (docs/05 A5)."""
+    as_of = forecast_inputs(ctx, n_paths=n_paths, window_days=window_days).as_of
+    inputs = forecast_inputs(
+        ctx,
+        as_of=as_of,
+        horizon_days=horizon_for(as_of, goal.target_date),
+        n_paths=n_paths,
+        window_days=window_days,
+    )
+    # Active residual goals share one pool, funded in date order (ties: the earlier goal, ids
+    # are time-ordered): those due first are set aside before this one (docs/07 §6.7).
+    reserved = sum(
+        g.target_minor
+        for g in ctx.all(m.Goal)
+        if g.id != goal.id
+        and g.status == "active"
+        and g.currency == goal.currency
+        and (g.target_date, g.id) < (goal.target_date, goal.id)
+    )
+    spec = GoalSpec(
+        goal.id, goal.name, goal.currency, goal.target_minor, goal.target_date, reserved
+    )
+    prior = irregular_prior(inputs.currency)
+    # The prior is part of the match, as for the forecast: a changed locale pack's prior must
+    # not read back a projection computed with the old one (#54 review).
+    params = {
+        **_params(ctx, inputs, window_days),
+        "goal": spec,
+        "prior": _model_params(prior, None)["prior"],
+        # Goals run on the forecast's paths: a new forecast engine is a new projection too.
+        "forecast_engine": ENGINE_VERSION,
+    }
+    want = to_jsonable(params)
+    for row in ctx.calculations("goal_projection", content_hash(inputs)):
+        if row.engine_version == GOAL_ENGINE_VERSION and all(
+            row.params.get(k) == v for k, v in want.items()
+        ):
+            return StoredGoalProjection(row, row.result, False)
+    started = time.perf_counter()
+    calibration = calibration_for(ctx, inputs, prior, window_days)
+    result = project_goal(inputs, spec, prior=prior, calibration=calibration)
+    elapsed = int((time.perf_counter() - started) * 1000)
+    rec = record(
+        "goal_projection",
+        inputs,
+        {**params, **_model_params(prior, calibration)},
+        result,
+        GOAL_ENGINE_VERSION,
+    )
+    row, created = _store(ctx, rec, elapsed)
+    return StoredGoalProjection(row, row.result, created)

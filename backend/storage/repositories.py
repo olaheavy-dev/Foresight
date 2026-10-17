@@ -11,7 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 from collections.abc import Iterable, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from typing import Any, TypeVar
 
@@ -62,6 +62,8 @@ REVIEW_BELOW = 0.85  # docs/01 F-06: the hybrid's trust threshold; below it a ro
 class WorkspaceContext:
     session: Session
     workspace_id: str
+    # Results worth reusing within this request or run only (e.g. the band calibration fit).
+    memo: dict[str, Any] = field(default_factory=dict, compare=False, repr=False)
 
     @classmethod
     def open(cls, session: Session, workspace_id: str) -> WorkspaceContext:

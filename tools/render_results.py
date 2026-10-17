@@ -49,6 +49,15 @@ def _met(summary: dict[str, Any], suite: str, *ids: str) -> str:
     return "—"
 
 
+def _sim_labels(props: Any) -> str:
+    """ "SIM-1/2/3/6/11" from the suite's property ids, in numeric order."""
+    if not isinstance(props, dict) or not props:
+        return "SIM"
+    nums = [str(k).removeprefix("SIM-") for k in props]
+    nums.sort(key=lambda n: (not n.isdigit(), int(n) if n.isdigit() else 0, n))
+    return "SIM-" + "/".join(nums)
+
+
 def _usd(value: Any) -> str:
     return "—" if value is None else f"${value:.4f}"
 
@@ -241,7 +250,9 @@ def render(summary: dict[str, Any]) -> str:
             f"{_gbp(dig(s, 'forecast', 'pinball_gbp_by_dataset', 'P1-base'))}"
         ),
         "E-SIM": (
-            f"properties SIM-1/2/3/6: {_f(dig(s, 'simulation', 'passed'))}/"
+            # The properties run, from the result itself (SIM-11 joined with goals).
+            f"properties {_sim_labels(dig(s, 'simulation', 'properties'))}: "
+            f"{_f(dig(s, 'simulation', 'passed'))}/"
             f"{_f(dig(s, 'simulation', 'total'))} cases passed"
         ),
     }
