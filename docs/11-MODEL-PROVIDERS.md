@@ -40,7 +40,7 @@ Simple answers cost about $0.0004–0.0006 on every option.
 - **Data residency:** no option keeps Claude inference in the UK or EU. Anthropic offers global or US inference. OpenAI offers EU processing, and UK data storage only, both with approval.
 - **Retention:** zero data retention needs approval from both providers. By default, neither trains on API data.
 - **Contract terms:** a UK fintech needs a data processing agreement that covers UK transfers (the UK IDTA or the UK addendum to the EU clauses). Check this for whichever provider or gateway is chosen. Mesh's DPA cites the EU clauses only, and Mesh publishes no SLA.
-- **New-account limits:** both providers start new accounts at a $500/month spend cap, enough for this stage.
+- **New-account limits (verify on the account before migrating):** Anthropic says new or limited-history organisations may start in an Evaluation tier below its standard Start tier ($500/month cap) ([rate limits](https://platform.claude.com/docs/en/api/rate-limits)). OpenAI sets limits per organisation and raises them at cumulative-spend thresholds ($5 / $100 / $500 …), so a fresh account's starting cap isn't fixed ([usage limits](https://help.openai.com/en/articles/6614457-troubleshooting-api-usage-and-spend-limits)). Record each account's observed limits, and raise them before switching live traffic.
 - **Startup credits:** Microsoft for Startups offers Azure credits, but reportedly not for Claude bought through Azure Marketplace. Anthropic's startup programme runs through partner VCs. OpenAI has no public self-serve programme.
 
 ## Not verified
