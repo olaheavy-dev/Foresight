@@ -114,6 +114,12 @@ def _view(ctx: WorkspaceContext, goal: m.Goal) -> GoalView:
     }
     if goal.status != "active":
         return GoalView(**view)
+    if goal.target_date <= _today(ctx):
+        # A projection for a date already past would still read as a chance (#54 review).
+        return GoalView(
+            **view,
+            problem="This goal's date has passed. Edit it to a new date, or mark it achieved.",
+        )
     try:
         block, calc, lower, reserved = _projection(ctx, goal)
     except NoLedgerData:
@@ -150,9 +156,13 @@ def _writable(ctx: WorkspaceContext) -> None:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "This profile is read-only.")
 
 
+def _today(ctx: WorkspaceContext) -> date:
+    """The profile's own today, not the server's: west of UTC near midnight they differ."""
+    return datetime.now(ZoneInfo(ctx.workspace.timezone)).date()
+
+
 def _check_date(ctx: WorkspaceContext, on: date) -> None:
-    # "Today" is the profile's, not the server's: west of UTC near midnight they differ.
-    if on <= datetime.now(ZoneInfo(ctx.workspace.timezone)).date():
+    if on <= _today(ctx):
         raise HTTPException(
             status.HTTP_422_UNPROCESSABLE_ENTITY, "A goal's date has to be in the future."
         )

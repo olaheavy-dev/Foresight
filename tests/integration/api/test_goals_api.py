@@ -223,3 +223,20 @@ def test_a_goal_date_is_checked_against_the_profiles_today() -> None:
     _check_date(ctx, today + timedelta(days=1))  # tomorrow there: accepted
     with pytest.raises(HTTPException):
         _check_date(ctx, today)
+
+
+def test_a_goal_past_its_date_isnt_shown_as_a_chance(
+    make_client: type[TestClient], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#54 review: once its date has passed (in the profile's own today), an active goal says so
+    and offers a new date or achieved, instead of a projection for a date already gone."""
+    from backend.app.routers import goals as router
+
+    with make_client(create_app(), base_url=BASE) as alice:
+        demo(alice)
+        on = date.today() + timedelta(days=30)
+        _create(alice, name="Trip", target_minor=50_000, target_date=on.isoformat())
+        monkeypatch.setattr(router, "_today", lambda ctx: on)  # the goal's day has come
+        (goal,) = _goals(alice)["goals"]
+        assert goal["projection"] is None
+        assert "date has passed" in goal["problem"]

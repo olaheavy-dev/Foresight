@@ -135,6 +135,9 @@ export function Goals({ currency, locale, timeZone }: { currency: string; locale
   const refresh = () =>
     void fetchGoals().then((list) => {
       if (list) setGoals(list.goals);
+      // Other goals' figures may now be out of date: say so rather than show them as current.
+      else
+        setActionProblem("Your other goals couldn’t be updated just now. Reload the page to see their latest figures.");
     });
 
   const reason = (outcome: GoalOutcome | null) =>

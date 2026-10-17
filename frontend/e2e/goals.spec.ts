@@ -111,3 +111,21 @@ test("two goals share what's spare: the later one counts what the earlier leaves
   await page.getByRole("region", { name: "Trip home" }).getByRole("button", { name: "Archive" }).click();
   await expect(laptop).not.toContainText("set aside for goals", { timeout: 20_000 });
 });
+
+test("when other goals can't be read again after a change, the Lab says so (#54 review)", async ({ page }) => {
+  await openDemoLab(page);
+  const add = page.getByRole("form", { name: "Add goal" });
+  await add.getByLabel("Goal").fill("Trip home");
+  await add.getByLabel(/Amount/).fill("1500");
+  await add.getByRole("button", { name: "Add goal" }).click();
+  const goal = page.getByRole("region", { name: "Trip home" });
+  await expect(goal).toContainText("Chance of reaching it", { timeout: 20_000 });
+
+  await page.route("**/api/goals", (route) =>
+    route.request().method() === "GET" ? route.fulfill({ status: 500, body: "{}" }) : route.continue(),
+  );
+  await goal.getByRole("button", { name: "Mark achieved" }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "couldn’t be updated just now" })).toBeVisible({
+    timeout: 20_000,
+  });
+});
