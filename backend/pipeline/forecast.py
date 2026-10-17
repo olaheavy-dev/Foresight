@@ -601,10 +601,10 @@ def run_goal_projection(
     n_paths: int = 500,
     window_days: int = HISTORY_DAYS,
 ) -> StoredGoalProjection:
-    """A goal on the forecast's own paths (docs/07 §6.7), stored as a `goal_projection`
-    calculation. The horizon runs through the goal's date (at least 90 days, at most 365); the
-    seed, prior and calibration are the forecast's, so the two never disagree. The same goal on
-    the same data is read back, never recomputed (docs/05 A5)."""
+    """A goal on the forecast's paths (docs/07 §6.7), stored as a `goal_projection` calculation.
+    The horizon runs through the goal's date (at least 90 days, at most 365); the seed, prior and
+    calibration are the forecast's (a horizon past 90 days draws its own paths, #58). The same
+    goal on the same data is read back, never recomputed (docs/05 A5)."""
     as_of = forecast_inputs(ctx, n_paths=n_paths, window_days=window_days).as_of
     inputs = forecast_inputs(
         ctx,

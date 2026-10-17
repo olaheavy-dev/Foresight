@@ -6,8 +6,9 @@ the cash above the buffer at the target month's pre-salary low,
 where the target cycle is the pay cycle containing the target date, measured from its payday (or
 tomorrow) up to the target date: every change before the goal's date counts, nothing after it
 does, and a target on the day before a payday measures exactly that cycle's pre-salary low. Paths
-are the forecast's own (same seed, prior and calibration), so a goal never disagrees with the
-forecast it sits beside. `reserved` is the targets of active goals due earlier: residual goals
+use the forecast's seed, prior and calibration; within 90 days they are the forecast's own. A
+target past 90 days runs a longer horizon, whose draws aren't yet prefix-stable with the 90-day
+forecast's (#58). `reserved` is the targets of active goals due earlier: residual goals
 share one pool, funded in date order, so spare cash is never counted for two goals (#54 review).
 
 Output: progress P10/P50/P90 at the target, `p_achieve` (the share of paths reaching the target),
