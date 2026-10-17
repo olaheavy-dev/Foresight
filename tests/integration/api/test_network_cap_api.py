@@ -395,3 +395,65 @@ def test_a_check_after_an_import_left_its_queue_still_runs_ingestion(
                 )
             ).one()
             assert (queued.workflow, queued.event) == ("ingestion", "manual_check")
+
+
+def test_an_edit_after_a_counted_check_keeps_it_a_manual_check(
+    make_client: type[TestClient],
+) -> None:
+    """#59 review: a counted check queued, then an edit coalesces into the same job; it stays a
+    manual check (with the newer data), so the advice it paid for still runs."""
+    from sqlalchemy import select
+
+    from backend.storage import models as m
+    from backend.storage.db import session_factory
+
+    with make_client(create_app(), base_url=BASE) as guest:
+        ws = demo(guest)["workspace_id"]
+        assert guest.post("/api/home/check", headers=HOME).status_code == 202
+        row = guest.get("/api/transactions?limit=1").json()["items"][0]
+        guest.post(
+            f"/api/transactions/{row['transaction_id']}/category",
+            json={"category_key": "groceries"},
+        )
+        with session_factory(get_settings().database_url)() as db:
+            (job,) = db.scalars(select(m.AnalysisJob).where(m.AnalysisJob.workspace_id == ws))
+            assert job.event == "manual_check"
+
+
+def test_a_check_for_newer_data_doesnt_join_a_running_one_for_older(
+    make_client: type[TestClient], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#59 review: a manual check running on older data doesn't cover a request after an edit;
+    that request counts and queues a manual check of the latest data."""
+    from sqlalchemy import select, update
+
+    from backend.storage import models as m
+    from backend.storage.db import session_factory
+
+    monkeypatch.setenv("GUEST_NETWORK_DAILY_CHECKS", "3")
+    get_settings.cache_clear()
+
+    with make_client(create_app(), base_url=BASE) as guest:
+        ws = demo(guest)["workspace_id"]
+        assert guest.post("/api/home/check", headers=HOME).status_code == 202
+        with session_factory(get_settings().database_url)() as db:  # the worker claims it
+            db.execute(
+                update(m.AnalysisJob)
+                .where(m.AnalysisJob.workspace_id == ws)
+                .values(status="running")
+            )
+            db.commit()
+        row = guest.get("/api/transactions?limit=1").json()["items"][0]
+        guest.post(
+            f"/api/transactions/{row['transaction_id']}/category",
+            json={"category_key": "groceries"},
+        )
+        assert guest.post("/api/home/check", headers=HOME).status_code == 202
+        assert sum(network_cap.allowance.counts.values()) == 2
+        with session_factory(get_settings().database_url)() as db:
+            queued = db.scalars(
+                select(m.AnalysisJob).where(
+                    m.AnalysisJob.workspace_id == ws, m.AnalysisJob.status == "queued"
+                )
+            ).one()
+            assert queued.event == "manual_check"

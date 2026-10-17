@@ -81,8 +81,11 @@ def enqueue(
             "workflow": case((keep_ingestion, table.c.workflow), else_=stmt.excluded.workflow),
             # A manual check joining a queued import keeps the import's workflow but becomes a
             # manual request, so a guest's counted check runs its advice (#59 review).
+            # A manual check, joining or joined, stays one: a counted check isn't turned back
+            # into an automatic event by a later edit (#59 review).
             "event": case(
                 (stmt.excluded.event == "manual_check", stmt.excluded.event),
+                (table.c.event == "manual_check", table.c.event),
                 (keep_ingestion, table.c.event),
                 else_=stmt.excluded.event,
             ),
@@ -93,12 +96,14 @@ def enqueue(
 
 def manual_check_queued(ctx: WorkspaceContext) -> bool:
     """Whether this profile already has a manual check waiting or just claimed (one already
-    counted): between the worker's claim and its run being created, a running job counts too
+    counted) for its current data: between the worker's claim and its run being created, a
+    running job counts too; one for older data doesn't, so the latest data is still checked
     (#59 review)."""
     stmt = select(m.AnalysisJob.id).where(
         m.AnalysisJob.workspace_id == ctx.workspace_id,
         m.AnalysisJob.status.in_(("queued", "running")),
         m.AnalysisJob.event == "manual_check",
+        m.AnalysisJob.data_version == int(ctx.workspace.data_version or 0),
     )
     return ctx.session.scalars(stmt.limit(1)).first() is not None
 
