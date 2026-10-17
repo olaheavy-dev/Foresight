@@ -51,6 +51,12 @@ class Settings(BaseSettings):
     # Guests' AI work per network per UTC day (backend/app/network_cap.py); 0 disables a cap.
     guest_network_daily_questions: int = 20
     guest_network_daily_checks: int = 3
+    # Where the visitor's address comes from behind a public edge (a CDN in front of the proxy):
+    # a header the edge sets and the origin only accepts from it (e.g. CF-Connecting-IP), and/or
+    # trusted proxy ranges skipped when reading X-Forwarded-For from the right (comma-separated
+    # CIDRs). Unset: the first public X-Forwarded-For hop from the right, as the proxy wrote it.
+    client_ip_header: str = ""
+    trusted_proxy_cidrs: str = ""
 
     database_url: str = ""
     # Baked into the image at build time (backend/Dockerfile). Deliberately a name that no

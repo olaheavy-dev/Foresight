@@ -97,3 +97,44 @@ def test_a_signed_in_profile_isnt_counted_against_the_guest_allowance(
         assert guest.post("/api/home/check", headers=HOME).status_code == 202
         assert another_guest.post("/api/home/check", headers=NEIGHBOUR).status_code == 429
         assert member.post("/api/home/check", headers=NEIGHBOUR).status_code == 202
+
+
+def test_only_an_admitted_question_counts_and_a_refusal_frees_its_slot(
+    make_client: type[TestClient], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#59 review: a question the profile's own rate limit refuses doesn't use up the network's
+    day, and a network refusal doesn't leave the profile's run slot taken."""
+    from backend.app.routers import ask as ask_router
+
+    monkeypatch.setenv("GUEST_NETWORK_DAILY_QUESTIONS", "1")
+    get_settings.cache_clear()
+    app = create_app()
+    app.dependency_overrides[ask_router.get_mesh] = lambda: None
+    real_admit = ask_router.limits.admit
+    refusals = iter(["Too many questions in a short time. Please wait a few minutes."])
+
+    def admit_once_refused(workspace_id: str, now: Any) -> str | None:
+        return next(refusals, None) or real_admit(workspace_id, now)
+
+    monkeypatch.setattr(ask_router.limits, "admit", admit_once_refused)
+    with (
+        make_client(app, base_url=BASE) as first,
+        make_client(app, base_url=BASE) as second,
+    ):
+        for client in (first, second):
+            demo(client)
+
+        def ask(client: TestClient, msg: str) -> Any:
+            thread = client.post("/api/threads").json()["thread_id"]
+            return client.post(
+                f"/api/threads/{thread}/messages",
+                json={"text": "How does next month look?", "client_msg_id": msg},
+                headers=HOME,
+            )
+
+        assert ask(first, "a").status_code == 429  # the profile's rate limit
+        assert ask(first, "b").status_code == 202  # the network's one question is still there
+        refused = ask(second, "c")
+        assert refused.status_code == 429  # now the network's day is used
+        ws = second.get("/api/session").json()["workspace_id"]
+        assert ask_router.limits.active[ws] == 0  # its admitted slot was released

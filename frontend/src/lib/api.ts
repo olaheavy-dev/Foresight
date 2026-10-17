@@ -432,11 +432,23 @@ export function fetchHomeInsights(options: ApiOptions = {}): Promise<HomeInsight
   return request("/api/home/insights", okAnd(isHomeInsights), options);
 }
 
-/** Start a proactive check now (browser; counts against the profile's daily allowance). */
-export function startProactiveCheck(options: ApiOptions = {}): Promise<HomeInsights | null> {
-  return request("/api/home/check", (body, status) => (status === 200 && isHomeInsights(body) ? body : null), options, {
-    method: "POST",
-  });
+export type CheckOutcome = HomeInsights | { refused: string };
+
+/**
+ * Start a proactive check now (browser; counts against the profile's daily allowance and, for
+ * guests, the network's). A 429 keeps the server's reason, so the page can say why (#59 review).
+ */
+export function startProactiveCheck(options: ApiOptions = {}): Promise<CheckOutcome | null> {
+  return request<CheckOutcome>(
+    "/api/home/check",
+    (body, status) => {
+      if (status === 200) return isHomeInsights(body) ? body : null;
+      const detail = (body as { detail?: unknown } | null)?.detail;
+      return status === 429 && typeof detail === "string" ? { refused: detail } : null;
+    },
+    options,
+    { method: "POST" },
+  );
 }
 
 export type SimulationOutcome = { view: SimulationView } | { error: string };

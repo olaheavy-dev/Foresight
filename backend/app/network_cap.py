@@ -5,12 +5,14 @@ guest profile, so on their own they let one network spend the whole day's Mesh b
 questions and manual proactive checks are therefore also counted per network per UTC day.
 Signed-in Google accounts keep only the per-profile limits.
 
-The network is the visitor's address as the edge proxy saw it: `X-Forwarded-For` read from the
-right, skipping private, loopback and link-local hops (the containers between Caddy and the
-API), so the first public address is the one Caddy wrote. Caddy replaces any `X-Forwarded-For`
-a client sends, so the value can't be spoofed through it. IPv4 is grouped by /24 and IPv6 by
-/48, so one household or office counts once. No address is stored: only an HMAC of the day and
-the network, kept in memory, which forgets everything at the end of the day or on a restart.
+The network is the visitor's address as the edge saw it: `X-Forwarded-For` read from the right,
+skipping private, loopback and link-local hops (the containers between the proxy and the API)
+and any configured trusted proxies, so the first public address is the one the proxy wrote; the
+proxy replaces any `X-Forwarded-For` a client sends. Behind a CDN, `CLIENT_IP_HEADER` names the
+header the CDN sets instead (the origin must accept traffic from the CDN alone). IPv4 is grouped
+by /24 and IPv6 by /48, so one household or office counts once. No address is stored: only an
+HMAC of the day and the network, kept in memory, which forgets everything at the end of the day
+or on a restart.
 When no public address is found (local development, a misconfigured proxy), nothing is counted:
 a mistake here can never lock out every visitor at once.
 """
@@ -31,7 +33,16 @@ from backend.settings import get_settings
 
 
 def client_network(request: Request) -> str | None:
-    """The visitor's network (an IPv4 /24 or IPv6 /48), or None when none is public."""
+    """The visitor's network (an IPv4 /24 or IPv6 /48), or None when none is public.
+
+    With `CLIENT_IP_HEADER` set (a CDN in front of the proxy, e.g. CF-Connecting-IP), that
+    header names the visitor. Otherwise `X-Forwarded-For` is read from the right, skipping
+    private hops and any `TRUSTED_PROXY_CIDRS`, so a public CDN or proxy is never taken for the
+    visitor and doesn't make everyone behind it share one allowance (#59 review)."""
+    settings = get_settings()
+    if settings.client_ip_header:
+        return _network(request.headers.get(settings.client_ip_header, "").strip())
+    trusted = _trusted(settings.trusted_proxy_cidrs)
     hops = [h.strip() for h in request.headers.get("x-forwarded-for", "").split(",")]
     if request.client is not None:
         hops.append(request.client.host)
@@ -40,11 +51,29 @@ def client_network(request: Request) -> str | None:
             ip = ipaddress.ip_address(raw)
         except ValueError:
             continue
-        if not ip.is_global:
-            continue  # a container hop (or a private network) between the edge and the API
-        prefix = 24 if ip.version == 4 else 48
-        return str(ipaddress.ip_network(f"{ip}/{prefix}", strict=False))
+        if not ip.is_global or any(ip in net for net in trusted):
+            continue  # a container hop, a private network, or a trusted proxy
+        return _network(raw)
     return None
+
+
+def _network(raw: str) -> str | None:
+    try:
+        ip = ipaddress.ip_address(raw)
+    except ValueError:
+        return None
+    if not ip.is_global:
+        return None
+    prefix = 24 if ip.version == 4 else 48
+    return str(ipaddress.ip_network(f"{ip}/{prefix}", strict=False))
+
+
+def _trusted(cidrs: str) -> list[ipaddress.IPv4Network | ipaddress.IPv6Network]:
+    out = []
+    for part in cidrs.split(","):
+        if part.strip():
+            out.append(ipaddress.ip_network(part.strip(), strict=False))
+    return out
 
 
 @dataclass
@@ -73,6 +102,18 @@ class NetworkAllowance:
                 return False
             self.counts[key] += 1
             return True
+
+    def give_back(self, request: Request, kind: str, now: datetime | None = None) -> None:
+        """Return one use counted today for work that never started (a run that failed to
+        start), so it doesn't use up the network's day."""
+        network = client_network(request)
+        if network is None:
+            return
+        today = (now or datetime.now(timezone.utc)).date()
+        with self.lock:
+            key = self._key(network, kind, today)
+            if self.day == today and self.counts.get(key, 0) > 0:
+                self.counts[key] -= 1
 
     def reset(self) -> None:
         with self.lock:

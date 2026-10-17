@@ -1,4 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { vi } from "vitest";
+
+import * as api from "@/lib/api";
 
 import type { HomeInsights } from "@/ui-contracts/types";
 
@@ -55,5 +58,17 @@ describe("ProactiveInsights", () => {
       />,
     );
     expect(screen.getByText(/Your data changed since the last check/)).toBeInTheDocument();
+  });
+
+  it("says why a refused check can't run and offers no retry (#59 review)", async () => {
+    const reason =
+      "Today’s guest allowance for your network is used. Sign in with Google to keep going, or come back tomorrow.";
+    const spy = vi.spyOn(api, "startProactiveCheck").mockResolvedValue({ refused: reason });
+    render(<ProactiveInsights initial={{ ...base, can_check: true }} demo {...env} />);
+    fireEvent.click(screen.getByRole("button", { name: "Run the proactive check" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent(reason);
+    expect(screen.queryByRole("button", { name: /proactive check/ })).not.toBeInTheDocument();
+    expect(screen.queryByText(/Please try again/)).not.toBeInTheDocument();
+    spy.mockRestore();
   });
 });

@@ -313,14 +313,17 @@ def post_message(
         # A retried POST returns the run already started (docs/05 §6.4).
         return RunAccepted(run_id=existing.run_id, thread_id=thread.id, reused=True)
     text, action = _question(body)
-    # A guest's questions also count per network, which a fresh guest profile doesn't reset.
-    if ctx.workspace.owner_user_id is None and not network_cap.allowance.take(
-        request, "question", get_settings().guest_network_daily_questions
-    ):
-        raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, network_cap.REFUSED)
     refusal = limits.admit(ctx.workspace_id, datetime.now(timezone.utc))
     if refusal is not None:
         raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, refusal)
+    # A guest's questions also count per network, which a fresh guest profile doesn't reset;
+    # only an admitted question counts, and one that never starts is given back (#59 review).
+    counted = ctx.workspace.owner_user_id is None
+    if counted and not network_cap.allowance.take(
+        request, "question", get_settings().guest_network_daily_questions
+    ):
+        limits.release(ctx.workspace_id)  # admitted above, but no run will start
+        raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, network_cap.REFUSED)
     if not thread.title:
         thread.title = text[:80]
     ctx.session.commit()
@@ -352,6 +355,8 @@ def post_message(
     started.wait(RUN_START_TIMEOUT_S)
     run_id = holder.get("run_id")
     if run_id is None:
+        if counted:
+            network_cap.allowance.give_back(request, "question")
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE, "The question couldn't be started. Try again."
         )

@@ -50,3 +50,40 @@ def test_the_cap_counts_per_network_and_kind_and_forgets_at_the_end_of_the_day()
     assert cap.take(home, "check", 2, day)  # each kind has its own count
     assert cap.take(home, "question", 2, datetime(2026, 10, 18, 0, 1, tzinfo=timezone.utc))
     assert all("81.2.69" not in key for key in cap.counts)  # no address is kept
+
+
+def test_behind_a_cdn_the_edges_header_or_trusted_ranges_name_the_visitor(
+    monkeypatch: Any,
+) -> None:
+    """#59 review: behind a public CDN the rightmost public hop is the CDN, which would make
+    everyone behind it share one allowance. A configured header, or trusted proxy ranges,
+    name the visitor instead."""
+    from backend.settings import get_settings
+
+    cdn_edge = "104.16.0.10"  # a public CDN address in front of the proxy
+    chain = f"81.2.69.160, {cdn_edge}"
+    assert _net(chain) == "104.16.0.0/24"  # unconfigured: the CDN is taken for the visitor
+
+    monkeypatch.setenv("TRUSTED_PROXY_CIDRS", "104.16.0.0/13, 2400:cb00::/32")
+    get_settings.cache_clear()
+    assert _net(chain) == "81.2.69.0/24"
+
+    monkeypatch.delenv("TRUSTED_PROXY_CIDRS")
+    monkeypatch.setenv("CLIENT_IP_HEADER", "CF-Connecting-IP")
+    get_settings.cache_clear()
+    req: Any = _Req(chain)
+    req.headers["CF-Connecting-IP"] = "81.2.69.161"
+    assert client_network(req) == "81.2.69.0/24"
+    req.headers["CF-Connecting-IP"] = "10.0.0.1"
+    assert client_network(req) is None  # a private value counts nothing
+    get_settings.cache_clear()
+
+
+def test_a_use_that_never_started_is_given_back() -> None:
+    cap = NetworkAllowance()
+    req: Any = _Req("81.2.69.160")
+    now = datetime(2026, 10, 17, 12, tzinfo=timezone.utc)
+    assert cap.take(req, "question", 1, now=now)
+    assert not cap.take(req, "question", 1, now=now)
+    cap.give_back(req, "question", now=now)  # the run failed to start
+    assert cap.take(req, "question", 1, now=now)
