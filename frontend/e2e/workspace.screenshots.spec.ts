@@ -81,6 +81,27 @@ for (const theme of THEMES) {
 }
 
 for (const theme of THEMES) {
+  for (const s of SIZES) {
+    test(`evidence chain · ${s.width} ${theme}`, async ({ page }) => {
+      await open(page, s, theme);
+      await ask(page, "Can I afford a trip in December?");
+      await expect(page.getByRole("heading", { level: 1, name: /27 November payday/ })).toBeVisible({
+        timeout: 20_000,
+      });
+      await page.locator("article.rec").first().locator(".checked-note").getByRole("button").click();
+      await expect(page.getByRole("dialog", { name: "Check by the Verifier" })).toBeVisible();
+      await page.waitForTimeout(300);
+      await shot(page, file("verifier-drawer", s, theme));
+      await page.keyboard.press("Escape");
+      await page.getByRole("tab", { name: "How it was checked" }).click();
+      await page.getByText("monzo.csv").scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
+      await shot(page, file("evidence-chain", s, theme));
+    });
+  }
+}
+
+for (const theme of THEMES) {
   for (const s of [SIZES[0], SIZES[3]]) {
     test(`AI paused · ${s.width} ${theme}`, async ({ page }) => {
       await page.request.post(`${MOCK}/__mock/ai-status`, { data: { status: "unavailable" } });

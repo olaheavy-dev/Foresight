@@ -7,9 +7,11 @@ one exists. Money is formatted on the server; dates use the en-GB/en-IN short fo
 from __future__ import annotations
 
 import math
+import re
 from collections import defaultdict
 from collections.abc import Sequence
 from datetime import date, timedelta
+from typing import Any
 
 from backend.app.ui_contracts.blocks import (
     MAX_POINTS,
@@ -343,3 +345,67 @@ def forecast_accounts(ctx: WorkspaceContext) -> list[str]:
         for a in ctx.all(m.Account)
         if a.include_in_forecast and a.tracked and a.currency == home
     ]
+
+
+_PLACEHOLDER = re.compile(r"\{\{\s*(calc_[0-9a-zA-Z]+)#([a-z_]+)\|([a-z_]+)\s*\}\}")
+
+
+def finding_text(text: str, ctx: WorkspaceContext) -> str | None:
+    """Fill each `{{calc_…#path|format}}` from the stored calculation; None if any can't be
+    (a finding is then left out rather than shown with a gap or a guessed number)."""
+    missing = False
+
+    def one(match: re.Match[str]) -> str:
+        nonlocal missing
+        calc_id, path, fmt = match.groups()
+        calc = ctx.calculation(calc_id)
+        result: dict[str, Any] = calc.result if calc is not None else {}
+        value = result.get(path)
+        if value is None:
+            missing = True
+            return ""
+        if fmt == "money":
+            currency = str(result.get("currency") or ctx.workspace.home_currency)
+            amount = MoneyAmount(amount_minor=int(value), currency=currency)
+            return money_value(amount, ctx.workspace.locale, "rounded").display
+        if fmt == "pct_change":
+            return f"{round(abs(float(value)) * 100)}%"
+        if fmt == "count":
+            return str(int(value))
+        if fmt == "date":
+            return short_date(date.fromisoformat(str(value)))
+        missing = True
+        return ""
+
+    filled = _PLACEHOLDER.sub(one, text)
+    return None if missing or "{{" in filled else filled
+
+
+def finding_link(query: dict[str, Any]) -> str | None:
+    """Where a finding's transactions are listed (Home, the Evidence drawer)."""
+    if query.get("category"):
+        return f"/transactions?category={query['category']}"
+    if query.get("obligation_key") or query.get("obligation_keys"):
+        return "/transactions?tab=recurring"
+    return None
+
+
+def finding_transactions(ctx: WorkspaceContext, query: dict[str, Any]) -> list[m.Transaction]:
+    """The transactions a finding counts (its `txn_query`): a category over a window, or the
+    payments of one or more recurring bills. The Evidence drawer shows these as its source."""
+    keys = {*(query.get("obligation_keys") or []), *filter(None, [query.get("obligation_key")])}
+    if keys:
+        ids = {i for o in ctx.all(m.RecurringObligation) if o.key in keys for i in o.member_ids}
+        return [t for t in ctx.all(m.Transaction) if t.id in ids]
+    if query.get("category") and query.get("from") and query.get("to"):
+        latest = ctx.latest_categorisations()
+        start, end = date.fromisoformat(query["from"]), date.fromisoformat(query["to"])
+        return [
+            t
+            for t in ctx.all(m.Transaction)
+            if t.status == "active"
+            and start <= t.posted_on <= end
+            and t.id in latest
+            and latest[t.id].category_key == query["category"]
+        ]
+    return []

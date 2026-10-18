@@ -39,3 +39,25 @@ test("Activity lists an import and a payee-wide correction in words, with the au
   await expect(page.getByText("Traces stay on Foresight’s own servers")).toBeVisible();
   await noSeriousA11yIssues(page);
 });
+
+test("a link to one run opens its trace in place (Home's 'How it was checked', mandatory F)", async ({ page }) => {
+  await page.context().clearCookies();
+  await page.goto("/");
+  await page.getByRole("button", { name: "Explore the live demo" }).click();
+  await page.waitForURL("**/home");
+  // A question makes a run; without a model key here it ends degraded, which still leaves a trace.
+  await page.goto("/workspace");
+  await page.getByLabel("Ask a question").fill("How does next month look?");
+  await page.getByRole("button", { name: "Send" }).click();
+  await expect(page.getByRole("region", { name: "Analysis" })).toBeVisible({ timeout: 20_000 });
+  await expect
+    .poll(async () => ((await (await page.request.get("/api/activity")).json()).runs ?? []).length, { timeout: 30_000 })
+    .toBeGreaterThan(0);
+  const runId: string = (await (await page.request.get("/api/activity")).json()).runs[0].run_id;
+
+  await page.goto(`/activity#run-${runId}`);
+  const run = page.locator(`li#run-${runId}`);
+  await expect(run.locator("details")).toHaveJSProperty("open", true);
+  await expect(run).toBeInViewport();
+  await noSeriousA11yIssues(page);
+});

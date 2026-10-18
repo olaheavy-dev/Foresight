@@ -76,6 +76,39 @@ test("an affordability answer streams its checks, then shows the answer skeleton
   await noSeriousA11yIssues(page);
 });
 
+test("from a recommendation to its checks, the finding behind it and its source rows (mandatory F)", async ({
+  page,
+}) => {
+  await ask(page, "Can I afford a trip in December?");
+  await expect(page.getByRole("heading", { level: 1, name: /27 November payday/ })).toBeVisible({ timeout: 15_000 });
+
+  // The card's "checks passed" citation opens the Verifier's record: every rule it ran.
+  const card = page.locator("article.rec").first();
+  await card
+    .locator(".checked-note")
+    .getByRole("button", { name: /open the evidence/ })
+    .click();
+  const drawer = page.getByRole("dialog", { name: "Check by the Verifier" });
+  await expect(drawer.getByText("How the Verifier checked it")).toBeVisible();
+  await expect(drawer.getByText("Its reasoning is grounded in the evidence")).toBeVisible();
+  await expect(drawer.getByText("Earlier draft was rejected and revised before you saw it.")).toBeVisible();
+  await noSeriousA11yIssues(page);
+  await page.keyboard.press("Escape");
+
+  // How it was checked: the finding that triggered it, the file its rows came from, and the rows.
+  await page.getByRole("tab", { name: "How it was checked" }).click();
+  const chain = page.getByRole("tabpanel").filter({ hasText: "Where the numbers come from" });
+  await expect(chain.getByText("Spending on eating out is up 39% on usual")).toBeVisible();
+  await expect(chain.getByText(/Based on 23 transactions/)).toBeVisible();
+  await expect(chain.getByText("monzo.csv")).toBeVisible();
+  await expect(chain.getByRole("link", { name: /See these transactions/ })).toHaveAttribute(
+    "href",
+    "/transactions?category=food.eating_out",
+  );
+  await noHorizontalScroll(page);
+  await noSeriousA11yIssues(page);
+});
+
 test("a citation opens the Evidence drawer with the stored calculation", async ({ page }) => {
   await ask(page, "Can I afford a trip in December?");
   await expect(page.getByRole("heading", { level: 1, name: /27 November payday/ })).toBeVisible({ timeout: 15_000 });

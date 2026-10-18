@@ -9,10 +9,6 @@ daily allowance.
 
 from __future__ import annotations
 
-import re
-from datetime import date
-from typing import Any
-
 from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import ValidationError
 from sqlalchemy import select
@@ -20,8 +16,6 @@ from sqlalchemy import select
 from backend.app import network_cap, proactive, views
 from backend.app.session import Profile, read_only
 from backend.app.ui_contracts.blocks import InterventionCard
-from backend.app.ui_contracts.money import money_value
-from backend.app.ui_contracts.primitives import MoneyAmount
 from backend.app.ui_contracts.response import HomeInsights, InsightFinding
 from backend.settings import get_settings
 from backend.storage import models as m
@@ -30,47 +24,7 @@ from backend.storage.repositories import WorkspaceContext
 router = APIRouter(prefix="/api/home", tags=["home"])
 
 MAX_FINDINGS = 5
-_PLACEHOLDER = re.compile(r"\{\{\s*(calc_[0-9a-zA-Z]+)#([a-z_]+)\|([a-z_]+)\s*\}\}")
 _SEVERITY_ORDER = {"act": 0, "watch": 1, "info": 2}
-
-
-def _fill(text: str, ctx: WorkspaceContext) -> str | None:
-    """Fill each `{{calc_…#path|format}}` from the stored calculation; None if any can't be
-    (a finding is then left out rather than shown with a gap or a guessed number)."""
-    missing = False
-
-    def one(match: re.Match[str]) -> str:
-        nonlocal missing
-        calc_id, path, fmt = match.groups()
-        calc = ctx.calculation(calc_id)
-        result: dict[str, Any] = calc.result if calc is not None else {}
-        value = result.get(path)
-        if value is None:
-            missing = True
-            return ""
-        if fmt == "money":
-            currency = str(result.get("currency") or ctx.workspace.home_currency)
-            amount = MoneyAmount(amount_minor=int(value), currency=currency)
-            return money_value(amount, ctx.workspace.locale, "rounded").display
-        if fmt == "pct_change":
-            return f"{round(abs(float(value)) * 100)}%"
-        if fmt == "count":
-            return str(int(value))
-        if fmt == "date":
-            return views.short_date(date.fromisoformat(str(value)))
-        missing = True
-        return ""
-
-    filled = _PLACEHOLDER.sub(one, text)
-    return None if missing or "{{" in filled else filled
-
-
-def _link(query: dict[str, Any]) -> str | None:
-    if query.get("category"):
-        return f"/transactions?category={query['category']}"
-    if query.get("obligation_key") or query.get("obligation_keys"):
-        return "/transactions?tab=recurring"
-    return None
 
 
 def _findings(ctx: WorkspaceContext) -> list[InsightFinding]:
@@ -80,8 +34,8 @@ def _findings(ctx: WorkspaceContext) -> list[InsightFinding]:
     rows = sorted(rows, key=lambda r: (_SEVERITY_ORDER.get(r.severity, 3), -(r.score or 0)))
     out = []
     for row in rows:
-        headline = _fill(row.headline, ctx)
-        detail = _fill(row.detail, ctx) if row.detail else ""
+        headline = views.finding_text(row.headline, ctx)
+        detail = views.finding_text(row.detail, ctx) if row.detail else ""
         if not headline or detail is None:
             continue
         out.append(
@@ -91,7 +45,7 @@ def _findings(ctx: WorkspaceContext) -> list[InsightFinding]:
                 severity=row.severity if row.severity in _SEVERITY_ORDER else "info",  # type: ignore[arg-type]
                 headline=headline,
                 detail=detail,
-                link=_link(row.txn_query or {}),
+                link=views.finding_link(row.txn_query or {}),
             )
         )
         if len(out) == MAX_FINDINGS:
@@ -145,6 +99,15 @@ def insights(ctx: WorkspaceContext) -> HomeInsights:
         reason = latest.note if latest.note in ("ai_paused", "daily_limit") else None
     else:
         state = "ready"
+    # Advice is shown only for the data and buffer it was checked against: after a newer change
+    # it would describe a ledger or a threshold that no longer holds.
+    cards = (
+        _cards(ctx, run.id)
+        if run
+        and run.data_version == int(ws.data_version or 0)
+        and run.prefs_version == ctx.prefs_version()  # checked against the current buffer
+        else []
+    )
     return HomeInsights(
         workspace_id=ws.id,
         status=state,  # type: ignore[arg-type]
@@ -153,15 +116,8 @@ def insights(ctx: WorkspaceContext) -> HomeInsights:
         checked_data_version=run.data_version if run else None,
         checked_at=ran.finished_at if ran else None,
         findings=_findings(ctx),
-        # Advice is shown only for the data and buffer it was checked against: after a newer
-        # change it would describe a ledger or a threshold that no longer holds.
-        recommendations=(
-            _cards(ctx, run.id)
-            if run
-            and run.data_version == int(ws.data_version or 0)
-            and run.prefs_version == ctx.prefs_version()  # checked against the current buffer
-            else []
-        ),
+        recommendations=cards,
+        run_id=run.id if cards and run else None,
         can_check=blocked is None and state != "checking",
     )
 

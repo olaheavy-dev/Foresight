@@ -13,6 +13,7 @@ import { fetchCalculation, type ParsedResponse } from "@/lib/api";
 import { formatClock, formatLongDate } from "@/lib/format";
 import type { CalculationView, EvidenceItem } from "@/ui-contracts/types";
 import { baseRef, blockRefs } from "./citations";
+import { EvidenceSource } from "./evidenceSource";
 
 const KIND: Record<string, string> = {
   calc: "Calculation",
@@ -153,6 +154,7 @@ export function EvidenceDrawer({
                   ))}
                 </ul>
               ) : null}
+              <EvidenceSource item={item} locale={locale} />
               {item.reproducible ? (
                 <dl className="facts-dl">
                   <dt>Data version</dt>

@@ -2902,6 +2902,19 @@
           "title": "Kind",
           "type": "string"
         },
+        "link": {
+          "anyOf": [
+            {
+              "pattern": "^/[a-z]",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Link"
+        },
         "provenance": {
           "enum": [
             "observed",
@@ -4381,6 +4394,19 @@
           },
           "title": "Recommendations",
           "type": "array"
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "pattern": "^run_[0-9A-HJKMNP-TV-Z]{26}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Run Id"
         },
         "status": {
           "enum": [

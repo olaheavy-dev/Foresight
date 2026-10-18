@@ -172,3 +172,30 @@ Found and fixed in this review:
 - **A long question title ran past the Recent list** at 1280 px. The time was pushed out of view and the row overflowed the panel. The list's grid column grew to fit its content. It's now `minmax(0, 1fr)`, so titles end with an ellipsis and the time stays visible. The refusal journey checks that the row stays inside the list.
 
 Checked and kept: the refusal uses the Workspace's existing failure card and caution icon. The thread keeps the person's question. The rate-limit refusal (a burst of questions) still offers a retry.
+
+## Evidence chain, reviewed 18 Oct 2026
+
+Mandatory requirement F: from a recommendation, reach how it was checked, the calculation and finding behind it, and the source transactions. I walked it in the UI first and found three dead ends:
+- The card's "N of M checks passed" citation opened a drawer that said the record wasn't available.
+- The findings that triggered a recommendation weren't in the answer at all.
+- On Home, checked advice had no route to its checks.
+
+Now:
+- Every answer showing a recommendation carries "Where the numbers come from" in **How it was checked**. It lists the Verifier's item (each rule in plain words, computed or model check, and that a draft was revised), then the triggering finding with its transaction count and dates, the imported file and rows, the reconciliation wording the Transactions page uses, and "See these transactions".
+- The card's citation opens the same Verifier item in the drawer.
+- Home's checked advice links "How it was checked" to that run's trace in Activity, which opens and scrolls to it.
+
+Captured with `SCREENSHOTS=1`, `e2e/workspace.screenshots.spec.ts` (mock API), at 375, 768, 1280 and 1440 px, light and dark:
+- `app-workspace-verifier-drawer-*`
+- `app-workspace-evidence-chain-*`
+
+Journeys:
+- `e2e/workspace.spec.ts`: the card citation leads to the checks, then the tab shows the finding, file and link.
+- `e2e/activity.spec.ts`: `/activity#run-…` opens that run.
+
+Found and fixed in this review: the source lines first rendered larger than the other evidence lines; they now use the panel's `ev-line` style.
+
+Could improve (open):
+- The verification item still shows the "Detected" provenance badge, which reads oddly for a check.
+- The arrow icon after "See these transactions" doesn't show at this text size.
+- Home's trace link isn't captured on the local stack: it needs a real checked recommendation, which needs a model key. A component test covers it.

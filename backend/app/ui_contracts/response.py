@@ -396,6 +396,8 @@ class HomeInsights(Contract):
     findings: list[InsightFinding] = []
     recommendations: list[InterventionCard] = []
     can_check: bool = False
+    # The run the recommendations came from: its trace (how each was checked) is in Activity.
+    run_id: RunId | None = None
 
 
 class ActivityStep(Contract):

@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { vi } from "vitest";
 
 import * as api from "@/lib/api";
+import { tripCard } from "@/test/workspaceFixtures";
 
 import type { HomeInsights } from "@/ui-contracts/types";
 
@@ -70,5 +71,17 @@ describe("ProactiveInsights", () => {
     expect(screen.queryByRole("button", { name: /proactive check/ })).not.toBeInTheDocument();
     expect(screen.queryByText(/Please try again/)).not.toBeInTheDocument();
     spy.mockRestore();
+  });
+
+  it("links its checked advice to the run's trace: how it was checked (mandatory F)", () => {
+    const run = "run_01ARZ3NDEKTSV4RRFFQ69G5FAV";
+    render(
+      <ProactiveInsights
+        initial={{ ...base, status: "ready", recommendations: [tripCard()], run_id: run }}
+        demo
+        {...env}
+      />,
+    );
+    expect(screen.getByRole("link", { name: /How it was checked/ })).toHaveAttribute("href", `/activity#run-${run}`);
   });
 });

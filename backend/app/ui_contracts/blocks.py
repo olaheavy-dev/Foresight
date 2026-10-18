@@ -552,6 +552,8 @@ class EvidenceItem(Contract):
     checks: list[VerificationCheck] | None = None
     critique: str | None = None
     reproducible: Reproducible | None = None
+    # An app page listing what this evidence counts (e.g. a finding's transactions).
+    link: Annotated[str, StringConstraints(pattern=r"^/[a-z]")] | None = None
 
     @model_validator(mode="after")
     def _checks_on_verification_only(self) -> EvidenceItem:

@@ -139,6 +139,14 @@ export function ProactiveInsights({
               <InterventionBlock key={card.recommendation_id} block={card} />
             ))}
           </BlockEnvProvider>
+          {insights.run_id ? (
+            // The evidence chain (mandatory F): each check, finding and step of this run.
+            <p className="insight-trace">
+              <a href={`/activity#run-${insights.run_id}`}>
+                How it was checked <Icon name="arrowright" />
+              </a>
+            </p>
+          ) : null}
         </div>
       ) : null}
 

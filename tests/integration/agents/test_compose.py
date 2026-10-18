@@ -616,3 +616,80 @@ def test_a_what_if_past_the_forecast_runs_long_enough_and_says_where_it_is_less_
     world = world_from_store(ctx, state, _inputs(ctx))
     assert world.forecast_inputs is not None
     assert world.forecast_inputs.horizon_days == 140
+
+
+def test_a_recommendations_evidence_reaches_its_checks_finding_and_source_rows(
+    p1: AgentStore,
+) -> None:
+    """Mandatory F (docs/06 §10.2): from a recommendation, the Evidence panel carries how the
+    Verifier checked it (every rule, and that a draft was revised) and the finding that
+    triggered it, with the transactions it counts, the import they came from and a link to them.
+    Before this, the card's "checks passed" citation and its findings led nowhere."""
+    findings = [f for f in p1.ctx.all(m.Finding) if f.kind == "category_spike" and f.txn_query]
+    assert findings, "the seeded P1 demo has a category finding"
+    finding = findings[0]
+
+    def advise(state: ForesightState, ctx: RunContext) -> NodeOutput:
+        with ctx.lock:
+            card = {
+                "version_id": "v1", "title": "Cap food delivery until payday",
+                "rationale_segments": [{"kind": "text", "text": "Keeps more money in hand."}],
+                "actions": [{"type": "category_cap", "label": "Cap food delivery", "detail": ""}],
+                "impact": {
+                    "p_breach_before": {"kind": "percent", "value": 1.0, "display": "100%"},
+                    "p_breach_after": {"kind": "percent", "value": 0.2, "display": "20%"},
+                    "p_breach_window": {"from": "2026-10-28", "to": "2026-11-27"},
+                },
+                "verification": {"verdict": "approved", "revisions": 1, "checks_passed": 2,
+                                 "checks_total": 2,
+                                 "verification_id": "ver_01JAAAAAAAAAAAAAAAAAAAAAAA"},
+                "triggered_by": [finding.id],
+            }  # fmt: skip
+            rec = ctx.store.add_recommendation(
+                run_id=ctx.run_id, proposal_key="cap", status="approved", proposal={"card": card}
+            )
+            ctx.store.add_verification(
+                run_id=ctx.run_id, recommendation_id=rec.id, round=1, verdict="REJECT",
+                rule_results=[{"rule": "V-04", "passed": False, "kind": "deterministic"}],
+            )  # fmt: skip
+            final = ctx.store.add_verification(
+                run_id=ctx.run_id, recommendation_id=rec.id, round=2, verdict="APPROVE",
+                rule_results=[
+                    {"rule": "V-04", "passed": True, "kind": "deterministic"},
+                    {"rule": "V-11@judge-1", "passed": True, "kind": "judge"},
+                ],
+            )  # fmt: skip
+            # The card cites the approving round, as `build_card` does in the product.
+            checked = {**card["verification"], "verification_id": final.id}  # type: ignore[dict-item]
+            rec.proposal = {"card": {**card, "verification": checked}}
+        return NodeOutput(update={"approved_recs": [rec.id]}, label="Drafting")
+
+    nodes = _with_spec(CAR_REPAIR, {
+        "advise": NodeSpec("advise", "advisor", "tool", advise, "Drafting"),
+    })  # fmt: skip
+    out, _ = _ask_with(
+        p1, nodes, json_ok(_intent(needs_advice=True)), spend_limit(), spend_limit(),
+        spend_limit(),
+    )  # fmt: skip
+    body = _body(p1, out.response_id)
+    (panel,) = [b for b in body["blocks"] if b["type"] == "EvidencePanel"]
+    by_kind = {i["kind"]: i for i in panel["items"]}
+
+    check = by_kind["verification"]
+    card = next(b for b in body["blocks"] if b["type"] == "InterventionCard")
+    assert check["ref"] == card["verification"]["verification_id"]  # the card's citation resolves
+    assert [c["name"] for c in check["checks"]] == [
+        "It's achievable, not too big a cut", "Its reasoning is grounded in the evidence",
+    ]  # fmt: skip
+    assert [c["kind"] for c in check["checks"]] == ["deterministic", "model"]
+    assert any("rejected and revised" in line for line in check["summary_lines"])
+
+    found = by_kind["finding"]
+    assert found["ref"] == finding.id
+    assert "{{" not in found["title"]  # filled from its calculation, as on Home
+    assert found["inputs"]["transaction_count"] > 0
+    assert found["link"].startswith("/transactions?category=")
+    source = found["source_chain"]
+    assert source["filename"]
+    assert source["importer"] == "csv_statement"
+    assert check_skeleton(AgentResponse.model_validate(body).blocks) == []

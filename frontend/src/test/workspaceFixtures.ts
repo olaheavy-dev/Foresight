@@ -347,7 +347,7 @@ const whatIfTable = (): ScenarioComparison => ({
   verdict: { kind: "tight", text: "Paying on 4 Dec dips below your buffer in some paths" },
 });
 
-const tripCard = (): InterventionCard => ({
+export const tripCard = (): InterventionCard => ({
   block_id: "b4",
   type: "InterventionCard",
   title: "Pay for the trip after your 27 November payday",
@@ -382,7 +382,51 @@ const tripCard = (): InterventionCard => ({
     checks_total: 9,
     verification_id: uid("ver", 2),
   },
-  triggered_by: [FC],
+  triggered_by: [FC, uid("fnd", 1)],
+});
+
+// The chain behind the shown recommendation (mandatory F), as the composer adds it to "How it was
+// checked": the Verifier's checks the card cites, and the finding that triggered it with the
+// transactions it counts, the file they came from and a link to them.
+const chainPanel = (): EvidencePanel => ({
+  block_id: "b10",
+  type: "EvidencePanel",
+  title: "Where the numbers come from",
+  placement: tab("checked"),
+  evidence: [uid("ver", 2), uid("fnd", 1)],
+  items: [
+    {
+      kind: "verification",
+      ref: uid("ver", 2),
+      title: "How the Verifier checked it",
+      provenance: "detected",
+      summary_lines: [
+        "Approved by the Verifier in round 2.",
+        "Earlier draft was rejected and revised before you saw it.",
+      ],
+      checks: [
+        { name: "Its evidence exists in your profile", passed: true, kind: "deterministic" },
+        { name: "It doesn’t set back a goal or your buffer", passed: true, kind: "deterministic" },
+        { name: "Its reasoning is grounded in the evidence", passed: true, kind: "model" },
+      ],
+    },
+    {
+      kind: "finding",
+      ref: uid("fnd", 1),
+      title: "Spending on eating out is up 39% on usual",
+      provenance: "detected",
+      summary_lines: ["£286 in the month to 11 Oct (23 payments), against a usual £206."],
+      inputs: { transaction_count: 23, date_range: { from: "2026-09-12", to: AS_OF } },
+      source_chain: {
+        import_id: uid("imp", 1),
+        filename: "monzo.csv",
+        importer: "csv_statement",
+        rows: "23 rows of this file",
+        reconciliation: { status: "not_reconcilable_no_balance", method: "balances" },
+      },
+      link: "/transactions?category=food.eating_out",
+    },
+  ],
 });
 
 const evidencePanel = (): EvidencePanel => ({
@@ -494,7 +538,7 @@ export const affordabilityResponse = (): AgentResponse =>
     question: "Can I afford a trip in December?",
     evidence_line: { agents: 6, rejected_drafts: 1, run_id: uid("run", 1) },
     verification: { recommendations: [{ recommendation_id: REC_ID, verdict: "approve", revisions: 1 }] },
-    provenance: { calc_ids: [`calc_${CALC}`], finding_ids: [], recommendation_ids: [REC_ID] },
+    provenance: { calc_ids: [`calc_${CALC}`], finding_ids: [uid("fnd", 1)], recommendation_ids: [REC_ID] },
     blocks: [
       verdict("Yes, if you pay for it after your 27 November payday.", [
         text("Your lowest point would then be "),
@@ -533,6 +577,7 @@ export const affordabilityResponse = (): AgentResponse =>
       forecastChart(),
       whatIfTable(),
       evidencePanel(),
+      chainPanel(),
       txnTable(),
       affordabilityTimeline,
     ],
