@@ -688,7 +688,7 @@ def test_a_recommendations_evidence_reaches_its_checks_finding_and_source_rows(
     assert found["ref"] == finding.id
     assert "{{" not in found["title"]  # filled from its calculation, as on Home
     assert found["inputs"]["transaction_count"] > 0
-    assert found["link"].startswith("/transactions?category=")
+    assert found["link"] == f"/transactions?finding={finding.id}"  # exactly its rows
     source = found["source_chain"]
     assert source["filename"]
     assert source["importer"] == "csv_statement"

@@ -13,7 +13,7 @@ const LEDE =
 export default async function TransactionsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string | string[]; category?: string | string[] }>;
+  searchParams: Promise<{ tab?: string | string[]; category?: string | string[]; finding?: string | string[] }>;
 }) {
   const [{ profile, features }, params] = await Promise.all([loadShell(), searchParams]);
   if (!isShipped(features, "ledger")) {
@@ -33,6 +33,11 @@ export default async function TransactionsPage({
           readOnly={Boolean(profile.read_only)}
           locale={profile.locale}
           initialCategory={typeof params.category === "string" ? params.category.slice(0, 64) : ""}
+          initialFinding={
+            typeof params.finding === "string" && /^fnd_[0-9A-HJKMNP-TV-Z]{26}$/.test(params.finding)
+              ? params.finding
+              : ""
+          }
         />
       ) : (
         <p className="lede">Choose the demo profile or import a statement first.</p>

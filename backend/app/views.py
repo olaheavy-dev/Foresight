@@ -388,33 +388,24 @@ def finding_text(text: str, ctx: WorkspaceContext) -> str | None:
     return None if missing or "{{" in filled else filled
 
 
-def finding_link(query: dict[str, Any]) -> str | None:
-    """Where a finding's transactions are listed (Home, the Evidence drawer)."""
-    if query.get("category"):
-        return f"/transactions?category={query['category']}"
-    if query.get("obligation_key") or query.get("obligation_keys"):
-        return "/transactions?tab=recurring"
-    return None
+def finding_link(finding_id: str) -> str:
+    """Where exactly a finding's transactions are listed (Home, the evidence chain): the ledger
+    filtered to its rows, for every kind of finding (#62 review)."""
+    return f"/transactions?finding={finding_id}"
 
 
 def finding_transactions(ctx: WorkspaceContext, query: dict[str, Any]) -> list[m.Transaction]:
     """The transactions a finding counts (its `txn_query`): a category over a window, or the
     payments of one or more recurring bills. The Evidence drawer shows these as its source."""
+    if query.get("txn_ids"):  # the detector's exact rows (category findings)
+        wanted = set(query["txn_ids"])
+        return [t for t in ctx.all(m.Transaction) if t.id in wanted]
     keys = {*(query.get("obligation_keys") or []), *filter(None, [query.get("obligation_key")])}
     if keys:
         ids = {i for o in ctx.all(m.RecurringObligation) if o.key in keys for i in o.member_ids}
         return [t for t in ctx.all(m.Transaction) if t.id in ids]
-    if query.get("category") and query.get("from") and query.get("to"):
-        latest = ctx.latest_categorisations()
-        start, end = date.fromisoformat(query["from"]), date.fromisoformat(query["to"])
-        return [
-            t
-            for t in ctx.all(m.Transaction)
-            if t.status == "active"
-            and start <= t.posted_on <= end
-            and t.id in latest
-            and latest[t.id].category_key == query["category"]
-        ]
+    # A category finding stored before its rows were (no `txn_ids`): no count is shown rather
+    # than a looser re-query that could contradict the detector's own (#62 review).
     return []
 
 
@@ -533,7 +524,7 @@ def _finding_item(ctx: WorkspaceContext, finding_id: str) -> EvidenceItem | None
             else None
         ),
         source_chain=chain,
-        link=finding_link(finding.txn_query or {}),
+        link=finding_link(finding.id),
     )
 
 

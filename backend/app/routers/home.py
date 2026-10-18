@@ -45,7 +45,7 @@ def _findings(ctx: WorkspaceContext) -> list[InsightFinding]:
                 severity=row.severity if row.severity in _SEVERITY_ORDER else "info",  # type: ignore[arg-type]
                 headline=headline,
                 detail=detail,
-                link=views.finding_link(row.txn_query or {}),
+                link=views.finding_link(row.id),
             )
         )
         if len(out) == MAX_FINDINGS:

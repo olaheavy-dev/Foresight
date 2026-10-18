@@ -55,6 +55,9 @@ class CategoryTrend:
     change_share: float  # (recent − usual) / usual
     count: int  # transactions in the recent window
     is_spike: bool
+    # The rows counted in the recent window (refunds, non-spending and rare one-offs excluded),
+    # so the evidence chain shows exactly these, never a looser re-query (#62 review).
+    recent_ids: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -81,22 +84,24 @@ def category_trends(
     n_prior = max(MIN_PRIOR_WINDOWS, min(MAX_PRIOR_WINDOWS, covered))
     max_large = ONE_OFF_MAX_ROWS * (n_prior + 1) // 4
     first = as_of - timedelta(days=(n_prior + 1) * WINDOW_DAYS - 1)
-    per_category: dict[str, list[tuple[date, int]]] = {}
+    per_category: dict[str, list[tuple[date, int, str]]] = {}
     for t in txns:
         c = by_id.get(t.id)
         if c is None or t.amount_minor >= 0 or c.flow_kind not in _SPEND:
             continue
         if c.category_key in NOT_A_BEHAVIOUR or not first <= t.posted_on <= as_of:
             continue
-        per_category.setdefault(c.category_key, []).append((t.posted_on, -t.amount_minor))
+        per_category.setdefault(c.category_key, []).append((t.posted_on, -t.amount_minor, t.id))
     out = []
     for category, all_rows in per_category.items():
-        large = ONE_OFF_MULTIPLE * statistics.median(a for _d, a in all_rows)
-        rare = sum(1 for _d, a in all_rows if a >= large) <= max_large
-        rows = [(d, a) for d, a in all_rows if not (rare and a >= large)]
+        large = ONE_OFF_MULTIPLE * statistics.median(a for _d, a, _i in all_rows)
+        rare = sum(1 for _d, a, _i in all_rows if a >= large) <= max_large
+        kept = [(d, a, i) for d, a, i in all_rows if not (rare and a >= large)]
+        rows = [(d, a) for d, a, _i in kept]
         end = as_of
         start = end - timedelta(days=WINDOW_DAYS - 1)
         recent, count = _window_total(rows, start, end)
+        recent_ids = tuple(sorted(i for d, _a, i in kept if start <= d <= end))
         prior = []
         prior_counts = []
         for k in range(1, n_prior + 1):
@@ -121,7 +126,9 @@ def category_trends(
             and z >= Z_THRESHOLD
             and abs(delta) >= max(min_delta_minor, MIN_DELTA_SHARE * usual)
         )
-        out.append(CategoryTrend(category, start, end, recent, usual, z, share, count, spike))
+        out.append(
+            CategoryTrend(category, start, end, recent, usual, z, share, count, spike, recent_ids)
+        )
     return tuple(sorted(out, key=lambda t: -(t.recent_minor - t.usual_minor)))
 
 

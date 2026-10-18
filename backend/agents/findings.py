@@ -104,6 +104,7 @@ def _spike(trend: CategoryTrend, workspace_id: str, currency: str) -> CandidateS
             "category": trend.category_key,
             "from": trend.window_start.isoformat(),
             "to": trend.window_end.isoformat(),
+            "txn_ids": list(trend.recent_ids),  # exactly the rows the detector counted
         },
     )
 

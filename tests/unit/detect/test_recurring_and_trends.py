@@ -95,6 +95,29 @@ def test_food_delivery_spike() -> None:
     assert food.recent_minor == 28640
     assert food.is_spike
     assert round(food.change_share, 2) == 0.41
+    # The rows it counted, exactly (the evidence chain shows these, #62 review): the 10 recent
+    # orders, not a refund in the same window.
+    recent = {r.id for r in rows[-10:]}
+    assert set(food.recent_ids) == recent
+    assert len(food.recent_ids) == food.count
+
+
+def test_a_refund_in_the_window_isnt_among_the_counted_rows() -> None:
+    as_of = date(2026, 10, 11)
+    rows = []
+    for k in range(3):
+        end = as_of - timedelta(days=30 * (k + 1))
+        rows += [txn("DELIVEROO", -2000, on=end - timedelta(days=d)) for d in range(10)]
+    rows += [txn("DELIVEROO", -2864, on=as_of - timedelta(days=d)) for d in range(10)]
+    refund = txn("DELIVEROO", 1500, on=as_of - timedelta(days=3))
+    rows.append(refund)
+    (food,) = [
+        t
+        for t in category_trends(rows, [categorise(r, PACK) for r in rows], as_of)
+        if t.category_key == "food.delivery"
+    ]
+    assert refund.id not in food.recent_ids
+    assert len(food.recent_ids) == food.count == 10
 
 
 def _windows(desc: str, totals: list[int], as_of: date, per_window: int = 10):  # type: ignore[no-untyped-def]

@@ -81,12 +81,15 @@ export function Transactions({
   readOnly,
   locale,
   initialCategory = "",
+  initialFinding = "",
 }: {
   tab: LedgerTab;
   readOnly: boolean;
   locale: string;
-  /** From `?category=` (Home's "See the transactions" link). */
+  /** From `?category=`. */
   initialCategory?: string;
+  /** From `?finding=` ("See these transactions" on a finding): exactly its rows. */
+  initialFinding?: string;
 }) {
   const [reviewCount, setReviewCount] = useState<number | null>(null);
   useEffect(() => {
@@ -125,6 +128,7 @@ export function Transactions({
           readOnly={readOnly}
           locale={locale}
           initialCategory={tab === "all" ? initialCategory : ""}
+          initialFinding={tab === "all" ? initialFinding : ""}
           onChanged={setReviewCount}
         />
       )}
@@ -140,16 +144,19 @@ function Ledger({
   readOnly,
   locale,
   initialCategory,
+  initialFinding,
   onChanged,
 }: {
   review: boolean;
   readOnly: boolean;
   locale: string;
   initialCategory: string;
+  initialFinding: string;
   onChanged: (reviewTotal: number | null) => void;
 }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState(initialCategory);
+  const [finding, setFinding] = useState(initialFinding);
   const [flowKind, setFlowKind] = useState("");
   const [page, setPage] = useState<TransactionPage | null>(null);
   const [rows, setRows] = useState<TransactionRow[]>([]);
@@ -167,9 +174,10 @@ function Ledger({
       category: category || undefined,
       flowKind: flowKind || undefined,
       review: review || undefined,
+      finding: finding || undefined,
       limit: PAGE,
     }),
-    [query, category, flowKind, review],
+    [query, category, flowKind, review, finding],
   );
 
   // Only the latest request may update the list: a slow answer for old filters (the ledger
@@ -225,6 +233,15 @@ function Ledger({
           }
         />
       </div>
+      {finding ? (
+        // The evidence chain's last step: exactly the rows a finding counts, nothing looser.
+        <p className="note-line ledger-finding" role="status">
+          Showing only the {page ? page.total : ""} transactions behind a finding.{" "}
+          <button type="button" className="link-btn" onClick={() => setFinding("")}>
+            Show all transactions
+          </button>
+        </p>
+      ) : null}
       <div className="ledger-tools" role="search" aria-label="Search and filter transactions">
         <label className="tool grow">
           <span className="sr-only">Search transactions</span>

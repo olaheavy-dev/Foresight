@@ -94,8 +94,10 @@ test("Home shows the demo's findings, and each links to its transactions (R2)", 
   await link.click();
   await page.waitForURL(`**${href}`);
   await expect(page.getByRole("heading", { level: 1, name: "Transactions" })).toBeVisible();
-  const category = new URL(href ?? "", "http://x").searchParams.get("category");
-  if (category) await expect(page.getByLabel("Category")).toHaveValue(category);
+  // Exactly the finding's rows (the evidence chain's last step), with a way back to all of them.
+  expect(href).toMatch(/^\/transactions\?finding=fnd_/);
+  await expect(page.getByRole("status").filter({ hasText: "transactions behind a finding" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Show all transactions" })).toBeVisible();
 });
 
 test("navigation reaches each section; unshipped ones say so honestly", async ({ page }) => {
