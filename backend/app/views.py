@@ -398,12 +398,15 @@ def finding_transactions(ctx: WorkspaceContext, query: dict[str, Any]) -> list[m
     """The transactions a finding counts (its `txn_query`): a category over a window, or the
     payments of one or more recurring bills. The Evidence drawer shows these as its source."""
     if query.get("txn_ids"):  # the detector's exact rows (category findings)
-        wanted = set(query["txn_ids"])
-        return [t for t in ctx.all(m.Transaction) if t.id in wanted]
-    keys = {*(query.get("obligation_keys") or []), *filter(None, [query.get("obligation_key")])}
-    if keys:
-        ids = {i for o in ctx.all(m.RecurringObligation) if o.key in keys for i in o.member_ids}
-        return [t for t in ctx.all(m.Transaction) if t.id in ids]
+        ids = set(query["txn_ids"])
+    else:
+        keys = {*(query.get("obligation_keys") or []), *filter(None, [query.get("obligation_key")])}
+        obligations = ctx.select(m.RecurringObligation).where(m.RecurringObligation.key.in_(keys))
+        ids = {i for o in ctx.session.scalars(obligations) for i in o.member_ids} if keys else set()
+    if ids:
+        # Only the referenced rows, workspace-scoped: never the whole ledger (#62 review).
+        rows = ctx.select(m.Transaction).where(m.Transaction.id.in_(sorted(ids)))
+        return list(ctx.session.scalars(rows))
     # A category finding stored before its rows were (no `txn_ids`): no count is shown rather
     # than a looser re-query that could contradict the detector's own (#62 review).
     return []
@@ -457,10 +460,10 @@ def recommendation_evidence(
 
 
 def _verification_item(ctx: WorkspaceContext, card: InterventionCard) -> EvidenceItem | None:
-    rounds = sorted(
-        (v for v in ctx.all(m.VerificationResult) if v.recommendation_id == card.recommendation_id),
-        key=lambda v: v.round,
+    stmt = ctx.select(m.VerificationResult).where(
+        m.VerificationResult.recommendation_id == card.recommendation_id
     )
+    rounds = sorted(ctx.session.scalars(stmt), key=lambda v: v.round)
     final = next((v for v in rounds if v.id == card.verification.verification_id), None)
     if final is None:
         return None
