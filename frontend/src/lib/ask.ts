@@ -31,7 +31,17 @@ export const isThreadId = (v: unknown): v is string => typeof v === "string" && 
 export const isRunId = (v: unknown): v is string => typeof v === "string" && RUN_ID.test(v);
 export const isResponseId = (v: unknown): v is string => typeof v === "string" && RESPONSE_ID.test(v);
 
-async function post(path: string, body: unknown, { fetchImpl = fetch, baseUrl = "" }: ApiOptions) {
+async function post(path: string, body: unknown, options: ApiOptions) {
+  const res = await postWithStatus(path, body, options);
+  return res?.ok ? res.body : null;
+}
+
+/** POST, keeping the status and body of a refusal (429 limits) so the reason can be shown. */
+async function postWithStatus(
+  path: string,
+  body: unknown,
+  { fetchImpl = fetch, baseUrl = "" }: ApiOptions,
+): Promise<{ ok: boolean; status: number; body: unknown } | null> {
   try {
     const response = await fetchImpl(`${baseUrl}${path}`, {
       method: "POST",
@@ -41,8 +51,8 @@ async function post(path: string, body: unknown, { fetchImpl = fetch, baseUrl = 
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
-    if (!response.ok) return null;
-    return (await response.json()) as unknown;
+    const parsed = (await response.json().catch(() => null)) as unknown;
+    return { ok: response.ok, status: response.status, body: parsed };
   } catch {
     return null;
   }
@@ -57,20 +67,31 @@ export async function createThread(options: ApiOptions = {}): Promise<string | n
 
 export type StructuredAction = { kind: string; payload: unknown; action_id?: string };
 
+/**
+ * Why a question wasn't taken: today's guest allowance for the network, too many in a short
+ * time, or two questions already running for the profile (#59 review).
+ */
+export type Refusal = { refused: "network_limit" | "rate_limit" | "busy" };
+
 /** Post a question (or a structured follow-up). Idempotent on `clientMsgId`. */
 export async function postMessage(
   threadId: string,
   text: string,
   clientMsgId: string,
   { action, ...options }: ApiOptions & { action?: StructuredAction } = {},
-): Promise<string | null> {
+): Promise<string | Refusal | null> {
   if (!isThreadId(threadId)) return null;
-  const body = await post(
+  const res = await postWithStatus(
     `/api/threads/${encodeURIComponent(threadId)}/messages`,
     { text, client_msg_id: clientMsgId, ...(action ? { action } : {}) },
     options,
   );
-  const id = (body as { run_id?: unknown } | null)?.run_id;
+  if (res?.status === 429) {
+    const detail = String((res.body as { detail?: unknown } | null)?.detail ?? "");
+    if (/network/i.test(detail)) return { refused: "network_limit" };
+    return { refused: /already running/i.test(detail) ? "busy" : "rate_limit" };
+  }
+  const id = (res?.ok ? (res.body as { run_id?: unknown } | null) : null)?.run_id;
   return isRunId(id) ? id : null;
 }
 

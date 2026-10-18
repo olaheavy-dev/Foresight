@@ -69,6 +69,18 @@ for (const theme of THEMES) {
 }
 
 for (const theme of THEMES) {
+  for (const s of SIZES) {
+    test(`guest allowance used · ${s.width} ${theme}`, async ({ page }) => {
+      await open(page, s, theme);
+      await ask(page, "Allowance check: how does next month look?");
+      await expect(page.getByRole("region", { name: "Analysis" }).getByRole("alert")).toBeVisible({ timeout: 20_000 });
+      await page.waitForTimeout(300);
+      await shot(page, file("network-limit", s, theme));
+    });
+  }
+}
+
+for (const theme of THEMES) {
   for (const s of [SIZES[0], SIZES[3]]) {
     test(`AI paused · ${s.width} ${theme}`, async ({ page }) => {
       await page.request.post(`${MOCK}/__mock/ai-status`, { data: { status: "unavailable" } });

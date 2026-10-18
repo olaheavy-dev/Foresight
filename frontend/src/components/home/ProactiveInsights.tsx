@@ -66,6 +66,7 @@ export function ProactiveInsights({
   const [insights, setInsights] = useState(initial);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [refused, setRefused] = useState<string | null>(null); // a limit a retry can't clear
 
   const refresh = useCallback(async () => {
     const next = await fetchHomeInsights();
@@ -88,7 +89,8 @@ export function ProactiveInsights({
     setFailed(false);
     const next = await startProactiveCheck();
     setBusy(false);
-    if (next) setInsights(next);
+    if (next && "refused" in next) setRefused(next.refused);
+    else if (next) setInsights(next);
     else setFailed(true);
   };
 
@@ -140,7 +142,7 @@ export function ProactiveInsights({
         </div>
       ) : null}
 
-      {insights.can_check && insights.status !== "ready" ? (
+      {insights.can_check && insights.status !== "ready" && !refused ? (
         <div className="btns">
           <Button variant="primary" onClick={check} disabled={busy} iconEnd="arrowright">
             {busy
@@ -151,7 +153,12 @@ export function ProactiveInsights({
           </Button>
         </div>
       ) : null}
-      {failed ? (
+      {refused ? (
+        // A limit (the network's day, or the profile's) that a retry can't clear: say why, no button.
+        <p className="form-error" role="alert">
+          {refused}
+        </p>
+      ) : failed ? (
         <p className="form-error" role="alert">
           The check couldn’t be started. Please try again.
         </p>

@@ -52,10 +52,13 @@ def utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 
-def enqueue(ctx: WorkspaceContext, event: str, *, immediate: bool = False) -> None:
+def enqueue(
+    ctx: WorkspaceContext, event: str, *, immediate: bool = False, workflow: str | None = None
+) -> None:
     """Queue (or refresh) this profile's analysis job. The caller commits, so the job is written
-    with the change that caused it. An import's workflow wins over a later correction's."""
-    workflow = WORKFLOWS[event]
+    with the change that caused it. An import's workflow wins over a later correction's.
+    `workflow` overrides the event's own (a manual check that owes an import its ingestion)."""
+    workflow = workflow or WORKFLOWS[event]
     ws = ctx.workspace
     not_before = utcnow() + (timedelta(0) if immediate else DEBOUNCE)
     table = m.AnalysisJob.__table__
@@ -76,10 +79,51 @@ def enqueue(ctx: WorkspaceContext, event: str, *, immediate: bool = False) -> No
             "data_version": stmt.excluded.data_version,
             "not_before": stmt.excluded.not_before,
             "workflow": case((keep_ingestion, table.c.workflow), else_=stmt.excluded.workflow),
-            "event": case((keep_ingestion, table.c.event), else_=stmt.excluded.event),
+            # A manual check joining a queued import keeps the import's workflow but becomes a
+            # manual request, so a guest's counted check runs its advice (#59 review).
+            # A manual check, joining or joined, stays one: a counted check isn't turned back
+            # into an automatic event by a later edit (#59 review).
+            "event": case(
+                (stmt.excluded.event == "manual_check", stmt.excluded.event),
+                (table.c.event == "manual_check", table.c.event),
+                (keep_ingestion, table.c.event),
+                else_=stmt.excluded.event,
+            ),
         },
     )
     ctx.session.execute(stmt)
+
+
+def manual_check_queued(ctx: WorkspaceContext) -> bool:
+    """Whether this profile already has a manual check waiting or just claimed (one already
+    counted) for its current data: between the worker's claim and its run being created, a
+    running job counts too; one for older data doesn't, so the latest data is still checked
+    (#59 review)."""
+    stmt = select(m.AnalysisJob.id).where(
+        m.AnalysisJob.workspace_id == ctx.workspace_id,
+        m.AnalysisJob.status.in_(("queued", "running")),
+        m.AnalysisJob.event == "manual_check",
+        m.AnalysisJob.data_version == int(ctx.workspace.data_version or 0),
+    )
+    return ctx.session.scalars(stmt.limit(1)).first() is not None
+
+
+def ingestion_owed(ctx: WorkspaceContext) -> bool:
+    """Whether this profile's latest import hasn't had its ingestion workflow (it was skipped
+    for a guest, failed, or the worker has only just claimed it): a manual check then runs the
+    ingestion workflow, so imported rows still get it (#59 review)."""
+    stmt = (
+        select(m.AnalysisJob.status)
+        .where(
+            m.AnalysisJob.workspace_id == ctx.workspace_id, m.AnalysisJob.workflow == "ingestion"
+        )
+        .order_by(m.AnalysisJob.created_at.desc())
+        .limit(1)
+    )
+    latest = ctx.session.scalars(stmt).first()
+    if latest == "running":  # a signed-in person's running import does its own ingestion
+        return advice_on_request_only(ctx.workspace)
+    return latest in ("skipped", "failed")
 
 
 def runs_today(db: Session, workspace_id: str) -> int:
@@ -113,6 +157,14 @@ def advice_blocked(db: Session, ws: m.Workspace) -> str | None:
     return None
 
 
+def advice_on_request_only(ws: m.Workspace) -> bool:
+    """A guest's profile (a demo copy, or one they imported into) runs advice only from its
+    button, which counts against the network's allowance: an edit or import refreshes the
+    findings but never spends on its own, so fresh guest profiles can't run AI uncounted (owner
+    decision for demo copies; #59 review for guests). A signed-in person's run by themselves."""
+    return ws.kind == "sample" or ws.owner_user_id is None
+
+
 def run_job(job_id: str, database_url: str) -> None:
     """Run one claimed job to completion (never raises; the outcome is recorded on the job)."""
     from backend.agents.runner import run_workflow
@@ -127,9 +179,11 @@ def run_job(job_id: str, database_url: str) -> None:
             findings.refresh(ctx)
             db.commit()
             blocked = advice_blocked(db, ctx.workspace)
-            if blocked is None and ctx.workspace.kind == "sample" and job.event != "manual_check":
-                # A demo copy runs advice only from its button (owner decision): an edit there
-                # refreshes the findings but never spends on its own.
+            if (
+                blocked is None
+                and advice_on_request_only(ctx.workspace)
+                and job.event != "manual_check"
+            ):
                 blocked = "manual_only"
             if blocked is None:
                 outcome = run_workflow(

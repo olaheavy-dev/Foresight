@@ -13,16 +13,17 @@ import re
 from datetime import date
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import ValidationError
 from sqlalchemy import select
 
-from backend.app import proactive, views
+from backend.app import network_cap, proactive, views
 from backend.app.session import Profile, read_only
 from backend.app.ui_contracts.blocks import InterventionCard
 from backend.app.ui_contracts.money import money_value
 from backend.app.ui_contracts.primitives import MoneyAmount
 from backend.app.ui_contracts.response import HomeInsights, InsightFinding
+from backend.settings import get_settings
 from backend.storage import models as m
 from backend.storage.repositories import WorkspaceContext
 
@@ -171,7 +172,7 @@ def get_insights(ctx: Profile) -> HomeInsights:
 
 
 @router.post("/check", response_model=HomeInsights, status_code=status.HTTP_202_ACCEPTED)
-def check_now(ctx: Profile) -> HomeInsights:
+def check_now(request: Request, ctx: Profile) -> HomeInsights:
     """Start a proactive check now (counts against the profile's daily allowance)."""
     if read_only(ctx.workspace):
         raise HTTPException(status.HTTP_403_FORBIDDEN, "This profile is read-only.")
@@ -182,6 +183,38 @@ def check_now(ctx: Profile) -> HomeInsights:
         raise HTTPException(
             status.HTTP_409_CONFLICT, "This profile has used today's proactive checks."
         )
-    proactive.enqueue(ctx, "manual_check", immediate=True)
-    ctx.session.commit()
+    # A second request (another tab) while this profile's manual check waits joins it and
+    # counts nothing; an automatic job queued by an edit becomes a manual check here, so that
+    # one counts (#59 review). The row lock keeps two requests from both counting.
+    ctx.session.execute(
+        select(m.Workspace.id).where(m.Workspace.id == ctx.workspace_id).with_for_update()
+    )
+    if proactive.manual_check_queued(ctx):
+        # Joins the profile's counted manual check (queued to run now, or just claimed by the
+        # worker); nothing new is queued, so no second workflow can run uncounted (#59 review).
+        ctx.session.commit()  # releases the row lock
+        return insights(ctx)
+    if proactive.advice_blocked(ctx.session, ctx.workspace) == "daily_limit":
+        # A manual check may have finished between the first look and the lock: it used the
+        # profile's day, so nothing is counted for one that would only be skipped (#59 review).
+        ctx.session.commit()
+        raise HTTPException(
+            status.HTTP_409_CONFLICT, "This profile has used today's proactive checks."
+        )
+    # A guest's checks also count per network, which a fresh guest profile doesn't reset.
+    counted = ctx.workspace.owner_user_id is None
+    if counted and not network_cap.allowance.take(
+        request, "check", get_settings().guest_network_daily_checks
+    ):
+        raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, network_cap.REFUSED)
+    try:
+        # An import whose ingestion hasn't run yet (skipped for a guest, or just claimed) gets
+        # it from this check, so its rows aren't left without the ledger step (#59 review).
+        workflow = "ingestion" if proactive.ingestion_owed(ctx) else None
+        proactive.enqueue(ctx, "manual_check", immediate=True, workflow=workflow)
+        ctx.session.commit()
+    except Exception:
+        if counted:  # no check was queued: the network's use is given back (#59 review)
+            network_cap.allowance.give_back(request, "check")
+        raise
     return insights(ctx)

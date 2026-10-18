@@ -128,6 +128,21 @@ test("an engine failure is said plainly, with no figures and a retry", async ({ 
   await noSeriousA11yIssues(page);
 });
 
+test("a guest network's used allowance is said plainly, with no retry", async ({ page }) => {
+  await ask(page, "Allowance check: how does next month look?");
+  const alert = page.getByRole("region", { name: "Analysis" }).getByRole("alert");
+  await expect(alert).toContainText("Today’s guest allowance for your network is used.", { timeout: 15_000 });
+  await expect(alert).toContainText("Sign in with Google to keep going, or come back tomorrow.");
+  await expect(page.getByRole("button", { name: "Try again" })).toHaveCount(0);
+  // A long title is cut with an ellipsis inside the Recent list, never wider than it.
+  const list = page.getByRole("list", { name: "Recent" });
+  if (await list.isVisible()) {
+    const [outer, row] = await Promise.all([list.boundingBox(), list.getByRole("button").first().boundingBox()]);
+    expect(row!.x + row!.width).toBeLessThanOrEqual(outer!.x + outer!.width + 1);
+  }
+  await noSeriousA11yIssues(page);
+});
+
 test("out-of-scope requests get a polite scope statement", async ({ page }) => {
   await ask(page, "Which shares should I invest in?");
   await expect(page.getByRole("heading", { level: 1, name: "I can’t recommend investments." })).toBeVisible({

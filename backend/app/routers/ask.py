@@ -31,6 +31,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import StringConstraints
 
 from backend.agents.runner import ask, run_followup
+from backend.app import network_cap
 from backend.app.session import Profile
 from backend.app.ui_contracts.primitives import Contract
 from backend.app.ui_contracts.response import AgentResponse
@@ -272,6 +273,7 @@ def _run_in_background(
     mesh: MeshClient | None,
     created: Callable[[str], None],
     failed: Callable[[BaseException], None],
+    reused: Callable[[str], None] = lambda _run_id: None,
 ) -> None:
     def work() -> None:
         try:
@@ -286,6 +288,8 @@ def _run_in_background(
                     action=action,
                     on_run_created=created,
                 )
+                if outcome.reused:  # a concurrent retry already started this question's run
+                    reused(outcome.run_id)
                 # The answer is saved and streamed; a question that ran out of time for its
                 # advice loop carries it on here (docs/06 §13), its answer added to the thread.
                 run_followup(store, outcome, mesh=mesh)
@@ -302,7 +306,9 @@ def _run_in_background(
     status_code=status.HTTP_202_ACCEPTED,
     response_model=RunAccepted,
 )
-def post_message(ctx: Profile, mesh: Mesh, thread_id: str, body: MessageBody) -> RunAccepted:
+def post_message(
+    request: Request, ctx: Profile, mesh: Mesh, thread_id: str, body: MessageBody
+) -> RunAccepted:
     thread = _thread(ctx, thread_id)
     store = AgentStore(ctx)
     existing = store.message_by_client_id(thread.id, body.client_msg_id)
@@ -313,9 +319,28 @@ def post_message(ctx: Profile, mesh: Mesh, thread_id: str, body: MessageBody) ->
     refusal = limits.admit(ctx.workspace_id, datetime.now(timezone.utc))
     if refusal is not None:
         raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, refusal)
-    if not thread.title:
-        thread.title = text[:80]
-    ctx.session.commit()
+    # A guest's questions also count per network, which a fresh guest profile doesn't reset;
+    # only an admitted question counts, and one that never starts is given back (#59 review).
+    counted = ctx.workspace.owner_user_id is None
+    if counted and not network_cap.allowance.take(
+        request, "question", get_settings().guest_network_daily_questions
+    ):
+        limits.release(ctx.workspace_id)  # admitted above, but no run will start
+        raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, network_cap.REFUSED)
+
+    def abandon() -> None:
+        """Setup failed before the run could launch: return what was reserved (#59 review)."""
+        if counted:
+            network_cap.allowance.give_back(request, "question")
+        limits.release(ctx.workspace_id)
+
+    try:
+        if not thread.title:
+            thread.title = text[:80]
+        ctx.session.commit()
+    except Exception:
+        abandon()
+        raise
 
     started = threading.Event()
     holder: dict[str, Any] = {}
@@ -324,26 +349,45 @@ def post_message(ctx: Profile, mesh: Mesh, thread_id: str, body: MessageBody) ->
         holder["run_id"] = run_id
         started.set()
 
+    def reused(run_id: str) -> None:
+        # The same question raced in twice: one run exists, so this request returns it and
+        # gives back the second count (#59 review).
+        if counted and "run_id" not in holder:
+            network_cap.allowance.give_back(request, "question")
+        holder.setdefault("run_id", run_id)
+        started.set()
+
     def failed(exc: BaseException) -> None:
         holder.setdefault("error", exc)
+        if counted and "run_id" not in holder:
+            # No run was created, whenever the failure came (even after the request gave up
+            # waiting): the use is given back here, once (#59 review).
+            network_cap.allowance.give_back(request, "question")
         started.set()
 
     url = get_settings().database_url
     assert url  # db_session already refused requests without a database
-    _run_in_background(
-        database_url=url,
-        workspace_id=ctx.workspace_id,
-        thread_id=thread.id,
-        text=text,
-        client_msg_id=body.client_msg_id,
-        action=action,
-        mesh=mesh,
-        created=created,
-        failed=failed,
-    )
+    try:
+        _run_in_background(
+            database_url=url,
+            workspace_id=ctx.workspace_id,
+            thread_id=thread.id,
+            text=text,
+            client_msg_id=body.client_msg_id,
+            action=action,
+            mesh=mesh,
+            created=created,
+            failed=failed,
+            reused=reused,
+        )
+    except Exception:  # the thread never started: nothing will release or give back
+        abandon()
+        raise
     started.wait(RUN_START_TIMEOUT_S)
     run_id = holder.get("run_id")
     if run_id is None:
+        # Not given back here: a slow start may still create its run; a failed one is given
+        # back by `failed` (#59 review).
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE, "The question couldn't be started. Try again."
         )

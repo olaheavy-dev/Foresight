@@ -51,6 +51,12 @@ export default function PrivacyPage() {
           <li>
             The demo profile is fictional. Each visitor gets a private copy, so nobody sees anyone else’s questions.
           </li>
+          <li>
+            Guests share a daily allowance of AI questions and checks per network, so one visitor can’t use up
+            everyone’s. To count it, Foresight keeps a one-way code made from your network and the date, in memory only,
+            never your address. It’s never written to disk, and it’s cleared on the first count after midnight (UTC) or
+            when the app restarts.
+          </li>
         </ul>
 
         <h2>When AI is used</h2>
