@@ -73,15 +73,55 @@ describe("ProactiveInsights", () => {
     spy.mockRestore();
   });
 
-  it("links its checked advice to the run's trace: how it was checked (mandatory F)", () => {
+  it("shows how its checked advice was checked, down to the source file (mandatory F)", () => {
     const run = "run_01ARZ3NDEKTSV4RRFFQ69G5FAV";
     render(
       <ProactiveInsights
-        initial={{ ...base, status: "ready", recommendations: [tripCard()], run_id: run }}
+        initial={{
+          ...base,
+          status: "ready",
+          recommendations: [tripCard()],
+          run_id: run,
+          evidence: [
+            {
+              ref: "ver_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+              kind: "verification",
+              title: "How the Verifier checked it",
+              provenance: "detected",
+              summary_lines: ["Approved by the Verifier in round 1."],
+              checks: [{ name: "It's achievable, not too big a cut", passed: true, kind: "deterministic" }],
+            },
+            {
+              ref: "fnd_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+              kind: "finding",
+              title: "Spending on food delivery is up 39% on usual",
+              provenance: "detected",
+              summary_lines: [],
+              inputs: { transaction_count: 23 },
+              source_chain: {
+                import_id: "imp_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+                filename: "monzo.csv",
+                importer: "csv_statement",
+                rows: "23 rows of this file",
+              },
+              link: "/transactions?category=food.delivery",
+            },
+          ],
+        }}
         demo
         {...env}
       />,
     );
-    expect(screen.getByRole("link", { name: /How it was checked/ })).toHaveAttribute("href", `/activity#run-${run}`);
+    fireEvent.click(screen.getByText("How it was checked"));
+    expect(screen.getByText("It's achievable, not too big a cut")).toBeInTheDocument();
+    expect(screen.getByText("monzo.csv")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /See these transactions/ })).toHaveAttribute(
+      "href",
+      "/transactions?category=food.delivery",
+    );
+    expect(screen.getByRole("link", { name: /Every step of this check/ })).toHaveAttribute(
+      "href",
+      `/activity#run-${run}`,
+    );
   });
 });

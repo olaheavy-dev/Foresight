@@ -693,3 +693,59 @@ def test_a_recommendations_evidence_reaches_its_checks_finding_and_source_rows(
     assert source["filename"]
     assert source["importer"] == "csv_statement"
     assert check_skeleton(AgentResponse.model_validate(body).blocks) == []
+
+
+def test_the_evidence_chain_fits_the_panel_with_every_cards_check_first(p1: AgentStore) -> None:
+    """#62 review: three shown cards citing many findings can't overflow the panel's 8 items;
+    each card's Verifier item comes first, so every card's citation resolves."""
+    from backend.app import views
+    from backend.app.ui_contracts.blocks import InterventionCard
+
+    findings = [f.id for f in p1.ctx.all(m.Finding) if f.headline]
+    assert len(findings) >= 2
+    run = p1.create_run(
+        workflow="ask", trigger="question", data_version=1, prefs_version=0,
+        deadline_at=datetime.now(UTC) + timedelta(minutes=2), thread_id=None,
+    )  # fmt: skip
+    cards = []
+    for i in range(3):
+        rec = p1.add_recommendation(run_id=run.id, proposal_key=f"k{i}", status="approved",
+                                    proposal={})  # fmt: skip
+        ver = p1.add_verification(run_id=run.id, recommendation_id=rec.id, round=1,
+                                  verdict="APPROVE", rule_results=[{"rule": "V-01",
+                                  "passed": True, "kind": "deterministic"}])  # fmt: skip
+        cards.append(
+            InterventionCard.model_validate(
+                {
+                    "type": "InterventionCard",
+                    "block_id": f"b{i}",
+                    "title": "Do it",
+                    "placement": {"area": "overview", "slot": "what_to_do"},
+                    "currency": "GBP",
+                    "recommendation_id": rec.id,
+                    "version_id": "v1",
+                    "status": "approved",
+                    "rationale_segments": [{"kind": "text", "text": "Because."}],
+                    "actions": [{"type": "x", "label": "Do it", "detail": ""}],
+                    "impact": {
+                        "p_breach_before": {"kind": "percent", "value": 1.0, "display": "100%"},
+                        "p_breach_after": {"kind": "percent", "value": 0.5, "display": "50%"},
+                        "p_breach_window": {"from": "2026-10-28", "to": "2026-11-27"},
+                    },
+                    "verification": {
+                        "verdict": "approved",
+                        "revisions": 0,
+                        "checks_passed": 1,
+                        "checks_total": 1,
+                        "verification_id": ver.id,
+                    },
+                    "triggered_by": findings,
+                }
+            )  # fmt: skip
+        )
+    # The demo has two findings, so a tighter bound stands in for the panel's 8: 3 checks + 2
+    # findings would be 5; within 4, every card's check is kept and one finding follows.
+    items = views.recommendation_evidence(p1.ctx, cards, limit=4)
+    assert [i.kind for i in items] == ["verification"] * 3 + ["finding"]
+    assert len(views.recommendation_evidence(p1.ctx, cards)) == 5  # within the default 8
+    assert {i.ref for i in items[:3]} == {c.verification.verification_id for c in cards}

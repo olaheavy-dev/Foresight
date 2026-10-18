@@ -29,7 +29,6 @@ from typing import Any, Literal
 from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 
-from backend.agents.advice.rules import RULE_NAMES
 from backend.agents.cache import prompt_version
 from backend.agents.contracts import PAY_TODAY
 from backend.agents.guard import output_screen
@@ -45,7 +44,6 @@ from backend.app.ui_contracts.blocks import (
     CategorySeries,
     ClarifyingQuestion,
     EntitySegment,
-    EvidenceInputs,
     EvidenceItem,
     EvidencePanel,
     FinancialMetricGroup,
@@ -58,14 +56,11 @@ from backend.app.ui_contracts.blocks import (
     RunCost,
     ScenarioComparison,
     Segment,
-    SourceChain,
-    SourceReconciliation,
     SpendingByCategory,
     TextSegment,
     TransactionRow,
     TransactionTable,
     ValueSegment,
-    VerificationCheck,
 )
 from backend.app.ui_contracts.money import money_value
 from backend.app.ui_contracts.primitives import (
@@ -958,113 +953,9 @@ class Composer:
             risks=flagged,
         )
 
-    def _rec_evidence(self, card: InterventionCard) -> list[EvidenceItem]:
-        """The chain behind a recommendation (docs/06 §10.2, mandatory F): how the Verifier
-        checked it, then each finding that triggered it, with the transactions it counts and the
-        import they came from. Nothing is recomputed; it reads the stored records."""
-        items: list[EvidenceItem] = []
-        rounds = sorted(
-            (
-                v
-                for v in self.ctx.all(m.VerificationResult)
-                if v.recommendation_id == card.recommendation_id
-            ),
-            key=lambda v: v.round,
-        )
-        final = next((v for v in rounds if v.id == card.verification.verification_id), None)
-        if final is not None:
-            rejected = sum(1 for v in rounds if v.round < final.round and v.verdict == "REJECT")
-            lines = [f"Approved by the Verifier in round {final.round}."]
-            if rejected:
-                lines.append(
-                    f"Earlier {'draft was' if rejected == 1 else 'drafts were'} rejected and "
-                    "revised before you saw it."
-                )
-            items.append(
-                EvidenceItem(
-                    ref=final.id,
-                    kind="verification",
-                    title="How the Verifier checked it",
-                    provenance="detected",
-                    summary_lines=lines,
-                    checks=[
-                        VerificationCheck(
-                            # Judge rules carry their prompt version: "V-11@judge-1.2".
-                            name=RULE_NAMES.get(
-                                str(r.get("rule")).split("@")[0], str(r.get("rule"))
-                            ),
-                            passed=bool(r.get("passed")),
-                            kind="model" if r.get("kind") == "judge" else "deterministic",
-                        )
-                        for r in final.rule_results or []
-                    ],
-                )
-            )
-        for ref in card.triggered_by:
-            if not ref.startswith("fnd_"):
-                continue
-            finding = self.ctx.get(m.Finding, ref.split("#")[0])
-            headline = views.finding_text(finding.headline, self.ctx) if finding else None
-            if finding is None or not headline:
-                continue
-            detail = views.finding_text(finding.detail, self.ctx) if finding.detail else None
-            txns = views.finding_transactions(self.ctx, finding.txn_query or {})
-            items.append(
-                EvidenceItem(
-                    ref=finding.id,
-                    kind="finding",
-                    title=headline[:80],
-                    provenance="detected",
-                    summary_lines=[detail] if detail else [],
-                    inputs=(
-                        EvidenceInputs(
-                            transaction_count=len(txns),
-                            date_range=DateRange(
-                                **{
-                                    "from": min(t.posted_on for t in txns),
-                                    "to": max(t.posted_on for t in txns),
-                                }
-                            ),
-                        )
-                        if txns
-                        else None
-                    ),
-                    source_chain=self._source_chain(txns),
-                    link=views.finding_link(finding.txn_query or {}),
-                )
-            )
-        return items
-
-    def _source_chain(self, txns: list[m.Transaction]) -> SourceChain | None:
-        """The import most of these transactions came from: its file, how many of them, and
-        whether its balances reconciled."""
-        counts: dict[str, int] = {}
-        for t in txns:
-            if t.import_batch_id:
-                counts[t.import_batch_id] = counts.get(t.import_batch_id, 0) + 1
-        if not counts:
-            return None
-        batch_id = max(counts, key=lambda b: counts[b])
-        batch = self.ctx.get(m.ImportBatch, batch_id)
-        if batch is None:
-            return None
-        n = counts[batch_id]
-        return SourceChain(
-            import_id=batch.id,
-            filename=batch.filename,
-            importer=batch.importer,  # type: ignore[arg-type]
-            rows=f"{n} {'row' if n == 1 else 'rows'} of this file",
-            reconciliation=(
-                SourceReconciliation(status=batch.reconciliation_status, method="balances")
-                if batch.reconciliation_status
-                else None
-            ),
-        )
-
     def evidence_panel(self) -> EvidencePanel | None:
-        items: list[EvidenceItem] = []
-        for card in self.sources.recommendations[:2]:
-            items += self._rec_evidence(card)
+        # Every shown card's chain first (its citation must resolve), within the panel's 8.
+        items = views.recommendation_evidence(self.ctx, self.sources.recommendations[:3])
         for calc in list(self.sources.calcs.values())[: max(0, 8 - len(items))]:
             kind = "forecast" if calc.kind in {"forecast", "simulation"} else "calculation"
             items.append(

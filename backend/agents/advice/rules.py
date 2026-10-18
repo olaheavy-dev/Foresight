@@ -400,28 +400,3 @@ def deterministic_rules(
 
 
 __all__ = ["RULES", "TIMING_ACTIONS", "critique_for", "deterministic_rules"]
-
-
-# Each rule in plain words, as the Evidence drawer lists the Verifier's checks (docs/06 §5).
-RULE_NAMES = {
-    "V-01": "Its evidence exists in your profile",
-    "V-02": "It rests on a finding or the forecast",
-    "V-03": "What it changes is in your data",
-    "V-04": "It's achievable, not too big a cut",
-    "V-05": "It changes enough to matter",
-    "V-06": "Its figure matches the engine's",
-    "V-07": "Every number traces to a calculation",
-    "V-08": "It doesn't set back a goal or your buffer",
-    "V-09": "It isn't a repeat of other advice",
-    "V-10": "It's specific to your data",
-    "V-11": "Its reasoning is grounded in the evidence",
-    "V-12": "You could act on it today",
-    "V-13": "Its tone is fair and not judgemental",
-    "V-14": "It isn't regulated financial advice",
-    "V-15": "It's framed for a shared account",
-    "V-16": "It counts only your own money",
-    "V-17": "It leaves protected savings alone",
-    "V-18": "Betting is handled only as you chose",
-    "V-19": "It holds without unconfirmed income",
-    "V-20": "It doesn't mix currencies",
-}

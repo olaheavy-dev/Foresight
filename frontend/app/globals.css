@@ -443,6 +443,11 @@ button.um-item { width: 100%; border: 0; background: none; font: inherit; cursor
 .insights-empty { margin: 0 0 var(--space-4); font-size: var(--font-size-sm); color: var(--color-text-secondary); }
 .insight-recs { display: grid; gap: var(--space-3); margin-bottom: var(--space-3); }
 .insight-recs-h { margin: 0; font-family: var(--font-family-display); font-size: var(--font-size-md); }
+/* How Home's checked advice was checked (mandatory F): a quiet disclosure under the cards. */
+.insight-trace { margin-top: var(--space-3); }
+.insight-trace > summary { cursor: pointer; font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--color-accent-primary); }
+.insight-trace > summary:focus-visible { outline: 2px solid var(--color-focus-ring, var(--color-accent-primary)); outline-offset: 2px; border-radius: var(--border-radius-sm); }
+.insight-trace > p { margin: var(--space-2) 0 0; font-size: var(--font-size-sm); }
 @media (min-width: 768px) { .insights { padding: var(--space-5) var(--space-6); } }
 .coming-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); margin-top: var(--space-3); }
 @media (min-width: 768px) {

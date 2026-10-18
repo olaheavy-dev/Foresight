@@ -117,6 +117,7 @@ def insights(ctx: WorkspaceContext) -> HomeInsights:
         checked_at=ran.finished_at if ran else None,
         findings=_findings(ctx),
         recommendations=cards,
+        evidence=views.recommendation_evidence(ctx, cards) if cards else [],
         run_id=run.id if cards and run else None,
         can_check=blocked is None and state != "checking",
     )

@@ -4362,6 +4362,15 @@
           "title": "Data Version",
           "type": "integer"
         },
+        "evidence": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/EvidenceItem"
+          },
+          "maxItems": 8,
+          "title": "Evidence",
+          "type": "array"
+        },
         "findings": {
           "default": [],
           "items": {

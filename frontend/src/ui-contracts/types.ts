@@ -2022,6 +2022,10 @@ export interface HomeInsights {
   checked_at?: string | null;
   checked_data_version?: number | null;
   data_version: number;
+  /**
+   * @maxItems 8
+   */
+  evidence?: EvidenceItem[];
   findings?: InsightFinding[];
   reason?: ("ai_paused" | "daily_limit" | "not_run") | null;
   recommendations?: InterventionCard[];

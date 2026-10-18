@@ -20,17 +20,24 @@ from backend.app.ui_contracts.blocks import (
     BaselineLine,
     CashFlowForecastData,
     ComparisonRow,
+    EvidenceInputs,
+    EvidenceItem,
     FanSeries,
     ForecastSummary,
+    InterventionCard,
     PayCycleLow,
     ScenarioComparisonData,
     ScenarioLine,
     ScenarioSeries,
     ScenarioVerdict,
+    SourceChain,
+    SourceReconciliation,
     StartingBalance,
+    VerificationCheck,
 )
 from backend.app.ui_contracts.money import money_value
 from backend.app.ui_contracts.primitives import (
+    DateRange,
     DateValue,
     MoneyAmount,
     MoneyValue,
@@ -409,3 +416,158 @@ def finding_transactions(ctx: WorkspaceContext, query: dict[str, Any]) -> list[m
             and latest[t.id].category_key == query["category"]
         ]
     return []
+
+
+# Each Verifier rule in plain words, as the evidence chain lists its checks (docs/06 §5).
+RULE_NAMES = {
+    "V-01": "Its evidence exists in your profile",
+    "V-02": "It rests on a finding or the forecast",
+    "V-03": "What it changes is in your data",
+    "V-04": "It's achievable, not too big a cut",
+    "V-05": "It changes enough to matter",
+    "V-06": "Its figure matches the engine's",
+    "V-07": "Every number traces to a calculation",
+    "V-08": "It doesn't set back a goal or your buffer",
+    "V-09": "It isn't a repeat of other advice",
+    "V-10": "It's specific to your data",
+    "V-11": "Its reasoning is grounded in the evidence",
+    "V-12": "You could act on it today",
+    "V-13": "Its tone is fair and not judgemental",
+    "V-14": "It isn't regulated financial advice",
+    "V-15": "It's framed for a shared account",
+    "V-16": "It counts only your own money",
+    "V-17": "It leaves protected savings alone",
+    "V-18": "Betting is handled only as you chose",
+    "V-19": "It holds without unconfirmed income",
+    "V-20": "It doesn't mix currencies",
+}
+EVIDENCE_ITEMS = 8  # EvidencePanel.items max_length
+
+
+def recommendation_evidence(
+    ctx: WorkspaceContext, cards: Sequence[InterventionCard], limit: int = EVIDENCE_ITEMS
+) -> list[EvidenceItem]:
+    """The chain behind shown recommendations (docs/06 §10.2, mandatory F), from stored records
+    only: each card's Verifier item first (its citation must resolve), then the findings that
+    triggered them, with the transactions each counts and the imports they came from; at most
+    `limit` items, so a panel always validates (#62 review)."""
+    checks = [c for c in (_verification_item(ctx, card) for card in cards) if c is not None]
+    findings: list[EvidenceItem] = []
+    seen: set[str] = set()
+    for card in cards:
+        for ref in card.triggered_by:
+            fid = ref.split("#")[0]
+            if fid.startswith("fnd_") and fid not in seen:
+                seen.add(fid)
+                item = _finding_item(ctx, fid)
+                if item is not None:
+                    findings.append(item)
+    return [*checks, *findings][:limit]
+
+
+def _verification_item(ctx: WorkspaceContext, card: InterventionCard) -> EvidenceItem | None:
+    rounds = sorted(
+        (v for v in ctx.all(m.VerificationResult) if v.recommendation_id == card.recommendation_id),
+        key=lambda v: v.round,
+    )
+    final = next((v for v in rounds if v.id == card.verification.verification_id), None)
+    if final is None:
+        return None
+    rejected = sum(1 for v in rounds if v.round < final.round and v.verdict == "REJECT")
+    lines = [f"Approved by the Verifier in round {final.round}."]
+    if rejected:
+        lines.append(
+            f"Earlier {'draft was' if rejected == 1 else 'drafts were'} rejected and revised "
+            "before you saw it."
+        )
+    return EvidenceItem(
+        ref=final.id,
+        kind="verification",
+        title="How the Verifier checked it",
+        provenance="detected",
+        summary_lines=lines,
+        checks=[
+            VerificationCheck(
+                # Judge rules carry their prompt version: "V-11@judge-1.2".
+                name=RULE_NAMES.get(str(r.get("rule")).split("@")[0], str(r.get("rule"))),
+                passed=bool(r.get("passed")),
+                kind="model" if r.get("kind") == "judge" else "deterministic",
+            )
+            for r in final.rule_results or []
+        ],
+    )
+
+
+def _finding_item(ctx: WorkspaceContext, finding_id: str) -> EvidenceItem | None:
+    finding = ctx.get(m.Finding, finding_id)
+    headline = finding_text(finding.headline, ctx) if finding else None
+    if finding is None or not headline:
+        return None
+    detail = finding_text(finding.detail, ctx) if finding.detail else None
+    txns = finding_transactions(ctx, finding.txn_query or {})
+    chain, files = _source_chain(ctx, txns)
+    lines = [detail] if detail else []
+    if len(files) > 1:  # every contributing import named, not only the largest (#62 review)
+        lines.append(
+            f"From {len(files)} files: "
+            + ", ".join(f"{name} ({n} {'row' if n == 1 else 'rows'})" for name, n in files)
+            + "."
+        )
+    return EvidenceItem(
+        ref=finding.id,
+        kind="finding",
+        title=headline[:80],
+        provenance="detected",
+        summary_lines=lines,
+        inputs=(
+            EvidenceInputs(
+                transaction_count=len(txns),
+                date_range=DateRange(
+                    **{
+                        "from": min(t.posted_on for t in txns),
+                        "to": max(t.posted_on for t in txns),
+                    }
+                ),
+            )
+            if txns
+            else None
+        ),
+        source_chain=chain,
+        link=finding_link(finding.txn_query or {}),
+    )
+
+
+def _source_chain(
+    ctx: WorkspaceContext, txns: list[m.Transaction]
+) -> tuple[SourceChain | None, list[tuple[str, int]]]:
+    """The import most of these transactions came from (its file, how many of them, whether its
+    balances reconciled), and every contributing file with its count."""
+    counts: dict[str, int] = {}
+    for t in txns:
+        if t.import_batch_id:
+            counts[t.import_batch_id] = counts.get(t.import_batch_id, 0) + 1
+    batches = {b: ctx.get(m.ImportBatch, b) for b in counts}
+    files = sorted(
+        ((batch.filename, counts[b]) for b, batch in batches.items() if batch is not None),
+        key=lambda f: -f[1],
+    )
+    if not files:
+        return None, []
+    main_id = max((b for b in batches if batches[b] is not None), key=lambda b: counts[b])
+    main = batches[main_id]
+    assert main is not None
+    n = counts[main_id]
+    return (
+        SourceChain(
+            import_id=main.id,
+            filename=main.filename,
+            importer=main.importer,  # type: ignore[arg-type]
+            rows=f"{n} {'row' if n == 1 else 'rows'} of this file",
+            reconciliation=(
+                SourceReconciliation(status=main.reconciliation_status, method="balances")
+                if main.reconciliation_status
+                else None
+            ),
+        ),
+        files,
+    )
