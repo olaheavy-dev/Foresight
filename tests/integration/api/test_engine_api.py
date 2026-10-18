@@ -412,3 +412,28 @@ def test_a_stored_simulation_records_its_simulator_version(api: TestClient) -> N
     calc_id = "calc_" + body["simulation_id"].removeprefix("sim_")
     calc = checked(api, api.get(f"/api/calculations/{calc_id}"), "/api/calculations/{calc_id}")
     assert calc["params"]["simulator"] == SIMULATOR_VERSION
+
+
+def test_transactions_filtered_to_a_finding_are_exactly_its_rows(
+    make_client: type[TestClient],
+) -> None:
+    """The evidence chain's last step (#62): `?finding=` lists exactly the rows the finding
+    counts, and another profile's finding is not found."""
+    from backend.app.main import create_app
+
+    with (
+        make_client(create_app(), base_url="https://testserver") as alice,
+        make_client(create_app(), base_url="https://testserver") as bob,
+    ):
+        demo(alice)
+        demo(bob)
+        finding = checked(alice, alice.get("/api/home/insights"), "/api/home/insights")["findings"][
+            0
+        ]
+        fid = finding["finding_id"]
+        assert finding["link"] == f"/transactions?finding={fid}"
+        page = checked(alice, alice.get(f"/api/transactions?finding={fid}"), "/api/transactions")
+        assert page["total"] > 0
+        everything = checked(alice, alice.get("/api/transactions"), "/api/transactions")
+        assert page["total"] < everything["total"]  # filtered, not the whole ledger
+        assert bob.get(f"/api/transactions?finding={fid}").status_code == 404

@@ -41,7 +41,8 @@ function Run({ run, locale, timeZone }: { run: ActivityRun; locale: string; time
   const tone =
     run.status === "succeeded" ? (run.partial ? "amber" : "green") : run.status === "running" ? "blue" : "red";
   return (
-    <li className="act-run">
+    // Linked from Home's "How it was checked" (`/activity#run-…`); OpenLinkedRun opens it.
+    <li className="act-run" id={`run-${run.run_id}`}>
       <details>
         <summary>
           <span className="act-run-main">

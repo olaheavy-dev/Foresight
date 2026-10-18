@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Iterable, Sequence
+from collections.abc import Collection, Iterable, Sequence
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from typing import Any, TypeVar
@@ -160,6 +160,7 @@ class WorkspaceContext:
         account_id: str | None = None,
         query: str | None = None,
         review: bool = False,
+        ids: Collection[str] | None = None,
         limit: int = 100,
         offset: int = 0,
     ) -> tuple[int, list[tuple[m.Transaction, m.Categorisation | None]]]:
@@ -184,6 +185,8 @@ class WorkspaceContext:
             .where(m.Transaction.workspace_id == self.workspace_id)
             .where(m.Transaction.status == "active")
         )
+        if ids is not None:  # exactly these rows (a finding's, from the evidence chain)
+            stmt = stmt.where(m.Transaction.id.in_(list(ids)))
         if date_from is not None:
             stmt = stmt.where(m.Transaction.posted_on >= date_from)
         if date_to is not None:

@@ -35,6 +35,7 @@ import type {
 } from "@/ui-contracts/types";
 import { Cite, Sources } from "./citations";
 import { Columns, HBars, LineChart } from "./charts";
+import { EvidenceSource } from "./evidenceSource";
 import { Segments } from "./values";
 
 export type BlockEnv = {
@@ -668,6 +669,7 @@ const PROVENANCE: Record<string, string> = {
 };
 
 export function EvidenceBlock({ block }: { block: EvidencePanel }) {
+  const { locale } = useEnv();
   return (
     <article
       className={`card ws-card ${block.items.every((i) => i.kind === "verification" && i.critique) ? "rejected" : ""}`}
@@ -692,6 +694,7 @@ export function EvidenceBlock({ block }: { block: EvidencePanel }) {
                 {l}
               </p>
             ))}
+            <EvidenceSource item={item} locale={locale} />
             {item.checks?.length ? (
               <ul className="checks">
                 {item.checks.map((c) => (

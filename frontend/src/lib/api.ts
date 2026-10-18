@@ -197,6 +197,8 @@ export type TransactionFilters = {
   accountId?: string;
   query?: string;
   review?: boolean;
+  /** Only the rows a finding counts (the evidence chain's "See these transactions"). */
+  finding?: string;
   limit?: number;
   offset?: number;
 };
@@ -214,6 +216,7 @@ export function fetchTransactions(
     accountId: "account_id",
     query: "q",
     review: "review",
+    finding: "finding",
     limit: "limit",
     offset: "offset",
   };

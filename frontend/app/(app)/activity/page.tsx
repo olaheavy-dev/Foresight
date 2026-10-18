@@ -1,4 +1,5 @@
 import { ActivityFeed } from "@/components/activity/ActivityFeed";
+import { OpenLinkedRun } from "@/components/activity/OpenLinkedRun";
 import { SectionPage } from "@/components/SectionPage";
 import { Unavailable } from "@/components/ui/NotShipped";
 import { fetchActivity } from "@/lib/api";
@@ -30,7 +31,10 @@ export default async function ActivityPage() {
       <h1>Activity</h1>
       <p className="lede">{LEDE}</p>
       {feed ? (
-        <ActivityFeed feed={feed} locale={profile.locale} timeZone={profile.timezone} />
+        <>
+          <ActivityFeed feed={feed} locale={profile.locale} timeZone={profile.timezone} />
+          <OpenLinkedRun />
+        </>
       ) : (
         <Unavailable what="Activity" />
       )}

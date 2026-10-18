@@ -6,7 +6,7 @@ from datetime import date
 
 from fastapi import APIRouter, HTTPException, Query, status
 
-from backend.app import proactive
+from backend.app import proactive, views
 from backend.app.session import Profile, read_only
 from backend.app.ui_contracts.money import money_value
 from backend.app.ui_contracts.primitives import MoneyAmount
@@ -37,10 +37,20 @@ def transactions(
     account_id: str | None = Query(default=None, max_length=32),
     q: str | None = Query(default=None, max_length=80, description="Search narration and payee"),
     review: bool = Query(default=False, description="Only rows to review (docs/01 F-07)"),
+    finding: str | None = Query(
+        default=None, max_length=32, description="Only the rows a finding counts (evidence chain)"
+    ),
     limit: int = Query(default=100, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
 ) -> TransactionPage:
+    ids = None
+    if finding is not None:
+        found = ctx.get(m.Finding, finding)
+        if found is None:  # another profile's finding is not found, never forbidden
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "No such finding in this profile.")
+        ids = [t.id for t in views.finding_transactions(ctx, found.txn_query or {})]
     total, rows = ctx.transaction_page(
+        ids=ids,
         date_from=date_from,
         date_to=date_to,
         category_key=category,

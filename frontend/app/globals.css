@@ -443,6 +443,11 @@ button.um-item { width: 100%; border: 0; background: none; font: inherit; cursor
 .insights-empty { margin: 0 0 var(--space-4); font-size: var(--font-size-sm); color: var(--color-text-secondary); }
 .insight-recs { display: grid; gap: var(--space-3); margin-bottom: var(--space-3); }
 .insight-recs-h { margin: 0; font-family: var(--font-family-display); font-size: var(--font-size-md); }
+/* How Home's checked advice was checked (mandatory F): a quiet disclosure under the cards. */
+.insight-trace { margin-top: var(--space-3); }
+.insight-trace > summary { cursor: pointer; font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--color-accent-primary); }
+.insight-trace > summary:focus-visible { outline: 2px solid var(--color-focus-ring, var(--color-accent-primary)); outline-offset: 2px; border-radius: var(--border-radius-sm); }
+.insight-trace > p { margin: var(--space-2) 0 0; font-size: var(--font-size-sm); }
 @media (min-width: 768px) { .insights { padding: var(--space-5) var(--space-6); } }
 .coming-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); margin-top: var(--space-3); }
 @media (min-width: 768px) {
@@ -731,6 +736,7 @@ button.um-item { width: 100%; border: 0; background: none; font: inherit; cursor
 .income-controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
 .income-controls .btn.sm { min-height: 36px; padding: 0 var(--space-3); font-size: var(--font-size-xs); }
 .income-controls .link-btn { min-height: 36px; padding: 0 var(--space-2); border: 0; background: none; font: inherit; font-size: var(--font-size-xs); color: var(--color-accent-primary); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.ledger-finding .link-btn { min-height: 36px; padding: 0 var(--space-1); border: 0; background: none; font: inherit; color: var(--color-accent-primary); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
 .income-controls .form-error { flex-basis: 100%; margin: 0; }
 /* Settings: one card per concern; each form saves on its own. */
 .settings { display: grid; gap: var(--space-4); max-width: 760px; }

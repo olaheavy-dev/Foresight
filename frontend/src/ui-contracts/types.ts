@@ -1185,6 +1185,7 @@ export interface EvidenceItem {
     | "format_profile"
     | "layout_profile"
     | "account_coverage";
+  link?: string | null;
   provenance: "observed" | "detected" | "confirmed" | "declared" | "user_set" | "default";
   ref: string;
   reproducible?: Reproducible | null;
@@ -2021,9 +2022,14 @@ export interface HomeInsights {
   checked_at?: string | null;
   checked_data_version?: number | null;
   data_version: number;
+  /**
+   * @maxItems 8
+   */
+  evidence?: EvidenceItem[];
   findings?: InsightFinding[];
   reason?: ("ai_paused" | "daily_limit" | "not_run") | null;
   recommendations?: InterventionCard[];
+  run_id?: string | null;
   status: "empty" | "checking" | "ready" | "paused" | "failed";
   workspace_id: string;
 }

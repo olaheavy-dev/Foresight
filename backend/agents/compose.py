@@ -954,8 +954,9 @@ class Composer:
         )
 
     def evidence_panel(self) -> EvidencePanel | None:
-        items: list[EvidenceItem] = []
-        for calc in list(self.sources.calcs.values())[:8]:
+        # Every shown card's chain first (its citation must resolve), within the panel's 8.
+        items = views.recommendation_evidence(self.ctx, self.sources.recommendations[:3])
+        for calc in list(self.sources.calcs.values())[: max(0, 8 - len(items))]:
             kind = "forecast" if calc.kind in {"forecast", "simulation"} else "calculation"
             items.append(
                 EvidenceItem(
@@ -1097,6 +1098,13 @@ class Composer:
             table = self.transactions()
             if table is not None:
                 blocks.append(table.model_copy(update={"placement": _place_tab("transactions")}))
+        if src.recommendations and "EvidencePanel" not in used:
+            # Every shown recommendation's chain is in the answer (mandatory F): its citations
+            # open how it was checked, the finding behind it and the rows it came from.
+            panel = self.evidence_panel()
+            if panel is not None:
+                blocks.append(panel.model_copy(update={"placement": _place_tab("checked")}))
+                used.add("EvidencePanel")
         if (
             self.case is not None
             and self.case.kind in {"goes_negative", "breaches_buffer"}

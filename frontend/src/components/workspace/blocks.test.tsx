@@ -87,3 +87,52 @@ describe("cost line (How it was checked only)", () => {
     expect(costLine(cached)).toBe("0 model calls · reused your earlier answer · 0.4 s");
   });
 });
+
+describe("the evidence chain in How it was checked (mandatory F)", () => {
+  it("shows the Verifier's checks and the finding's transactions, file and link", () => {
+    const U = "01ARZ3NDEKTSV4RRFFQ69G5FAV";
+    renderBlock({
+      type: "EvidencePanel",
+      block_id: "b9-evidence",
+      title: "Where the numbers come from",
+      placement: { area: "tab", tab: "checked" },
+      items: [
+        {
+          ref: `ver_${U}`,
+          kind: "verification",
+          title: "How the Verifier checked it",
+          provenance: "detected",
+          summary_lines: ["Approved by the Verifier in round 2."],
+          checks: [
+            { name: "It's achievable, not too big a cut", passed: true, kind: "deterministic" },
+            { name: "Its reasoning is grounded in the evidence", passed: true, kind: "model" },
+          ],
+        },
+        {
+          ref: `fnd_${U}`,
+          kind: "finding",
+          title: "Spending on food delivery is up 39% on usual",
+          provenance: "detected",
+          summary_lines: ["£286 in the month to 11 Oct (23 payments), against a usual £206."],
+          inputs: { transaction_count: 23, date_range: { from: "2026-09-12", to: "2026-10-11" } },
+          source_chain: {
+            import_id: `imp_${U}`,
+            filename: "monzo.csv",
+            importer: "csv_statement",
+            rows: "23 rows of this file",
+            reconciliation: { status: "reconciled", method: "balances" },
+          },
+          link: "/transactions?category=food.delivery",
+        },
+      ],
+    } as Block);
+    expect(screen.getByText("It's achievable, not too big a cut")).toBeInTheDocument();
+    expect(screen.getByText(/Based on 23 transactions, 12 Sept? 2026 to 11 Oct 2026/)).toBeInTheDocument();
+    expect(screen.getByText("monzo.csv")).toBeInTheDocument();
+    expect(screen.getByText("Every row adds up to the running balance")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /See these transactions/ })).toHaveAttribute(
+      "href",
+      "/transactions?category=food.delivery",
+    );
+  });
+});

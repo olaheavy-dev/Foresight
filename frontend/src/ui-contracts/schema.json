@@ -2902,6 +2902,19 @@
           "title": "Kind",
           "type": "string"
         },
+        "link": {
+          "anyOf": [
+            {
+              "pattern": "^/[a-z]",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Link"
+        },
         "provenance": {
           "enum": [
             "observed",
@@ -4349,6 +4362,15 @@
           "title": "Data Version",
           "type": "integer"
         },
+        "evidence": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/EvidenceItem"
+          },
+          "maxItems": 8,
+          "title": "Evidence",
+          "type": "array"
+        },
         "findings": {
           "default": [],
           "items": {
@@ -4381,6 +4403,19 @@
           },
           "title": "Recommendations",
           "type": "array"
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "pattern": "^run_[0-9A-HJKMNP-TV-Z]{26}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Run Id"
         },
         "status": {
           "enum": [

@@ -151,6 +151,9 @@ def test_a_finished_run_shows_its_checked_recommendations(
     (card,) = body["recommendations"]  # only the approved one
     assert card["title"] == "Move the gym payment"
     assert card["verification"]["verdict"] == "approved"
+    # The run behind them, so Home links to how they were checked (mandatory F).
+    (job,) = _jobs(profile["workspace_id"])
+    assert body["run_id"] == job.run_id
 
 
 def test_interrupted_jobs_run_again_after_a_restart(api: TestClient) -> None:

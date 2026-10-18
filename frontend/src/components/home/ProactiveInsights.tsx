@@ -11,7 +11,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { Icon } from "@/components/icons/Icon";
 import { Badge, Button, CardHead } from "@/components/ui/primitives";
-import { BlockEnvProvider, InterventionBlock } from "@/components/workspace/blocks";
+import { BlockEnvProvider, EvidenceBlock, InterventionBlock } from "@/components/workspace/blocks";
 // The blocks reused from the Workspace bring their styles with them.
 import "@/components/workspace/workspace.css";
 import { fetchHomeInsights, startProactiveCheck } from "@/lib/api";
@@ -139,6 +139,31 @@ export function ProactiveInsights({
               <InterventionBlock key={card.recommendation_id} block={card} />
             ))}
           </BlockEnvProvider>
+          {insights.evidence?.length ? (
+            // The evidence chain (mandatory F): each check, the findings behind the advice, the
+            // transactions and files they came from; the run's full trace is in Activity.
+            <details className="insight-trace">
+              <summary>How it was checked</summary>
+              <BlockEnvProvider value={env}>
+                <EvidenceBlock
+                  block={{
+                    type: "EvidencePanel",
+                    block_id: "home-evidence",
+                    title: "Where the advice comes from",
+                    placement: { area: "tab", tab: "checked" },
+                    items: insights.evidence,
+                  }}
+                />
+              </BlockEnvProvider>
+              {insights.run_id ? (
+                <p>
+                  <a href={`/activity#run-${insights.run_id}`}>
+                    Every step of this check, in Activity <Icon name="arrowright" />
+                  </a>
+                </p>
+              ) : null}
+            </details>
+          ) : null}
         </div>
       ) : null}
 

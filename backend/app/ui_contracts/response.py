@@ -10,6 +10,7 @@ from pydantic import Field, StringConstraints
 from backend.app.ui_contracts.blocks import (
     Block,
     CashFlowForecastData,
+    EvidenceItem,
     GoalProjection,
     InterventionCard,
     ScenarioComparisonData,
@@ -396,6 +397,10 @@ class HomeInsights(Contract):
     findings: list[InsightFinding] = []
     recommendations: list[InterventionCard] = []
     can_check: bool = False
+    # How the shown recommendations were checked, the findings behind them and their source rows
+    # (mandatory F), and the run they came from (its full trace is in Activity).
+    evidence: Annotated[list[EvidenceItem], Field(max_length=8)] = []
+    run_id: RunId | None = None
 
 
 class ActivityStep(Contract):

@@ -616,3 +616,136 @@ def test_a_what_if_past_the_forecast_runs_long_enough_and_says_where_it_is_less_
     world = world_from_store(ctx, state, _inputs(ctx))
     assert world.forecast_inputs is not None
     assert world.forecast_inputs.horizon_days == 140
+
+
+def test_a_recommendations_evidence_reaches_its_checks_finding_and_source_rows(
+    p1: AgentStore,
+) -> None:
+    """Mandatory F (docs/06 §10.2): from a recommendation, the Evidence panel carries how the
+    Verifier checked it (every rule, and that a draft was revised) and the finding that
+    triggered it, with the transactions it counts, the import they came from and a link to them.
+    Before this, the card's "checks passed" citation and its findings led nowhere."""
+    findings = [f for f in p1.ctx.all(m.Finding) if f.kind == "category_spike" and f.txn_query]
+    assert findings, "the seeded P1 demo has a category finding"
+    finding = findings[0]
+
+    def advise(state: ForesightState, ctx: RunContext) -> NodeOutput:
+        with ctx.lock:
+            card = {
+                "version_id": "v1", "title": "Cap food delivery until payday",
+                "rationale_segments": [{"kind": "text", "text": "Keeps more money in hand."}],
+                "actions": [{"type": "category_cap", "label": "Cap food delivery", "detail": ""}],
+                "impact": {
+                    "p_breach_before": {"kind": "percent", "value": 1.0, "display": "100%"},
+                    "p_breach_after": {"kind": "percent", "value": 0.2, "display": "20%"},
+                    "p_breach_window": {"from": "2026-10-28", "to": "2026-11-27"},
+                },
+                "verification": {"verdict": "approved", "revisions": 1, "checks_passed": 2,
+                                 "checks_total": 2,
+                                 "verification_id": "ver_01JAAAAAAAAAAAAAAAAAAAAAAA"},
+                "triggered_by": [finding.id],
+            }  # fmt: skip
+            rec = ctx.store.add_recommendation(
+                run_id=ctx.run_id, proposal_key="cap", status="approved", proposal={"card": card}
+            )
+            ctx.store.add_verification(
+                run_id=ctx.run_id, recommendation_id=rec.id, round=1, verdict="REJECT",
+                rule_results=[{"rule": "V-04", "passed": False, "kind": "deterministic"}],
+            )  # fmt: skip
+            final = ctx.store.add_verification(
+                run_id=ctx.run_id, recommendation_id=rec.id, round=2, verdict="APPROVE",
+                rule_results=[
+                    {"rule": "V-04", "passed": True, "kind": "deterministic"},
+                    {"rule": "V-11@judge-1", "passed": True, "kind": "judge"},
+                ],
+            )  # fmt: skip
+            # The card cites the approving round, as `build_card` does in the product.
+            checked = {**card["verification"], "verification_id": final.id}  # type: ignore[dict-item]
+            rec.proposal = {"card": {**card, "verification": checked}}
+        return NodeOutput(update={"approved_recs": [rec.id]}, label="Drafting")
+
+    nodes = _with_spec(CAR_REPAIR, {
+        "advise": NodeSpec("advise", "advisor", "tool", advise, "Drafting"),
+    })  # fmt: skip
+    out, _ = _ask_with(
+        p1, nodes, json_ok(_intent(needs_advice=True)), spend_limit(), spend_limit(),
+        spend_limit(),
+    )  # fmt: skip
+    body = _body(p1, out.response_id)
+    (panel,) = [b for b in body["blocks"] if b["type"] == "EvidencePanel"]
+    by_kind = {i["kind"]: i for i in panel["items"]}
+
+    check = by_kind["verification"]
+    card = next(b for b in body["blocks"] if b["type"] == "InterventionCard")
+    assert check["ref"] == card["verification"]["verification_id"]  # the card's citation resolves
+    assert [c["name"] for c in check["checks"]] == [
+        "It's achievable, not too big a cut", "Its reasoning is grounded in the evidence",
+    ]  # fmt: skip
+    assert [c["kind"] for c in check["checks"]] == ["deterministic", "model"]
+    assert any("rejected and revised" in line for line in check["summary_lines"])
+
+    found = by_kind["finding"]
+    assert found["ref"] == finding.id
+    assert "{{" not in found["title"]  # filled from its calculation, as on Home
+    assert found["inputs"]["transaction_count"] > 0
+    assert found["link"] == f"/transactions?finding={finding.id}"  # exactly its rows
+    source = found["source_chain"]
+    assert source["filename"]
+    assert source["importer"] == "csv_statement"
+    assert check_skeleton(AgentResponse.model_validate(body).blocks) == []
+
+
+def test_the_evidence_chain_fits_the_panel_with_every_cards_check_first(p1: AgentStore) -> None:
+    """#62 review: three shown cards citing many findings can't overflow the panel's 8 items;
+    each card's Verifier item comes first, so every card's citation resolves."""
+    from backend.app import views
+    from backend.app.ui_contracts.blocks import InterventionCard
+
+    findings = [f.id for f in p1.ctx.all(m.Finding) if f.headline]
+    assert len(findings) >= 2
+    run = p1.create_run(
+        workflow="ask", trigger="question", data_version=1, prefs_version=0,
+        deadline_at=datetime.now(UTC) + timedelta(minutes=2), thread_id=None,
+    )  # fmt: skip
+    cards = []
+    for i in range(3):
+        rec = p1.add_recommendation(run_id=run.id, proposal_key=f"k{i}", status="approved",
+                                    proposal={})  # fmt: skip
+        ver = p1.add_verification(run_id=run.id, recommendation_id=rec.id, round=1,
+                                  verdict="APPROVE", rule_results=[{"rule": "V-01",
+                                  "passed": True, "kind": "deterministic"}])  # fmt: skip
+        cards.append(
+            InterventionCard.model_validate(
+                {
+                    "type": "InterventionCard",
+                    "block_id": f"b{i}",
+                    "title": "Do it",
+                    "placement": {"area": "overview", "slot": "what_to_do"},
+                    "currency": "GBP",
+                    "recommendation_id": rec.id,
+                    "version_id": "v1",
+                    "status": "approved",
+                    "rationale_segments": [{"kind": "text", "text": "Because."}],
+                    "actions": [{"type": "x", "label": "Do it", "detail": ""}],
+                    "impact": {
+                        "p_breach_before": {"kind": "percent", "value": 1.0, "display": "100%"},
+                        "p_breach_after": {"kind": "percent", "value": 0.5, "display": "50%"},
+                        "p_breach_window": {"from": "2026-10-28", "to": "2026-11-27"},
+                    },
+                    "verification": {
+                        "verdict": "approved",
+                        "revisions": 0,
+                        "checks_passed": 1,
+                        "checks_total": 1,
+                        "verification_id": ver.id,
+                    },
+                    "triggered_by": findings,
+                }
+            )  # fmt: skip
+        )
+    # The demo has two findings, so a tighter bound stands in for the panel's 8: 3 checks + 2
+    # findings would be 5; within 4, every card's check is kept and one finding follows.
+    items = views.recommendation_evidence(p1.ctx, cards, limit=4)
+    assert [i.kind for i in items] == ["verification"] * 3 + ["finding"]
+    assert len(views.recommendation_evidence(p1.ctx, cards)) == 5  # within the default 8
+    assert {i.ref for i in items[:3]} == {c.verification.verification_id for c in cards}
