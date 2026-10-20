@@ -16,9 +16,7 @@ export default function PrivacyPage() {
         <h1 id="privacy-h" className="serif">
           How Foresight handles your data
         </h1>
-        <p className="sub">
-          Last updated {UPDATED}. Foresight is a personal portfolio project run by one person.
-        </p>
+        <p className="sub">Last updated {UPDATED}. Foresight is a personal portfolio project run by one person.</p>
 
         <h2>What we store</h2>
         <ul>
