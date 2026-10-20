@@ -4,8 +4,9 @@ import { defineConfig, devices } from "@playwright/test";
 // for post-deploy smoke tests (BASE_URL=https://foresight.olaheavy.dev).
 export default defineConfig({
   testDir: "./e2e",
-  // Workspace journeys need the scripted mock API: playwright.workspace.config.ts.
-  testIgnore: /workspace(\.screenshots)?\.spec\.ts$/,
+  // Workspace journeys need the scripted mock API: playwright.workspace.config.ts. The portfolio
+  // walkthrough records on the live site with its own config: playwright.walkthrough.config.ts.
+  testIgnore: /(workspace(\.screenshots)?|walkthrough)\.spec\.ts$/,
   timeout: 30_000,
   // CI's runner is shared by the whole stack and two browsers; the app allows a busy server up to
   // 10 s for the ledger (TIMEOUTS.ledger), so assertions there wait as long. Local runs keep 5 s.
