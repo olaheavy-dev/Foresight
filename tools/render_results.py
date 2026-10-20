@@ -49,6 +49,11 @@ def _met(summary: dict[str, Any], suite: str, *ids: str) -> str:
     return "—"
 
 
+def _target_value(summary: dict[str, Any], suite: str, target_id: str) -> Any:
+    targets = (summary.get("targets") or {}).get(suite, [])
+    return next((t.get("value") for t in targets if t.get("id") == target_id), None)
+
+
 def _sim_labels(props: Any) -> str:
     """ "SIM-1/2/3/6/11" from the suite's property ids, in numeric order."""
     if not isinstance(props, dict) or not props:
@@ -175,9 +180,9 @@ def render(summary: dict[str, Any]) -> str:
         f"{summary['generator_version']} · seed {', '.join(str(x) for x in summary['seeds'])}",
         "",
         "Reproduce: `make eval` (every deterministic suite) or `make eval-fast` (< 60 s). Full "
-        "report: `evals/results/<run>/report.md`. Suites that use a model (the Verifier, "
-        "orchestration, the Workspace) are scored on recorded responses, so a run makes no model "
-        "calls.",
+        "report: `evals/results/<run>/report.md`. By default (replay), suites that use a model "
+        "(the Verifier, orchestration, the Workspace) are scored on recorded responses, with no "
+        "model calls; the line above gives this run's mode.",
         "",
         *_core_table(core_metrics(summary)),
         "**Headline**",
@@ -187,7 +192,9 @@ def render(summary: dict[str, Any]) -> str:
         f"| Categorisation | Accuracy · macro-F1 (rules-only) | P1+P2 test split "
         f"(n={_f(h['categorisation.n'])}) | {_f(h['categorisation.accuracy'])} · "
         f"{_f(h['categorisation.macro_f1'])} | majority class "
-        f"{_f(h['categorisation.majority_accuracy'])} | hybrid ≥ 0.93 | — |",
+        f"{_f(h['categorisation.majority_accuracy'])} | hybrid ≥ 0.93 on the same split (got "
+        f"{_f(_target_value(summary, 'E-CAT', 'CAT-hybrid-acc-generated'))}) | "
+        f"{_met(summary, 'E-CAT', 'CAT-hybrid-acc-generated')} |",
         f"| Forecast | MAE @30 d | P1 | {_gbp(h['forecast.mae30_gbp'])} | "
         f"{_baseline(h['forecast.best_baseline_30'])} {_gbp(h['forecast.best_baseline_mae30_gbp'])}"
         f" | skill vs repeat-30 ≥ 0.20 (got {_f(h['forecast.skill_vs_B1_30'])}) | "

@@ -78,7 +78,7 @@ What isn't covered yet: categorisation accuracy is measured on a generated test 
 
 Run `evalrun_20261017T092618Z_6770a22` · commit `6770a22` · 2026-10-17T09:26:18Z · mode: deterministic (no model calls) · engine fc-1.3.0 · generator gen-1.1.0 · seed 1729
 
-Reproduce: `make eval` (every deterministic suite) or `make eval-fast` (< 60 s). Full report: `evals/results/<run>/report.md`. Suites that use a model (the Verifier, orchestration, the Workspace) are scored on recorded responses, so a run makes no model calls.
+Reproduce: `make eval` (every deterministic suite) or `make eval-fast` (< 60 s). Full report: `evals/results/<run>/report.md`. By default (replay), suites that use a model (the Verifier, orchestration, the Workspace) are scored on recorded responses, with no model calls; the line above gives this run's mode.
 
 **Core metrics: cost · accuracy · latency** (E-EFF gate: pass; latency from recorded live calls, docs/09 §10f)
 
@@ -100,7 +100,7 @@ Targets: EFF-1 <= 0.03 ✓ · EFF-2 <= 0.055 ✓ · EFF-3 <= 0.1 ✓ · EFF-4 <=
 
 | Area | Metric | Dataset | Foresight | Best baseline | Target | Met |
 |---|---|---|---|---|---|---|
-| Categorisation | Accuracy · macro-F1 (rules-only) | P1+P2 test split (n=498) | 0.942 · 0.807 | majority class 0.205 | hybrid ≥ 0.93 | — |
+| Categorisation | Accuracy · macro-F1 (rules-only) | P1+P2 test split (n=498) | 0.942 · 0.807 | majority class 0.205 | hybrid ≥ 0.93 on the same split (got 0.942) | ✓ |
 | Forecast | MAE @30 d | P1 | £443.19 | B0-flat £643.36 | skill vs repeat-30 ≥ 0.20 (got 0.641) | ✓ |
 | Forecast | MASE @30 d | P1 | 0.495 | best naive 0.726 | < 1 and below the best naive | ✓ |
 | Forecast | P10–P90 coverage (all h) | P1, P2, S4 | 0.785 (P1) · 0.866 (P2) · 0.762 (S4) | — | 0.72–0.88 (P1, P2) | ✓ |
