@@ -23,6 +23,11 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore", env_ignore_empty=True)
 
     mesh_api_key: str = ""
+    # Where model calls go: "mesh" (the gateway) or "openai" (OpenAI directly, docs/11). Model IDs
+    # below keep their provider prefix either way, so recordings replay unchanged; under "openai"
+    # every tier's primary must be an `openai/` model and other providers' fallbacks are skipped.
+    model_provider: str = "mesh"
+    openai_api_key: str = ""
     # Model IDs per tier (docs/06 §13), chosen from Mesh's catalogue (docs/00 §12.1). The Verifier
     # judge uses a different provider from the Advisor so the check is independent.
     mesh_model_fast: str = "openai/gpt-6-luna"

@@ -1,0 +1,128 @@
+"""MODEL_PROVIDER=openai: same gateway, OpenAI directly (docs/11). No network."""
+
+from __future__ import annotations
+
+from types import SimpleNamespace
+from typing import Any
+
+import httpx
+import pytest
+from openai import RateLimitError
+
+from backend.mesh.mesh_client import (
+    OPENAI_BASE_URL,
+    MeshClient,
+    MeshConfigError,
+    MeshSpendLimitError,
+    ModelTier,
+)
+from backend.settings import Settings
+
+
+class StubCompletions:
+    def __init__(self, error: Exception | None = None) -> None:
+        self.error = error
+        self.calls: list[dict[str, Any]] = []
+
+    def create(self, **kwargs: Any) -> SimpleNamespace:
+        self.calls.append(kwargs)
+        if self.error is not None:
+            raise self.error
+        return SimpleNamespace(
+            id="chatcmpl_1",
+            model=kwargs["model"],
+            choices=[SimpleNamespace(message=SimpleNamespace(content="ok"))],
+            usage=SimpleNamespace(prompt_tokens=1000, completion_tokens=100, total_tokens=1100),
+        )
+
+
+def _settings(**overrides: Any) -> Settings:
+    values: dict[str, Any] = {
+        "model_provider": "openai",
+        "openai_api_key": "sk_test",
+        "mesh_model_fast": "openai/gpt-6-luna",
+        "mesh_model_fast_fallback": "anthropic/claude-haiku-5.5",
+        "mesh_model_reasoning": "openai/gpt-6.1-sol",
+        "mesh_model_reasoning_fallback": "google/gemini-3.1-pro",
+    }
+    values.update(overrides)
+    return Settings(**values)
+
+
+def _client(completions: StubCompletions, **overrides: Any) -> MeshClient:
+    stub = SimpleNamespace(chat=SimpleNamespace(completions=completions))
+    return MeshClient(settings=_settings(**overrides), client=stub, sleep=lambda _: None)  # type: ignore[arg-type]
+
+
+def _ask(client: MeshClient, tier: ModelTier = ModelTier.FAST) -> Any:
+    return client.complete(tier=tier, messages=[{"role": "user", "content": "hello"}])
+
+
+def test_openai_provider_uses_the_fixed_openai_address(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://example.invalid/v1")
+    client = MeshClient(settings=_settings())
+    assert client.provider == "openai"
+    assert client.base_url == OPENAI_BASE_URL
+
+
+def test_openai_provider_needs_its_own_key() -> None:
+    with pytest.raises(MeshConfigError, match="OPENAI_API_KEY"):
+        MeshClient(settings=_settings(openai_api_key="", mesh_api_key="rsk_test"))
+
+
+def test_unknown_provider_is_a_config_error() -> None:
+    with pytest.raises(MeshConfigError, match="MODEL_PROVIDER"):
+        MeshClient(settings=_settings(model_provider="elsewhere"))
+
+
+def test_model_is_sent_without_its_prefix_and_priced() -> None:
+    completions = StubCompletions()
+    result = _ask(_client(completions))
+    assert completions.calls[0]["model"] == "gpt-6-luna"
+    assert result.text == "ok"
+    assert result.cost_estimate is not None
+    assert result.cost_estimate > 0
+
+
+def test_other_providers_fallbacks_are_skipped() -> None:
+    """Haiku can't be reached on OpenAI, so a failing primary isn't followed by a doomed call."""
+    client = _client(StubCompletions())
+    assert client.models_for(ModelTier.FAST) == ("openai/gpt-6-luna", "")
+
+
+def test_a_non_openai_primary_is_a_config_error() -> None:
+    client = _client(StubCompletions(), mesh_model_reasoning="anthropic/claude-sonnet-5.5")
+    with pytest.raises(MeshConfigError, match="claude-sonnet"):
+        _ask(client, ModelTier.REASONING)
+
+
+def test_replay_still_answers_recordings_of_other_providers() -> None:
+    """Recordings made through Mesh keep their keys (prefixed model IDs), so replay is unchanged."""
+    client = MeshClient(
+        settings=_settings(
+            mesh_cassette_mode="replay", mesh_model_reasoning="anthropic/claude-sonnet-5.5"
+        )
+    )
+    assert client.models_for(ModelTier.REASONING) == (
+        "anthropic/claude-sonnet-5.5",
+        "google/gemini-3.1-pro",
+    )
+
+
+def test_insufficient_quota_is_a_spend_limit_not_a_retry() -> None:
+    response = httpx.Response(429, request=httpx.Request("POST", OPENAI_BASE_URL))
+    error = RateLimitError(
+        "quota",
+        response=response,
+        body={"error": {"code": "insufficient_quota", "message": "quota"}},
+    )
+    completions = StubCompletions(error=error)
+    client = _client(completions)
+    with pytest.raises(MeshSpendLimitError):
+        _ask(client)
+    assert len(completions.calls) == 1
+
+
+def test_no_balance_lookup_on_openai() -> None:
+    client = _client(StubCompletions())
+    assert client._available_usd() is None
