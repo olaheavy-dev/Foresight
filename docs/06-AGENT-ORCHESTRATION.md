@@ -709,13 +709,15 @@ Test: freeze the same accepted ledger interpretations, forecast inputs and typed
 | Analyst ranking & wording | reasoning | Judgement about salience; one call per refresh (questions reuse it, §6.1) | model default* |
 | Forecaster scenario parse | fast → reasoning if multi-modifier or low confidence | Most scenarios are simple | 0 |
 | Advisor | reasoning | Hardest judgement task | model default* |
-| Verifier judge | verifier tier: a different provider from the Advisor | Independence | 0 |
+| Verifier judge | verifier tier: a different model from the Advisor (until 20 Oct 2026, a different provider) | Independence | 0 |
 | Digest headline | fast | ≤ 20 words | 0.3 |
 
 Model IDs are configuration (settings `MESH_MODEL_<TIER>` and `MESH_MODEL_<TIER>_FALLBACK`); each model's capabilities and price are data in `backend/mesh/models.yaml` (or the file named by `MESH_MODELS_FILE`), so switching a model needs no code change. Chosen from Mesh's catalogue, probed live on 13 Oct 2026. The reasoning tier also serves the Analyst's ranking and the Forecaster's multi-modifier parse. **Selection rule** (docs/00 §8): drop any model that fails its tier's accuracy gates; drop any model that breaks the end-to-end latency targets; of what is left, pick the cheapest, and choose the faster one when costs are within 10%. Applied 13 Oct 2026 (owner decision; `evals/results/20261013T2200Z_advisor_model_trial/`, evals/CHANGELOG.md):
 
 - **Reasoning tier stays on Claude Sonnet 5.5.** GPT-5.6 Luna Pro matched it on the Advisor's 18 dev cases at about 37% lower cost, then failed on whole answers: *accuracy*, the Analyst's ranking broke its output check even after the repair (explanations over the 240-character limit), so 21 of the 60 E-UI answers lost their Analyst step; *latency*, Advisor calls took 17–57 s, putting advice answers at about 44 s median and 62 s at worst (targets 35 s and 60 s). Gemini 3.8 Flash failed the Advisor schema.
 - **Verifier judge stays on GPT-6.1 Sol** (a different provider from the Advisor). Haiku 5.5 failed the E-VER accuracy gate as judge on the dev trial (52% repairs with json_schema; with tool calls, one correct fix withdrawn).
+
+- **20 Oct 2026, owner decision (`00` §12 item 14):** every tier moves to OpenAI, called directly. The judge must be a different model from the Advisor rather than a different provider; a same-family judge may share the Advisor's blind spots, so E-VER's flawed-proposal cases are the check that it still catches them. The models are picked by the selection rule above, on a trial using the remaining Mesh credit; the table below changes when that trial and the re-recording are accepted.
 
 | Tier | Primary | Fallback |
 |---|---|---|

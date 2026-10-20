@@ -52,7 +52,9 @@ from backend.settings import get_settings
 from evals.advice_world import BASELINE, base_world, case_world
 
 ROOT = Path(__file__).resolve().parent
-RUN_DIR = ROOT / "results" / "20261013T2200Z_advisor_model_trial"
+# The 13 Oct trial (arms A–D) stays frozen in its own folder. The 20 Oct all-OpenAI trial
+# (arms E, F) runs on cases rebuilt for the gen-1.1.0 ledgers.
+RUN_DIR = ROOT / "results" / "20261020T2030Z_openai_advisor_trial"
 CASES_FILE = RUN_DIR / "dev_cases.jsonl"
 MAX_REVISIONS = 2
 ARMS: dict[str, dict[str, str]] = {
@@ -61,10 +63,16 @@ ARMS: dict[str, dict[str, str]] = {
     "C": {"reasoning": "openai/gpt-5.6-luna-pro", "verifier": "anthropic/claude-sonnet-5.5"},
     # Owner-approved follow-up (13 Oct 2026): a ~20x cheaper judge, still a different provider.
     "D": {"reasoning": "openai/gpt-5.6-luna-pro", "verifier": "anthropic/claude-haiku-5.5"},
+    # Owner decision 20 Oct 2026 (docs/00 §12 item 14): all OpenAI, the judge a different model
+    # from the Advisor. E keeps the judge validated in arm A; F swaps the two Sol models.
+    "E": {"reasoning": "openai/gpt-6-sol", "verifier": "openai/gpt-6.1-sol"},
+    "F": {"reasoning": "openai/gpt-6.1-sol", "verifier": "openai/gpt-6-sol"},
 }
+# Categories whose rise the trend detector reports on P1. Since gen-1.1.0 (14 Oct 2026) P1 has no
+# eating-out spike, so those cases cite the forecast alone and claim only what it shows (the
+# precedent set for the authored E-VER cases that day, evals/CHANGELOG.md).
 FINDING = {
     "food.delivery": "fnd:category_spike:food.delivery",
-    "food.eating_out": "fnd:category_spike:food.eating_out",
 }
 REVISABLE = {"impact_mismatch", "infeasible_cut", "dangling_evidence", "generic_advice"}
 REVISABLE |= {"wrong_evidence"}
@@ -105,11 +113,17 @@ def _cap_case(
             or (
                 f"Your {label} spending has risen above its usual level; holding it at {{{{cap}}}}"
                 " a month eases the low point before payday."
+                if cat in FINDING
+                else f"Holding {label} at {{{{cap}}}} a month eases the low point before payday."
             ),
             "trigger_refs": refs
             if refs is not None
             else [
-                {"id": FINDING[cat], "kind": "finding", "role": "trigger"},
+                *(
+                    [{"id": FINDING[cat], "kind": "finding", "role": "trigger"}]
+                    if cat in FINDING
+                    else []
+                ),
                 {"id": BASELINE, "kind": "forecast", "role": "trigger"},
             ],
         },
