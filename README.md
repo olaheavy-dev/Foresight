@@ -2,11 +2,11 @@
 
 **Foresight tells you where your money is heading, checks its own advice before it reaches you, and gives every number a receipt.**
 
-An agent-native financial intelligence system for the Agent Arena 2026 hackathon (FinPilot track).
+An agent-native personal-finance workspace, built by one person as a portfolio project (started for the Agent Arena 2026 hackathon).
 
-- **Live app:** https://foresight.olaheavy.dev (deployed continuously; features appear as they ship)
+- **Live app:** https://foresight.olaheavy.dev (deployed continuously; the demo profile is fictional data)
 - **Design and plan:** [`docs/README.md`](docs/README.md) (start here), canonical decisions in [`docs/00-DECISION-REGISTER.md`](docs/00-DECISION-REGISTER.md)
-- **Status:** Stage 2: the forecast and the AI Workspace (agents, checked advice, anomaly findings, audit trail) are live. Nothing below is claimed until its evaluation is green.
+- **Status:** everything under "Built" is live. Nothing is claimed until its evaluation is green.
 
 ## Status
 
@@ -78,7 +78,7 @@ What isn't covered yet: categorisation accuracy is measured on a generated test 
 
 Run `evalrun_20261017T092618Z_6770a22` · commit `6770a22` · 2026-10-17T09:26:18Z · mode: deterministic (no model calls) · engine fc-1.3.0 · generator gen-1.1.0 · seed 1729
 
-Reproduce: `make eval` (every deterministic suite) or `make eval-fast` (< 60 s). Full report: `evals/results/<run>/report.md`. LLM arms (hybrid categorisation, Verifier, orchestration) arrive with Stage 2 and show as —.
+Reproduce: `make eval` (every deterministic suite) or `make eval-fast` (< 60 s). Full report: `evals/results/<run>/report.md`. Suites that use a model (the Verifier, orchestration, the Workspace) are scored on recorded responses, so a run makes no model calls.
 
 **Core metrics: cost · accuracy · latency** (E-EFF gate: pass; latency from recorded live calls, docs/09 §10f)
 
@@ -100,7 +100,7 @@ Targets: EFF-1 <= 0.03 ✓ · EFF-2 <= 0.055 ✓ · EFF-3 <= 0.1 ✓ · EFF-4 <=
 
 | Area | Metric | Dataset | Foresight | Best baseline | Target | Met |
 |---|---|---|---|---|---|---|
-| Categorisation | Accuracy · macro-F1 (rules-only) | P1+P2 test split (n=498) | 0.942 · 0.807 | majority class 0.205 | hybrid ≥ 0.93 (Stage 2) | — |
+| Categorisation | Accuracy · macro-F1 (rules-only) | P1+P2 test split (n=498) | 0.942 · 0.807 | majority class 0.205 | hybrid ≥ 0.93 | — |
 | Forecast | MAE @30 d | P1 | £443.19 | B0-flat £643.36 | skill vs repeat-30 ≥ 0.20 (got 0.641) | ✓ |
 | Forecast | MASE @30 d | P1 | 0.495 | best naive 0.726 | < 1 and below the best naive | ✓ |
 | Forecast | P10–P90 coverage (all h) | P1, P2, S4 | 0.785 (P1) · 0.866 (P2) · 0.762 (S4) | — | 0.72–0.88 (P1, P2) | ✓ |
@@ -161,3 +161,7 @@ Not run yet: E-ACCT, E-ALIAS, E-XFER.
 ## Privacy
 
 All personas and figures in this repository are fictional, and a pre-commit hook blocks statement files and account identifiers from the repo. In the deployed app you can import your own CSV statements: they're stored privately for your guest session (deleted after 7 days unused) or your Google account, account numbers are masked before any model call, and **Delete my data** in the account menu removes every profile, import and conversation at once.
+
+## License
+
+Copyright © 2026 Sunkanmi Olawuwo. All rights reserved. The code is public to read; it may not be copied, modified or used without written permission (see [`LICENSE`](LICENSE)).

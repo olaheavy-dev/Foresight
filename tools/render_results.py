@@ -175,8 +175,9 @@ def render(summary: dict[str, Any]) -> str:
         f"{summary['generator_version']} · seed {', '.join(str(x) for x in summary['seeds'])}",
         "",
         "Reproduce: `make eval` (every deterministic suite) or `make eval-fast` (< 60 s). Full "
-        "report: `evals/results/<run>/report.md`. LLM arms (hybrid categorisation, Verifier, "
-        "orchestration) arrive with Stage 2 and show as —.",
+        "report: `evals/results/<run>/report.md`. Suites that use a model (the Verifier, "
+        "orchestration, the Workspace) are scored on recorded responses, so a run makes no model "
+        "calls.",
         "",
         *_core_table(core_metrics(summary)),
         "**Headline**",
@@ -186,7 +187,7 @@ def render(summary: dict[str, Any]) -> str:
         f"| Categorisation | Accuracy · macro-F1 (rules-only) | P1+P2 test split "
         f"(n={_f(h['categorisation.n'])}) | {_f(h['categorisation.accuracy'])} · "
         f"{_f(h['categorisation.macro_f1'])} | majority class "
-        f"{_f(h['categorisation.majority_accuracy'])} | hybrid ≥ 0.93 (Stage 2) | — |",
+        f"{_f(h['categorisation.majority_accuracy'])} | hybrid ≥ 0.93 | — |",
         f"| Forecast | MAE @30 d | P1 | {_gbp(h['forecast.mae30_gbp'])} | "
         f"{_baseline(h['forecast.best_baseline_30'])} {_gbp(h['forecast.best_baseline_mae30_gbp'])}"
         f" | skill vs repeat-30 ≥ 0.20 (got {_f(h['forecast.skill_vs_B1_30'])}) | "

@@ -3,7 +3,7 @@ import { Logo } from "@/components/Logo";
 
 export const metadata = { title: "Privacy · Foresight" };
 
-const UPDATED = "15 October 2026";
+const UPDATED = "20 October 2026";
 const ISSUES = "https://github.com/olaheavy-dev/Foresight/issues";
 
 /** Public privacy notice (linked from Landing and Google's consent screen). Plain facts only. */
@@ -17,7 +17,7 @@ export default function PrivacyPage() {
           How Foresight handles your data
         </h1>
         <p className="sub">
-          Last updated {UPDATED}. Foresight is a hackathon project (Agent Arena 2026) run by one person.
+          Last updated {UPDATED}. Foresight is a personal portfolio project run by one person.
         </p>
 
         <h2>What we store</h2>

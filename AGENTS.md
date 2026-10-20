@@ -4,7 +4,7 @@
 
 ## What this is
 
-An agent-native personal-finance workspace (Agent Arena 2026). Next.js frontend (`frontend/`), FastAPI backend (`backend/app`), a deterministic finance engine (`backend/finance_core`), LangGraph agents (`backend/agents`), PostgreSQL, and every model call through the Mesh gateway (`backend/mesh/mesh_client.py`). Features ship behind flags in `features.yaml`, and evaluation suites live in `evals/`.
+An agent-native personal-finance workspace (a portfolio project, started for Agent Arena 2026). Next.js frontend (`frontend/`), FastAPI backend (`backend/app`), a deterministic finance engine (`backend/finance_core`), LangGraph agents (`backend/agents`), PostgreSQL, and every model call through the Mesh gateway (`backend/mesh/mesh_client.py`). Features ship behind flags in `features.yaml`, and evaluation suites live in `evals/`.
 
 ## Commands
 
