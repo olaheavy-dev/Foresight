@@ -20,6 +20,7 @@ def test_the_shipped_file_covers_every_configured_tier_model() -> None:
         s.mesh_model_fast, s.mesh_model_fast_fallback, s.mesh_model_reasoning,
         s.mesh_model_reasoning_fallback, s.mesh_model_verifier, s.mesh_model_verifier_fallback,
     }  # fmt: skip
+    configured.discard("")  # an empty fallback means none (the judge has none since 20 Oct 2026)
     models = model_config.load()["models"]
     assert configured <= set(models)
     assert all("price_in" in models[m] and "price_out" in models[m] for m in configured)

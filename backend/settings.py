@@ -28,17 +28,17 @@ class Settings(BaseSettings):
     # every tier's primary must be an `openai/` model and other providers' fallbacks are skipped.
     model_provider: str = "mesh"
     openai_api_key: str = ""
-    # Model IDs per tier (docs/06 §13), chosen from Mesh's catalogue (docs/00 §12.1). The Verifier
-    # judge uses a different provider from the Advisor so the check is independent.
+    # Model IDs per tier (docs/06 §13). Owner decision 20 Oct 2026 (docs/00 §12 item 14): every tier
+    # on OpenAI, the Verifier judge a different model from the Advisor. GPT-6 Sol as Advisor won the
+    # dev-case trial (evals/results/20261020T2030Z_openai_advisor_trial); GPT-6.1 Sol stays
+    # the judge. The judge has no fallback: the only other Sol model is the Advisor's.
+    # GPT-5.6 Luna Pro failed whole-answer accuracy and latency on 13 Oct (evals/CHANGELOG.md).
     mesh_model_fast: str = "openai/gpt-6-luna"
-    mesh_model_fast_fallback: str = "anthropic/claude-haiku-5.5"
-    # Owner decision 13 Oct 2026 under the core-metrics rule (docs/00 §8): GPT-5.6 Luna Pro was
-    # tried on the reasoning tier and failed accuracy and latency (evals/CHANGELOG.md), so the
-    # Advisor/Analyst stay on Claude Sonnet 5.5 and the judge on GPT-6.1 Sol (another provider).
-    mesh_model_reasoning: str = "anthropic/claude-sonnet-5.5"
-    mesh_model_reasoning_fallback: str = "google/gemini-3.1-pro"
+    mesh_model_fast_fallback: str = "openai/gpt-6-sol"
+    mesh_model_reasoning: str = "openai/gpt-6-sol"
+    mesh_model_reasoning_fallback: str = "openai/gpt-6.1-sol"
     mesh_model_verifier: str = "openai/gpt-6.1-sol"
-    mesh_model_verifier_fallback: str = "google/gemini-3.1-pro"
+    mesh_model_verifier_fallback: str = ""
     # Per-call timeouts by tier (docs/05 §6.4); transport retries are ours, not the SDK's.
     mesh_timeout_fast_seconds: float = 8.0
     mesh_timeout_reasoning_seconds: float = 25.0
