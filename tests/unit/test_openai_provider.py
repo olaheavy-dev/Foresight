@@ -42,7 +42,7 @@ def _settings(**overrides: Any) -> Settings:
         "openai_api_key": "sk_test",
         "mesh_model_fast": "openai/gpt-6-luna",
         "mesh_model_fast_fallback": "anthropic/claude-haiku-5.5",
-        "mesh_model_reasoning": "openai/gpt-6.1-sol",
+        "mesh_model_reasoning": "openai/gpt-6-sol",
         "mesh_model_reasoning_fallback": "google/gemini-3.1-pro",
     }
     values.update(overrides)
@@ -167,3 +167,19 @@ def test_the_advisor_can_never_fall_back_to_its_judge() -> None:
     advisor_models = {s.mesh_model_reasoning, s.mesh_model_reasoning_fallback} - {""}
     judge_models = {s.mesh_model_verifier, s.mesh_model_verifier_fallback} - {""}
     assert not advisor_models & judge_models
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"mesh_model_reasoning": "openai/gpt-6.1-sol"},
+        {"mesh_model_reasoning_fallback": "openai/gpt-6.1-sol"},
+        {"mesh_model_verifier_fallback": "openai/gpt-6-sol"},
+    ],
+)
+def test_a_configuration_where_the_advisor_judges_itself_is_refused(
+    overrides: dict[str, str],
+) -> None:
+    """Codex on #67: an override must not make one model write and check advice."""
+    with pytest.raises(MeshConfigError, match="judge"):
+        _client(StubCompletions(), **overrides)

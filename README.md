@@ -35,7 +35,7 @@ Features ship behind flags ([`features.yaml`](features.yaml)). A feature is list
 - Income and recurring-bill detection
 - 90-day cash-flow forecast with uncertainty band
 - What-if simulation against the same engine
-- Coordinator and five specialist agents (LangGraph, Mesh)
+- Coordinator and five specialist agents (LangGraph, OpenAI)
 - Behaviour trends and anomaly detection
 - Advisor and Verifier loop (advice checked before you see it)
 - Evidence and audit trail for every recommendation
@@ -59,16 +59,16 @@ Features ship behind flags ([`features.yaml`](features.yaml)). A feature is list
 
 <!-- STATUS:END -->
 
-## Model calls go through Mesh only
+## Model calls go through one gateway
 
-Every model call goes through [`backend/mesh/mesh_client.py`](backend/mesh/mesh_client.py) to `https://api.meshapi.ai/v1`. No other module may import an AI SDK. An import-linter contract and `tests/unit/test_mesh_only.py` enforce this. There are no embeddings, no OCR and no client-side AI: the web app never calls a model.
+Every model call goes through [`backend/mesh/mesh_client.py`](backend/mesh/mesh_client.py), which calls OpenAI (`https://api.openai.com/v1`, `MODEL_PROVIDER=openai`; the earlier Mesh route is kept until it is removed). No other module may import an AI SDK, and the base URLs are fixed in code. An import-linter contract and `tests/unit/test_mesh_only.py` enforce this. There are no embeddings, no OCR and no client-side AI: the web app never calls a model.
 
 ## Run it
 
 Requirements: Docker, or Python 3.10+ and PostgreSQL 16.
 
 ```bash
-cp .env.example .env          # add MESH_API_KEY
+cp .env.example .env          # set OPENAI_API_KEY (replay and make check need no key)
 make demo                     # postgres + api + web via docker compose → http://localhost:3000
 ```
 
@@ -77,14 +77,14 @@ Development:
 ```bash
 python -m venv .venv && source .venv/bin/activate
 make install                  # dependencies + pre-commit hooks
-make check                    # lint, types, Mesh-only contracts, unit tests, flag and README checks
+make check                    # lint, types, one-gateway contracts, unit tests, flag and README checks
 docker compose up -d postgres
 DATABASE_URL=postgresql+psycopg://foresight:change_me@localhost:5432/foresight make test-db
 ```
 
 ## Self-evaluation
 
-The results below are generated from `evals/results/latest.json` by `tools/render_results.py`; CI checks that the README matches them (see [`docs/09-EVALUATION-STRATEGY.md`](docs/09-EVALUATION-STRATEGY.md)). Suites that involve models replay real Mesh responses recorded once (`evals/cassettes`), so CI measures real model behaviour without spending; each recording run and its cost is logged in [`evals/CHANGELOG.md`](evals/CHANGELOG.md). A feature is switched on only when every required target of its suites is measured and met: an unmeasured target fails unless the suite excludes it explicitly and says why.
+The results below are generated from `evals/results/latest.json` by `tools/render_results.py`; CI checks that the README matches them (see [`docs/09-EVALUATION-STRATEGY.md`](docs/09-EVALUATION-STRATEGY.md)). Suites that involve models replay real model responses recorded once (through Mesh until 20 Oct 2026, OpenAI directly since) (`evals/cassettes`), so CI measures real model behaviour without spending; each recording run and its cost is logged in [`evals/CHANGELOG.md`](evals/CHANGELOG.md). A feature is switched on only when every required target of its suites is measured and met: an unmeasured target fails unless the suite excludes it explicitly and says why.
 
 What isn't covered yet: categorisation accuracy is measured on a generated test split, not on an independent hand-labelled UK holdout (those four targets are excluded and shown as not measured); the AI format proposal for unknown CSV layouts isn't shipped (unknown files get the column form instead); and E-ORC's pass rate over all 31 cases includes cases for features not built yet, so it is shown but not gated, while the cases for built features must all pass (`ORC-pass-built`).
 

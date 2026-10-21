@@ -185,7 +185,7 @@ def test_anthropic_tool_path_uses_auto_tool_choice() -> None:
 
 
 def test_gemini_pro_uses_forced_tool_calls_instead_of_json_schema() -> None:
-    s = settings(mesh_model_verifier="google/gemini-3.1-pro")
+    s = settings(mesh_model_verifier="google/gemini-3.1-pro", mesh_model_reasoning_fallback="")
     calls = ScriptedCompletions(
         ok(None, tool_arguments='{"category": "groceries", "confidence": 0.7}')
     )
