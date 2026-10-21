@@ -462,6 +462,13 @@ class MeshClient:
             return model.removeprefix("openai/")
         return model
 
+    def _token_limit(self, max_tokens: int) -> dict[str, Any]:
+        """OpenAI rejects `max_tokens` for the GPT-6 models (400 unsupported_parameter, probed
+        21 Oct 2026) and takes `max_completion_tokens`; Mesh translated it for us."""
+        if self._provider == "openai":
+            return {"max_completion_tokens": max_tokens}
+        return {"max_tokens": max_tokens}
+
     def _serves(self, model: str) -> bool:
         return self._provider == "mesh" or model.startswith("openai/")
 
@@ -732,8 +739,11 @@ class MeshClient:
                 attempts += 1
                 try:
                     response = self._client.chat.completions.create(
-                        **{**kwargs, "model": self._wire_model(model)},
-                        max_tokens=max_tokens,
+                        **{
+                            **kwargs,
+                            "model": self._wire_model(model),
+                            **self._token_limit(max_tokens),
+                        },
                         timeout=self._timeout(tier),
                     )
                 except BadRequestError as exc:

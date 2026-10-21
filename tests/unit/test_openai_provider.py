@@ -84,6 +84,14 @@ def test_model_is_sent_without_its_prefix_and_priced() -> None:
     assert result.cost_estimate > 0
 
 
+def test_the_token_limit_is_sent_as_max_completion_tokens() -> None:
+    """OpenAI answers 400 unsupported_parameter to `max_tokens` on the GPT-6 models."""
+    completions = StubCompletions()
+    _ask(_client(completions))
+    assert "max_tokens" not in completions.calls[0]
+    assert completions.calls[0]["max_completion_tokens"] == 1024
+
+
 def test_other_providers_fallbacks_are_skipped() -> None:
     """Haiku can't be reached on OpenAI, so a failing primary isn't followed by a doomed call."""
     client = _client(StubCompletions())

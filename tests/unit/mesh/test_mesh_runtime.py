@@ -147,17 +147,18 @@ def test_breaker_opens_on_failure_ratio_in_window() -> None:
 # ------------------------------------------------------------------------------ capabilities
 
 
-def test_openai_model_gets_temperature_and_json_schema() -> None:
+def test_gpt6_model_gets_json_schema_and_no_temperature() -> None:
+    """OpenAI answers 400 to temperature 0.0 on the GPT-6 models (probed 21 Oct 2026)."""
     calls = ScriptedCompletions(json_ok({"category": "groceries", "confidence": 0.9}))
     out = client(calls).structured(
         tier=ModelTier.FAST, messages=MSG, output=Category, name="categorise"
     )
     sent = calls.calls[0]
-    assert sent["temperature"] == 0.0
+    assert "temperature" not in sent
     assert sent["response_format"]["type"] == "json_schema"
     assert out.value.category == "groceries"
     assert out.strategy == "json_schema"
-    assert out.result.temperature == 0.0
+    assert out.result.temperature is None
 
 
 def test_anthropic_model_never_gets_temperature() -> None:
