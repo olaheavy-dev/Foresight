@@ -717,12 +717,12 @@ Model IDs are configuration (settings `MESH_MODEL_<TIER>` and `MESH_MODEL_<TIER>
 - **Reasoning tier stays on Claude Sonnet 5.5.** GPT-5.6 Luna Pro matched it on the Advisor's 18 dev cases at about 37% lower cost, then failed on whole answers: *accuracy*, the Analyst's ranking broke its output check even after the repair (explanations over the 240-character limit), so 21 of the 60 E-UI answers lost their Analyst step; *latency*, Advisor calls took 17–57 s, putting advice answers at about 44 s median and 62 s at worst (targets 35 s and 60 s). Gemini 3.8 Flash failed the Advisor schema.
 - **Verifier judge stays on GPT-6.1 Sol** (a different provider from the Advisor). Haiku 5.5 failed the E-VER accuracy gate as judge on the dev trial (52% repairs with json_schema; with tool calls, one correct fix withdrawn).
 
-- **20 Oct 2026, owner decision (`00` §12 item 14):** every tier moves to OpenAI, called directly. The judge must be a different model from the Advisor rather than a different provider; a same-family judge may share the Advisor's blind spots, so E-VER's flawed-proposal cases are the check that it still catches them. The models are picked by the selection rule above, on a trial using the remaining Mesh credit; the table below changes when that trial and the re-recording are accepted.
+- **20 Oct 2026, owner decision (`00` §12 item 14):** every tier moves to OpenAI, called directly. The judge must be a different model from the Advisor rather than a different provider; a same-family judge may share the Advisor's blind spots, so E-VER's flawed-proposal cases are the check that it still catches them. The models are picked by the selection rule above, on a trial using the remaining Mesh credit; applied 20–21 Oct 2026: GPT-6 Sol as Advisor won the dev-case trial (`evals/results/20261020T2030Z_openai_advisor_trial/`) and passed the whole-answer gates on re-recording (evals/CHANGELOG.md, `evalrun_20261021T085940Z_29b86eb`).
 
 | Tier | Primary | Fallback |
 |---|---|---|
-| fast | `openai/gpt-6-luna` | `anthropic/claude-haiku-5.5` |
-| reasoning | `anthropic/claude-sonnet-5.5` | `google/gemini-3.1-pro` |
-| verifier | `openai/gpt-6.1-sol` | `google/gemini-3.1-pro` |
+| fast | `openai/gpt-6-luna` | `openai/gpt-6-sol` |
+| reasoning | `openai/gpt-6-sol` | `openai/gpt-6.1-sol` |
+| verifier | `openai/gpt-6.1-sol` | none (the only other Sol model is the Advisor's) |
 
 \* **Anthropic-tier temperatures are the model default.** Through Mesh, Anthropic models reject a `temperature` parameter and a forced `tool_choice`, so the client never sends either to them (`backend/mesh/models.yaml`); their structured output uses `json_schema`, or tool calls with `tool_choice: "auto"`. `google/gemini-3.1-pro` uses the tool-call path because its `json_schema` output didn't parse. Each `AgentStep` records the temperature actually sent, with `null` meaning "model default". The eval suite records which models produced each result, so swapping a model shows up as a measurable change.
