@@ -226,3 +226,15 @@ def test_recordings_from_before_the_field_replay_as_mesh(tmp_path: Any) -> None:
         settings=_settings(mesh_cassette_mode="replay", mesh_cassette_dir=str(tmp_path))
     )
     assert _ask(replayer).provider == "mesh"
+
+
+def test_a_migrated_mesh_config_with_skipped_shared_fallbacks_starts() -> None:
+    """Codex on #67: Gemini fallbacks left on both tiers are skipped under openai, never called,
+    so they don't make the Advisor its own judge."""
+    client = _client(
+        StubCompletions(),
+        mesh_model_reasoning_fallback="google/gemini-3.1-pro",
+        mesh_model_verifier_fallback="google/gemini-3.1-pro",
+    )
+    assert client.models_for(ModelTier.REASONING)[1] == ""
+    assert client.models_for(ModelTier.VERIFIER)[1] == ""

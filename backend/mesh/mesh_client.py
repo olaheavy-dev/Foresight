@@ -408,9 +408,14 @@ class MeshClient:
                     raise MeshConfigError(
                         f"MODEL_PROVIDER '{self._provider}' can't serve '{primary}'"
                     )
-            # The judge is a different model from the Advisor (docs/06 §13), fallbacks included.
-            advisor = {s.mesh_model_reasoning, s.mesh_model_reasoning_fallback} - {""}
-            judge = {s.mesh_model_verifier, s.mesh_model_verifier_fallback} - {""}
+
+            # The judge is a different model from the Advisor (docs/06 §13), fallbacks included;
+            # a fallback the provider skips (models_for) is never called, so it doesn't count.
+            def served(*models: str) -> set[str]:
+                return {m for m in models if m and self._serves(m)}
+
+            advisor = served(s.mesh_model_reasoning, s.mesh_model_reasoning_fallback)
+            judge = served(s.mesh_model_verifier, s.mesh_model_verifier_fallback)
             if advisor & judge:
                 raise MeshConfigError(
                     f"the Verifier judge can't use the Advisor's model: {sorted(advisor & judge)}"
