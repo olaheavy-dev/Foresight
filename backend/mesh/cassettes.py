@@ -85,9 +85,15 @@ class RecordedResponse:
 
 
 class CassetteStore:
-    def __init__(self, directory: str | Path, *, live_run_sha: str = "local") -> None:
+    def __init__(
+        self, directory: str | Path, *, live_run_sha: str = "local", provider: str = ""
+    ) -> None:
         self.directory = Path(directory)
         self.live_run_sha = live_run_sha
+        # Who served a new recording ("mesh", "openai"). Stored beside the key, never in it: a
+        # recording of the same model replays whichever route made it, and results can still say
+        # which route their latency and cost came from.
+        self.provider = provider
 
     def _path(self, key: str) -> Path:
         return self.directory / f"{key}.json"
@@ -120,6 +126,8 @@ class CassetteStore:
             "recorded_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "live_run_sha": self.live_run_sha,
         }
+        if self.provider:
+            entry["provider"] = self.provider
         path = self._path(key)
         path.write_text(json.dumps(entry, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         return path

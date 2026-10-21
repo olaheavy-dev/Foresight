@@ -399,8 +399,20 @@ class MeshClient:
                 max_retries=0,  # retries are ours: counted, logged and visible to the breaker
             )
         self._client = client
+        if self._mode != "replay":
+            # Fail at start-up, not on the first Advisor call, when a tier can't be served.
+            s = self._settings
+            for primary in (s.mesh_model_fast, s.mesh_model_reasoning, s.mesh_model_verifier):
+                if primary and not self._serves(primary):
+                    raise MeshConfigError(
+                        f"MODEL_PROVIDER '{self._provider}' can't serve '{primary}'"
+                    )
         self._cassettes = cassettes or (
-            CassetteStore(self._settings.mesh_cassette_dir, live_run_sha=self._settings.build_sha)
+            CassetteStore(
+                self._settings.mesh_cassette_dir,
+                live_run_sha=self._settings.build_sha,
+                provider=self._provider,
+            )
             if self._mode != "live"
             else None
         )

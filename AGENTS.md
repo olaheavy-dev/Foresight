@@ -4,7 +4,7 @@
 
 ## What this is
 
-An agent-native personal-finance workspace (a portfolio project, started for Agent Arena 2026). Next.js frontend (`frontend/`), FastAPI backend (`backend/app`), a deterministic finance engine (`backend/finance_core`), LangGraph agents (`backend/agents`), PostgreSQL, and every model call through the Mesh gateway (`backend/mesh/mesh_client.py`). Features ship behind flags in `features.yaml`, and evaluation suites live in `evals/`.
+An agent-native personal-finance workspace (a portfolio project, started for Agent Arena 2026). Next.js frontend (`frontend/`), FastAPI backend (`backend/app`), a deterministic finance engine (`backend/finance_core`), LangGraph agents (`backend/agents`), PostgreSQL, and every model call through one gateway module (`backend/mesh/mesh_client.py`), which calls OpenAI directly (owner decision 20 Oct 2026, `docs/00` §12 item 14). Features ship behind flags in `features.yaml`, and evaluation suites live in `evals/`.
 
 ## Commands
 
@@ -20,7 +20,7 @@ An agent-native personal-finance workspace (a portfolio project, started for Age
 | Workspace journeys (mock API) | `cd frontend && npx playwright test -c playwright.workspace.config.ts` |
 | Regenerate API contracts | `python -m tools.export_schemas` (then commit `frontend/src/ui-contracts/*`) |
 
-Evals replay recorded model responses by default (`evals/cassettes/`). Recording calls Mesh and **spends money**: never record without an owner-approved hard cap, and batch changes so each set is recorded once.
+Evals replay recorded model responses by default (`evals/cassettes/`). Recording calls the model provider and **spends money**: never record without an owner-approved hard cap, and batch changes so each set is recorded once.
 
 ## Code review rules
 
@@ -44,9 +44,9 @@ Review every change against these rules. A finding names the rule, the file and 
 - Only Verifier-approved recommendations are published. Rejected or withdrawn drafts appear only in the audit trail and the "How it was checked" view, labelled as such. No code path may publish a draft without a Verifier approval.
 - Any ledger change (import, correction, declared balance) bumps `data_version`, so cached forecasts and answers can't go stale.
 
-### 3. Models: Mesh only, recorded and costed
+### 3. Models: one gateway, recorded and costed
 
-- All application model calls go through `MeshClient` (Mesh gateway). No direct provider SDKs or HTTP calls; `make imports` enforces this.
+- All application model calls go through `MeshClient` (`backend/mesh/mesh_client.py`), the only module that may import a model SDK or call a provider; `make imports` enforces this. The provider is `MODEL_PROVIDER` (`openai`; `mesh` until it is removed), each with a base URL fixed in code.
 - A new or changed prompt, schema or model invalidates recordings. The PR says which suites need re-recording and the estimated cost, and recording waits for an approved cap.
 - Report model cost and latency changes against the core metrics (E-EFF: cost, accuracy, latency).
 
@@ -68,4 +68,4 @@ Review every change against these rules. A finding names the rule, the file and 
 
 - Keep diffs focused; match the surrounding code's style and comment density.
 - Never put infrastructure details (IPs, hosts, other apps) in this public repository.
-- Ask before spending on Mesh, changing a frozen eval set (`evals/datasets/authored/`), or changing an owner decision recorded in `docs/00-DECISION-REGISTER.md`.
+- Ask before spending on model calls, changing a frozen eval set (`evals/datasets/authored/`), or changing an owner decision recorded in `docs/00-DECISION-REGISTER.md`.

@@ -98,10 +98,30 @@ def test_other_providers_fallbacks_are_skipped() -> None:
     assert client.models_for(ModelTier.FAST) == ("openai/gpt-6-luna", "")
 
 
-def test_a_non_openai_primary_is_a_config_error() -> None:
-    client = _client(StubCompletions(), mesh_model_reasoning="anthropic/claude-sonnet-5.5")
+def test_a_non_openai_primary_is_refused_at_start_up() -> None:
+    """Codex on #67: the service mustn't look healthy and then fail every Advisor call."""
     with pytest.raises(MeshConfigError, match="claude-sonnet"):
-        _ask(client, ModelTier.REASONING)
+        _client(StubCompletions(), mesh_model_reasoning="anthropic/claude-sonnet-5.5")
+
+
+def test_new_recordings_say_which_provider_served_them(tmp_path: Any) -> None:
+    import json
+
+    from backend.mesh.cassettes import CassetteStore
+
+    store = CassetteStore(tmp_path, provider="openai")
+    stub = SimpleNamespace(chat=SimpleNamespace(completions=StubCompletions()))
+    client = MeshClient(
+        settings=_settings(mesh_cassette_mode="record", mesh_cassette_dir=str(tmp_path)),
+        client=stub,  # type: ignore[arg-type]
+        cassettes=store,
+        sleep=lambda _: None,
+    )
+    _ask(client)
+    (saved,) = tmp_path.glob("*.json")
+    entry = json.loads(saved.read_text())
+    assert entry["provider"] == "openai"
+    assert "provider" not in entry["request"]  # the key is unchanged
 
 
 def test_replay_still_answers_recordings_of_other_providers() -> None:
