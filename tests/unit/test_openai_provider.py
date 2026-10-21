@@ -183,3 +183,46 @@ def test_a_configuration_where_the_advisor_judges_itself_is_refused(
     """Codex on #67: an override must not make one model write and check advice."""
     with pytest.raises(MeshConfigError, match="judge"):
         _client(StubCompletions(), **overrides)
+
+
+def test_a_replay_keeps_the_provider_that_recorded_it(tmp_path: Any) -> None:
+    """Codex on #67: a recording replayed under another MODEL_PROVIDER keeps its own route."""
+    from backend.mesh.cassettes import CassetteStore
+
+    stub = SimpleNamespace(chat=SimpleNamespace(completions=StubCompletions()))
+    recorder = MeshClient(
+        settings=_settings(mesh_cassette_mode="record", mesh_cassette_dir=str(tmp_path)),
+        client=stub,  # type: ignore[arg-type]
+        cassettes=CassetteStore(tmp_path, provider="openai"),
+        sleep=lambda _: None,
+    )
+    _ask(recorder)
+    replayer = MeshClient(
+        settings=_settings(
+            model_provider="mesh", mesh_cassette_mode="replay", mesh_cassette_dir=str(tmp_path)
+        )
+    )
+    replayed = _ask(replayer)
+    assert replayed.replayed
+    assert replayed.provider == "openai"
+
+
+def test_recordings_from_before_the_field_replay_as_mesh(tmp_path: Any) -> None:
+    import json
+
+    from backend.mesh.cassettes import CassetteStore
+
+    stub = SimpleNamespace(chat=SimpleNamespace(completions=StubCompletions()))
+    recorder = MeshClient(
+        settings=_settings(mesh_cassette_mode="record", mesh_cassette_dir=str(tmp_path)),
+        client=stub,  # type: ignore[arg-type]
+        cassettes=CassetteStore(tmp_path),
+        sleep=lambda _: None,
+    )
+    _ask(recorder)
+    (saved,) = tmp_path.glob("*.json")
+    assert "provider" not in json.loads(saved.read_text())
+    replayer = MeshClient(
+        settings=_settings(mesh_cassette_mode="replay", mesh_cassette_dir=str(tmp_path))
+    )
+    assert _ask(replayer).provider == "mesh"

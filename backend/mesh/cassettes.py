@@ -25,6 +25,7 @@ measured from real calls; entries recorded before latency was kept have none ("n
 
 from __future__ import annotations
 
+import dataclasses
 import hashlib
 import json
 from dataclasses import dataclass
@@ -54,6 +55,9 @@ class RecordedResponse:
     completion_tokens: int
     latency_ms: int | None = None  # wall time of the live call; None = not recorded
     cost_estimate_usd: float | None = None
+    # The route that served the recording (stored beside the key, see CassetteStore). None only
+    # for a response not read from a cassette.
+    provider: str | None = None
 
     def as_json(self) -> dict[str, Any]:
         return {
@@ -113,7 +117,10 @@ class CassetteStore:
         entry = json.loads(path.read_text(encoding="utf-8"))
         if entry.get("format") != CASSETTE_FORMAT or entry.get("request_hash") != key:
             raise CassetteMiss(f"cassette {path.name} does not match its request")
-        return RecordedResponse.from_json(entry["response"])
+        # Recordings from before the field existed were all made through Mesh (to 20 Oct 2026).
+        return dataclasses.replace(
+            RecordedResponse.from_json(entry["response"]), provider=entry.get("provider") or "mesh"
+        )
 
     def save(self, request: dict[str, Any], response: RecordedResponse) -> Path:
         key = request_hash(request)

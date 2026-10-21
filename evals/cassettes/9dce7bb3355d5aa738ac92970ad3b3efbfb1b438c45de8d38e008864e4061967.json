@@ -1,6 +1,7 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
+  "provider": "openai",
   "recorded_at": "2026-10-21T08:54:42+00:00",
   "request": {
     "max_tokens": 1600,

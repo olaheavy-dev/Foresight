@@ -869,5 +869,6 @@ class MeshClient:
             tier=tier.value,
             temperature=sent_temperature,
             strategy=strategy,
-            provider=self._provider,
+            # A replay keeps the route its latency and cost came from (Codex on #67).
+            provider=(recorded.provider or self._provider) if replayed else self._provider,
         )
