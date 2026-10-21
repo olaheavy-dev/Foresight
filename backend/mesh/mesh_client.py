@@ -134,6 +134,7 @@ class MeshResult:
     strategy: str | None = None  # json_schema | tools | json_object for structured calls
     # False when a replayed call has no recorded live latency (latency_ms is then local time).
     latency_measured: bool = True
+    provider: str = "mesh"  # the configured route (MODEL_PROVIDER), stored on each AgentStep
 
 
 T = TypeVar("T", bound=BaseModel)
@@ -822,8 +823,8 @@ class MeshClient:
                 break
         raise MeshCallError(f"Mesh call failed for tier '{tier.value}'") from last_error
 
-    @staticmethod
     def _result(
+        self,
         recorded: RecordedResponse,
         tier: ModelTier,
         started: float,
@@ -861,4 +862,5 @@ class MeshClient:
             tier=tier.value,
             temperature=sent_temperature,
             strategy=strategy,
+            provider=self._provider,
         )

@@ -722,7 +722,7 @@ Model IDs are configuration (settings `MESH_MODEL_<TIER>` and `MESH_MODEL_<TIER>
 | Tier | Primary | Fallback |
 |---|---|---|
 | fast | `openai/gpt-6-luna` | `openai/gpt-6-sol` |
-| reasoning | `openai/gpt-6-sol` | `openai/gpt-6.1-sol` |
+| reasoning | `openai/gpt-6-sol` | none (the only other Sol model is the judge's; an Advisor failure degrades to the deterministic answer) |
 | verifier | `openai/gpt-6.1-sol` | none (the only other Sol model is the Advisor's) |
 
 \* **Anthropic-tier temperatures are the model default.** Through Mesh, Anthropic models reject a `temperature` parameter and a forced `tool_choice`, so the client never sends either to them (`backend/mesh/models.yaml`); their structured output uses `json_schema`, or tool calls with `tool_choice: "auto"`. `google/gemini-3.1-pro` uses the tool-call path because its `json_schema` output didn't parse. Each `AgentStep` records the temperature actually sent, with `null` meaning "model default". The eval suite records which models produced each result, so swapping a model shows up as a measurable change.

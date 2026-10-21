@@ -154,3 +154,16 @@ def test_insufficient_quota_is_a_spend_limit_not_a_retry() -> None:
 def test_no_balance_lookup_on_openai() -> None:
     client = _client(StubCompletions())
     assert client._available_usd() is None
+
+
+def test_results_carry_the_provider_for_agent_steps() -> None:
+    """Codex on #67: activity and audit rows must not label OpenAI calls as Mesh."""
+    assert _ask(_client(StubCompletions())).provider == "openai"
+
+
+def test_the_advisor_can_never_fall_back_to_its_judge() -> None:
+    """Codex on #67: in a degraded run the same model must not write and check advice."""
+    s = Settings()
+    advisor_models = {s.mesh_model_reasoning, s.mesh_model_reasoning_fallback} - {""}
+    judge_models = {s.mesh_model_verifier, s.mesh_model_verifier_fallback} - {""}
+    assert not advisor_models & judge_models

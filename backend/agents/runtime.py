@@ -150,7 +150,7 @@ def _usage(results: Sequence[MeshResult], overlapped_ms: int | None = None) -> d
         "cost_estimate_usd": cost,
         "model": last.model if last else None,
         "tier": last.tier if last else None,
-        "provider": "mesh" if last else None,
+        "provider": last.provider if last else None,
         "temperature": last.temperature if last else None,
         "attempt": max((r.attempts for r in results), default=1),
         "model_ms": overlapped_ms if overlapped_ms is not None else model_ms(results),
