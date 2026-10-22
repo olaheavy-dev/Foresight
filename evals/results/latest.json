@@ -1,22 +1,22 @@
 {
   "durations_s": {
-    "E-ANOM": 0.81,
-    "E-AUD": 8.89,
-    "E-CAT": 0.44,
-    "E-CTX": 0.54,
+    "E-ANOM": 0.8,
+    "E-AUD": 8.61,
+    "E-CAT": 0.43,
+    "E-CTX": 0.53,
     "E-EFF": 0.0,
-    "E-FC": 10.37,
-    "E-GRD": 7.08,
-    "E-INC": 0.77,
-    "E-ING": 0.66,
-    "E-LOC": 0.32,
-    "E-ORC": 27.24,
+    "E-FC": 10.03,
+    "E-GRD": 6.89,
+    "E-INC": 0.76,
+    "E-ING": 0.65,
+    "E-LOC": 0.31,
+    "E-ORC": 26.48,
     "E-REC": 0.41,
     "E-SCN": 0.26,
-    "E-SEC": 0.28,
-    "E-SIM": 26.63,
-    "E-UI": 24.66,
-    "E-VER": 15.64
+    "E-SEC": 0.27,
+    "E-SIM": 25.85,
+    "E-UI": 24.07,
+    "E-VER": 15.24
   },
   "engine_version": "fc-1.3.0",
   "errors": {},
@@ -170,7 +170,7 @@
   },
   "generator_version": "gen-1.1.0",
   "git_dirty": false,
-  "git_sha": "29b86eb2b016ca242a50122ea74ca6c9fee96764",
+  "git_sha": "680a4918d38aad95e004ede1e6d36075aa586f0e",
   "holdout_version": null,
   "home_currency_primary": "GBP",
   "layout_set_version": null,
@@ -189,7 +189,7 @@
     "null = not run. Gates: a suite that did not run is 'fail'; see gate_detail.rule."
   ],
   "prompt_versions": {},
-  "run_id": "evalrun_20261021T085940Z_29b86eb",
+  "run_id": "evalrun_20261022T100645Z_680a491",
   "schema_version": "1.1",
   "seeds": [
     1729
@@ -347,7 +347,7 @@
         "model_calls_per_cache_hit_after_understand": 0,
         "model_calls_per_cache_miss": 1,
         "recorded_tokens_total": 447216,
-        "replay_seconds": 0.54
+        "replay_seconds": 0.53
       },
       "followup_turns_scored": 45,
       "mode": "replay",
@@ -1100,12 +1100,12 @@
           "count": 13,
           "degraded_left_out": 0,
           "first_step_p95_s": 0.02,
-          "latency_estimated_p50_s": 15.62,
-          "latency_estimated_p95_s": 35.13,
+          "latency_estimated_p50_s": 15.57,
+          "latency_estimated_p95_s": 35.07,
           "latency_measured": 13,
-          "latency_p50_s": 15.62,
-          "latency_p50_s_measured_only": 15.62,
-          "latency_p95_s": 35.13
+          "latency_p50_s": 15.57,
+          "latency_p50_s_measured_only": 15.57,
+          "latency_p95_s": 35.07
         },
         "all": {
           "cost_mean_usd": 0.00442,
@@ -1114,11 +1114,11 @@
           "degraded_left_out": 0,
           "first_step_p95_s": 0.02,
           "latency_estimated_p50_s": 3.41,
-          "latency_estimated_p95_s": 21.68,
+          "latency_estimated_p95_s": 21.65,
           "latency_measured": 60,
           "latency_p50_s": 3.41,
           "latency_p50_s_measured_only": 3.41,
-          "latency_p95_s": 21.68
+          "latency_p95_s": 21.65
         },
         "simple": {
           "cost_mean_usd": 0.00051,
@@ -1126,12 +1126,12 @@
           "count": 47,
           "degraded_left_out": 0,
           "first_step_p95_s": 0.02,
-          "latency_estimated_p50_s": 2.2,
-          "latency_estimated_p95_s": 7.2,
+          "latency_estimated_p50_s": 2.23,
+          "latency_estimated_p95_s": 7.19,
           "latency_measured": 47,
-          "latency_p50_s": 2.2,
-          "latency_p50_s_measured_only": 2.2,
-          "latency_p95_s": 7.2
+          "latency_p50_s": 2.23,
+          "latency_p50_s_measured_only": 2.23,
+          "latency_p95_s": 7.19
         }
       },
       "by_tier": {
@@ -1615,7 +1615,7 @@
         "tool_calls_outside_allow_list": []
       },
       "mode": "replay",
-      "seconds": 27.2
+      "seconds": 26.5
     },
     "recurring": {
       "council_tax_months_exact": true,
@@ -2128,7 +2128,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 10.0",
-        "value": 2.2
+        "value": 2.23
       },
       {
         "dataset": "13 advice answers",
@@ -2137,7 +2137,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 35.0",
-        "value": 15.62
+        "value": 15.57
       },
       {
         "dataset": "13 advice answers",
@@ -2146,7 +2146,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 60.0",
-        "value": 35.13
+        "value": 35.07
       }
     ],
     "E-FC": [
@@ -2781,5 +2781,5 @@
       }
     ]
   },
-  "timestamp_utc": "2026-10-21T08:59:40Z"
+  "timestamp_utc": "2026-10-22T10:06:45Z"
 }
