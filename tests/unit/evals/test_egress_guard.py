@@ -27,8 +27,8 @@ def test_raw_ip_connects_outside_the_allow_list_are_blocked() -> None:
     assert blocked == ["203.0.113.7:443"]
 
 
-def test_loopback_and_mesh_are_allowed_and_the_guard_is_removed_after() -> None:
-    assert "api.meshapi.ai" in ALLOWED_HOSTS
+def test_loopback_is_allowed_and_the_guard_is_removed_after() -> None:
+    assert ALLOWED_HOSTS == {"api.telegram.org"}  # the model provider's host is added per provider
     with egress_guard() as blocked:
         socket.getaddrinfo("localhost", 5432)
     assert blocked == []
@@ -43,12 +43,26 @@ def test_the_configured_provider_is_allowed(monkeypatch: pytest.MonkeyPatch) -> 
     monkeypatch.setenv("MODEL_PROVIDER", "openai")
     get_settings.cache_clear()
     try:
-        assert "api.openai.com" in allowed_hosts()
+        model_hosts = allowed_hosts() & {"api.openai.com", "api.meshapi.ai"}
+        assert model_hosts == {"api.openai.com"}  # never the retired gateway too (Codex, #67)
         with egress_guard() as blocked:
             try:
                 socket.getaddrinfo("api.openai.com", 443)
             except socket.gaierror:
                 pass  # offline is fine: the guard let the lookup through
         assert blocked == []
+    finally:
+        get_settings.cache_clear()
+
+
+def test_a_mesh_connection_is_blocked_under_openai(monkeypatch: pytest.MonkeyPatch) -> None:
+    from backend.settings import get_settings
+
+    monkeypatch.setenv("MODEL_PROVIDER", "openai")
+    get_settings.cache_clear()
+    try:
+        with egress_guard() as blocked, pytest.raises(EgressBlocked):
+            socket.getaddrinfo("api.meshapi.ai", 443)
+        assert blocked == ["api.meshapi.ai:443"]
     finally:
         get_settings.cache_clear()

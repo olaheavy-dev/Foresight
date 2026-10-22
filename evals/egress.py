@@ -19,7 +19,8 @@ from urllib.parse import urlsplit
 from backend.mesh.mesh_client import PROVIDER_BASE_URLS
 from backend.settings import get_settings
 
-ALLOWED_HOSTS = frozenset({"api.meshapi.ai", "api.telegram.org"})
+# Services other than the model provider; the provider's host is added for MODEL_PROVIDER alone.
+ALLOWED_HOSTS = frozenset({"api.telegram.org"})
 
 
 class EgressBlocked(ConnectionError):
