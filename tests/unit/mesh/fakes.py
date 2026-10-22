@@ -101,6 +101,7 @@ class ScriptedCompletions:
 
 def settings(**overrides: Any) -> Settings:
     base: dict[str, Any] = {
+        "model_provider": "mesh",  # not the developer's .env: these fixtures name Mesh models
         "mesh_api_key": "rsk_test",
         "mesh_model_fast": "openai/gpt-6-luna",
         "mesh_model_fast_fallback": "anthropic/claude-haiku-5.5",

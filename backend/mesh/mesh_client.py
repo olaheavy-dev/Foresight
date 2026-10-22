@@ -517,8 +517,10 @@ class MeshClient:
                 fallback = ""
         return primary, fallback
 
-    def _timeout(self, tier: ModelTier) -> float:
-        if tier is ModelTier.FAST:
+    def _timeout(self, tier: ModelTier, *, fallback: bool = False) -> float:
+        # The fast tier's fallback runs only after the primary failed, and may be a slower model
+        # (GPT-6 Sol behind Luna): an answer matters more than speed, so it gets the long timeout.
+        if tier is ModelTier.FAST and not fallback:
             return self._settings.mesh_timeout_fast_seconds
         return self._settings.mesh_timeout_reasoning_seconds
 
@@ -769,7 +771,7 @@ class MeshClient:
                             "model": self._wire_model(model),
                             **self._token_limit(max_tokens),
                         },
-                        timeout=self._timeout(tier),
+                        timeout=self._timeout(tier, fallback=is_fallback),
                     )
                 except BadRequestError as exc:
                     if _error_code(exc) == "spend_limit_exceeded":

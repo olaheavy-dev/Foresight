@@ -7,7 +7,7 @@ from typing import Any
 
 import httpx
 import pytest
-from openai import RateLimitError
+from openai import APITimeoutError, RateLimitError
 
 from backend.mesh.mesh_client import (
     OPENAI_BASE_URL,
@@ -238,3 +238,23 @@ def test_a_migrated_mesh_config_with_skipped_shared_fallbacks_starts() -> None:
     )
     assert client.models_for(ModelTier.REASONING)[1] == ""
     assert client.models_for(ModelTier.VERIFIER)[1] == ""
+
+
+def test_the_fast_fallback_gets_the_long_timeout() -> None:
+    """GPT-6 Sol behind Luna often takes over 8 s; the fast timeout would doom the fallback."""
+
+    class LunaTimesOut(StubCompletions):
+        def create(self, **kwargs: Any) -> SimpleNamespace:
+            if kwargs["model"] == "gpt-6-luna":
+                self.calls.append(kwargs)
+                raise APITimeoutError(request=httpx.Request("POST", OPENAI_BASE_URL))
+            return super().create(**kwargs)
+
+    completions = LunaTimesOut()
+    client = _client(completions, mesh_model_fast_fallback="openai/gpt-6-sol", mesh_max_retries=0)
+    assert _ask(client).text == "ok"
+    s = client._settings
+    assert [(c["model"], c["timeout"]) for c in completions.calls] == [
+        ("gpt-6-luna", s.mesh_timeout_fast_seconds),
+        ("gpt-6-sol", s.mesh_timeout_reasoning_seconds),
+    ]
