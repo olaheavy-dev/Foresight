@@ -23,10 +23,12 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore", env_ignore_empty=True)
 
     mesh_api_key: str = ""
-    # Where model calls go: "mesh" (the gateway) or "openai" (OpenAI directly, docs/11). Model IDs
-    # below keep their provider prefix either way, so recordings replay unchanged; under "openai"
-    # every tier's primary must be an `openai/` model and other providers' fallbacks are skipped.
-    model_provider: str = "mesh"
+    # Where model calls go: "openai" (OpenAI directly; owner decision 20 Oct 2026, docs/00 §12 item
+    # 14) or "mesh" (the old gateway, until it is removed). The default is openai, so an env without
+    # MODEL_PROVIDER never stays on Mesh. Model IDs keep their provider prefix either way, so
+    # recordings replay unchanged; under "openai" every tier's primary must be an `openai/` model
+    # (start-up refuses a stale override) and other providers' fallbacks are skipped.
+    model_provider: str = "openai"
     openai_api_key: str = ""
     # Model IDs per tier (docs/06 §13). Owner decision 20 Oct 2026 (docs/00 §12 item 14): every tier
     # on OpenAI, the Verifier judge a different model from the Advisor. GPT-6 Sol as Advisor won the

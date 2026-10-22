@@ -61,6 +61,6 @@ def test_mesh_base_url_cannot_be_overridden(monkeypatch: pytest.MonkeyPatch) -> 
 
     monkeypatch.setenv("MESH_BASE_URL", "https://example.invalid/v1")
     monkeypatch.setenv("OPENAI_BASE_URL", "https://example.invalid/v1")
-    client = MeshClient(settings=Settings(mesh_api_key="rsk_test"))
+    client = MeshClient(settings=Settings(model_provider="mesh", mesh_api_key="rsk_test"))
     assert MESH_BASE_URL == "https://api.meshapi.ai/v1"
     assert client.base_url == MESH_BASE_URL

@@ -33,3 +33,22 @@ def test_loopback_and_mesh_are_allowed_and_the_guard_is_removed_after() -> None:
         socket.getaddrinfo("localhost", 5432)
     assert blocked == []
     assert socket.getaddrinfo.__module__ == "socket"
+
+
+def test_the_configured_provider_is_allowed(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Under MODEL_PROVIDER=openai, a live or recording ORC-13 run reaches OpenAI (Codex, #67)."""
+    from backend.settings import get_settings
+    from evals.egress import allowed_hosts
+
+    monkeypatch.setenv("MODEL_PROVIDER", "openai")
+    get_settings.cache_clear()
+    try:
+        assert "api.openai.com" in allowed_hosts()
+        with egress_guard() as blocked:
+            try:
+                socket.getaddrinfo("api.openai.com", 443)
+            except socket.gaierror:
+                pass  # offline is fine: the guard let the lookup through
+        assert blocked == []
+    finally:
+        get_settings.cache_clear()

@@ -639,7 +639,7 @@ Uses the real LangGraph graph (live or replay). Assertions read the persisted `A
 | ORC-10 | Budget guard | a run that would exceed **12 LLM calls / 60k tokens** (01 FR-60) aborts gracefully with an audit event. Deterministic partial results are still returned |
 | ORC-11 | Scheduler | APScheduler job (freezegun clock) triggers a digest run without HTTP. The content references a current `brf_`/`rec_` |
 | ORC-12 | Snapshot reload | reopening `rsp_…` performs **0** agent steps |
-| ORC-13 | Mesh-only egress (allow-list) | socket guard allows only `api.meshapi.ai`, the Telegram Bot API and the configured SMTP host (the PostgreSQL connection is internal to the app network and not egress); **every other outbound connection** fails. A full live run succeeds; an injected call to any other host fails the run; `LANGSMITH_TRACING`/`LANGCHAIN_TRACING_V2` asserted off |
+| ORC-13 | Mesh-only egress (allow-list) | socket guard allows only the configured model provider (`api.openai.com` under `MODEL_PROVIDER=openai`; `api.meshapi.ai` until Mesh is removed), the Telegram Bot API and the configured SMTP host (the PostgreSQL connection is internal to the app network and not egress); **every other outbound connection** fails. A full live run succeeds; an injected call to any other host fails the run; `LANGSMITH_TRACING`/`LANGCHAIN_TRACING_V2` asserted off |
 | ORC-14 | PDF LayoutProfile path | an `L5` PDF → Ledger Agent `propose_layout_profile` step → reconciliation gate → first-use H11 confirmation (simulated) → accepted, with the LayoutProfile saved. A second `L5` file → 0 layout-proposal LLM steps |
 | ORC-16 | Deferred advice follow-up (docs/06 §13, owner, 14 Oct 2026) | a question whose first round is wholly rejected and has no time left for a revision (stubs, labelled: a revision never fits; the judge fails every draft in the question and passes them in the follow-up) is answered at once with `followup_pending`, never cached; the `advice_followup` run then revises, verifies and adds a follow-up answer in the same thread naming the answer (`follow_up_of`) |
 | ORC-15 | CSV FormatProfile path | a `C1` CSV → no built-in match → Ledger Agent `propose_format_profile` step → user confirmation (simulated) → parse with P/R 1.000 → profile saved. A second `C1` file → 0 format-proposal LLM steps |
@@ -792,8 +792,8 @@ Walk the chain for every recommendation produced in `E-GRD`:
 
 | Mode | What it does | Needs |
 |---|---|---|
-| **Replay (default)** | Deterministic suites run for real. LLM suites **re-score recorded Mesh responses from a named live run** in `evals/cassettes/` (request-hash keyed; each cassette stores the Mesh response id, model, token usage, timestamp and the live run's commit sha). `CassetteMiss` fails loudly if a prompt or input changed | Python 3.12 |
-| **Live** | All LLM calls go to `https://api.meshapi.ai/v1` via `mesh_client`. `--record` refreshes cassettes | `MESH_API_KEY` |
+| **Replay (default)** | Deterministic suites run for real. LLM suites **re-score recorded model responses from a named live run** in `evals/cassettes/` (request-hash keyed; each cassette stores the Mesh response id, model, token usage, timestamp and the live run's commit sha). `CassetteMiss` fails loudly if a prompt or input changed | Python 3.12 |
+| **Live** | All LLM calls go through `mesh_client` to the provider `MODEL_PROVIDER` names: `openai` (`https://api.openai.com/v1`, the default since 20 Oct 2026) or `mesh` (`https://api.meshapi.ai/v1`, until it is removed). Recording (`FORESIGHT_EVAL_MESH=record`, `EVAL_MESH_MODE=record`) refreshes cassettes and spends money: only under an owner-approved cap | `OPENAI_API_KEY` (or `MESH_API_KEY` under `mesh`) |
 
 Deterministic suites (`E-ING` except the profile-proposal arms §4.1.3/§4.3, `E-ALIAS`, `E-XFER`, `E-ACCT`, `E-INC`, `E-REC`, `E-ANOM`, `E-FC`, `E-SIM`, `E-AUD`, and the deterministic `E-LOC` arms; E-LOC-10/15 hybrid and LLM-only arms and E-LOC-14 layout proposals use cassettes) never touch cassettes.
 
@@ -815,8 +815,8 @@ python -m evals.run --suite ingestion           # E-ING (csv_statement + pdf_sta
 python -m evals.run --suite forecast            # E-FC
 python -m evals.run --suite categorisation --mode replay
 
-# 4. Live against Mesh
-cp .env.example .env   # MESH_API_KEY=rsk_...
+# 4. Live against the model provider (spends money: owner-approved cap first)
+cp .env.example .env   # MODEL_PROVIDER=openai, OPENAI_API_KEY=sk-...
 python -m evals.run --suite all --mode live --seeds 1729,2024,31415,4242,8128
 
 # 5. Regenerate the README table
@@ -963,7 +963,7 @@ Where we fall short: <auto-listed>
 | `unit` | push | `pytest backend/` against a `services: postgres:16` container (transactional rollback per test), incl. E-SIM properties and leakage guards | yes |
 | `eval-replay` | push | `evals.run --suite all --mode replay` (throwaway PostgreSQL schema per run) + README drift check + manifest hash check | yes |
 | `publish` | `workflow_run` success of the above on `main` | build and push `foresight-backend` / `foresight-frontend` images to GHCR (`sha-<commit>`, `main`); the owner's VPS rolls them out (`05` §12), so only green builds are ever deployed | n/a |
-| `eval-live` | manual + nightly until submission | live run with the `MESH_API_KEY` secret | no |
+| `eval-live` | manual + nightly until submission | live run with the provider key secret (`OPENAI_API_KEY`; `MESH_API_KEY` under `mesh`) | no |
 
 **Evaluation is part of the daily workflow, not a final step:**
 
