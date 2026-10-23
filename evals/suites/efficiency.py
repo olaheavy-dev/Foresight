@@ -3,7 +3,7 @@
 Measured on the E-UI test questions answered through the real graph (the same answers E-UI
 scores, computed once per process): per answer type (simple vs advice) and per model tier.
 
-- **cost** per answer: Mesh `usage` × the price table, summed over the run's steps;
+- **cost** per answer: provider `usage` × the price table, summed over the run's steps;
 - **end-to-end latency** per answer: local time measured in replay plus each step's model wait,
   built from the live latencies stored in the cassettes (`evals/efficiency.py`);
 - **time to first step**: until the first progress step is written (what the SSE stream shows).
@@ -151,7 +151,7 @@ def run(fast: bool = False, cases: Any = None) -> dict[str, Any]:
         "Where latency is not measured, `latency_estimated_*` counts each unmeasured call at its "
         "tier's measured median call latency; it is an estimate and decides no target.",
         "End-to-end = local time in replay + each step's model wait (concurrent judge calls "
-        "overlap) − the Understand/prefetch overlap. Network and server time outside Mesh calls "
+        "overlap) − the Understand/prefetch overlap. Network and server time outside model calls "
         "are not included.",
     ]
     return {"metrics": metrics, "targets": targets, "notes": notes}

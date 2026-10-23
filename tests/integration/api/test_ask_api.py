@@ -287,7 +287,7 @@ def test_a_402_pauses_ai_answers_and_streams_ai_unavailable_with_the_forecast(
     assert [b["type"] for b in partial["blocks"]][1] == "CashFlowForecastChart"
     status = api.get("/api/ai-status").json()
     assert status == {"status": "unavailable", "message": PAUSED_TEXT}
-    assert api.get("/healthz").json()["ai"] in {"ok", "low", "unavailable"}
+    assert api.get("/healthz").json()["ai"] in {"ok", "unavailable"}
 
     # While paused, a new free-text question makes no model call and says so at once.
     calls_before = len(scripted.calls)

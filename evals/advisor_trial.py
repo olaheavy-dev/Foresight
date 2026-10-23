@@ -20,7 +20,7 @@ Metrics (fixed before running):
                         model-written numbers, not generic, no unrequested protected cuts
   schema repair rate    structured calls that needed the repair retry or failed
   latency p50           per Advisor call
-  cost per case         from Mesh-reported usage x catalogue prices
+  cost per case         from provider-reported usage x catalogue prices
 
 Decision rule (fixed before running): a cheaper arm wins only if its revision success and its
 grounding rate are each >= arm A's minus 2 points AND it has no grounding violations; among

@@ -6,7 +6,7 @@ plus the ING-13 format-proposal run (docs/06 §9 H1, docs/09 ORC-15).
 - `ledger_query`: a deterministic, reproducible transaction query for `transaction_lookup`.
 - `analyst`: deterministic finding candidates, then one reasoning-tier call to rank and word them.
 
-With no Mesh client the nodes still do their deterministic part and make no model call.
+With no model client the nodes still do their deterministic part and make no model call.
 """
 
 from __future__ import annotations

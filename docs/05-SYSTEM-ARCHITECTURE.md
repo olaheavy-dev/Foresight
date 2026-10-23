@@ -5,6 +5,8 @@
 
 Status: design. No production code exists yet. Code snippets are pseudocode that shows shape, not implementation.
 
+> **Model provider, 23 Oct 2026.** Model calls now go to OpenAI directly (`https://api.openai.com/v1`; owner decision 20 Oct 2026, `00` §12 item 14), and the Mesh gateway this document was designed around has been removed. The sections below that define current behaviour (§2 diagram, §3.1 rules, §5.3, §7.1, §7.3, deployment) say OpenAI; where an older passage still says "Mesh", read it as the model provider. The module keeps its name, `backend/mesh/mesh_client.py`, and the settings keep their `MESH_*` names, because the deployment's environment uses them.
+
 ---
 
 ## 1. Architectural principles
@@ -28,17 +30,16 @@ Status: design. No production code exists yet. Code snippets are pseudocode that
 flowchart LR
     U[User<br/>browser] -->|HTTPS| WEB[Next.js web app<br/>TypeScript]
     WEB -->|REST + SSE<br/>JSON| API[FastAPI backend<br/>Python 3.12]
-    API -->|OpenAI-compatible<br/>HTTPS| MESH[(Mesh API<br/>api.meshapi.ai/v1)]
+    API -->|HTTPS| MESH[(OpenAI API<br/>api.openai.com/v1)]
     API --> DB[(PostgreSQL 16)]
     API -->|Bot API| TG[Telegram]
     API -->|SMTP| MAIL[Email provider]
-    MESH --> LLMS[Underlying LLM providers<br/>chosen per agent tier]
-    CI[GitHub Actions<br/>organiser checks + our tests + evals] -.->|metadata call, no credits| MESH
+    CI[GitHub Actions<br/>our tests + evals<br/>replay recorded responses, no key]
 ```
 
 Trust boundaries:
 1. **Browser ↔ API.** Untrusted input: CSV files, chat text, scenario parameters.
-2. **API ↔ Mesh.** Third-party processor. Only the minimum, redacted data crosses it (§7.3).
+2. **API ↔ OpenAI.** Third-party processor. Only the minimum, redacted data crosses it (§7.3).
 3. **API ↔ Telegram/SMTP.** Outbound only. Digests contain summary figures, never full transaction lists.
 
 ---
@@ -127,12 +128,12 @@ Enforced with `import-linter` contracts in CI.
 | `scheduler` | `agents`, `storage`, delivery adapters | `app` | Job definitions, digest rendering, delivery |
 | `evals` | `finance_core`, `agents`, `storage` (throwaway Postgres schema per run) | `app` | Datasets, metric computation, reports |
 
-The **Mesh-only rule** (rev 4.3), enforced three ways:
+The **one-gateway rule** (rev 4.3, first written for Mesh), enforced three ways:
 1. **Import contract.** An `import-linter` *forbidden* contract applies to every package except `backend.mesh`: no imports of `openai`, `langchain_openai`, `langchain_community`, `litellm`, `anthropic`, `google.genai`, `cohere`, `transformers`, `sentence_transformers` or `tiktoken`. LangGraph is used **only** for the graph (`langgraph` core); no LangChain model wrappers anywhere. Test stubs fake `mesh_client`; they never construct an `OpenAI()` client.
-2. **Egress allow-list.** Integration and eval runs install a socket guard allowing only `api.meshapi.ai`, the Telegram Bot API and the configured SMTP host (09 ORC-13). Any other outbound connection fails the run. `backend/mesh` may use `httpx` only through the `openai` client to the Mesh base URL.
+2. **Egress allow-list.** Integration and eval runs install a socket guard allowing only the configured model provider (`api.openai.com`), the Telegram Bot API and the configured SMTP host (09 ORC-13). Any other outbound connection fails the run. `backend/mesh` may use `httpx` only through the `openai` client to the provider's fixed base URL.
 3. **No silent telemetry.** Settings force `LANGSMITH_TRACING=false` and `LANGCHAIN_TRACING_V2=false` at start-up, and a unit test asserts it, so no run traces (which would contain financial data) leave the app.
 
-The README states it plainly: **every model call goes through `backend/mesh/mesh_client.py` to `https://api.meshapi.ai/v1`; there are no embeddings, no OCR and no client-side AI (the Next.js app never calls a model).** This sits beside the organiser's own CI check that LLM calls route via Mesh.
+The README states it plainly: **every model call goes through `backend/mesh/mesh_client.py` to `https://api.openai.com/v1`; there are no embeddings, no OCR and no client-side AI (the Next.js app never calls a model).**
 
 ### 3.2 Import sources: two generic importers, bank knowledge as data (00 §3, §6b)
 
@@ -398,16 +399,16 @@ The stack is **decided** (see 00 §8). Each table records the alternatives consi
 | AutoGen | Strong for multi-agent chat | Conversation-shaped, so non-deterministic routing; poor fit for auditable, bounded pipelines | Rejected |
 | Custom orchestrator | Total control, no dependency | We would re-implement state, checkpoints and visualisation, and lose the "structured framework" bonus | Rejected (but nodes are plain functions, so they can be ported) |
 
-Constraint: we use **LangGraph only for the graph**. LLM calls go through `mesh_client` (via the `openai` SDK), not LangChain chat-model wrappers. This keeps the Mesh routing unambiguous for the organiser's static check.
+Constraint: we use **LangGraph only for the graph**. LLM calls go through `mesh_client` (via the `openai` SDK), not LangChain chat-model wrappers. This keeps the single route to the model provider unambiguous.
 
-### 5.3 LLM access — **Mesh via `openai` SDK** (mandatory)
+### 5.3 LLM access — **OpenAI via the `openai` SDK** (Mesh until 23 Oct 2026)
 
 ```
 # pseudocode — backend/mesh/mesh_client.py
-client = OpenAI(base_url="https://api.meshapi.ai/v1", api_key=env["MESH_API_KEY"])
+client = OpenAI(base_url="https://api.openai.com/v1", api_key=env["OPENAI_API_KEY"])
 
 def complete(tier, messages, response_schema, *, run_id, step_id, timeout_s, max_retries=2) -> ParsedOutput:
-    model = MODEL_TIERS[tier]                     # resolved from config; IDs from Mesh catalogue (OPEN #1)
+    model = MODEL_TIERS[tier]                     # resolved from config (MESH_MODEL_<TIER>, models.yaml)
     messages = redact(messages)                   # §7.3
     resp = client.chat.completions.create(model=model, messages=messages,
                                           response_format=json_schema(response_schema), temperature=TIER_TEMP[tier])
@@ -416,13 +417,13 @@ def complete(tier, messages, response_schema, *, run_id, step_id, timeout_s, max
     return parsed
 ```
 
-- **Model tiers** (actual model IDs are OPEN #1 and must come from Mesh's catalogue, never guessed):
+- **Model tiers** (the IDs in use are in `06` §13 and `backend/settings.py`, never guessed):
   - `fast`: Coordinator intent, Ledger batch categorisation, block planning. Low cost, high throughput.
   - `reasoning`: Advisor proposals, Verifier LLM-judge, Forecaster scenario parsing for complex text.
-  - Optional `judge-alt`: a model *different from* the Advisor's model for the Verifier's LLM-judge, to reduce self-agreement bias. Mesh's multi-model access makes this cheap to do.
+  - Optional `judge-alt`: a model *different from* the Advisor's model for the Verifier's LLM-judge, to reduce self-agreement bias. As built this is the `verifier` tier: a different OpenAI model from the Advisor's, with no fallback (`06` §13).
 - **Structured outputs**: every LLM call has a Pydantic response schema. If the model or endpoint doesn't support `json_schema` response format, fall back to JSON mode plus validation plus one repair attempt.
-- **Failover**: Mesh offers provider failover. We also keep a per-tier fallback model list in config.
-- **No-credit key check**: CI and app startup call a Mesh metadata endpoint (e.g. a model-list call) to validate `MESH_API_KEY`, matching the organiser's critical check.
+- **Failover**: a per-tier fallback model in config (only the `fast` tier has one; the Advisor and the judge have none, so neither can fall back to the other's model).
+- **Start-up check**: outside replay, the client refuses to start without `OPENAI_API_KEY`, with a tier primary OpenAI can't serve, or with an Advisor that would judge itself.
 
 ### 5.4 Storage — **PostgreSQL 16 everywhere** (decided, rev 5.2)
 
@@ -547,10 +548,10 @@ The briefing stores `{data_version, prefs_version, engine_version, as_of}`. It i
 
 ### 7.1 Secrets
 
-- `MESH_API_KEY`, `TELEGRAM_BOT_TOKEN`, `SMTP_*`, `SESSION_SECRET` are read from the environment (`pydantic-settings`). A local `.env` is gitignored, and `.env.example` is committed with placeholder values only.
-- GitHub Actions secrets: `MESH_API_KEY`, `SUBMISSION_TOKEN` (organiser). Our own workflows never echo them, and live evals run on `workflow_dispatch` or nightly until submission; push/PR evals replay recorded responses (`09` §16).
-- A pre-commit hook (`gitleaks` or `detect-secrets`) blocks committing anything shaped like `rsk_…`.
-- The Mesh key is used server-side only. It never reaches the browser, and no client-side LLM calls exist.
+- `OPENAI_API_KEY`, `TELEGRAM_BOT_TOKEN`, `SMTP_*`, `SESSION_SECRET` are read from the environment (`pydantic-settings`). A local `.env` is gitignored, and `.env.example` is committed with placeholder values only.
+- CI needs no model key: push/PR evals replay recorded responses (`09` §16). A live eval would use an `OPENAI_API_KEY` secret, never echoed.
+- A pre-commit hook (`gitleaks` or `detect-secrets`) blocks committing anything shaped like a key (`sk-…`, and the old Mesh `rsk_…`).
+- The OpenAI key is used server-side only. It never reaches the browser, and no client-side LLM calls exist.
 
 ### 7.2 Workspace isolation
 
@@ -559,7 +560,7 @@ The briefing stores `{data_version, prefs_version, engine_version, as_of}`. It i
 - Evidence and snapshot endpoints check that the requested `calc_…`, `rec_…` or `rsp_…` belongs to the session's workspace, returning 404 rather than 403 to avoid leaking existence.
 - Production: Postgres RLS policy `workspace_id = current_setting('app.workspace_id')` as defence in depth.
 
-### 7.3 What is sent to Mesh (data minimisation)
+### 7.3 What is sent to the model provider (data minimisation)
 
 | Agent call | Sent | Never sent |
 |---|---|---|
@@ -718,7 +719,7 @@ Key invariants under property tests:
 | Publishing | **Only after CI is green on `main`**: the publish workflow runs on `workflow_run` of the CI workflow (organiser checks + tests + replay evals) with `conclusion == success`. PRs build images without pushing. Watchtower therefore only ever sees green builds. | Same, plus staged rollout |
 | Rollback | Pin the compose image to a previous `sha-<commit>` tag | Same |
 | Public URL | **https://foresight.olaheavy.dev** via Cloudflare DNS → Caddy TLS | Same |
-| Secrets | Server-side `/…/foresight/.env`: `MESH_API_KEY`, `POSTGRES_PASSWORD`, `DATABASE_URL`, `TELEGRAM_BOT_TOKEN`, `SMTP_*`. Only `.env.example` is committed. | Secret manager with rotation |
+| Secrets | Server-side `/…/foresight/.env`: `OPENAI_API_KEY`, `POSTGRES_PASSWORD`, `DATABASE_URL`, `TELEGRAM_BOT_TOKEN`, `SMTP_*`. Only `.env.example` is committed. | Secret manager with rotation |
 | Scheduler | In-process APScheduler on the always-on backend container (job store in Postgres) | Dedicated worker + queue with idempotent jobs |
 | Data on the server | **Demo workspaces only**, re-seeded from the seeded generator through the real importers on every deploy (DEMO-01). **Real data never goes to the VPS**; uploads in the public demo are per-session and purged daily. Because demo data is reproducible from the generator, backups are optional; a nightly `pg_dump` kept off-server is enough if useful. | Per-user data, retention policy, PITR backups |
 | Resources | ~1–1.5 GB RAM in total (Postgres ~256 MB, backend ~512 MB, Next.js ~256 MB) on a small shared VPS | Sized per load |
@@ -733,7 +734,7 @@ Pipeline:
 4. Smoke tests follow the platform's onboarding checklist: the public URL returns 200, `/healthz` reports the expected SHA, no container publishes host ports, logs show no startup errors.
 5. **Feature flags** (`features.yaml`, FR-86) decide what the deployed app shows; CI refuses a flag turned on while its eval suites are red, so the public app never shows a half-built feature.
 
-Readiness probe `/healthz` (database reachable, migrations at head, deploy SHA), and `/healthz/mesh`, which runs the metadata call and is cached for 5 minutes. Postgres is internal to the app network. The deployed app's egress allow-list is Mesh, Telegram and SMTP (09 ORC-13) plus, for Google sign-in (§5.9), `accounts.google.com` (browser redirect only), `oauth2.googleapis.com` (code exchange) and `www.googleapis.com` (signing keys). No model call or financial data goes to Google.
+Readiness probe `/healthz` (database reachable, deploy SHA, and the AI status word `ok` or `unavailable`). Postgres is internal to the app network. The deployed app's egress allow-list is OpenAI, Telegram and SMTP (09 ORC-13) plus, for Google sign-in (§5.9), `accounts.google.com` (browser redirect only), `oauth2.googleapis.com` (code exchange) and `www.googleapis.com` (signing keys). No model call or financial data goes to Google.
 
 ---
 
@@ -748,8 +749,8 @@ Readiness probe `/healthz` (database reachable, migrations at head, deploy SHA),
 | Scheduling | APScheduler + DB lock | Queue + idempotent jobs + dead-letter |
 | Ingestion | generic `csv_statement` (CSV + XLS/XLSX; built-in Monzo/Revolut profiles), manual, demo; generic PDF with reconciliation gate (Tier 2); locale packs `uk`, `in`; any currency, forecasts per currency | + Open Banking (UK AIS; India Account Aggregator), OCR for scanned statements, more locale packs, FX conversion with a rates source |
 | Observability | `AgentRun`/`AgentStep` as traces, JSON logs, UI timeline, `/ops/metrics` (§8) | OTel → self-hosted collector (Tempo or Langfuse) + Grafana, alerting on verifier-rejection spikes and circuit-breaker openings |
-| Models | Two tiers via Mesh | Per-task routing, offline eval gating before a model change ships |
-| Compliance | Disclaimer, data export/delete, joint-account consent record, per-pack wording rules | UK GDPR / Data Protection Act 2018 (lawful basis, retention, DPIA), FCA advice-vs-guidance perimeter review; India DPDP Act 2023 and SEBI investment-adviser perimeter review; DPAs with Mesh and providers |
+| Models | Three tiers on OpenAI (fast, reasoning, verifier) | Per-task routing, offline eval gating before a model change ships |
+| Compliance | Disclaimer, data export/delete, joint-account consent record, per-pack wording rules | UK GDPR / Data Protection Act 2018 (lawful basis, retention, DPIA), FCA advice-vs-guidance perimeter review; India DPDP Act 2023 and SEBI investment-adviser perimeter review; DPAs with OpenAI and other processors |
 
 ---
 

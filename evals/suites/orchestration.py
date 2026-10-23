@@ -407,7 +407,7 @@ def _deferred(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult)
 
 
 def _scripted_mesh(mode: str) -> tuple[MeshClient, Any]:
-    """A Mesh client on a scripted transport (no network) for the fault-injection cases."""
+    """A model client on a scripted transport (no network) for the fault-injection cases."""
     from tests.unit.mesh.fakes import (
         ScriptedCompletions,
         client,

@@ -153,10 +153,10 @@ def run(fast: bool = False, cases: Any = None) -> dict[str, Any]:
                "==", 0, f"{hits['near_miss_n']} pairs", stage1=False),
     ]  # fmt: skip
     notes = [
-        "Real Understand prompt and schema through the product's Mesh client, "
+        "Real Understand prompt and schema through the product's model client, "
         f"{eval_mode()} mode; {missing} of {calls} requests not recorded."
         if missing
-        else f"Real Understand prompt and schema through the product's Mesh client, "
+        else f"Real Understand prompt and schema through the product's model client, "
         f"{eval_mode()} mode; every request recorded.",
         "Targets are Stage 2: reported, not gating the Stage 1 build (stage1=false).",
     ]

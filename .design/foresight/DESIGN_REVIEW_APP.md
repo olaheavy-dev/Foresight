@@ -199,3 +199,11 @@ Could improve (open):
 - The verification item still shows the "Detected" provenance badge, which reads oddly for a check.
 - The arrow icon after "See these transactions" doesn't show at this text size.
 - Home's trace link isn't captured on the local stack: it needs a real checked recommendation, which needs a model key. A component test covers it.
+
+## Mesh removed (copy only), reviewed 23 Oct 2026
+
+Two text changes, no layout or style change. The privacy page's "When AI is used" now names OpenAI ("to an AI model from OpenAI, through OpenAI’s API and under its terms") instead of the Mesh gateway. Activity's run line drops "through Mesh" and reads "3 model calls · 5200 tokens in, 1100 out".
+
+Captured on the local stack built from `chore/remove-mesh`, with no model key (`SCREENSHOTS=1 npx playwright test app.screenshots`): every page at 375, 768 and 1280 px, light and dark, including `review-privacy-*` and `review-activity-*`. No horizontal overflow and no serious or critical axe issues on either page. Screenshots are not committed.
+
+Not captured: the Activity run line itself. With no key the stack has no agent runs, so Activity shows its empty state. `ActivityFeed.test.tsx` checks the new wording, and fails on the old.

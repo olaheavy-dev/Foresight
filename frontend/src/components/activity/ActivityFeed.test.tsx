@@ -54,7 +54,7 @@ export const ACTIVITY_FIXTURE: Feed = {
           agent: "advisor",
           kind: "llm",
           label: "Drafting advice",
-          model: "anthropic/claude-sonnet-5.5",
+          model: "openai/gpt-6-sol",
           status: "retried",
           latency_ms: 11800,
           tokens_in: 3400,
@@ -107,13 +107,16 @@ describe("ActivityFeed", () => {
     expect(screen.getByText("Advised on a question")).toBeInTheDocument();
     expect(screen.getByText(/1 checked · 1 rejected/)).toBeInTheDocument();
     const steps = screen.getByRole("table");
-    expect(within(steps).getByText("anthropic/claude-sonnet-5.5")).toBeInTheDocument();
+    expect(within(steps).getByText("openai/gpt-6-sol")).toBeInTheDocument();
     expect(within(steps).getByText("no model")).toBeInTheDocument();
     expect(within(steps).getByText(/retried/)).toBeInTheDocument();
     expect(screen.getByText(/Audit chain intact · 12 entries/)).toBeInTheDocument();
     // Costs are estimates (usage × catalogue prices), never shown as a bill (docs/00 §7).
     expect(screen.getByText("about $0.041")).toBeInTheDocument();
     expect(within(steps).getByRole("columnheader", { name: "Est. cost" })).toBeInTheDocument();
+    // The run line counts calls and tokens and names no gateway (Mesh was removed on 23 Oct 2026).
+    expect(screen.getByText(/^3 model calls · 5200 tokens in, 1100 out/)).toBeInTheDocument();
+    expect(document.body.textContent).not.toMatch(/mesh/i);
     expect(screen.getByText("Changed the category of 23 transactions")).toBeInTheDocument();
   });
 });

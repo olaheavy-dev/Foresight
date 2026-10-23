@@ -1,4 +1,4 @@
-"""Cost and latency of whole answers, from recorded Mesh calls (docs/09 E-EFF).
+"""Cost and latency of whole answers, from recorded model calls (docs/09 E-EFF).
 
 Latency is only ever measured from real calls: every cassette stores the live call's wall time,
 and a replayed call reports it (`MeshResult.latency_measured`). An answer's end-to-end time is
@@ -19,7 +19,7 @@ from backend.storage.agent_repo import AgentStore
 
 
 class CallLog:
-    """Wraps the eval Mesh client and keeps every call it returns (thread-safe)."""
+    """Wraps the eval model client and keeps every call it returns (thread-safe)."""
 
     def __init__(self, inner: Any) -> None:
         self._inner = inner

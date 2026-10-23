@@ -1,8 +1,9 @@
 """The only gateway to language models.
 
-Every model call in Foresight goes through this module to Mesh API
-(https://api.meshapi.ai/v1). No other module may import an AI SDK; an import-linter
-contract and tests/test_mesh_only.py enforce that (docs/05 §3.1).
+Every model call in Foresight goes through this module to OpenAI (https://api.openai.com/v1;
+owner decision 20 Oct 2026, docs/00 §12 item 14). No other module may import an AI SDK; an
+import-linter contract and tests/unit/test_mesh_only.py enforce that (docs/05 §3.1). The module
+keeps its old name, `mesh`, from the gateway it first called.
 
 What a call goes through (docs/05 §6.4, docs/06 §10.1):
 
@@ -11,7 +12,8 @@ What a call goes through (docs/05 §6.4, docs/06 §10.1):
 3. Otherwise the circuit breaker may refuse at once (`MeshUnavailableError`).
 4. The tier's primary model: up to `mesh_max_retries` retries on transport errors, timeouts and 5xx
    (backoff 1 s, 4 s), honouring a 429 `Retry-After` up to 10 s; then one attempt on the tier's
-   fallback model. A 402 (no Mesh balance) stops at once with `MeshSpendLimitError`.
+   fallback model. A 429 `insufficient_quota` (no credit) stops at once with
+   `MeshSpendLimitError`.
 5. Each request is shaped by the model's capabilities (`capabilities.py`): temperature is never
    sent to a model that rejects it, and a forced tool choice only where it is accepted.
 6. Structured output: the model's preferred mode (`json_schema` or forced tool-call arguments),
@@ -51,14 +53,12 @@ from backend.mesh.prices import cost_estimate
 from backend.mesh.spend_guard import DailySpendGuard
 from backend.settings import Settings, get_settings
 
-# Fixed, not configurable: `model_provider` picks one of these, and no environment variable or
-# setting can point the client at any other address.
-MESH_BASE_URL = "https://api.meshapi.ai/v1"
+# Fixed, not configurable: no environment variable or setting can point the client at any other
+# address. `model_provider` must name one of these (only OpenAI since Mesh was removed).
 OPENAI_BASE_URL = "https://api.openai.com/v1"
-PROVIDER_BASE_URLS = {"mesh": MESH_BASE_URL, "openai": OPENAI_BASE_URL}
+PROVIDER_BASE_URLS = {"openai": OPENAI_BASE_URL}
 
 __all__ = [
-    "MESH_BASE_URL",
     "OPENAI_BASE_URL",
     "PROVIDER_BASE_URLS",
     "CassetteMiss",
@@ -79,11 +79,11 @@ __all__ = [
 class ModelTier(str, Enum):
     FAST = "fast"  # Coordinator Understand and block plan, Ledger Agent, digest headline
     REASONING = "reasoning"  # Behaviour Analyst, Advisor
-    VERIFIER = "verifier"  # Verifier judge: a different provider from the Advisor (docs/06 §13)
+    VERIFIER = "verifier"  # Verifier judge: a different model from the Advisor (docs/06 §13)
 
 
 class MeshConfigError(RuntimeError):
-    """Raised when Mesh is not configured (missing key or model ID)."""
+    """Raised when the model client is not configured (provider, key or model ID)."""
 
 
 class MeshCallError(RuntimeError):
@@ -91,17 +91,18 @@ class MeshCallError(RuntimeError):
 
 
 class MeshSpendLimitError(MeshCallError):
-    """Mesh refused for lack of balance (402 / spend_limit_exceeded). Callers degrade."""
+    """The provider refused for lack of credit (429 insufficient_quota). Callers degrade."""
 
 
 class MeshUnavailableError(MeshCallError):
-    """The circuit breaker is open: Mesh is failing, so no call was attempted."""
+    """The circuit breaker is open (the provider is failing) or today's budget is used, so no
+    call was attempted."""
 
 
 class MeshSchemaError(MeshCallError):
     """The model's output failed validation twice (initial attempt + one repair).
 
-    `calls` holds every Mesh call made before giving up, so budgets and cost still count them.
+    `calls` holds every model call made before giving up, so budgets and cost still count them.
     """
 
     def __init__(self, message: str, calls: tuple[MeshResult, ...] = ()) -> None:
@@ -134,7 +135,9 @@ class MeshResult:
     strategy: str | None = None  # json_schema | tools | json_object for structured calls
     # False when a replayed call has no recorded live latency (latency_ms is then local time).
     latency_measured: bool = True
-    provider: str = "mesh"  # the configured route (MODEL_PROVIDER), stored on each AgentStep
+    # The route the call took, stored on each AgentStep: "openai", or "mesh" for a replayed
+    # recording made through the old gateway.
+    provider: str = "openai"
 
 
 T = TypeVar("T", bound=BaseModel)
@@ -266,7 +269,7 @@ class _Structured:
 
 
 def _error_code(exc: APIStatusError) -> str:
-    """Mesh errors look like {"error": {"code": "invalid_request" | "spend_limit_exceeded"}}."""
+    """Provider errors look like {"error": {"code": "insufficient_quota" | ...}}."""
     body = getattr(exc, "body", None)
     if isinstance(body, dict):
         inner = body.get("error", body)
@@ -386,15 +389,10 @@ class MeshClient:
         if self._provider not in PROVIDER_BASE_URLS:
             raise MeshConfigError(f"unknown MODEL_PROVIDER '{self._provider}'")
         if client is None and self._mode != "replay":
-            key_name, api_key = (
-                ("OPENAI_API_KEY", self._settings.openai_api_key)
-                if self._provider == "openai"
-                else ("MESH_API_KEY", self._settings.mesh_api_key)
-            )
-            if not api_key:
-                raise MeshConfigError(f"{key_name} is not set")
+            if not self._settings.openai_api_key:
+                raise MeshConfigError("OPENAI_API_KEY is not set")
             client = OpenAI(
-                api_key=api_key,
+                api_key=self._settings.openai_api_key,
                 base_url=PROVIDER_BASE_URLS[self._provider],
                 timeout=self._settings.mesh_timeout_reasoning_seconds,
                 max_retries=0,  # retries are ours: counted, logged and visible to the breaker
@@ -438,10 +436,7 @@ class MeshClient:
             else None
         )
         self.availability = AiAvailability(
-            self._available_usd,
             lambda: self.breaker.state is BreakerState.OPEN,
-            low_usd=self._settings.mesh_low_balance_usd,
-            worst_case_usd=self._settings.mesh_question_worst_case_usd,
             budget_used=lambda: self.spend_guard is not None and self.spend_guard.exhausted(),
         )
 
@@ -452,17 +447,6 @@ class MeshClient:
         from backend.storage.spend import spent_on
 
         return spent_on(self._settings.database_url, day)
-
-    def _available_usd(self) -> float | None:
-        """Mesh `GET /v1/balance` (costs no credit). None when it can't be read (replay mode,
-        no live client, or a provider without a balance endpoint): availability then rests on the
-        breaker, the daily spend guard and spend refusals alone."""
-        if self._client is None or self._mode == "replay" or self._provider != "mesh":
-            return None
-        body = self._client.get("/balance", cast_to=object, options={"timeout": 3.0})
-        if isinstance(body, dict) and body.get("available_usd") is not None:
-            return float(body["available_usd"])
-        return None
 
     # ------------------------------------------------------------------ configuration
 
@@ -480,22 +464,21 @@ class MeshClient:
             return PROVIDER_BASE_URLS[self._provider]
         return str(self._client.base_url).rstrip("/")
 
-    def _wire_model(self, model: str) -> str:
-        """The model ID as the provider expects it: OpenAI takes "gpt-6-luna", not
-        "openai/gpt-6-luna". Settings, prices and cassette keys keep the prefixed ID."""
-        if self._provider == "openai":
-            return model.removeprefix("openai/")
-        return model
+    @staticmethod
+    def _wire_model(model: str) -> str:
+        """The model ID as OpenAI expects it: "gpt-6-luna", not "openai/gpt-6-luna". Settings,
+        prices and cassette keys keep the prefixed ID."""
+        return model.removeprefix("openai/")
 
-    def _token_limit(self, max_tokens: int) -> dict[str, Any]:
+    @staticmethod
+    def _token_limit(max_tokens: int) -> dict[str, Any]:
         """OpenAI rejects `max_tokens` for the GPT-6 models (400 unsupported_parameter, probed
-        21 Oct 2026) and takes `max_completion_tokens`; Mesh translated it for us."""
-        if self._provider == "openai":
-            return {"max_completion_tokens": max_tokens}
-        return {"max_tokens": max_tokens}
+        21 Oct 2026) and takes `max_completion_tokens`."""
+        return {"max_completion_tokens": max_tokens}
 
-    def _serves(self, model: str) -> bool:
-        return self._provider == "mesh" or model.startswith("openai/")
+    @staticmethod
+    def _serves(model: str) -> bool:
+        return model.startswith("openai/")
 
     def models_for(self, tier: ModelTier) -> tuple[str, str]:
         s = self._settings
@@ -505,8 +488,8 @@ class MeshClient:
             ModelTier.VERIFIER: (s.mesh_model_verifier, s.mesh_model_verifier_fallback),
         }[tier]
         if not primary:
-            raise MeshConfigError(f"No Mesh model configured for tier '{tier.value}'")
-        # Replay never reaches a provider, so recordings made through Mesh still answer.
+            raise MeshConfigError(f"No model configured for tier '{tier.value}'")
+        # Replay never reaches a provider, so recordings of other models still answer.
         if self._mode != "replay":
             if not self._serves(primary):
                 raise MeshConfigError(
@@ -744,7 +727,7 @@ class MeshClient:
             )
 
         if not self.breaker.allow():
-            raise MeshUnavailableError("Mesh circuit breaker is open")
+            raise MeshUnavailableError("the model circuit breaker is open")
         if self.spend_guard is not None and self.spend_guard.exhausted():
             raise MeshUnavailableError("today's model budget is used")
 
@@ -774,9 +757,6 @@ class MeshClient:
                         timeout=self._timeout(tier, fallback=is_fallback),
                     )
                 except BadRequestError as exc:
-                    if _error_code(exc) == "spend_limit_exceeded":
-                        self.availability.note_spend_limit()
-                        raise MeshSpendLimitError("Mesh balance exhausted") from exc
                     # The request shape was rejected; not an outage, so the breaker isn't told.
                     raise _UnsupportedRequest(str(exc)) from exc
                 except RateLimitError as exc:
@@ -790,13 +770,8 @@ class MeshClient:
                     continue
                 except APIStatusError as exc:
                     status = _status(exc)
-                    if status == 402 or _error_code(exc) == "spend_limit_exceeded":
-                        self.availability.note_spend_limit()
-                        raise MeshSpendLimitError(
-                            "Mesh balance exhausted (402 spend_limit_exceeded)"
-                        ) from exc
                     if status in (401, 403):
-                        raise MeshCallError(f"Mesh rejected the key ({status})") from exc
+                        raise MeshCallError(f"the provider rejected the key ({status})") from exc
                     last_error = exc
                     self.breaker.record(False)
                     if attempt + 1 < tries:

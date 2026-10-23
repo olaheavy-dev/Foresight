@@ -2,8 +2,8 @@
 
 `rules_only` is the finance_core rules engine as shipped (merchant rules, inflow ladder, bank
 category as a weak prior, no merchant memory). `hybrid` sends the spending rows the rules leave
-below 0.85 to the Ledger Agent (fast tier via Mesh, docs/06 §4.1); `llm_only` sends every test row.
-Both model arms run from recorded Mesh responses (`evals/cassettes`, replay: no key, no network);
+below 0.85 to the Ledger Agent (fast tier, docs/06 §4.1); `llm_only` sends every test row.
+Both model arms run from recorded model responses (`evals/cassettes`, replay: no key, no network);
 `MESH_CASSETTE_MODE=record` re-records them. A missing recording leaves the arm null with a note
 rather than inventing numbers. The UK hand-labelled holdout is not built yet, so its rows are null.
 """
@@ -79,7 +79,7 @@ def _model_arm(
             "macro_f1": None,
             "flow_class_accuracy": None,
             "llm_call_rate": None,
-            "note": f"not measured: no recorded Mesh response ({type(exc).__name__}); "
+            "note": f"not measured: no recorded model response ({type(exc).__name__}); "
             "re-record with MESH_CASSETTE_MODE=record",
         }
     gold, pred, conf, amounts, gold_flow, pred_flow = [], [], [], [], [], []
@@ -302,7 +302,7 @@ def run(fast: bool = False) -> dict[str, Any]:
                 "measured on the generated test split (CAT-hybrid-acc-generated)"
             )
     notes = [
-        "Hybrid and LLM-only arms replay recorded Mesh responses (evals/cassettes); the "
+        "Hybrid and LLM-only arms replay recorded model responses (evals/cassettes); the "
         "holdout targets stay null until the UK hand-labelled holdout exists.",
         f"Majority-class baseline predicts '{majority}' (most frequent dev-split label).",
     ]

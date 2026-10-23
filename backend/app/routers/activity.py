@@ -171,7 +171,7 @@ def activity(ctx: Profile, limit: int = Query(default=20, ge=1, le=50)) -> Activ
                         agent=s.agent,
                         kind=s.kind,
                         label=s.label or "",
-                        model=s.model,  # e.g. anthropic/claude-sonnet-5.5, behind Mesh
+                        model=s.model,  # e.g. anthropic/claude-sonnet-5.5
                         status=s.status,
                         cached=bool(s.cached),
                         latency_ms=s.latency_ms,

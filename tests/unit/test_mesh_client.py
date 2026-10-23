@@ -26,7 +26,7 @@ class StubCompletions:
     def create(self, **kwargs: Any) -> SimpleNamespace:
         self.calls.append(kwargs)
         if kwargs["model"] in self.fail_models:
-            raise APIConnectionError(request=httpx.Request("POST", "https://api.meshapi.ai/v1"))
+            raise APIConnectionError(request=httpx.Request("POST", "https://api.openai.com/v1"))
         return SimpleNamespace(
             id="resp_1",
             model=kwargs["model"],
@@ -37,11 +37,12 @@ class StubCompletions:
 
 def _client(completions: StubCompletions, **overrides: str) -> MeshClient:
     settings = Settings(
-        model_provider="mesh",  # the Mesh route; OpenAI is in test_openai_provider.py
-        mesh_api_key="rsk_test",
-        mesh_model_fast=overrides.get("fast", "fast-primary"),
-        mesh_model_fast_fallback=overrides.get("fast_fallback", "fast-backup"),
-        mesh_model_reasoning=overrides.get("reasoning", "reason-primary"),
+        model_provider="openai",
+        openai_api_key="sk_test",
+        # The wire name drops the prefix: the stub sees "fast-primary".
+        mesh_model_fast=overrides.get("fast", "openai/fast-primary"),
+        mesh_model_fast_fallback=overrides.get("fast_fallback", "openai/fast-backup"),
+        mesh_model_reasoning=overrides.get("reasoning", "openai/reason-primary"),
     )
     stub = SimpleNamespace(chat=SimpleNamespace(completions=completions))
     return MeshClient(settings=settings, client=stub, sleep=lambda _: None)  # type: ignore[arg-type]
@@ -53,7 +54,7 @@ def _ask(client: MeshClient, content: str = "hello") -> Any:
 
 def test_missing_key_is_a_config_error() -> None:
     with pytest.raises(MeshConfigError):
-        MeshClient(settings=Settings(model_provider="mesh", mesh_api_key=""))
+        MeshClient(settings=Settings(model_provider="openai", openai_api_key=""))
 
 
 def test_missing_model_is_a_config_error() -> None:

@@ -15,7 +15,7 @@ from backend.settings import get_settings
 EVAL_CANARY_SECRET = "foresight-cassettes"  # noqa: S105 - not a secret: see the module docstring
 
 
-# Set by the eval harness, whose Mesh client records or replays even when the process settings
+# Set by the eval harness, whose model client records or replays even when the process settings
 # say live: its prompts must carry the fixed canary too.
 force_eval_canary = False
 

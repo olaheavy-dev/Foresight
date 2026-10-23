@@ -1,6 +1,8 @@
 """Per-token prices for cost estimates (docs/05 §9), USD per million tokens.
 
-Read from `models.yaml` (configuration), copied from Mesh's catalogue (`GET /v1/models`).
+Read from `models.yaml` (configuration). The prices were copied from Mesh's catalogue
+(`GET /v1/models`, 13 Oct 2026); gpt-6-luna and gpt-6.1-sol matched OpenAI's list prices on 16 Oct
+(docs/11), and gpt-6-sol's price has not been checked against OpenAI's yet.
 An unknown model gets no estimate rather than a guessed one.
 """
 
@@ -19,8 +21,9 @@ def _prices() -> dict[str, tuple[float, float]]:
 
 
 def price_for(model: str) -> tuple[float, float] | None:
-    """Mesh reports the served model with or without its provider prefix ("gpt-6-luna" for
-    "openai/gpt-6-luna"); both name the same catalogue entry."""
+    """The provider reports the served model without its prefix ("gpt-6-luna" for
+    "openai/gpt-6-luna"; recordings made through Mesh may have either); both name the same
+    catalogue entry."""
     prices = _prices()
     price = prices.get(model)
     if price is not None:

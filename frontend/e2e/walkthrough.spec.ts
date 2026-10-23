@@ -1,9 +1,9 @@
 // The portfolio walkthrough: a scripted tour of the live app, recorded as video
 // (playwright.walkthrough.config.ts). It asks one question and runs one proactive check on a fresh
-// demo copy (about $0.10 of Mesh), so it runs only with WALKTHROUGH=1.
+// demo copy (about $0.10 of OpenAI credit), so it runs only with WALKTHROUGH=1.
 import { expect, type Page, test } from "@playwright/test";
 
-test.skip(!process.env.WALKTHROUGH, "set WALKTHROUGH=1 to record the walkthrough (spends a little Mesh)");
+test.skip(!process.env.WALKTHROUGH, "set WALKTHROUGH=1 to record the walkthrough (spends a little OpenAI credit)");
 
 const beat = (page: Page, ms = 1_800) => page.waitForTimeout(ms);
 

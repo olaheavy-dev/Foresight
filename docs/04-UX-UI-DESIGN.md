@@ -153,7 +153,7 @@ Income stays £0 and is shown separately from "From your other account" and "Oth
 | Loading | Skeletons at final sizes; the inline agent step checklist in the AI Workspace; "Running 500 paths…" in the Lab |
 | Empty | No data → "Import a CSV statement or explore the live demo", plus the drop zone |
 | Agent step failed | Name the step and reason, then **Retry the run**; keep the last good snapshot |
-| **Model unavailable** (Mesh down) | Deterministic numbers and charts still render; explanations show "Explanations are unavailable right now. Your figures are unaffected." |
+| **Model unavailable** (provider down or out of credit) | Deterministic numbers and charts still render; explanations show "Explanations are unavailable right now. Your figures are unaffected." |
 | **Stale balance** | "Your latest statement ends 30 Sep. Add October's for an up-to-date forecast."; band widened |
 | **Uncertain forecast** | Wide-range note: "Your spending varies a lot, so this range is wide." Verdicts avoid certainty words |
 | **Failed import** | Per-file reason and next step; other files continue; nothing partial is committed |

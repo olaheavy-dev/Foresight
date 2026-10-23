@@ -411,7 +411,7 @@ class ActivityStep(Contract):
     agent: NonEmpty
     kind: NonEmpty  # llm | tool | control
     label: str = ""
-    model: str | None = None  # vendor/model behind the Mesh gateway, for model calls
+    model: str | None = None  # provider/model id, for model calls
     status: NonEmpty
     cached: bool = False
     latency_ms: Annotated[int, Field(ge=0)] | None = None

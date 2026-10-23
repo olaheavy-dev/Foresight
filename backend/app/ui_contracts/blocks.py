@@ -601,7 +601,7 @@ class VerificationLoop(Contract):
 
 class RunCost(Contract):
     """Sums of the run's AgentStep usage (docs/08 §5.10, docs/00 §7). Shown only in How it was
-    checked; `usd_estimate` = Mesh-reported tokens × catalogue price, labelled estimated."""
+    checked; `usd_estimate` = provider-reported tokens × catalogue price, labelled estimated."""
 
     model_calls: Annotated[int, Field(ge=0)]
     tokens: Annotated[int, Field(ge=0)]

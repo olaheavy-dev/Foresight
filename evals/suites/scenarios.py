@@ -180,7 +180,7 @@ def run(fast: bool = False) -> dict[str, Any]:
             rows.append(row)
     measured = bool(rows) and missing == 0
     if missing:
-        notes.append(f"{missing} prompts have no recorded Mesh response: LLM metrics not measured")
+        notes.append(f"{missing} prompts have no recorded model response: LLM metrics not measured")
     scored = [r for r in rows if not r["clarify_expected"]]
     ambiguous = [r for r in rows if r["clarify_expected"]]
     asked = [r for r in rows if r["clarify_got"]]

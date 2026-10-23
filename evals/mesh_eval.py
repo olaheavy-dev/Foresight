@@ -1,8 +1,8 @@
-"""A Mesh client for the LLM eval suites (docs/09 §13, §16).
+"""A model client for the LLM eval suites (docs/09 §13, §16).
 
 `EVAL_MESH_MODE` chooses the mode: `replay` (default; recorded cassettes under evals/cassettes, no
-key, no network), `record` (live calls through Mesh, every exchange saved) or `live`. A suite that
-meets a request with no cassette reports its LLM arms as "not measured", never a guess.
+key, no network), `record` (live calls to the provider, every exchange saved) or `live`. A suite
+that meets a request with no cassette reports its LLM arms as "not measured", never a guess.
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ def eval_mode() -> str:
 
 
 def eval_mesh() -> MeshClient | None:
-    """The suite's Mesh client, or None when no model can be reached in this mode."""
+    """The suite's model client, or None when no model can be reached in this mode."""
     mode = eval_mode()
     # Prompts carry the eval canary in record/replay (backend.agents.prompting reads settings).
     os.environ["MESH_CASSETTE_MODE"] = mode

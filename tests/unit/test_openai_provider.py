@@ -67,7 +67,7 @@ def test_openai_provider_uses_the_fixed_openai_address(monkeypatch: pytest.Monke
 
 def test_openai_provider_needs_its_own_key() -> None:
     with pytest.raises(MeshConfigError, match="OPENAI_API_KEY"):
-        MeshClient(settings=_settings(openai_api_key="", mesh_api_key="rsk_test"))
+        MeshClient(settings=_settings(openai_api_key=""))
 
 
 def test_unknown_provider_is_a_config_error() -> None:
@@ -151,11 +151,6 @@ def test_insufficient_quota_is_a_spend_limit_not_a_retry() -> None:
     assert len(completions.calls) == 1
 
 
-def test_no_balance_lookup_on_openai() -> None:
-    client = _client(StubCompletions())
-    assert client._available_usd() is None
-
-
 def test_results_carry_the_provider_for_agent_steps() -> None:
     """Codex on #67: activity and audit rows must not label OpenAI calls as Mesh."""
     assert _ask(_client(StubCompletions())).provider == "openai"
@@ -186,25 +181,23 @@ def test_a_configuration_where_the_advisor_judges_itself_is_refused(
 
 
 def test_a_replay_keeps_the_provider_that_recorded_it(tmp_path: Any) -> None:
-    """Codex on #67: a recording replayed under another MODEL_PROVIDER keeps its own route."""
+    """Codex on #67: a recording made through Mesh replays as "mesh", not as OpenAI."""
     from backend.mesh.cassettes import CassetteStore
 
     stub = SimpleNamespace(chat=SimpleNamespace(completions=StubCompletions()))
     recorder = MeshClient(
         settings=_settings(mesh_cassette_mode="record", mesh_cassette_dir=str(tmp_path)),
         client=stub,  # type: ignore[arg-type]
-        cassettes=CassetteStore(tmp_path, provider="openai"),
+        cassettes=CassetteStore(tmp_path, provider="mesh"),
         sleep=lambda _: None,
     )
     _ask(recorder)
     replayer = MeshClient(
-        settings=_settings(
-            model_provider="mesh", mesh_cassette_mode="replay", mesh_cassette_dir=str(tmp_path)
-        )
+        settings=_settings(mesh_cassette_mode="replay", mesh_cassette_dir=str(tmp_path))
     )
     replayed = _ask(replayer)
     assert replayed.replayed
-    assert replayed.provider == "openai"
+    assert replayed.provider == "mesh"
 
 
 def test_recordings_from_before_the_field_replay_as_mesh(tmp_path: Any) -> None:

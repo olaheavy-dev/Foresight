@@ -433,7 +433,7 @@ class AgentRun(Base):
     tokens_in: Mapped[int] = mapped_column(Integer, server_default="0")
     tokens_out: Mapped[int] = mapped_column(Integer, server_default="0")
     # Run-level aggregate behind the timeline's cost {model_calls, tokens, usd_estimate, cached}
-    # (docs/08 §5.10): sums of its steps, from Mesh `usage` × the price table, never model text.
+    # (docs/08 §5.10): sums of its steps, from provider `usage` × the price table, never model text.
     cost_estimate_usd: Mapped[float | None] = mapped_column(Float)
     cached_steps: Mapped[int] = mapped_column(Integer, server_default="0")
     revision_count: Mapped[int] = mapped_column(Integer, server_default="0")

@@ -614,9 +614,9 @@ The system **never** executes financial actions (no payments, no cancellations).
 
 | Failure | Retry policy | Terminal behaviour |
 |---|---|---|
-| Mesh transport error / 5xx / timeout | ≤ 2 retries, exponential backoff (1s, 4s), then fallback model in the same tier, 1 attempt | Step error. Deterministic parts still returned (e.g. findings without LLM ranking use the deterministic salience score) |
-| Mesh 429 | Respect `Retry-After` up to 10s, then as above | Same |
-| Mesh outage (circuit breaker open, 05 §6.4) | none: nodes skip to the degraded path at once | Same as above, without waiting for timeouts |
+| Transport error / 5xx / timeout | ≤ 2 retries, exponential backoff (1s, 4s), then fallback model in the same tier, 1 attempt | Step error. Deterministic parts still returned (e.g. findings without LLM ranking use the deterministic salience score) |
+| 429 (rate limit; `insufficient_quota` is no credit: stop at once, AI answers pause) | Respect `Retry-After` up to 10s, then as above | Same |
+| Provider outage (circuit breaker open, 05 §6.4) | none: nodes skip to the degraded path at once | Same as above, without waiting for timeouts |
 | Node timeout (`fast` 8 s, its fallback 25 s; `reasoning` 25 s) or run deadline (75 s questions, 120 s ingestion) | timeout counts as a transport error; deadline: none | Withdraw unchecked drafts ("deadline"), compose deterministically from engine numbers with "No recommendation was checked in time", `partial=true` (05 §6.4) |
 | Prompt canary in output, or output screen failure (05 §7.4a) | none | Output dropped, step `failed`, `AuditEvent prompt_leak_blocked`; the block falls back to a deterministic template |
 | Schema-invalid LLM output | 1 repair retry (validation errors fed back), then degrade; two total attempts | Ledger rows → `uncategorised` + review; Advisor → no proposals ("couldn't generate advice"); plan → default block plan for the intent |
@@ -663,7 +663,7 @@ class AgentStep(BaseModel):
     step_id: str; run_id: str; workspace_id: str
     node: str                        # LangGraph node name, e.g. "verify_deterministic"
     agent: str                       # coordinator|ledger|analyst|forecaster|advisor|verifier|system
-    provider: Literal["mesh"] | None # mesh only for LLM steps; None otherwise
+    provider: str | None             # LLM steps: "openai" ("mesh" if replayed from a Mesh recording)
     kind: Literal["llm","tool","control"]
     model: str | None; tier: str | None; prompt_version: str | None
     input_hash: str                  # sha256 of canonical input JSON
@@ -682,7 +682,7 @@ This feeds the `AgentExecutionTimeline` block (08), the Evidence drawer, and orc
 
 ## 12. Deterministic vs probabilistic boundary
 
-| Concern | Deterministic (`finance_core`, tested) | Probabilistic (LLM via Mesh) |
+| Concern | Deterministic (`finance_core`, tested) | Probabilistic (LLM via `mesh_client`) |
 |---|---|---|
 | Narration parsing, masking | ✔ | |
 | Currency detection, number/date inference, holidays, locale-pack application | ✔ (unambiguous cases) | — (ambiguity goes to the user, H13, never to an LLM) |
@@ -718,6 +718,7 @@ Model IDs are configuration (settings `MESH_MODEL_<TIER>` and `MESH_MODEL_<TIER>
 - **Verifier judge stays on GPT-6.1 Sol** (a different provider from the Advisor). Haiku 5.5 failed the E-VER accuracy gate as judge on the dev trial (52% repairs with json_schema; with tool calls, one correct fix withdrawn).
 
 - **20 Oct 2026, owner decision (`00` §12 item 14):** every tier moves to OpenAI, called directly. The judge must be a different model from the Advisor rather than a different provider; a same-family judge may share the Advisor's blind spots, so E-VER's flawed-proposal cases are the check that it still catches them. The models are picked by the selection rule above, on a trial using the remaining Mesh credit; applied 20–21 Oct 2026: GPT-6 Sol as Advisor won the dev-case trial (`evals/results/20261020T2030Z_openai_advisor_trial/`) and passed the whole-answer gates on re-recording (evals/CHANGELOG.md, `evalrun_20261021T085940Z_29b86eb`).
+- **23 Oct 2026:** the Mesh route is removed from the code. `MODEL_PROVIDER` accepts only `openai`; an env still naming `mesh`, or a tier primary OpenAI can't serve, turns AI answers off and logs why (the API still starts). Recordings made through Mesh still replay and keep `provider: "mesh"` on their steps.
 
 | Tier | Primary | Fallback |
 |---|---|---|
@@ -725,4 +726,4 @@ Model IDs are configuration (settings `MESH_MODEL_<TIER>` and `MESH_MODEL_<TIER>
 | reasoning | `openai/gpt-6-sol` | none (the only other Sol model is the judge's; an Advisor failure degrades to the deterministic answer) |
 | verifier | `openai/gpt-6.1-sol` | none (the only other Sol model is the Advisor's) |
 
-\* **Anthropic-tier temperatures are the model default.** Through Mesh, Anthropic models reject a `temperature` parameter and a forced `tool_choice`, so the client never sends either to them (`backend/mesh/models.yaml`); their structured output uses `json_schema`, or tool calls with `tool_choice: "auto"`. `google/gemini-3.1-pro` uses the tool-call path because its `json_schema` output didn't parse. Each `AgentStep` records the temperature actually sent, with `null` meaning "model default". The eval suite records which models produced each result, so swapping a model shows up as a measurable change.
+\* **Temperatures are the model default.** The GPT-6 models accept only their default temperature, so the client never sends one to them (`backend/mesh/models.yaml`; through Mesh, until 23 Oct 2026, the same was true of the Anthropic models then used). Each `AgentStep` records the temperature actually sent, with `null` meaning "model default". The eval suite records which models produced each result, so swapping a model shows up as a measurable change.

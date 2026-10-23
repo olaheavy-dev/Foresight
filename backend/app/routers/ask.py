@@ -18,6 +18,7 @@ it is allowed on the read-only demo profiles.
 from __future__ import annotations
 
 import json
+import logging
 import threading
 import time
 from collections import defaultdict, deque
@@ -83,22 +84,29 @@ class Limits:
 
 limits = Limits()
 
-# --------------------------------------------------------------------------- Mesh
+# --------------------------------------------------------------------------- Model client
 
 
+log = logging.getLogger(__name__)
 _mesh_lock = threading.Lock()
 _mesh: MeshClient | None = None
+_mesh_refused = False  # the reason is logged once, not on every request
 
 
 def get_mesh() -> MeshClient | None:
-    """One Mesh client per process (it carries the circuit breaker). None when no key is set:
+    """One model client per process (it carries the circuit breaker). None when no key is set:
     questions then degrade honestly instead of failing (docs/06 §10.1)."""
-    global _mesh
+    global _mesh, _mesh_refused
     with _mesh_lock:
         if _mesh is None:
             try:
                 _mesh = MeshClient()
-            except MeshConfigError:
+            except MeshConfigError as exc:
+                # Names settings, never values: e.g. a stale MODEL_PROVIDER=mesh or a model
+                # override OpenAI can't serve. The app still runs; AI answers show as paused.
+                if not _mesh_refused:
+                    log.warning("AI answers are off: %s", exc)
+                    _mesh_refused = True
                 return None
         return _mesh
 
@@ -107,7 +115,7 @@ Mesh = Annotated[MeshClient | None, Depends(get_mesh)]
 
 
 def ai_status(mesh: MeshClient | None) -> AiStatus:
-    """`ok` | `low` | `unavailable` (a word only; never a balance figure)."""
+    """`ok` | `unavailable` (a word only; never a spend figure)."""
     if mesh is None:
         return "unavailable"
     try:

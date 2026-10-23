@@ -1,11 +1,11 @@
 """Shared harness for the model-backed Stage 2 suites (E-CTX, E-UI, E-ORC, E-SEC SEC-1).
 
-Model calls go through the product's own Mesh client and prompts, so a recorded exchange is the
+Model calls go through the product's own model client and prompts, so a recorded exchange is the
 exact request the app sends. Mode comes from `FORESIGHT_EVAL_MESH`:
 
 - `replay` (default, CI): answers from `evals/cassettes/`; no key, no network. A request that was
   never recorded is reported as "not recorded", never guessed.
-- `record`: re-uses what is recorded and calls Mesh only for new or changed requests (needs
+- `record`: re-uses what is recorded and calls the model only for new or changed requests (needs
   `MESH_API_KEY`); the cassettes are then committed.
 
 Suites that need whole answers run against a disposable PostgreSQL database seeded with the P1/P2
@@ -66,7 +66,7 @@ class HoldMesh:
 
 
 def eval_mesh() -> MeshClient:
-    """The product's Mesh client in replay or record mode, on the committed cassettes.
+    """The product's model client in replay or record mode, on the committed cassettes.
 
     Recorded and replayed prompts must carry the fixed evaluation canary, never a per-process
     one, or no recording could ever be replayed; the prompts are told so explicitly."""
@@ -90,7 +90,7 @@ class NotRecorded(LookupError):
 
 
 def fresh_breaker(mesh: Any) -> None:
-    """Each eval case starts with a closed circuit breaker: a transient Mesh error while recording
+    """Each eval case starts with a closed circuit breaker: a transient model error while recording
     one case must not pause AI for the next ones, or recording and replay take different paths."""
     from backend.mesh.breaker import CircuitBreaker
 
