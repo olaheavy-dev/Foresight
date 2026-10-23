@@ -37,12 +37,17 @@ def client_network(request: Request) -> str | None:
     """The visitor's network (an IPv4 /24 or IPv6 /48), or None when none is public.
 
     With `CLIENT_IP_HEADER` set (a CDN in front of the proxy, e.g. CF-Connecting-IP), that
-    header names the visitor. Otherwise `X-Forwarded-For` is read from the right, skipping
-    private hops and any `TRUSTED_PROXY_CIDRS`, so a public CDN or proxy is never taken for the
-    visitor and doesn't make everyone behind it share one allowance (#59 review)."""
+    header names the visitor. Otherwise, and whenever that header is missing or not a public
+    address, `X-Forwarded-For` is read from the right, skipping private hops and any
+    `TRUSTED_PROXY_CIDRS`, so a public CDN or proxy is never taken for the visitor and doesn't
+    make everyone behind it share one allowance (#59 review). The fallback matters because a
+    request with no network is never counted: with the header configured but no edge setting it,
+    returning None would lift the cap for every visitor (23 Oct 2026)."""
     settings = get_settings()
     if settings.client_ip_header:
-        return _network(request.headers.get(settings.client_ip_header, "").strip())
+        named = _network(request.headers.get(settings.client_ip_header, "").strip())
+        if named is not None:
+            return named
     trusted = _trusted(settings.trusted_proxy_cidrs)
     hops = [h.strip() for h in request.headers.get("x-forwarded-for", "").split(",")]
     if request.client is not None:
