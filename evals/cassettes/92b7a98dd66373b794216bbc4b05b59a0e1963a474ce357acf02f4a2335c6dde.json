@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Show me my Deliveroo orders\",\"intent\":\"transaction_lookup\",\"slots\":{\"merchant\":\"Deliveroo\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002673,
     "latency_ms": 576,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHAR3X74JW6F728S8JMJW5",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHAR3X74JW6F728S8JMJW5",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -186,7 +186,7 @@
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_tr_b8\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.eating_out\",\"monthly_cap_minor\":20000},\"title\":\"Cap eating out at {{cap}} a month\",\"rationale\":\"The forecast shows your balance dipping below your buffer before payday. Limiting eating out to {{cap}} a month reduces spending by {{saving}} compared with the last month, keeping more cash in hand.\",\"trigger_refs\":[{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":8321,\"claimed_impact_text\":\"Monthly spending reduction of {{saving}} compared with the last thirty days.\"}],\"critique_addressed\":[\"Replaced the generic advice with an explicit monthly cap for the eating-out category and a category-specific rationale.\"]}",
     "cost_estimate_usd": 0.006892,
     "latency_ms": 5120,
-    "mesh_response_id": "chatcmpl-EbAYh8a5dLaSyWOIgySdntKUVAAyv",
+    "provider_response_id": "chatcmpl-EbAYh8a5dLaSyWOIgySdntKUVAAyv",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

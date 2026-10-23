@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"I can\u2019t tell from the figures available whether any bills went up recently.\",\"key_numbers\":[],\"main_visual\":\"TransactionTable\"}",
     "cost_estimate_usd": 0.0001378,
     "latency_ms": 2669,
-    "mesh_response_id": "chatcmpl-EYqXVX3DYzLksGskq3F7qmxUPoXfP",
+    "provider_response_id": "chatcmpl-EYqXVX3DYzLksGskq3F7qmxUPoXfP",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

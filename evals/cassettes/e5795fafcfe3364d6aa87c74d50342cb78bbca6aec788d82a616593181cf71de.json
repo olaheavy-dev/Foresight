@@ -78,7 +78,7 @@
   "request_hash": "e5795fafcfe3364d6aa87c74d50342cb78bbca6aec788d82a616593181cf71de",
   "response": {
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The cited baseline forecast does not establish that moving the holiday payment to March keeps November\u2019s lowest balance above the buffer.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal identifies the holiday payment and specifies moving it from 6 November 2026 to 26 March 2027.\"},{\"rule\":\"V-13\",\"passed\":false,\"reason\":\"The rationale assures a future above-buffer balance that is not established by the cited forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Rescheduling a holiday purchase does not involve restricted financial advice or recommendations.\"}]}",
-    "mesh_response_id": "chatcmpl-EYWYHNhHwdVJoFQnp6J3YHby2vN52",
+    "provider_response_id": "chatcmpl-EYWYHNhHwdVJoFQnp6J3YHby2vN52",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

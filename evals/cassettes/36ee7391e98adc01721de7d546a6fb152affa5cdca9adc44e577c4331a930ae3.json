@@ -103,7 +103,7 @@
   "request_hash": "36ee7391e98adc01721de7d546a6fb152affa5cdca9adc44e577c4331a930ae3",
   "response": {
     "content": "{\"standalone_question\":\"How much did I spend on groceries in August 2026?\",\"intent\":\"spending_breakdown\",\"slots\":{\"period\":\"2026-08\",\"category_key\":\"groceries\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdNXB3fA1w7lR6CWDToXyWOR2of4",
+    "provider_response_id": "chatcmpl-EYdNXB3fA1w7lR6CWDToXyWOR2of4",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -381,7 +381,7 @@
   "request_hash": "8dffaeede083a1553527e58ad469c0b3f0d4b4bf7ec2bad10a8774a76f62eae3",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Council tax increase\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"recurring_change\",\"recurring_id\":\"rob_council_tax\",\"amount_minor\":17000,\"from_date\":\"2026-12-01\"}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVZqJVOXlnYrKZvA75sTGlemCtWv",
+    "provider_response_id": "chatcmpl-EYVZqJVOXlnYrKZvA75sTGlemCtWv",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

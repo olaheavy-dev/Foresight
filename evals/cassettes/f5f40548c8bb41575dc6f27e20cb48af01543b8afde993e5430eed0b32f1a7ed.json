@@ -383,7 +383,7 @@
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Rent increases 6% in April\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"category_cut_pct\",\"category_key\":\"housing.rent\",\"pct\":-6,\"from_date\":\"2027-04-01\"}],\"assumptions\":[\"April means April 2027, the next April after today.\"]},\"clarification\":null}",
     "cost_estimate_usd": 0.007704,
     "latency_ms": 8094,
-    "mesh_response_id": "chatcmpl-EbAi4r5n14aCEqgtCgtlMUifhezHi",
+    "provider_response_id": "chatcmpl-EbAi4r5n14aCEqgtCgtlMUifhezHi",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

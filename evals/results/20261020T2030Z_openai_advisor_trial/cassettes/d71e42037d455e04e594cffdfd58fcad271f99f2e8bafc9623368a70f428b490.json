@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited forecast supports the pre-payday low-point concern, and deterministic checks confirm the cap's impact.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal specifies an eating-out cap and a clear period for applying it.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported future guarantees.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal concerns an everyday spending cap, not restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.004448,
     "latency_ms": 7703,
-    "mesh_response_id": "chatcmpl-EbARRgYBNLy3CCNCl0GtIm5hjLeQt",
+    "provider_response_id": "chatcmpl-EbARRgYBNLy3CCNCl0GtIm5hjLeQt",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

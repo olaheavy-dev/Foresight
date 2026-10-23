@@ -13,7 +13,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 
-from backend.mesh import model_config
+from backend.llm import model_config
 
 StructuredMode = Literal["json_schema", "tools"]
 

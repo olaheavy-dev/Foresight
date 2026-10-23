@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Show me Deliveroo payments.\",\"intent\":\"transaction_lookup\",\"slots\":{\"merchant\":\"Deliveroo\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002542,
     "latency_ms": 443,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHB798E3S0DP1SXB18V702",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHB798E3S0DP1SXB18V702",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

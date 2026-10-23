@@ -383,7 +383,7 @@
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Car repair and delivery cap\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-10-14\",\"amount_minor\":65000,\"label\":\"Car repair\",\"category_key\":\"transport.car\"},{\"type\":\"category_cap\",\"category_key\":\"food.delivery\",\"monthly_cap_minor\":10000,\"from_date\":\"2026-10-11\"}],\"assumptions\":[]},\"clarification\":null}",
     "cost_estimate_usd": 0.005496,
     "latency_ms": 3262,
-    "mesh_response_id": "chatcmpl-EbAiecHvlieLsyE3O42RdAoY7WgpO",
+    "provider_response_id": "chatcmpl-EbAiecHvlieLsyE3O42RdAoY7WgpO",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

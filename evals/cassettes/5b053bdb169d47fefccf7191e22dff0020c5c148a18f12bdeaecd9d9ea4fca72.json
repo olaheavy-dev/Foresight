@@ -81,7 +81,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The evidence supports subscription overlap, but does not establish that the planned holiday would remain unaffordable against the buffer.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"Names Netflix and specifies cancellation of its recurring subscription as the action.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"Uses neutral, conditional language without blame or guarantees about future outcomes.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Recommends only a subscription cancellation, with no restricted financial advice.\"}]}",
     "cost_estimate_usd": 0.004384,
     "latency_ms": 5825,
-    "mesh_response_id": "chatcmpl-EbMMKkktYfAclTIatUpwPIj84WOMh",
+    "provider_response_id": "chatcmpl-EbMMKkktYfAclTIatUpwPIj84WOMh",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

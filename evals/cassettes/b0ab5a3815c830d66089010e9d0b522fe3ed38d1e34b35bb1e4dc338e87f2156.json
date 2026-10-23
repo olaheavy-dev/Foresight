@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"Food delivery accounts for {{R10}} of {{R7}} total spending in the period. The breakdown shows how much went to delivery, but not what caused it to seem high.\",\"key_numbers\":[\"R10\",\"R7\"],\"main_visual\":\"SpendingBreakdownChart\"}",
     "cost_estimate_usd": 0.0001612,
     "latency_ms": 3208,
-    "mesh_response_id": "chatcmpl-EYqaVdvCqzbKDzXGmoNn4SenCfSQP",
+    "provider_response_id": "chatcmpl-EYqaVdvCqzbKDzXGmoNn4SenCfSQP",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

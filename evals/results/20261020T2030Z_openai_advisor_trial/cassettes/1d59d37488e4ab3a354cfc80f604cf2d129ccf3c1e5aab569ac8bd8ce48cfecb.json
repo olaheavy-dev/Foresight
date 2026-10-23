@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The cited forecast summary does not establish that balances fall below the buffer or that last month's eating-out spending exceeded the cap.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"It names eating out and gives a clear monthly cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, and its future-facing claim stays within the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation concerns eating-out spending, not a restricted financial topic.\"}]}",
     "cost_estimate_usd": 0.004664,
     "latency_ms": 5916,
-    "mesh_response_id": "chatcmpl-EbAYEmRnSrqnGjGFgLNs53xTuwJ8n",
+    "provider_response_id": "chatcmpl-EbAYEmRnSrqnGjGFgLNs53xTuwJ8n",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

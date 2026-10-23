@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"I can\u2019t tell whether any of your subscriptions overlap from the information shown here.\",\"key_numbers\":[],\"main_visual\":\"TransactionTable\"}",
     "cost_estimate_usd": 0.0001353,
     "latency_ms": 4029,
-    "mesh_response_id": "chatcmpl-EYqXmDDsmUGzYSiiqXzQk4sY4DNHR",
+    "provider_response_id": "chatcmpl-EYqXmDDsmUGzYSiiqXzQk4sY4DNHR",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -78,7 +78,7 @@
   "request_hash": "9dc39f3a6fa4064ee1a5dd362f276c5db8e8a8398588c6f185c17be557cec89a",
   "response": {
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited spending spike and cash-flow forecast support reducing eating-out spending to improve the pre-payday low balance.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names eating out and specifies a monthly cap to apply until payday.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with forecast benefits expressed as possibilities rather than guarantees.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation is limited to a spending-category cap and contains no restricted financial advice or recommendations.\"}]}",
-    "mesh_response_id": "chatcmpl-EYdAyGNFTQgoU4u5jKCt1VB7Vn5of",
+    "provider_response_id": "chatcmpl-EYdAyGNFTQgoU4u5jKCt1VB7Vn5of",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

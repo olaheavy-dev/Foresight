@@ -33,16 +33,16 @@ strict = true
 testpaths = ["tests"]
 markers = ["postgres: needs a reachable PostgreSQL (DATABASE_URL)"]
 
-# One-gateway rule (docs/05 §3.1): no AI SDK may be imported outside backend.mesh.
+# One-gateway rule (docs/05 §3.1): no AI SDK may be imported outside backend.llm.
 [tool.importlinter]
 root_packages = ["backend", "tools"]
 include_external_packages = true
 
 [[tool.importlinter.contracts]]
-name = "Only backend.mesh may talk to model providers"
+name = "Only backend.llm may talk to model providers"
 type = "forbidden"
-# Direct imports only: agents reach models *through* backend.mesh (docs/05 §3.1), which is the one
-# module allowed to import openai. tests/unit/test_mesh_only.py scans tools/ and evals/ too.
+# Direct imports only: agents reach models *through* backend.llm (docs/05 §3.1), which is the one
+# module allowed to import openai. tests/unit/test_one_gateway.py scans tools/ and evals/ too.
 allow_indirect_imports = true
 source_modules = [
     "backend.app",
@@ -68,10 +68,10 @@ forbidden_modules = [
 ]
 
 [[tool.importlinter.contracts]]
-name = "finance_core is pure: no storage, agents, mesh or app"
+name = "finance_core is pure: no storage, agents, llm or app"
 type = "forbidden"
 source_modules = ["backend.finance_core"]
-forbidden_modules = ["backend.storage", "backend.agents", "backend.mesh", "backend.app"]
+forbidden_modules = ["backend.storage", "backend.agents", "backend.llm", "backend.app"]
 
 [[tool.importlinter.contracts]]
 name = "tools never depend on the HTTP layer"
@@ -82,7 +82,7 @@ forbidden_modules = ["backend.app"]
 ignore_imports = ["tools.export_schemas -> backend.app.ui_contracts.schema"]
 
 [[tool.importlinter.contracts]]
-name = "storage and mesh never import app or agents"
+name = "storage and llm never import app or agents"
 type = "forbidden"
-source_modules = ["backend.storage", "backend.mesh"]
+source_modules = ["backend.storage", "backend.llm"]
 forbidden_modules = ["backend.app", "backend.agents"]

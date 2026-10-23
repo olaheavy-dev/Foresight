@@ -5,9 +5,9 @@ from __future__ import annotations
 
 import pytest
 
-from backend.mesh.availability import PAUSED_TEXT, AiAvailability, user_status
-from backend.mesh.mesh_client import MeshSpendLimitError, ModelTier
-from tests.unit.mesh.fakes import ScriptedCompletions, client, spend_limit
+from backend.llm.availability import PAUSED_TEXT, AiAvailability, user_status
+from backend.llm.client import ModelSpendLimitError, ModelTier
+from tests.unit.llm.fakes import ScriptedCompletions, client, spend_limit
 
 
 class Clock:
@@ -51,7 +51,7 @@ def test_users_never_see_billing_words() -> None:
 
 
 def test_no_credit_flips_the_client_to_unavailable() -> None:
-    mesh = client(ScriptedCompletions(spend_limit()))
-    with pytest.raises(MeshSpendLimitError):
-        mesh.complete(tier=ModelTier.FAST, messages=[{"role": "user", "content": "hi"}])
-    assert mesh.availability.status() == "unavailable"
+    model_client = client(ScriptedCompletions(spend_limit()))
+    with pytest.raises(ModelSpendLimitError):
+        model_client.complete(tier=ModelTier.FAST, messages=[{"role": "user", "content": "hi"}])
+    assert model_client.availability.status() == "unavailable"

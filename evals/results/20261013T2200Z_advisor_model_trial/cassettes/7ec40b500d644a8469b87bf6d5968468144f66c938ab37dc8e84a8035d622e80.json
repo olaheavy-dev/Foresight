@@ -78,7 +78,7 @@
   "request_hash": "7ec40b500d644a8469b87bf6d5968468144f66c938ab37dc8e84a8035d622e80",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-83f06bcc5bfb82067200",
+    "provider_response_id": "chatcmpl-83f06bcc5bfb82067200",
     "model": "anthropic/claude-sonnet-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"Spike finding supports higher delivery spend; baseline forecast supports the pre-payday low point the cap aims to ease.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the category (food delivery), a clear monthly cap amount, and the timeframe (until next payday).\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral, respectful wording with no alarmist or blaming language, and no claims beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Concerns only a food delivery spending cap; no investment, loan, credit, pension or tax advice.\"}]}",
     "usage": {

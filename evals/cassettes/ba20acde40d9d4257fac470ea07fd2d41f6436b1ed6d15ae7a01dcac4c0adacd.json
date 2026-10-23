@@ -381,7 +381,7 @@
   "request_hash": "ba20acde40d9d4257fac470ea07fd2d41f6436b1ed6d15ae7a01dcac4c0adacd",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Cancel gym membership\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"recurring_cancel\",\"recurring_id\":\"rob_gym\",\"from_date\":\"2026-11-01\"}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVaAlgMYqw3Fi4SPS6X1FB8mFwzf",
+    "provider_response_id": "chatcmpl-EYVaAlgMYqw3Fi4SPS6X1FB8mFwzf",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

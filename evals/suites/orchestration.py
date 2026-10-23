@@ -4,7 +4,7 @@ Every case runs the real LangGraph graph on a disposable PostgreSQL database see
 personas, and every assertion reads the persisted `AgentRun` / `AgentStep` / `Recommendation` /
 `VerificationResult` rows, never the graph's return value alone.
 
-Model calls are answered from the committed cassettes (`FORESIGHT_EVAL_MESH=replay`, no key, no
+Model calls are answered from the committed cassettes (`FORESIGHT_EVAL_LLM=replay`, no key, no
 network). A case whose requests were never recorded is reported "not recorded", never a pass.
 Where a case asks for a stub (`stubs`), only that part is scripted and the step says so: the stub
 Advisor's steps carry the model name `stub/advisor`, the fault-injection cases (ORC-6/7) run on a
@@ -30,18 +30,18 @@ from backend.agents.routes import SYSTEM_EVENTS, WORKFLOW_ROUTES
 from backend.agents.runner import RunOutcome, ask, run_workflow
 from backend.agents.runtime import NodeOutput, NodeSpec, RunContext
 from backend.agents.state import ForesightState
-from backend.mesh.cassettes import CassetteMiss
-from backend.mesh.mesh_client import MeshClient
+from backend.llm.cassettes import CassetteMiss
+from backend.llm.client import ModelClient
 from backend.pipeline.forecast import run_forecast
 from backend.storage import models as m
 from backend.storage.agent_repo import AgentStore
 from backend.storage.repositories import WorkspaceContext, create_workspace, demo_workspace
-from evals.assistant import eval_mesh, eval_mode, fresh_breaker, seeded_database
+from evals.assistant import eval_mode, eval_model_client, fresh_breaker, seeded_database
 from evals.authored import AUTHORED_DIR
 from evals.common import read_jsonl
 from evals.egress import EgressBlocked, egress_guard
 from evals.metrics import r4
-from evals.stubs import StubMesh
+from evals.stubs import StubLLM
 from evals.suites import Target, target
 
 SUITE_ID = "E-ORC"
@@ -186,7 +186,7 @@ def _common(
 # --------------------------------------------------------------------------- case runners
 
 
-def _system(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult) -> None:
+def _system(case: dict[str, Any], session: Any, model_client: Any, result: CaseResult) -> None:
     store = _store(session, PERSONA[case["dataset"]])
     inputs = dict(case["input"])
     named = str(inputs.pop("event", "") or "import_committed")
@@ -202,7 +202,7 @@ def _system(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult) -
         workflow=workflow,
         trigger=case["trigger"],
         event=event,
-        mesh=mesh,
+        model_client=model_client,
         inputs={"as_of": case["as_of"]},
     )
     steps = _common(result, case, store, out)
@@ -225,14 +225,14 @@ def _system(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult) -
         result.assertions["briefing_step_reached"] = any(s.node == "briefing" for s in steps)
 
 
-def _scenario(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult) -> None:
+def _scenario(case: dict[str, Any], session: Any, model_client: Any, result: CaseResult) -> None:
     store = _store(session, PERSONA[case["dataset"]])
     text = case["input"]["scenario_text"]
     out = run_workflow(
         store,
         workflow="scenario",
         trigger="user",
-        mesh=mesh,
+        model_client=model_client,
         inputs={
             "as_of": case["as_of"],
             "user_message": text,
@@ -246,10 +246,12 @@ def _scenario(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult)
     result.assertions["response_composed"] = any(s.node == "compose" for s in steps)
 
 
-def _recommendation(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult) -> None:
+def _recommendation(
+    case: dict[str, Any], session: Any, model_client: Any, result: CaseResult
+) -> None:
     store = _store(session, PERSONA[case["dataset"]])
     stub = (case.get("stubs") or {}).get("advisor")
-    client: Any = StubMesh(mesh, advisor_mode=stub) if stub else mesh
+    client: Any = StubLLM(model_client, advisor_mode=stub) if stub else model_client
     with session.begin_nested():
         forecast = run_forecast(store.ctx, as_of=date.fromisoformat(case["as_of"]))
     session.commit()
@@ -257,7 +259,7 @@ def _recommendation(case: dict[str, Any], session: Any, mesh: Any, result: CaseR
         store,
         workflow="recommendation",
         trigger="user",
-        mesh=client,
+        model_client=client,
         inputs={
             "as_of": case["as_of"],
             "forecast_id": forecast.calculation.id,
@@ -292,7 +294,7 @@ def _recommendation(case: dict[str, Any], session: Any, mesh: Any, result: CaseR
 def _ask(
     case: dict[str, Any],
     session: Any,
-    mesh: Any,
+    model_client: Any,
     result: CaseResult,
     *,
     budget: Budget | None = None,
@@ -310,19 +312,21 @@ def _ask(
         thread_id=thread.id,
         text=case["input"]["question"],
         client_msg_id=uuid.uuid4().hex,
-        mesh=mesh,
+        model_client=model_client,
         budget=budget,
         as_of=case["as_of"],
     )
     return store, out
 
 
-def _conversation(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult) -> None:
+def _conversation(
+    case: dict[str, Any], session: Any, model_client: Any, result: CaseResult
+) -> None:
     budget = None
     limits = (case.get("stubs") or {}).get("budget")
     if limits:
         budget = Budget(max_calls=int(limits["llm_calls"]))
-    store, out = _ask(case, session, mesh, result, budget=budget)
+    store, out = _ask(case, session, model_client, result, budget=budget)
     steps = _common(result, case, store, out)
     intent = (out.state.get("intent") or {}).get("intent")
     terminal = case["terminal_state"]
@@ -356,7 +360,7 @@ def _conversation(case: dict[str, Any], session: Any, mesh: Any, result: CaseRes
         )
 
 
-def _deferred(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult) -> None:
+def _deferred(case: dict[str, Any], session: Any, model_client: Any, result: CaseResult) -> None:
     """ORC-16 (docs/06 §13): a question whose first round is wholly rejected and has no time left
     for a revision is deferred, not dropped. Two stubs, both labelled: "a revision fits" is false
     (latency is not reproducible in replay), and the judge fails every draft in the question and
@@ -373,8 +377,8 @@ def _deferred(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult)
     if stubs.get("revision_time") == "none":
         specialists.REVISION_ROUND_MS = 10**9
     try:
-        asked_mesh = StubMesh(mesh, judge_pass=False) if scripted else mesh
-        store, out = _ask(case, session, asked_mesh, result)
+        asked_client = StubLLM(model_client, judge_pass=False) if scripted else model_client
+        store, out = _ask(case, session, asked_client, result)
     finally:
         specialists.REVISION_ROUND_MS = saved
     steps = _common(result, case, store, out)
@@ -384,7 +388,11 @@ def _deferred(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult)
     result.assertions["answer_says_followup_pending"] = bool((first or {}).get("followup_pending"))
     key = out.state.get("cache_key")
     result.assertions["pending_answer_not_cached"] = not key or store.cache_get(str(key)) is None
-    follow = run_followup(store, out, mesh=StubMesh(mesh, judge_pass=True) if scripted else mesh)
+    follow = run_followup(
+        store,
+        out,
+        model_client=StubLLM(model_client, judge_pass=True) if scripted else model_client,
+    )
     ran = follow is not None and follow.status == "succeeded"
     result.assertions["followup_run_succeeded"] = ran
     if follow is None:
@@ -406,9 +414,9 @@ def _deferred(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult)
     result.note = f"follow-up {outcome}" + (" (scripted judge: stub)" if scripted else "")
 
 
-def _scripted_mesh(mode: str) -> tuple[MeshClient, Any]:
+def _scripted_client(mode: str) -> tuple[ModelClient, Any]:
     """A model client on a scripted transport (no network) for the fault-injection cases."""
-    from tests.unit.mesh.fakes import (
+    from tests.unit.llm.fakes import (
         ScriptedCompletions,
         client,
         json_ok,
@@ -433,14 +441,14 @@ def _scripted_mesh(mode: str) -> tuple[MeshClient, Any]:
             json_ok({"not": "an intent"}), json_ok({"still": "wrong"}), default=json_ok({})
         )
     # The scripted transport answers every call: never the cassette store, whatever the
-    # environment's MESH_CASSETTE_MODE (the full eval run sets replay).
-    return client(fake, settings=settings(mesh_cassette_mode="live")), fake
+    # environment's MODEL_CASSETTE_MODE (the full eval run sets replay).
+    return client(fake, settings=settings(model_cassette_mode="live")), fake
 
 
 def _fault(case: dict[str, Any], session: Any, result: CaseResult) -> None:
     mode = case["stubs"]["mesh"]
-    mesh, _ = _scripted_mesh(mode)
-    store, out = _ask(case, session, mesh, result)
+    model_client, _ = _scripted_client(mode)
+    store, out = _ask(case, session, model_client, result)
     steps = _common(result, case, store, out)
     understand = next((s for s in steps if s.node == "understand"), None)
     result.note = "scripted transport (fault injection)"
@@ -482,13 +490,13 @@ def _snapshot(case: dict[str, Any], session: Any, result: CaseResult) -> None:
     result.assertions["zero_agent_steps"] = store.step_count() == before
 
 
-def _egress(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult) -> None:
+def _egress(case: dict[str, Any], session: Any, model_client: Any, result: CaseResult) -> None:
     result.assertions["tracing_off"] = all(
         os.environ.get(v, "false").lower() == "false"
         for v in ("LANGSMITH_TRACING", "LANGCHAIN_TRACING_V2")
     )
     with egress_guard() as blocked:
-        _system(case, session, mesh, result)
+        _system(case, session, model_client, result)
         result.assertions["full_run_inside_guard"] = result.assertions.get("run_recorded", False)
         result.assertions["no_blocked_attempts_in_normal_run"] = blocked == []
 
@@ -504,7 +512,7 @@ def _egress(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult) -
                 workflow="ingestion",
                 trigger="event",
                 event="import_committed",
-                mesh=mesh,
+                model_client=model_client,
                 nodes=injected,
                 inputs={"as_of": case["as_of"]},
             )
@@ -516,7 +524,9 @@ def _egress(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult) -
         )
 
 
-def _format_profile(case: dict[str, Any], session: Any, mesh: Any, result: CaseResult) -> None:
+def _format_profile(
+    case: dict[str, Any], session: Any, model_client: Any, result: CaseResult
+) -> None:
     from backend.agents import ledger_nodes as ln
     from backend.pipeline.ingest import ingest_file
     from backend.storage.ids import new_id
@@ -535,7 +545,7 @@ def _format_profile(case: dict[str, Any], session: Any, mesh: Any, result: CaseR
     data = ds.file_bytes(file)
     first = ingest_file(ctx, "statement.csv", data, account_id=acct.id)
     result.assertions["needs_user_input"] = first.status == "needs_review"
-    run = ln.propose_format_profiles(store, mesh, "statement.csv", data)
+    run = ln.propose_format_profiles(store, model_client, "statement.csv", data)
     steps = store.steps(run.run_id or "") if run.run_id else []
     result.agents = _invoked(steps)
     result.steps = len(steps)
@@ -551,41 +561,41 @@ def _format_profile(case: dict[str, Any], session: Any, mesh: Any, result: CaseR
     second = ingest_file(ctx, "statement.csv", data, account_id=acct.id,
                          answers={"date_order": "DMY"})  # fmt: skip
     result.assertions["committed_after_confirmation"] = second.status == "committed"
-    again = ln.propose_format_profiles(store, mesh, "again.csv", data)
+    again = ln.propose_format_profiles(store, model_client, "again.csv", data)
     result.assertions["reused_with_no_model_call"] = not again.needed and again.proposals == []
 
 
 # --------------------------------------------------------------------------- the suite
 
 
-def _run_case(case: dict[str, Any], factory: Any, mesh: Any) -> CaseResult:
+def _run_case(case: dict[str, Any], factory: Any, model_client: Any) -> CaseResult:
     result = CaseResult(case=case["id"], checks=list(case["checks"]))
     unbuilt = [UNBUILT[c] for c in case["checks"] if c in UNBUILT]
     if unbuilt or case.get("stage", 2) > 2:
         result.status = "not_measured"
         result.note = "; ".join(unbuilt) or f"stage {case['stage']} case"
         return result
-    fresh_breaker(mesh)
+    fresh_breaker(model_client)
     with factory() as session:
         try:
             if "ORC-13" in case["checks"]:
-                _egress(case, session, mesh, result)
+                _egress(case, session, model_client, result)
             elif "ORC-15" in case["checks"]:
-                _format_profile(case, session, mesh, result)
+                _format_profile(case, session, model_client, result)
             elif "ORC-12" in case["checks"]:
                 _snapshot(case, session, result)
             elif "ORC-16" in case["checks"]:
-                _deferred(case, session, mesh, result)
+                _deferred(case, session, model_client, result)
             elif (case.get("stubs") or {}).get("mesh"):
                 _fault(case, session, result)
             elif case["workflow"] in ("ingestion", "risk_detection"):
-                _system(case, session, mesh, result)
+                _system(case, session, model_client, result)
             elif case["workflow"] == "scenario":
-                _scenario(case, session, mesh, result)
+                _scenario(case, session, model_client, result)
             elif case["workflow"] == "recommendation":
-                _recommendation(case, session, mesh, result)
+                _recommendation(case, session, model_client, result)
             else:
-                _conversation(case, session, mesh, result)
+                _conversation(case, session, model_client, result)
         except CassetteMiss as miss:
             session.rollback()
             result.status = "not_recorded"
@@ -636,7 +646,7 @@ def run(fast: bool = False) -> dict[str, Any]:
     if fast:
         cases = cases[:6]
     started = time.monotonic()
-    mesh = eval_mesh()
+    model_client = eval_model_client()
     results: list[CaseResult] = []
     with seeded_database() as factory:
         if factory is None:
@@ -658,7 +668,7 @@ def run(fast: bool = False) -> dict[str, Any]:
             }
         # ORC-12 reopens an answer stored by an earlier case: run it last.
         ordered = sorted(cases, key=lambda c: "ORC-12" in c["checks"])
-        results = [_run_case(c, factory, mesh) for c in ordered]
+        results = [_run_case(c, factory, model_client) for c in ordered]
         with factory() as session:
             run_ids = [r.id for r in session.query(m.AgentRun).all()]
         distinct_detail, distinct_ok = _distinctness(factory, run_ids)

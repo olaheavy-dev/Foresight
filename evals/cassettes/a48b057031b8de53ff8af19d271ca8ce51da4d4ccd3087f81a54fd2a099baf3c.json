@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"What happens if my rent rises to \u00a31,300 in February?\",\"intent\":\"scenario\",\"slots\":{\"amount_minor\":130000,\"date\":\"2027-02-01\",\"purpose\":\"rent\",\"modifier\":\"recurring_change\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.96,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.000359,
     "latency_ms": 505,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHBC9FPB8GGP97HV132TKV",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHBC9FPB8GGP97HV132TKV",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

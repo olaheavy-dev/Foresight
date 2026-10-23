@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Is a \u00a31,200 holiday on 6 November affordable?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":120000,\"date\":\"2026-11-06\",\"purpose\":\"holiday\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002754,
     "latency_ms": 3299,
-    "mesh_response_id": "chatcmpl-EYe2wwr4dVn5HuagOgJPl73oWuDej",
+    "provider_response_id": "chatcmpl-EYe2wwr4dVn5HuagOgJPl73oWuDej",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

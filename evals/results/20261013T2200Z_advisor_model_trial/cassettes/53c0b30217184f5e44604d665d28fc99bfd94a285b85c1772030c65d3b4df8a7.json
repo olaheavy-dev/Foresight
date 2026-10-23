@@ -192,7 +192,7 @@
   "request_hash": "53c0b30217184f5e44604d665d28fc99bfd94a285b85c1772030c65d3b4df8a7",
   "response": {
     "content": "{\n  \"proposals\": [\n    {\n      \"proposal_id\": \"prp_tr_u2\",\n      \"action\": \"cap_category\",\n      \"currency\": \"GBP\",\n      \"params",
-    "mesh_response_id": "chatcmpl-gemini-1791923470",
+    "provider_response_id": "chatcmpl-gemini-1791923470",
     "model": "gemini-3.8-flash",
     "tool_arguments": null,
     "usage": {

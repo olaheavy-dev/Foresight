@@ -103,7 +103,7 @@
   "request_hash": "a1bd9e1a4acb40484c4302d06e3ee9b58bff332d19c87c1276ab5a713c0a18a6",
   "response": {
     "content": "{\"standalone_question\":\"Why is food delivery up?\",\"intent\":\"trend_or_change\",\"slots\":{\"category_key\":\"food.delivery\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdN0hpwcPdDKHAmrvA0TEowccqqz",
+    "provider_response_id": "chatcmpl-EYdN0hpwcPdDKHAmrvA0TEowccqqz",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

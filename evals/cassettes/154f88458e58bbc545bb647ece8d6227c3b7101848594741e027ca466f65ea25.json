@@ -383,7 +383,7 @@
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Energy bill rises to \u00a395 monthly\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"recurring_change\",\"recurring_id\":\"rob_energy\",\"amount_minor\":9500,\"from_date\":\"2026-11-01\"}],\"assumptions\":[]},\"clarification\":null}",
     "cost_estimate_usd": 0.004862,
     "latency_ms": 2512,
-    "mesh_response_id": "chatcmpl-EbAiBYDsHQRnV7rR2umjxvVGkrZpQ",
+    "provider_response_id": "chatcmpl-EbAiBYDsHQRnV7rR2umjxvVGkrZpQ",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

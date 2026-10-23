@@ -186,7 +186,7 @@
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_bp_042\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.delivery\",\"monthly_cap_minor\":15000},\"title\":\"Cap food delivery spending at {{cap}} a month\",\"rationale\":\"Food delivery spending is above its usual level. This cap keeps more cash in hand before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.delivery\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":13640,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Named food delivery in the title and rationale.\"]}",
     "cost_estimate_usd": 0.008058,
     "latency_ms": 5420,
-    "mesh_response_id": "chatcmpl-EbBEHjyEA7opM5l3GsBfbEqyWd0uP",
+    "provider_response_id": "chatcmpl-EbBEHjyEA7opM5l3GsBfbEqyWd0uP",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

@@ -7,7 +7,7 @@ What goes to the model, and what never does (docs/05 §7.3, §7.4a):
   confirmation (docs/06 H8): a model never decides that money is income;
 - the cleaned narration (`normalised`: references, long numbers and card fragments already
   stripped), passed through `prepare_for_model` (quarantined, length-capped) and then
-  `backend.mesh.redact` inside the model client;
+  `backend.llm.redact` inside the model client;
 - an amount *band*, the direction, the weekday and the payment type. Never the exact amount, the
   balance, the account, the date or the raw description;
 - rows flagged `suspicious_text` at import are not sent at all: they keep their rule result and
@@ -38,8 +38,8 @@ from backend.finance_core.types import (
     FlowKind,
     Transaction,
 )
-from backend.mesh.mesh_client import MeshClient, MeshResult, MeshSchemaError, ModelTier
-from backend.mesh.redact import redact
+from backend.llm.client import ModelClient, ModelResult, ModelSchemaError, ModelTier
+from backend.llm.redact import redact
 
 PROMPT = "ledger_categorise"
 UNCATEGORISED = "uncategorised"
@@ -192,7 +192,7 @@ class LlmCategorisation:
     """Outcome of the model fallback over a set of rows."""
 
     results: dict[str, Categorisation] = field(default_factory=dict)  # txn id → model answer
-    calls: list[MeshResult] = field(default_factory=list)
+    calls: list[ModelResult] = field(default_factory=list)
     sent: int = 0  # rows sent to the model
     withheld: int = 0  # rows whose text was withheld (suspicious) and so not sent
     invalid: int = 0  # items the model returned for unknown rows, or rows it skipped
@@ -208,14 +208,14 @@ class LlmCategorisation:
 def categorise_with_model(
     txns: Sequence[Transaction],
     pack: CategorisationPack,
-    mesh: MeshClient,
+    model_client: ModelClient,
     *,
     locale_pack: str = "uk",
     outflow_only: bool = True,
     batch_size: int = BATCH_SIZE,
     max_batches: int | None = None,
     before_call: Callable[[], None] | None = None,
-    after_call: Callable[[Sequence[MeshResult]], None] | None = None,
+    after_call: Callable[[Sequence[ModelResult]], None] | None = None,
     exponent: int = 2,
 ) -> LlmCategorisation:
     """Send `txns` to the fast tier in deterministic batches (ordered by id) and validate the
@@ -243,7 +243,7 @@ def categorise_with_model(
         out.batches += 1
         out.sent += len(rows)
         try:
-            result = mesh.structured(
+            result = model_client.structured(
                 tier=ModelTier.FAST,
                 messages=messages_for(rows, categories, pack, locale_pack=locale_pack),
                 output=schema,
@@ -251,7 +251,7 @@ def categorise_with_model(
                 max_tokens=BASE_MAX_TOKENS + MAX_TOKENS_PER_ROW * len(rows),
                 locale_pack=locale_pack,
             )
-        except MeshSchemaError:
+        except ModelSchemaError:
             # Degrade this batch only (docs/06 §10.1): its rows keep the rule answer and stay in
             # the review queue. Transport failures still propagate to the node's degrade path.
             out.failed_batches += 1

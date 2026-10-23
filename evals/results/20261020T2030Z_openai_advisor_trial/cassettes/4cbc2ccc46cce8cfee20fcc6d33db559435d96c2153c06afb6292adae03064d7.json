@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The delivery-spending spike and cash-flow forecast support the rationale.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"It names food delivery, gives a monthly cap, and specifies when to apply it.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported future claim.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation concerns food-delivery spending, not an excluded financial topic.\"}]}",
     "cost_estimate_usd": 0.004168,
     "latency_ms": 4314,
-    "mesh_response_id": "chatcmpl-EbAVmlE6mTS90jGmG897BrLnBNZ5X",
+    "provider_response_id": "chatcmpl-EbAVmlE6mTS90jGmG897BrLnBNZ5X",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

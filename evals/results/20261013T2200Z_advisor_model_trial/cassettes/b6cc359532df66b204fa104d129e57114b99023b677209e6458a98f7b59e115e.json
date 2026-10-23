@@ -184,7 +184,7 @@
   "request_hash": "b6cc359532df66b204fa104d129e57114b99023b677209e6458a98f7b59e115e",
   "response": {
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_tr_b10\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.eating_out\",\"monthly_cap_minor\":20000},\"title\":\"Hold eating out at {{cap}} a month until the next payday\",\"rationale\":\"Eating out spending is above its usual level, and this cap could ease the projected low point before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.eating_out\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":18993,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Replaced the unrelated streaming-overlap evidence with the eating-out spending-spike finding.\"]}",
-    "mesh_response_id": "resp_0b57baa681a93dd1016ace9a4cc7f887d1a63519d56606b0c7",
+    "provider_response_id": "resp_0b57baa681a93dd1016ace9a4cc7f887d1a63519d56606b0c7",
     "model": "openai-gpt-56-luna-pro",
     "tool_arguments": null,
     "usage": {

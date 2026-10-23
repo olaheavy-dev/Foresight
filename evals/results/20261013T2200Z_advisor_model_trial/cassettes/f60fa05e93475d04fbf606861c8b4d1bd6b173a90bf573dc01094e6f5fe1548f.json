@@ -78,7 +78,7 @@
   "request_hash": "f60fa05e93475d04fbf606861c8b4d1bd6b173a90bf573dc01094e6f5fe1548f",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-c02b00453cafdbc9da7a",
+    "provider_response_id": "chatcmpl-c02b00453cafdbc9da7a",
     "model": "anthropic/claude-sonnet-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"Category spike finding supports the spike claim; baseline forecast supports the buffer reference.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names category food.eating_out and a clear monthly cap of 20000 minor units.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral, respectful wording with no speculation beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Budget cap on eating out only; no investment, loan, credit card, pension or tax advice.\"}]}",
     "usage": {

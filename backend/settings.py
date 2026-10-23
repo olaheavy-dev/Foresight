@@ -19,14 +19,15 @@ def disable_external_tracing() -> None:
 
 
 class Settings(BaseSettings):
-    # A blank value in .env (e.g. `MESH_MODEL_FAST=`) means "use the default", never "".
+    # A blank value in .env (e.g. `MODEL_FAST=`) means "use the default", never "".
     model_config = SettingsConfigDict(env_file=".env", extra="ignore", env_ignore_empty=True)
 
     # Where model calls go: OpenAI directly (owner decision 20 Oct 2026, docs/00 §12 item 14; the
     # Mesh gateway was removed on 23 Oct). Any other value, such as a stale "mesh", fails at
     # start-up. Model IDs keep their `openai/` prefix, so recordings replay unchanged; every tier's
     # primary must be an `openai/` model (start-up refuses a stale override) and other providers'
-    # fallbacks are skipped. The MESH_* setting names are kept: they are the deployment's env.
+    # fallbacks are skipped. The old MESH_* names are no longer read (renamed 23 Oct 2026): an env
+    # still setting them gets these defaults.
     model_provider: str = "openai"
     openai_api_key: str = ""
     # Model IDs per tier (docs/06 §13). Owner decision 20 Oct 2026 (docs/00 §12 item 14): every tier
@@ -36,22 +37,22 @@ class Settings(BaseSettings):
     # same model must never write and check a recommendation (Codex on #67). An Advisor failure
     # degrades to the deterministic answer.
     # GPT-5.6 Luna Pro failed whole-answer accuracy and latency on 13 Oct (evals/CHANGELOG.md).
-    mesh_model_fast: str = "openai/gpt-6-luna"
-    mesh_model_fast_fallback: str = "openai/gpt-6-sol"
-    mesh_model_reasoning: str = "openai/gpt-6-sol"
-    mesh_model_reasoning_fallback: str = ""
-    mesh_model_verifier: str = "openai/gpt-6.1-sol"
-    mesh_model_verifier_fallback: str = ""
+    model_fast: str = "openai/gpt-6-luna"
+    model_fast_fallback: str = "openai/gpt-6-sol"
+    model_reasoning: str = "openai/gpt-6-sol"
+    model_reasoning_fallback: str = ""
+    model_verifier: str = "openai/gpt-6.1-sol"
+    model_verifier_fallback: str = ""
     # Per-call timeouts by tier (docs/05 §6.4); transport retries are ours, not the SDK's.
-    mesh_timeout_fast_seconds: float = 8.0
-    mesh_timeout_reasoning_seconds: float = 25.0
-    mesh_max_retries: int = 2
+    model_timeout_fast_seconds: float = 8.0
+    model_timeout_reasoning_seconds: float = 25.0
+    model_max_retries: int = 2
     # live: call the model · record: call it and save each exchange · replay: answer only from saved
     # exchanges (no key, no network); a request that was never recorded raises CassetteMiss.
-    mesh_cassette_mode: str = "live"
-    mesh_cassette_dir: str = "evals/cassettes"
-    # Project-wide cap on model spend per UTC day (backend/mesh/spend_guard.py); 0 disables it.
-    mesh_daily_budget_usd: float = 0.50
+    model_cassette_mode: str = "live"
+    model_cassette_dir: str = "evals/cassettes"
+    # Project-wide cap on model spend per UTC day (backend/llm/spend_guard.py); 0 disables it.
+    model_daily_budget_usd: float = 0.50
     # Guests' AI work per network per UTC day (backend/app/network_cap.py); 0 disables a cap.
     guest_network_daily_questions: int = 20
     guest_network_daily_checks: int = 3

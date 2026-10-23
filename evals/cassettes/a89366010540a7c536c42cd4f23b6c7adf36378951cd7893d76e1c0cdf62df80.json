@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The evidence supports reducing elevated food-delivery spending but does not establish the holiday's affordability.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal specifies a food-delivery category and a concrete monthly spending cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no guarantees beyond the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation concerns a spending cap, not restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003686,
     "latency_ms": 4819,
-    "mesh_response_id": "chatcmpl-EbBg92HvImmRu4PmSpo3gjDxozar8",
+    "provider_response_id": "chatcmpl-EbBg92HvImmRu4PmSpo3gjDxozar8",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

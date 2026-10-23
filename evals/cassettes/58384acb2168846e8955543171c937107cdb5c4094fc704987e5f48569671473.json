@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"The forecast shows your likely lowest balance before payday is {{R2}}, on {{R3}}. The transfer may be moved to keep more cash available during that pre-payday dip.\",\"key_numbers\":[\"R2\",\"R3\"],\"main_visual\":\"EvidencePanel\"}",
     "cost_estimate_usd": 0.000267,
     "latency_ms": 1497,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHCSVZJDHA211RHPS5A32Z",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHCSVZJDHA211RHPS5A32Z",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

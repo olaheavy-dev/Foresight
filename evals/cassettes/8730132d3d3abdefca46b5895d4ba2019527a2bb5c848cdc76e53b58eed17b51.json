@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Will I drop under \u00a3500?\",\"intent\":\"risk_check\",\"slots\":{\"threshold_minor\":50000},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.82,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002694,
     "latency_ms": 603,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHB9663TAV7Z3Y1HPHZS8E",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHB9663TAV7Z3Y1HPHZS8E",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

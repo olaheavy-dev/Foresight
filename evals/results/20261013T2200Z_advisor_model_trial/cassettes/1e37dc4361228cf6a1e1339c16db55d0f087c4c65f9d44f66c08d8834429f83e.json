@@ -184,7 +184,7 @@
   "request_hash": "1e37dc4361228cf6a1e1339c16db55d0f087c4c65f9d44f66c08d8834429f83e",
   "response": {
     "content": "{\n  \"proposals\": [\n    {\n      \"proposal_id\": \"prp_tr_b6\",\n      \"action\": \"cap_category\",\n      \"currency\": \"GBP\",\n      \"params\":",
-    "mesh_response_id": "chatcmpl-gemini-1791923180",
+    "provider_response_id": "chatcmpl-gemini-1791923180",
     "model": "gemini-3.8-flash",
     "tool_arguments": null,
     "usage": {

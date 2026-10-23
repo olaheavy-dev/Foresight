@@ -186,7 +186,7 @@
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_bp_011\",\"action\":\"cancel_recurring\",\"currency\":\"GBP\",\"params\":{\"recurring_id\":\"rob_sky\"},\"title\":\"Cancel Sky TV if you no longer need it\",\"rationale\":\"Sky TV overlaps with Netflix. Cancelling it would keep more cash in hand before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:subscription_overlap:rob_netflix+rob_sky\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":4600,\"claimed_impact_text\":\"Estimated monthly saving: \u00a346.\"},{\"proposal_id\":\"prp_food_delivery_cap\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.delivery\",\"monthly_cap_minor\":20310},\"title\":\"Cap food delivery at {{cap}} a month\",\"rationale\":\"Food delivery spending is above its usual level. A {{cap}} monthly cap would keep more cash in hand before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.delivery\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":8330,\"claimed_impact_text\":\"A \u00a3203.10 monthly cap would save an estimated \u00a383.30 compared with the last thirty days.\"}],\"critique_addressed\":[\"Removed the prohibited text from the revised Sky TV proposal title.\"]}",
     "cost_estimate_usd": 0.009934,
     "latency_ms": 7468,
-    "mesh_response_id": "chatcmpl-EbAlmRW1iuQKBvLazaMkW0ETUUsji",
+    "provider_response_id": "chatcmpl-EbAlmRW1iuQKBvLazaMkW0ETUUsji",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

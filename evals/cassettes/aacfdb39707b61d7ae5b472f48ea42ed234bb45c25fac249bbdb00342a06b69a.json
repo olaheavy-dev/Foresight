@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"I can\u2019t verify why the transfer was recommended from the information available. The forecast shows a low balance of {{R2}} before payday and a {{R4}} chance of going below your buffer.\",\"key_numbers\":[\"R2\",\"R4\"],\"main_visual\":\"EvidencePanel\"}",
     "cost_estimate_usd": 0.0001983,
     "latency_ms": 477,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHCBD96GK3J43J6X3HJEPT",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHCBD96GK3J43J6X3HJEPT",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

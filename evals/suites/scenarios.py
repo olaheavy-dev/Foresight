@@ -19,10 +19,10 @@ from datetime import date
 from typing import Any
 
 from backend.agents.forecaster import ModifierModel, parse_scenario
-from backend.mesh.mesh_client import MeshCallError
+from backend.llm.client import ModelCallError
 from evals.authored import AUTHORED_DIR
 from evals.common import load_dataset, read_jsonl, uk_categorisation_pack
-from evals.mesh_eval import NOT_RECORDED, eval_mesh, eval_mode
+from evals.llm_eval import NOT_RECORDED, eval_mode, eval_model_client
 from evals.metrics import r4
 from evals.suites import Target, target
 
@@ -142,18 +142,18 @@ def run(fast: bool = False) -> dict[str, Any]:
     cases = read_jsonl(CASES)
     if fast:
         cases = cases[:FAST_CASES]
-    mesh = eval_mesh()
+    model_client = eval_model_client()
     notes: list[str] = [f"mode: {eval_mode()}"]
     rows: list[dict[str, Any]] = []
     missing = 0
     contexts: dict[str, dict[str, Any]] = {}
-    if mesh is not None:
+    if model_client is not None:
         for case in cases:
             ctx = contexts.setdefault(case["dataset"], _context(case["dataset"]))
             try:
                 out = parse_scenario(
                     case["prompt"],
-                    mesh,
+                    model_client,
                     today=ctx["today"] if isinstance(ctx["today"], date) else ctx["today"],
                     currency=ctx["currency"],
                     categories=ctx["categories"],
@@ -163,7 +163,7 @@ def run(fast: bool = False) -> dict[str, Any]:
             except NOT_RECORDED:
                 missing += 1
                 continue
-            except MeshCallError as exc:
+            except ModelCallError as exc:
                 rows.append(
                     {
                         "id": case["id"],

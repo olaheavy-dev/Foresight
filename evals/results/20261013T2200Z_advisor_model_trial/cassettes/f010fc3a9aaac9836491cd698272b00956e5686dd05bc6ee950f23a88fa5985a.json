@@ -78,7 +78,7 @@
   "request_hash": "f010fc3a9aaac9836491cd698272b00956e5686dd05bc6ee950f23a88fa5985a",
   "response": {
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports elevated eating-out spending, and the forecast supports the pre-payday buffer context.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names eating out and specifies a monthly cap as a clear action.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with the future benefit framed within the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal is limited to a spending-category cap and contains no restricted financial advice or recommendations.\"}]}",
-    "mesh_response_id": "chatcmpl-EYdD8FIEZsFC8X15XDDPaZR2PRNvs",
+    "provider_response_id": "chatcmpl-EYdD8FIEZsFC8X15XDDPaZR2PRNvs",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

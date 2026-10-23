@@ -78,7 +78,7 @@
   "request_hash": "e90b002d962c372b8bc7e0cfe3826635f1bd2be59c5252a3d5c95925e6a8c331",
   "response": {
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The cited Spotify price increase does not support the claim that delivery spending has risen above its usual level.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and gives a clear monthly cap to apply until the next payday.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no future claims beyond the cash-flow forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal only caps food-delivery spending and contains no restricted financial advice or recommendations.\"}]}",
-    "mesh_response_id": "chatcmpl-EYdBtsonwTDHm9hj5U8PmAN5p9vzD",
+    "provider_response_id": "chatcmpl-EYdBtsonwTDHm9hj5U8PmAN5p9vzD",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

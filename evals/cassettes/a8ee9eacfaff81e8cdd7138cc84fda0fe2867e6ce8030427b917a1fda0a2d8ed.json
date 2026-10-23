@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Can you file my tax return?\",\"intent\":\"smalltalk_or_out_of_scope\",\"slots\":{},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":true,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002484,
     "latency_ms": 459,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHB1CMHEF0Q1CSJH0QK6NX",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHB1CMHEF0Q1CSJH0QK6NX",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

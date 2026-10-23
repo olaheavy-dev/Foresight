@@ -103,7 +103,7 @@
   "request_hash": "8a68371960b1b513e38b245d32314b03fd9570b20912da4480c29b88311188f4",
   "response": {
     "content": "{\"standalone_question\":\"Has spending on taxis gone up?\",\"intent\":\"trend_or_change\",\"slots\":{\"category_key\":\"transport.taxi\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdNPODCS8zoYr4hBrs3YldKw00W1",
+    "provider_response_id": "chatcmpl-EYdNPODCS8zoYr4hBrs3YldKw00W1",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

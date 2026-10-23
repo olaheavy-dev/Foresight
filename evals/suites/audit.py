@@ -40,9 +40,9 @@ from backend.pipeline.forecast import run_forecast, verify, verify_simulation
 from backend.storage import models as m
 from backend.storage.agent_repo import AgentStore
 from backend.storage.repositories import WorkspaceContext, demo_workspace
-from evals.assistant import eval_mesh, eval_mode, seeded_database
+from evals.assistant import eval_mode, eval_model_client, seeded_database
 from evals.metrics import r4
-from evals.stubs import StubMesh
+from evals.stubs import StubLLM
 from evals.suites import Target, target
 
 SUITE_ID = "E-AUD"
@@ -55,7 +55,9 @@ SAMPLE = 50
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
 
 
-def _build_corpus(session: Any, mesh: Any) -> tuple[list[str], list[dict[str, Any]], list[str]]:
+def _build_corpus(
+    session: Any, model_client: Any
+) -> tuple[list[str], list[dict[str, Any]], list[str]]:
     """Run the recommendation workflow per persona and mode. Each run's recommendations are walked
     as the run left them (before the next mode starts), so approved chains are checked as
     approved. Returns the workspace ids, the walked chains and the calculations they cite."""
@@ -76,7 +78,9 @@ def _build_corpus(session: Any, mesh: Any) -> tuple[list[str], list[dict[str, An
                 store,
                 workflow="recommendation",
                 trigger="user",
-                mesh=StubMesh(mesh, advisor_mode=mode, judge_pass=True, categories=CATEGORIES),
+                model_client=StubLLM(
+                    model_client, advisor_mode=mode, judge_pass=True, categories=CATEGORIES
+                ),
                 inputs={
                     "as_of": AS_OF,
                     "forecast_id": forecast.calculation.id,
@@ -237,7 +241,7 @@ def _recompute(ctx: WorkspaceContext, calc: m.Calculation) -> bool | None:
 
 
 def run(fast: bool = False) -> dict[str, Any]:
-    mesh = eval_mesh()
+    model_client = eval_model_client()
     with seeded_database() as factory:
         if factory is None:
             return {
@@ -258,7 +262,7 @@ def run(fast: bool = False) -> dict[str, Any]:
                 "notes": ["E-AUD needs DATABASE_URL (PostgreSQL); not measured."],
             }
         with factory() as session:
-            workspaces, chains, calc_ids = _build_corpus(session, mesh)
+            workspaces, chains, calc_ids = _build_corpus(session, model_client)
             rejected_ok = rejected_n = 0
             provenance_ok = provenance_n = 0
             chain_valid = True

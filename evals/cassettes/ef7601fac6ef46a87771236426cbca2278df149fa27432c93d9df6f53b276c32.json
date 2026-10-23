@@ -103,7 +103,7 @@
   "request_hash": "ef7601fac6ef46a87771236426cbca2278df149fa27432c93d9df6f53b276c32",
   "response": {
     "content": "{\"standalone_question\":\"Is a 1200 quid trip on 6 Nov ok?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":120000,\"date\":\"2026-11-06\",\"purpose\":\"trip\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.96,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdTCejD3GBnSMowmkOcacAf9KBti",
+    "provider_response_id": "chatcmpl-EYdTCejD3GBnSMowmkOcacAf9KBti",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

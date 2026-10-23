@@ -81,7 +81,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The delivery spike is supported, but the cited forecast summary does not establish that the balance falls below the buffer before the planned trip.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and specifies a clear monthly spending cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with future claims framed in terms of the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation concerns a spending cap and contains no restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003858,
     "latency_ms": 4099,
-    "mesh_response_id": "chatcmpl-EbMMoFuckEEMfe0cpKcOdZEJCnfAk",
+    "provider_response_id": "chatcmpl-EbMMoFuckEEMfe0cpKcOdZEJCnfAk",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

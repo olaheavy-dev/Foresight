@@ -381,7 +381,7 @@
   "request_hash": "b91ddb6eeed0c1243ab5c7447e447f2110dc67a931b797577b0609a320f3b928",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Cap eating out at \u00a3200/month\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"category_cap\",\"category_key\":\"food.eating_out\",\"monthly_cap_minor\":20000,\"from_date\":\"2026-11-01\"}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVaxmN4CmdQqMm3CqzhYfzmzDdlx",
+    "provider_response_id": "chatcmpl-EYVaxmN4CmdQqMm3CqzhYfzmzDdlx",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

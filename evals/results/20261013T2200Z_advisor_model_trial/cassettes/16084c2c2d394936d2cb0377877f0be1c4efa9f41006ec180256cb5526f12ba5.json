@@ -78,7 +78,7 @@
   "request_hash": "16084c2c2d394936d2cb0377877f0be1c4efa9f41006ec180256cb5526f12ba5",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-8be8245e8ccf1d4acae4",
+    "provider_response_id": "chatcmpl-8be8245e8ccf1d4acae4",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"The cited category spike finding supports the rise in food.delivery spending, and the baseline forecast supports the low-balance-before-payday link.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the food.delivery category, a monthly cap amount and an end point (next payday), so the person can act today.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral, hedged wording ('may ease') with no blame and no claims about the future beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"A spending cap on a discretionary category; no investment, credit, tax or other REF advice or recommendation.\"}]}",
     "usage": {

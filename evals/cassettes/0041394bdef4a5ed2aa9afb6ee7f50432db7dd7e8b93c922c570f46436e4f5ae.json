@@ -103,7 +103,7 @@
   "request_hash": "0041394bdef4a5ed2aa9afb6ee7f50432db7dd7e8b93c922c570f46436e4f5ae",
   "response": {
     "content": "{\"standalone_question\":\"Can I buy a \u00a3350 phone on Klarna in 3 instalments?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":35000,\"purpose\":\"phone\",\"instalments\":3,\"modifier\":\"split_outflow\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.97,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdQEDG8TJpMSihWxuJv4ktE1mMWq",
+    "provider_response_id": "chatcmpl-EYdQEDG8TJpMSihWxuJv4ktE1mMWq",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

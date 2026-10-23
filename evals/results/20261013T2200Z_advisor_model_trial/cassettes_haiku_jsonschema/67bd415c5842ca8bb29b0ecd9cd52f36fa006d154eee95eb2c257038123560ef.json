@@ -78,7 +78,7 @@
   "request_hash": "67bd415c5842ca8bb29b0ecd9cd52f36fa006d154eee95eb2c257038123560ef",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-fe6a0db2c4c16fabfa6e",
+    "provider_response_id": "chatcmpl-fe6a0db2c4c16fabfa6e",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": false, \"reason\": \"Cited evidence is a Spotify price change, which cannot explain a rise in food-delivery spending; the causal claim is unsupported.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names a specific category (food.delivery), a monthly cap amount and a clear action the person can take today.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Wording is neutral and respectful, and makes no claims beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"A spending cap on a discretionary category; no REF advice or recommendation is present.\"}]}",
     "usage": {

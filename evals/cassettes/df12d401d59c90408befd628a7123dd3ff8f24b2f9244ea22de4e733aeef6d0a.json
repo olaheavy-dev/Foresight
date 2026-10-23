@@ -381,7 +381,7 @@
   "request_hash": "df12d401d59c90408befd628a7123dd3ff8f24b2f9244ea22de4e733aeef6d0a",
   "response": {
     "content": "{\"status\":\"needs_clarification\",\"spec\":null,\"clarification\":{\"question\":\"How much will the holiday cost, and when would you pay for it?\",\"slot\":\"amount and date\",\"options\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVbxsst1RxMUhKsXrzBaCqv3M8cj",
+    "provider_response_id": "chatcmpl-EYVbxsst1RxMUhKsXrzBaCqv3M8cj",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

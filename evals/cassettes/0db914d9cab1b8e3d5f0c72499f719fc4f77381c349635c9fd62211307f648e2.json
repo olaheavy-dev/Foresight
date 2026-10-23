@@ -381,7 +381,7 @@
   "request_hash": "0db914d9cab1b8e3d5f0c72499f719fc4f77381c349635c9fd62211307f648e2",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Wedding gift\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-10-31\",\"amount_minor\":15000,\"label\":\"Wedding gift\",\"category_key\":\"gifts\"}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVXmOcgIT4dBTl4ozoL6fr1GlVZz",
+    "provider_response_id": "chatcmpl-EYVXmOcgIT4dBTl4ozoL6fr1GlVZz",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

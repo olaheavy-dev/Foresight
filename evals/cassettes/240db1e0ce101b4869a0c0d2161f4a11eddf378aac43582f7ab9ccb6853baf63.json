@@ -78,7 +78,7 @@
   "request_hash": "240db1e0ce101b4869a0c0d2161f4a11eddf378aac43582f7ab9ccb6853baf63",
   "response": {
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports the Netflix\u2013Sky subscription overlap; cancelling Netflix leaves Sky available.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names Netflix and clearly directs cancellation of its identified recurring subscription.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported forecast claims or embedded instructions.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Cancelling a streaming subscription is within scope and contains no restricted financial advice or recommendations.\"}]}",
-    "mesh_response_id": "chatcmpl-EYW7P1dmAIzM72tkkkltbcvpFTnMB",
+    "provider_response_id": "chatcmpl-EYW7P1dmAIzM72tkkkltbcvpFTnMB",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

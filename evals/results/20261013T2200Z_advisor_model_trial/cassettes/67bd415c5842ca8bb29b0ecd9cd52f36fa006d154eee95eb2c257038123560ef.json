@@ -78,7 +78,7 @@
   "request_hash": "67bd415c5842ca8bb29b0ecd9cd52f36fa006d154eee95eb2c257038123560ef",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-7d9404122516f6a2ab8c",
+    "provider_response_id": "chatcmpl-7d9404122516f6a2ab8c",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": false, \"reason\": \"The cited evidence is a Spotify price change, which does not support the claim that delivery spending rose or caused the low balance.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the food.delivery category, a monthly cap amount and a clear action until the next payday.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Wording is neutral and respectful, with no REF content and no unsupported claims about the future.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"A spending cap on a delivery category is not REF advice or a REF recommendation.\"}]}",
     "usage": {

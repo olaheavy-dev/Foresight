@@ -381,7 +381,7 @@
   "request_hash": "c8aa698f212be82384f6890b6f2dac224e5afbc7e40fc0bcf864c5a63a3a6030",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"TV licence payment\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-12-01\",\"amount_minor\":17450,\"label\":\"TV licence\",\"category_key\":\"utilities.tv_licence\"}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVY8StujN1LG0vS8ELAH3Jbkj7Ri",
+    "provider_response_id": "chatcmpl-EYVY8StujN1LG0vS8ELAH3Jbkj7Ri",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

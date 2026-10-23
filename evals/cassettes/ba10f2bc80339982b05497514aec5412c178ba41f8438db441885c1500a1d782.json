@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"Your projected low balance over the forecast is {{R5}} on {{R6}}. These figures don\u2019t include your emergency-fund target, so they can\u2019t confirm whether you\u2019re on track to reach it.\",\"key_numbers\":[\"R5\",\"R6\",\"R1\"],\"main_visual\":\"FinancialMetricGroup\"}",
     "cost_estimate_usd": 0.0002011,
     "latency_ms": 423,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHC7F0VTXHJSKSVD6NXE9C",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHC7F0VTXHJSKSVD6NXE9C",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

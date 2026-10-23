@@ -381,7 +381,7 @@
   "request_hash": "3b127263d8580fbb3af4678d5d0d009c2af03bec0d1bee02fe6a66f456d06275",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"5% salary raise\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"income_change_pct\",\"income_stream_id\":\"inc_salary\",\"pct\":5,\"from_date\":\"2027-01-01\",\"to_date\":null}],\"assumptions\":[]}, \"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVZRcu47AS9AfxmU2ezancj3EgSF",
+    "provider_response_id": "chatcmpl-EYVZRcu47AS9AfxmU2ezancj3EgSF",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

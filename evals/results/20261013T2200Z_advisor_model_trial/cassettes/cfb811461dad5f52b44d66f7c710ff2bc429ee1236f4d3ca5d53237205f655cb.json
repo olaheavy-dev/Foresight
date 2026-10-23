@@ -78,7 +78,7 @@
   "request_hash": "cfb811461dad5f52b44d66f7c710ff2bc429ee1236f4d3ca5d53237205f655cb",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-937893efb6d27883435e",
+    "provider_response_id": "chatcmpl-937893efb6d27883435e",
     "model": "anthropic/claude-sonnet-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"Spike finding in food.eating_out supports the 'risen above usual' claim; baseline forecast supports the pre-payday low point.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names a category (eating out), a clear action (cap at a set monthly amount) and a time frame (until next payday).\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral, respectful wording with no blame, alarm or speculation beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Only a spending cap on a food category; no investment, loan, credit, pension or tax advice.\"}]}",
     "usage": {

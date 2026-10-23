@@ -20,7 +20,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from backend.agents.cache import prompt_version
 from backend.agents.prompting import system_prompt
 from backend.finance_core.types import ScenarioModifier, ScenarioSpec
-from backend.mesh.mesh_client import MeshClient, MeshResult, ModelTier
+from backend.llm.client import ModelClient, ModelResult, ModelTier
 
 PARSE_PROMPT = "forecaster_parse"
 
@@ -94,7 +94,7 @@ class ScenarioParse(BaseModel):
 class ParseOutcome:
     parse: ScenarioParse
     tier: ModelTier
-    llm: list[MeshResult] = field(default_factory=list)
+    llm: list[ModelResult] = field(default_factory=list)
     prompt_version: str = ""
 
 
@@ -135,7 +135,7 @@ def parse_messages(
 
 def parse_scenario(
     question: str,
-    mesh: MeshClient,
+    model_client: ModelClient,
     *,
     today: date,
     currency: str,
@@ -148,7 +148,7 @@ def parse_scenario(
     tier = tier_for(question)
     if before_llm is not None:
         before_llm()
-    result = mesh.structured(
+    result = model_client.structured(
         tier=tier,
         messages=parse_messages(
             question,

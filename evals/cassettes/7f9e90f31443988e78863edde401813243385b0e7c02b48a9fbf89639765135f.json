@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Can I buy a \u00a3350 phone this month?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":35000,\"date\":\"2026-10-01\",\"purpose\":\"phone\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0003252,
     "latency_ms": 486,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHAEA05DRJC8WS0P0N5F1B",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHAEA05DRJC8WS0P0N5F1B",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

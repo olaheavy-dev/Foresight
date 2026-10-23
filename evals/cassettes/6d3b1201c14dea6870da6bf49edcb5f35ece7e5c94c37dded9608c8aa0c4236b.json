@@ -381,7 +381,7 @@
   "request_hash": "6d3b1201c14dea6870da6bf49edcb5f35ece7e5c94c37dded9608c8aa0c4236b",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"\u00a3800 trip\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-11-06\",\"amount_minor\":80000,\"label\":\"Trip\",\"category_key\":\"travel\"}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVXCfmq5Rk26xbSa951UF9cL2yXA",
+    "provider_response_id": "chatcmpl-EYVXCfmq5Rk26xbSa951UF9cL2yXA",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

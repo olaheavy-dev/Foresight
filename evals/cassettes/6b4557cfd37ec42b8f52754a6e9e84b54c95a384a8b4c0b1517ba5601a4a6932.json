@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Find my Amazon purchases in September.\",\"intent\":\"transaction_lookup\",\"slots\":{\"period\":\"2026-09\",\"merchant\":\"Amazon\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002598,
     "latency_ms": 508,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHASMJ4E8RTV914BW0MA2G",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHASMJ4E8RTV914BW0MA2G",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

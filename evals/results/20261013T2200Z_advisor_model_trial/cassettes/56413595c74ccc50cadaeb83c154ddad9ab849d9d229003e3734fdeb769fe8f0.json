@@ -184,7 +184,7 @@
   "request_hash": "56413595c74ccc50cadaeb83c154ddad9ab849d9d229003e3734fdeb769fe8f0",
   "response": {
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_tr_b4\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.eating_out\",\"monthly_cap_minor\":15681},\"title\":\"Hold eating out at {{cap}} a month until the next payday\",\"rationale\":\"Eating out spending has risen above its usual level; holding it at {{cap}} a month can improve the low point before payday without cutting an essential category.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.eating_out\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":23312,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Raised the eating-out cap to at least sixty percent of its three-month median and kept the change away from protected and essential categories.\"]}",
-    "mesh_response_id": "resp_0f3549b1c9295e78016ace920e49dc87d1b5cde8b2a5861267",
+    "provider_response_id": "resp_0f3549b1c9295e78016ace920e49dc87d1b5cde8b2a5861267",
     "model": "openai-gpt-56-luna-pro",
     "tool_arguments": null,
     "usage": {

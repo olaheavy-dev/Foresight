@@ -186,7 +186,7 @@
     "content": "{\n  \"proposals\": [\n    {\n      \"proposal_id\": \"prp_tr_b1\",\n      \"action\": \"cap_category\",\n      \"currency\": \"GBP\",\n      \"params\": {\n        \"category_key\": \"food.delivery\",\n        \"monthly_cap_minor\": 15000\n      },\n      \"title\": \"Cap food delivery at {{cap}} a month\",\n      \"rationale\": \"Your food delivery spending is above its usual level. Capping it at {{cap}} a month keeps more cash in hand before payday.\",\n      \"trigger_refs\": [\n        {\n          \"kind\": \"finding\",\n          \"id\": \"fnd:category_spike:food.delivery\",\n          \"role\": \"trigger\"\n        },\n        {\n          \"kind\": \"forecast\",\n          \"id\": \"fc:baseline\",\n          \"role\": \"trigger\"\n        }\n      ],\n      \"expected_direction\": \"improves_buffer\",\n      \"claimed_monthly_impact_minor\": 13640,\n      \"claimed_impact_text\": \"Estimated monthly saving of {{saving}} compared with your last thirty days of food delivery spending.\"\n    }\n  ],\n  \"critique_addressed\": [\n    \"Corrected claimed_monthly_impact_minor to 13640: last thirty days' spending of 28640 minus the cap of 15000.\"\n  ]\n}",
     "cost_estimate_usd": 0.008328,
     "latency_ms": 6863,
-    "mesh_response_id": "chatcmpl-EbAW8lmttB1Wp389vtHA5p4JEhUCy",
+    "provider_response_id": "chatcmpl-EbAW8lmttB1Wp389vtHA5p4JEhUCy",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

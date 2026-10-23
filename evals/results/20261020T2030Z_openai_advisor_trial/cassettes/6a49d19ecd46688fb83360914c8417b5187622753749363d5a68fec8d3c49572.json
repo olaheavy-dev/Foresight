@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited forecast supports the buffer-risk trigger, and the feasible spending cut supports retaining cash without claiming to improve the forecast low point.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names eating out and specifies a clear monthly spending cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with future-risk language limited to the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal concerns an ordinary spending cap and contains no restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003588,
     "latency_ms": 5278,
-    "mesh_response_id": "chatcmpl-EbARMDnyAyWtmPPmJESUijvODjLA6",
+    "provider_response_id": "chatcmpl-EbARMDnyAyWtmPPmJESUijvODjLA6",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

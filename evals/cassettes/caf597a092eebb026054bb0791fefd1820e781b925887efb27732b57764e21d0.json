@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports the Netflix\u2013Sky TV overlap, and the cash-flow forecast supports the pre-payday cash rationale.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names Netflix and clearly recommends cancelling it if Sky TV is preferred.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral, respectful, and makes no unsupported prediction beyond the cash-flow rationale.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Cancelling an overlapping TV subscription is within scope and contains no restricted financial advice.\"}]}",
     "cost_estimate_usd": 0.003322,
     "latency_ms": 4076,
-    "mesh_response_id": "chatcmpl-EbB94c7gUqnoraJGd5lXI8mA3ZFwN",
+    "provider_response_id": "chatcmpl-EbB94c7gUqnoraJGd5lXI8mA3ZFwN",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

@@ -86,7 +86,7 @@
   "request_hash": "e2e102e24f920ac68260127c99e5ce234293401ddd961463de46bb1aee593716",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-17aeca21d71d0791148f",
+    "provider_response_id": "chatcmpl-17aeca21d71d0791148f",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"The spike finding for food.eating_out supports the claim that its usual level is exceeded, and the baseline forecast is cited for the impact.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the category food.eating_out and a concrete monthly cap action that can be set today.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral wording; the forward reference is limited to the cited baseline forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"A spending cap on eating out is not investment, lending, pension, credit, or tax advice, and is not a REF recommendation.\"}]}",
     "usage": {

@@ -383,7 +383,7 @@
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Two-month job loss\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"income_change_pct\",\"income_stream_id\":\"inc_acme_analytics\",\"pct\":-100,\"from_date\":\"2026-10-11\",\"to_date\":\"2026-12-11\"}],\"assumptions\":[]}}",
     "cost_estimate_usd": 0.0004846,
     "latency_ms": 1511,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHC1BBNXBJM6X9TZJRXA3N",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHC1BBNXBJM6X9TZJRXA3N",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

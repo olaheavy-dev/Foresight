@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports above-usual food-delivery spending, and the cap's estimated saving is covered by the passed impact checks.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and specifies a monthly cap with a clear cap-category action.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with savings presented as an estimate rather than a guarantee.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal concerns a spending cap and contains no restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003254,
     "latency_ms": 4589,
-    "mesh_response_id": "chatcmpl-EbBRUfcqEUfilTVeBL2SJ4KJqMPuJ",
+    "provider_response_id": "chatcmpl-EbBRUfcqEUfilTVeBL2SJ4KJqMPuJ",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

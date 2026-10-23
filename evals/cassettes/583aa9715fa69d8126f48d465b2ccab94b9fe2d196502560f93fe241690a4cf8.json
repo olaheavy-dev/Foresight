@@ -383,7 +383,7 @@
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"10% pay reduction from November\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"income_change_pct\",\"income_stream_id\":\"inc_salary\",\"pct\":-10,\"from_date\":\"2026-11-01\"}],\"assumptions\":[]},\"clarification\":null}",
     "cost_estimate_usd": 0.00517,
     "latency_ms": 3042,
-    "mesh_response_id": "chatcmpl-EbAhwKP299LLUtYUaFwW44iS8oysd",
+    "provider_response_id": "chatcmpl-EbAhwKP299LLUtYUaFwW44iS8oysd",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

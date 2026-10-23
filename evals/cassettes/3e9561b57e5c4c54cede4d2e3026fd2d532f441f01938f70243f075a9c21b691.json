@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Can I afford it?\",\"intent\":\"affordability\",\"slots\":{},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.4,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002617,
     "latency_ms": 439,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHB1VAVREJJTMQ3RGR664V",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHB1VAVREJJTMQ3RGR664V",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

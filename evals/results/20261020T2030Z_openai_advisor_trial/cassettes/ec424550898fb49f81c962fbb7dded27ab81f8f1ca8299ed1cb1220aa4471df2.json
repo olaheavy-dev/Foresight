@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The evidence describes what the forecast measures but does not report a finding of buffer pressure.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"It names eating out and gives a clear monthly cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, without claims beyond the cited forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"It recommends a spending cap, not advice in a restricted area.\"}]}",
     "cost_estimate_usd": 0.004696,
     "latency_ms": 5534,
-    "mesh_response_id": "chatcmpl-EbAWX7537AE01R7UqlwLyDDqNWF6t",
+    "provider_response_id": "chatcmpl-EbAWX7537AE01R7UqlwLyDDqNWF6t",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

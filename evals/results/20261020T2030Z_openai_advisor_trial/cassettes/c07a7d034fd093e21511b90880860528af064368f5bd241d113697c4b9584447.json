@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast supports the concern about the pre-payday low point, and a spending cap would ease it.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"It names eating out, gives a monthly cap, and specifies when to apply it.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported claim about the future.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation concerns eating-out spending, not a restricted financial topic.\"}]}",
     "cost_estimate_usd": 0.004348,
     "latency_ms": 4770,
-    "mesh_response_id": "chatcmpl-EbAVuTHG3lxNsT2z0hjWdZHzLKYNl",
+    "provider_response_id": "chatcmpl-EbAVuTHG3lxNsT2z0hjWdZHzLKYNl",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

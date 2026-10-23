@@ -381,7 +381,7 @@
   "request_hash": "bbf0cd8536cdfa84364356728e533c3daa67aa751287c3204907ef3dcf7039e2",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"\u00a3300 tax refund\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_inflow\",\"date\":\"2026-11-10\",\"amount_minor\":30000,\"label\":\"Tax refund\",\"category_key\":\"refund\"}],\"assumptions\":[]}, \"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVYPWN82MPBaR4eWyQnjtJ5JfEwS",
+    "provider_response_id": "chatcmpl-EYVYPWN82MPBaR4eWyQnjtJ5JfEwS",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

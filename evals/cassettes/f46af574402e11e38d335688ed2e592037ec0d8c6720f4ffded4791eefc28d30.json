@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"Review the transaction table to see your subscription charges.\",\"key_numbers\":[],\"main_visual\":\"TransactionTable\"}",
     "cost_estimate_usd": 0.0001412,
     "latency_ms": 2945,
-    "mesh_response_id": "chatcmpl-EYqadsi8yh3vFJti5a1uWwdixcFSh",
+    "provider_response_id": "chatcmpl-EYqadsi8yh3vFJti5a1uWwdixcFSh",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

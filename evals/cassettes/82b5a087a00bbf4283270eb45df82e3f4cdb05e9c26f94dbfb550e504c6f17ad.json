@@ -187,7 +187,7 @@
     "content": "{\"proposals\":[{\"proposal_id\":\"delivery_cap\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.delivery\",\"monthly_cap_minor\":20310},\"title\":\"Bring food delivery back to {{cap}} a month\",\"rationale\":\"Food delivery spending is above its usual level. This cap keeps more cash in hand before payday, but the forecast is already below your buffer before the planned trip, so it does not make the trip affordable on its own.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd_01K742SG010000000000000001\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"calc_d9e3afcd8d1565faa32c320b\",\"role\":\"context\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":8330,\"claimed_impact_text\":\"Estimated saving of {{saving}} a month against recent food delivery spending.\"},{\"proposal_id\":\"netflix_cancel\",\"action\":\"cancel_recurring\",\"currency\":\"GBP\",\"params\":{\"recurring_id\":\"rob_netflix\"},\"title\":\"Consider cancelling Netflix\",\"rationale\":\"Netflix and Disney+ overlap. If you would keep Disney+ instead, cancelling Netflix would keep {{saving}} more in hand each month before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd_01K742SG020000000000000002\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":1299,\"claimed_impact_text\":\"Saves {{saving}} a month.\"}],\"critique_addressed\":null}",
     "cost_estimate_usd": 0.013286,
     "latency_ms": 10791,
-    "mesh_response_id": "chatcmpl-EbMMdyYzMSjJT3rbztY9IFx77AlzX",
+    "provider_response_id": "chatcmpl-EbMMdyYzMSjJT3rbztY9IFx77AlzX",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

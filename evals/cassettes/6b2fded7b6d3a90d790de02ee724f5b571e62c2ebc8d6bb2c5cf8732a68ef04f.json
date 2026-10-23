@@ -103,7 +103,7 @@
   "request_hash": "6b2fded7b6d3a90d790de02ee724f5b571e62c2ebc8d6bb2c5cf8732a68ef04f",
   "response": {
     "content": "{\"standalone_question\":\"What happens if I drop Sky?\",\"intent\":\"scenario\",\"slots\":{\"modifier\":\"recurring_cancel\",\"merchant\":\"Sky\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.89,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdUOcEhKMFqyzJFMlb2p4mmdjxmD",
+    "provider_response_id": "chatcmpl-EYdUOcEhKMFqyzJFMlb2p4mmdjxmD",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

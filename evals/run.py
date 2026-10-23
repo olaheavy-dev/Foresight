@@ -152,7 +152,7 @@ def build_summary(
         "layout_set_version": None,
         "locales": ["uk"],
         "home_currency_primary": "GBP",
-        "mesh_models": {"coordinator": None, "ledger": None, "advisor": None, "verifier": None},
+        "llm_models": {"coordinator": None, "ledger": None, "advisor": None, "verifier": None},
         "prompt_versions": {},
         "seeds": [PRIMARY_SEED],
         "suites_run": sorted(results),

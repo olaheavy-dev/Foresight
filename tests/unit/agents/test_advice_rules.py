@@ -10,7 +10,7 @@ from backend.agents.advice.models import InterventionProposal
 from backend.agents.advice.rules import critique_for
 from backend.agents.advice.verifier import verify
 from backend.agents.forecaster import SpecModel, tier_for, to_engine_spec
-from backend.mesh.mesh_client import ModelTier
+from backend.llm.client import ModelTier
 from evals.advice_world import BASELINE, case_world
 from evals.suites.scenarios import score_case
 

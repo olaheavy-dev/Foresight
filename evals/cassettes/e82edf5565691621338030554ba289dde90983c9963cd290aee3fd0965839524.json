@@ -78,7 +78,7 @@
   "request_hash": "e82edf5565691621338030554ba289dde90983c9963cd290aee3fd0965839524",
   "response": {
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast and passed impact recomputation support the purchase-timing claim about the buffer.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal specifies moving the Holiday purchase from 6 November to 28 November 2026.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with future claims limited to the forecasted cash-flow impact.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Rescheduling a holiday purchase does not involve restricted financial advice or recommendations.\"}]}",
-    "mesh_response_id": "chatcmpl-EYW8AI64H7wfDDrpSUig2GUvJ24cV",
+    "provider_response_id": "chatcmpl-EYW8AI64H7wfDDrpSUig2GUvJ24cV",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

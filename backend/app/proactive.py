@@ -146,11 +146,11 @@ def daily_allowance(ws: m.Workspace) -> int:
 
 def advice_blocked(db: Session, ws: m.Workspace) -> str | None:
     """Why the checked-advice workflow can't run now, or None. Findings run regardless."""
-    from backend.app.routers.ask import ai_status, get_mesh
+    from backend.app.routers.ask import ai_status, get_model_client
 
     if ws.kind == "demo":
         return "template"
-    if ai_status(get_mesh()) != "ok":
+    if ai_status(get_model_client()) != "ok":
         return "ai_paused"
     if runs_today(db, ws.id) >= daily_allowance(ws):
         return "daily_limit"
@@ -168,7 +168,7 @@ def advice_on_request_only(ws: m.Workspace) -> bool:
 def run_job(job_id: str, database_url: str) -> None:
     """Run one claimed job to completion (never raises; the outcome is recorded on the job)."""
     from backend.agents.runner import run_workflow
-    from backend.app.routers.ask import get_mesh
+    from backend.app.routers.ask import get_model_client
 
     with session_factory(database_url)() as db:
         job = db.get(m.AnalysisJob, job_id)
@@ -191,7 +191,7 @@ def run_job(job_id: str, database_url: str) -> None:
                     workflow=job.workflow,
                     trigger="event",
                     event=job.event,
-                    mesh=get_mesh(),
+                    model_client=get_model_client(),
                 )
                 job.run_id = outcome.run_id
                 job.status = "done"

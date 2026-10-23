@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Is my spending up compared to normal?\",\"intent\":\"trend_or_change\",\"slots\":{},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.94,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002565,
     "latency_ms": 497,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHBCSHP6WZBQH379QS69TB",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHBCSHP6WZBQH379QS69TB",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

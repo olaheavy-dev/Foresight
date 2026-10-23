@@ -186,7 +186,7 @@
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_bp_022\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.delivery\",\"monthly_cap_minor\":20310},\"title\":\"Set a monthly food delivery cap of {{cap}}\",\"rationale\":\"Food delivery spending is above its usual level. Keeping it at its three-month median would leave more cash in hand before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.delivery\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"context\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":8330,\"claimed_impact_text\":null},{\"proposal_id\":\"prp_cancel_netflix\",\"action\":\"cancel_recurring\",\"currency\":\"GBP\",\"params\":{\"recurring_id\":\"rob_netflix\"},\"title\":\"Consider cancelling Netflix if Sky TV meets your needs\",\"rationale\":\"Netflix and Sky TV overlap. If you do not need both, cancelling Netflix would keep more cash in hand before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:subscription_overlap:rob_netflix+rob_sky\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":1299,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Revised the food delivery cap to its three-month median, which is above the required minimum. The proposal does not cut an essential or protected category.\"]}",
     "cost_estimate_usd": 0.010282,
     "latency_ms": 11966,
-    "mesh_response_id": "chatcmpl-EbAuSUYs7R5Ed9UQlbTjdb5Ol2agi",
+    "provider_response_id": "chatcmpl-EbAuSUYs7R5Ed9UQlbTjdb5Ol2agi",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

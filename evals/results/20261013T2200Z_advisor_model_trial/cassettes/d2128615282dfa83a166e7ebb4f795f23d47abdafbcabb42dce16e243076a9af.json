@@ -78,7 +78,7 @@
   "request_hash": "d2128615282dfa83a166e7ebb4f795f23d47abdafbcabb42dce16e243076a9af",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-5db0dab0985565d48b74",
+    "provider_response_id": "chatcmpl-5db0dab0985565d48b74",
     "model": "anthropic/claude-sonnet-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"Spike finding in food.eating_out and baseline forecast support capping at usual level to ease the forecast low point.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names a category (food.eating_out), a clear action (monthly cap) and a cap amount parameter (26135 minor units).\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral, respectful wording; no alarmist claims or predictions beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Only a discretionary spending cap; no investment, loan, credit card, pension or tax advice.\"}]}",
     "usage": {

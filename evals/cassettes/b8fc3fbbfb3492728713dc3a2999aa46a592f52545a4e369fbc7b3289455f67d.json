@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"How much will I have saved by March?\",\"intent\":\"goal_status\",\"slots\":{},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.82,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0004141,
     "latency_ms": 498,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHAW32TB4H2J6KJKAVANRK",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHAW32TB4H2J6KJKAVANRK",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

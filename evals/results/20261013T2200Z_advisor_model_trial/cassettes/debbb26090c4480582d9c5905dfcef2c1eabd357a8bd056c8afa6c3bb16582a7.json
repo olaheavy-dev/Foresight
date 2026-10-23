@@ -78,7 +78,7 @@
   "request_hash": "debbb26090c4480582d9c5905dfcef2c1eabd357a8bd056c8afa6c3bb16582a7",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-9aa46df8b83ab1bef5ef",
+    "provider_response_id": "chatcmpl-9aa46df8b83ab1bef5ef",
     "model": "anthropic/claude-sonnet-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"Category spike finding supports the claim that eating out is above usual; the forecast supports the pre-payday low point.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the category (eating out), a monthly cap amount and a timeframe (until next payday); clear action.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral, respectful wording with no speculation beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Only budgeting for an everyday spending category; no investment, loan, credit or tax advice.\"}]}",
     "usage": {

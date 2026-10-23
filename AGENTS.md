@@ -4,7 +4,7 @@
 
 ## What this is
 
-An agent-native personal-finance workspace (a portfolio project, started for Agent Arena 2026). Next.js frontend (`frontend/`), FastAPI backend (`backend/app`), a deterministic finance engine (`backend/finance_core`), LangGraph agents (`backend/agents`), PostgreSQL, and every model call through one gateway module (`backend/mesh/mesh_client.py`), which calls OpenAI directly (owner decision 20 Oct 2026, `docs/00` §12 item 14). Features ship behind flags in `features.yaml`, and evaluation suites live in `evals/`.
+An agent-native personal-finance workspace (a portfolio project, started for Agent Arena 2026). Next.js frontend (`frontend/`), FastAPI backend (`backend/app`), a deterministic finance engine (`backend/finance_core`), LangGraph agents (`backend/agents`), PostgreSQL, and every model call through one gateway module (`backend/llm/client.py`), which calls OpenAI directly (owner decision 20 Oct 2026, `docs/00` §12 item 14). Features ship behind flags in `features.yaml`, and evaluation suites live in `evals/`.
 
 ## Commands
 
@@ -46,7 +46,7 @@ Review every change against these rules. A finding names the rule, the file and 
 
 ### 3. Models: one gateway, recorded and costed
 
-- All application model calls go through `MeshClient` (`backend/mesh/mesh_client.py`), the only module that may import a model SDK or call a provider; `make imports` enforces this. The provider is OpenAI (`MODEL_PROVIDER=openai`, the only value accepted since Mesh was removed on 23 Oct 2026), with its base URL fixed in code. The module and the `MESH_*` settings keep their old names.
+- All application model calls go through `ModelClient` (`backend/llm/client.py`), the only module that may import a model SDK or call a provider; `make imports` enforces this. The provider is OpenAI (`MODEL_PROVIDER=openai`, the only value accepted since Mesh was removed on 23 Oct 2026), with its base URL fixed in code. Settings are `MODEL_*` (renamed from `MESH_*` on 23 Oct 2026; the old names are no longer read).
 - A new or changed prompt, schema or model invalidates recordings. The PR says which suites need re-recording and the estimated cost, and recording waits for an approved cap.
 - Report model cost and latency changes against the core metrics (E-EFF: cost, accuracy, latency).
 

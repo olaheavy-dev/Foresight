@@ -103,7 +103,7 @@
   "request_hash": "3544e297340c859f4407f2ac8547b2c7b7bbda564057d84e861c607525271153",
   "response": {
     "content": "{\"standalone_question\":\"Can I afford a \u00a31,200 holiday on 19 December instead?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":120000,\"date\":\"2026-12-19\",\"purpose\":\"holiday\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdSvzbjpG7Qfs5TPpqoDdv40LC4z",
+    "provider_response_id": "chatcmpl-EYdSvzbjpG7Qfs5TPpqoDdv40LC4z",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

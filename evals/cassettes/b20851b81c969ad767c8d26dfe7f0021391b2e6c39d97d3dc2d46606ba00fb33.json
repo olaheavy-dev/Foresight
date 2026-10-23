@@ -186,7 +186,7 @@
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_gp_040\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.eating_out\",\"monthly_cap_minor\":14000},\"title\":\"Set a monthly cap for eating out\",\"rationale\":\"With the forecast balance close to your buffer before the December payday, keeping eating-out spending within {{cap}} a month keeps more cash in hand before payday.\",\"trigger_refs\":[{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":4632,\"claimed_impact_text\":\"Estimated monthly saving: \u00a346.32.\"},{\"proposal_id\":\"prp_gp_041\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"shopping.general\",\"monthly_cap_minor\":15000},\"title\":\"Set a monthly cap for general shopping\",\"rationale\":\"With the forecast balance close to your buffer before the December payday, keeping general shopping within {{cap}} a month keeps more cash in hand before payday.\",\"trigger_refs\":[{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":4338,\"claimed_impact_text\":\"Estimated monthly saving: \u00a343.38.\"}],\"critique_addressed\":[\"Replaced the date change with a cap whose estimated monthly saving exceeds the required threshold. Left the protected savings sweep untouched.\"]}",
     "cost_estimate_usd": 0.011758,
     "latency_ms": 8782,
-    "mesh_response_id": "chatcmpl-EbAj8SVI1fFhHcAw4SQd3SHjySoIY",
+    "provider_response_id": "chatcmpl-EbAj8SVI1fFhHcAw4SQd3SHjySoIY",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

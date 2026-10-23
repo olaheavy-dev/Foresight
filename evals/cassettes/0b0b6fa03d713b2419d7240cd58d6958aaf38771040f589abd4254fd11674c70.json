@@ -381,7 +381,7 @@
   "request_hash": "0b0b6fa03d713b2419d7240cd58d6958aaf38771040f589abd4254fd11674c70",
   "response": {
     "content": "{\"status\":\"needs_clarification\",\"spec\":null,\"clarification\":{\"question\":\"How much will the laptop cost, and when do you expect to buy it?\",\"slot\":\"purchase_amount_and_date\"}}",
-    "mesh_response_id": "chatcmpl-EYVc4a8RaCF1587pgDv8YyP0Tkb7q",
+    "provider_response_id": "chatcmpl-EYVc4a8RaCF1587pgDv8YyP0Tkb7q",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -125,7 +125,7 @@
     "content": "{\"items\":[{\"row\":0,\"category\":\"shopping.general\",\"confidence\":0.94}]}",
     "cost_estimate_usd": 0.0002295,
     "latency_ms": 2991,
-    "mesh_response_id": "chatcmpl-EYdwQmRFa0syIY0IRCkXeZzaXBy7m",
+    "provider_response_id": "chatcmpl-EYdwQmRFa0syIY0IRCkXeZzaXBy7m",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

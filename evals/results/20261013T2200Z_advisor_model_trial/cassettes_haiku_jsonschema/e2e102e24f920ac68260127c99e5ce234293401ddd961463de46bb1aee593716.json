@@ -86,7 +86,7 @@
   "request_hash": "e2e102e24f920ac68260127c99e5ce234293401ddd961463de46bb1aee593716",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-d602bb258f6011c61026",
+    "provider_response_id": "chatcmpl-d602bb258f6011c61026",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"The cited spike finding shows food.eating_out spending well above its usual level, which supports a cap on that same category.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the category food.eating_out and a monthly cap amount with a clear action, which a person can apply directly.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Wording is neutral and factual, with no REF content and no claims beyond the baseline forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"A discretionary spending cap on a single category; no REF products, advice or recommendations are involved.\"}]}",
     "usage": {

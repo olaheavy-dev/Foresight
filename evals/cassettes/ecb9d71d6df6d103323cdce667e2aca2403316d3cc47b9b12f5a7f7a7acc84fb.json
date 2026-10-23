@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Could I spend \u00a32,000 on a sofa in November?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":200000,\"date\":\"2026-11-01\",\"purpose\":\"sofa\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002735,
     "latency_ms": 500,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHAESET5Q5W9HB45GHD4BG",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHAESET5Q5W9HB45GHD4BG",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

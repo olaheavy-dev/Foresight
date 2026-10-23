@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited spending spike and cash-flow forecast support reducing elevated food-delivery spending to preserve cash before payday.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and specifies a concrete monthly spending cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported claims beyond the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal concerns a discretionary spending cap and contains no restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003254,
     "latency_ms": 4488,
-    "mesh_response_id": "chatcmpl-EbASjRBe4M6pnHZiL8VMsDwlkplJG",
+    "provider_response_id": "chatcmpl-EbASjRBe4M6pnHZiL8VMsDwlkplJG",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

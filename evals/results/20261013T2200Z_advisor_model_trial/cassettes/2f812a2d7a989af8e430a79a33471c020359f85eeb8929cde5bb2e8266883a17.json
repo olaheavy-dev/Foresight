@@ -78,7 +78,7 @@
   "request_hash": "2f812a2d7a989af8e430a79a33471c020359f85eeb8929cde5bb2e8266883a17",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-3bb93f92f25e88d30222",
+    "provider_response_id": "chatcmpl-3bb93f92f25e88d30222",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"The finding shows food.eating_out spending is above its usual level, and the forecast covers the low balance before payday, so the cap link is supported.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the category (food.eating_out), a monthly cap amount and a clear timeframe (until next payday), so it can be acted on today.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Wording is neutral and respectful, with no REF content and no unsupported claims about the future.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"A spending cap on eating out is a budgeting action, not REF advice or a REF recommendation.\"}]}",
     "usage": {

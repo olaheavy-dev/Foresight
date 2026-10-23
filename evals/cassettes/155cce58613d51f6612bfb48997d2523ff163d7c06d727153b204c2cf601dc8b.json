@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Which subscriptions am I paying for?\",\"intent\":\"subscription_review\",\"slots\":{},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002459,
     "latency_ms": 483,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHAT4ZYAJQQB9PTB746PMK",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHAT4ZYAJQQB9PTB746PMK",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

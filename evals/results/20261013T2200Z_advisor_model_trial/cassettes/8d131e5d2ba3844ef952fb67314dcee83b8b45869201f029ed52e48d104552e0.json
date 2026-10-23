@@ -78,7 +78,7 @@
   "request_hash": "8d131e5d2ba3844ef952fb67314dcee83b8b45869201f029ed52e48d104552e0",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-4c6ad8317acb4dd362e3",
+    "provider_response_id": "chatcmpl-4c6ad8317acb4dd362e3",
     "model": "anthropic/claude-sonnet-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"Overlap finding between Netflix and Sky supports the claim of overlapping coverage; forecast cited for the saving impact.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names a specific subscription (Netflix) and a clear action (cancel it) that can be done today.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral, respectful wording with no pressure or speculation beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Concerns only a streaming subscription; no investment, loan, credit, pension or tax advice.\"}]}",
     "usage": {

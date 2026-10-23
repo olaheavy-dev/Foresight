@@ -381,7 +381,7 @@
   "request_hash": "4cff6382329975a0f50c4aedb66ed03d09613a2f79282ab57000940ffc8bb598",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Dentist bill\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-10-22\",\"amount_minor\":18000,\"label\":\"Dentist bill\",\"category_key\":\"health\"}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVXe75C2thTUlLWtfHoYqFtjMunE",
+    "provider_response_id": "chatcmpl-EYVXe75C2thTUlLWtfHoYqFtjMunE",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -5,12 +5,12 @@ from __future__ import annotations
 from typing import Any
 
 from backend.agents.runtime import concurrent_ms, model_ms
-from backend.mesh.mesh_client import MeshResult, Usage
+from backend.llm.client import ModelResult, Usage
 from evals.suites.efficiency import percentile
 
 
-def call(ms: int, measured: bool = True) -> MeshResult:
-    return MeshResult(
+def call(ms: int, measured: bool = True) -> ModelResult:
+    return ModelResult(
         text="", model="m", response_id="r", usage=Usage(1, 1, 2), latency_ms=ms,
         used_fallback=False, latency_measured=measured,
     )  # fmt: skip

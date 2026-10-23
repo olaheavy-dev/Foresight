@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The cited subscription overlap and baseline forecast do not establish that capping eating out will ease the pre-payday low point.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"It names eating out, sets a monthly cap, and gives a timeframe.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"It recommends a spending cap, not a restricted financial action.\"}]}",
     "cost_estimate_usd": 0.004854,
     "latency_ms": 4761,
-    "mesh_response_id": "chatcmpl-EbAZSOIqoE20dOMqiYyD6yhc6jL9N",
+    "provider_response_id": "chatcmpl-EbAZSOIqoE20dOMqiYyD6yhc6jL9N",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

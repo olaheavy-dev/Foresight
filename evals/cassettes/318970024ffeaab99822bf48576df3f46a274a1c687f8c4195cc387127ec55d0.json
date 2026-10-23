@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast supports the buffer-risk trigger, and the verified spending cap preserves cash.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"Names eating out and specifies a clear monthly cap to apply.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"Uses neutral, respectful language and limits the future-risk claim to the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Recommends only a spending-category cap, with no out-of-scope financial advice.\"}]}",
     "cost_estimate_usd": 0.003088,
     "latency_ms": 4141,
-    "mesh_response_id": "chatcmpl-EYq2H6EsK9MGg3Oc9OO8AwMAkGtrg",
+    "provider_response_id": "chatcmpl-EYq2H6EsK9MGg3Oc9OO8AwMAkGtrg",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

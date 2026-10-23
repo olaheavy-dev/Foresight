@@ -381,7 +381,7 @@
   "request_hash": "974f064569b0a45c6bffe0d0853d53b1133970b91a987c48b83cf7fb74318ece",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Cut food delivery by half\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"category_cut_pct\",\"category_key\":\"food.delivery\",\"pct\":50,\"from_date\":\"2026-10-11\",\"to_date\":null}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVaaDHRrLwaf98G6Yj7bU6Cj1Kqe",
+    "provider_response_id": "chatcmpl-EYVaaDHRrLwaf98G6Yj7bU6Cj1Kqe",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

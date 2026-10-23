@@ -186,7 +186,7 @@
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_bp_048\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.delivery\",\"monthly_cap_minor\":20310},\"title\":\"Bring food delivery back to its usual level\",\"rationale\":\"Cap food delivery at {{cap}} a month. Recent spending was above its usual level, so this keeps more cash in hand before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.delivery\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":8330,\"claimed_impact_text\":null},{\"proposal_id\":\"prp_streaming_overlap\",\"action\":\"cancel_recurring\",\"currency\":\"GBP\",\"params\":{\"recurring_id\":\"rob_netflix\"},\"title\":\"Consider cancelling Netflix\",\"rationale\":\"Netflix overlaps with Sky TV. If Sky TV meets your needs, cancelling Netflix keeps more cash in hand before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:subscription_overlap:rob_netflix+rob_sky\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":1299,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Replaced the proposed savings-transfer delay with a food-delivery cap. The revised proposal leaves the protected savings transfer and its timing unchanged, so it does not delay that goal or move the transfer into another pay cycle.\"]}",
     "cost_estimate_usd": 0.011392,
     "latency_ms": 8831,
-    "mesh_response_id": "chatcmpl-EbBIRKjYKYeQaqH8yjMcNOkJVpgax",
+    "provider_response_id": "chatcmpl-EbBIRKjYKYeQaqH8yjMcNOkJVpgax",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

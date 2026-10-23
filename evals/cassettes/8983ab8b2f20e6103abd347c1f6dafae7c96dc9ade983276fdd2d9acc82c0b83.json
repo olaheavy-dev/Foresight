@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast supports the pre-payday balance concern, and the spending cap preserves cash.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names taxi spending and specifies a concrete monthly cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral, respectful, and stays within the forecast's scope.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"A taxi spending cap does not involve restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003372,
     "latency_ms": 5012,
-    "mesh_response_id": "chatcmpl-EbAlQlmYHHyauz3cNMJK0wdlkSS5p",
+    "provider_response_id": "chatcmpl-EbAlQlmYHHyauz3cNMJK0wdlkSS5p",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

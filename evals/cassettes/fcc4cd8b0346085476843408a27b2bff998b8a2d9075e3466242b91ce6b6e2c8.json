@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports the stated overlap between Netflix and Disney+.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names Netflix and specifies cancelling its recurring subscription.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral, respectful, and conditional on Disney+ meeting the user's needs.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Cancelling an entertainment subscription is within scope and involves no restricted financial advice.\"}]}",
     "cost_estimate_usd": 0.00302,
     "latency_ms": 6167,
-    "mesh_response_id": "chatcmpl-EbBfaNMCFs7davmuwoNg0Ef4zT0bF",
+    "provider_response_id": "chatcmpl-EbBfaNMCFs7davmuwoNg0Ef4zT0bF",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

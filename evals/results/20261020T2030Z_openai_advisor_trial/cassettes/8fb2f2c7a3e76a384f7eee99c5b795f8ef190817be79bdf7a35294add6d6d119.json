@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The cited baseline forecast does not support the claim about savings compared with last month\u2019s eating-out spending.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"It names eating out and gives a clear monthly cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"It recommends only a spending cap, with no out-of-scope advice.\"}]}",
     "cost_estimate_usd": 0.004486,
     "latency_ms": 4859,
-    "mesh_response_id": "chatcmpl-EbAZAGdLSZr7OqpZCQlVQTQizlYwf",
+    "provider_response_id": "chatcmpl-EbAZAGdLSZr7OqpZCQlVQTQizlYwf",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

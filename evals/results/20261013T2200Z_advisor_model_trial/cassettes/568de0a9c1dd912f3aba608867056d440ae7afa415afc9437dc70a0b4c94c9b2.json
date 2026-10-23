@@ -78,7 +78,7 @@
   "request_hash": "568de0a9c1dd912f3aba608867056d440ae7afa415afc9437dc70a0b4c94c9b2",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-fe4eadf866d566a272c0",
+    "provider_response_id": "chatcmpl-fe4eadf866d566a272c0",
     "model": "anthropic/claude-sonnet-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"Category spike finding supports 'above usual level'; baseline forecast supports the buffer-before-payday claim.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names category food.delivery, a clear action (monthly cap) and a cap amount of 15000 minor units.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral, respectful wording; 'could help' makes no claims beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Budget cap on a spending category; no investment, loan, credit card, pension or tax advice.\"}]}",
     "usage": {

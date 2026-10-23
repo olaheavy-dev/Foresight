@@ -381,7 +381,7 @@
   "request_hash": "7f14b7e381f02ba5c73403a15fb6fe31cd3984c7becb388ac9fe33b5321df351",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"October salary delayed\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"income_delay\",\"income_stream_id\":\"inc_salary\",\"days\":7,\"occurrences\":1}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVYuoqweyOl0MCA1jhTKmqAWbYGq",
+    "provider_response_id": "chatcmpl-EYVYuoqweyOl0MCA1jhTKmqAWbYGq",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

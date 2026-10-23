@@ -24,7 +24,7 @@ from typing import Any
 
 from backend.agents.budget import Budget, BudgetExceeded
 from backend.agents.state import ForesightState
-from backend.mesh.mesh_client import MeshCallError, MeshClient, MeshResult
+from backend.llm.client import ModelCallError, ModelClient, ModelResult
 from backend.storage.agent_repo import AgentStore
 
 # docs/05 §6.4: run deadlines.
@@ -52,7 +52,7 @@ class NodeOutput:
     output: dict[str, Any] = field(default_factory=dict)
     status: str = "ok"  # ok | retried | failed | skipped
     label: str | None = None  # templated user-facing label (never model text)
-    llm: Sequence[MeshResult] = ()
+    llm: Sequence[ModelResult] = ()
     tool_calls: list[dict[str, Any]] = field(default_factory=list)
     prompt_version: str | None = None
     cached: bool = False
@@ -62,14 +62,14 @@ class NodeOutput:
     model_ms: int | None = None
 
 
-def model_ms(results: Sequence[MeshResult]) -> int | None:
+def model_ms(results: Sequence[ModelResult]) -> int | None:
     """Model wait of calls made one after another; None if any latency was not measured."""
     if not results or any(not r.latency_measured for r in results):
         return None
     return sum(r.latency_ms for r in results)
 
 
-def concurrent_ms(groups: Sequence[Sequence[MeshResult]], workers: int) -> int | None:
+def concurrent_ms(groups: Sequence[Sequence[ModelResult]], workers: int) -> int | None:
     """Model wait of call groups run on a pool of `workers` threads, each group's calls in turn:
     groups start in order on the first free worker (as `ThreadPoolExecutor.map` does), and the
     wait is when the busiest worker finishes."""
@@ -93,14 +93,14 @@ class RunContext:
     run_id: str
     workflow: str
     deadline_at: datetime
-    mesh: MeshClient | None = None
+    model_client: ModelClient | None = None
     budget: Budget = field(default_factory=Budget)
     clock: Callable[[], datetime] = utcnow
     commit: bool = True  # commit after each step so SSE readers see progress
     lock: threading.RLock = field(default_factory=threading.RLock)
     # Every call charged in this run, in order: a step stopped by the budget still records the
     # calls it made before the refusal (they were paid for).
-    charged: list[MeshResult] = field(default_factory=list)
+    charged: list[ModelResult] = field(default_factory=list)
     # Model wait so far on the run's critical path (sum of the steps' `model_ms`): the recorded
     # latencies, so a time-based decision is the same live, in record mode and in replay.
     waited_ms: int = 0
@@ -108,7 +108,7 @@ class RunContext:
     def deadline_passed(self) -> bool:
         return self.clock() >= self.deadline_at
 
-    def charge(self, results: Sequence[MeshResult]) -> None:
+    def charge(self, results: Sequence[ModelResult]) -> None:
         self.budget.charge(len(results), sum(r.usage.total_tokens for r in results))
         self.charged.extend(results)
 
@@ -116,10 +116,10 @@ class RunContext:
         """Call before each model call; raises BudgetExceeded when the run's budget is used."""
         self.budget.check()
 
-    def require_mesh(self) -> MeshClient:
-        if self.mesh is None:
-            raise MeshCallError("no Mesh client configured for this run")
-        return self.mesh
+    def require_model_client(self) -> ModelClient:
+        if self.model_client is None:
+            raise ModelCallError("no model client configured for this run")
+        return self.model_client
 
 
 NodeFn = Callable[[ForesightState, RunContext], NodeOutput]
@@ -137,7 +137,7 @@ class NodeSpec:
     on_deadline: NodeFn | None = None
 
 
-def _usage(results: Sequence[MeshResult], overlapped_ms: int | None = None) -> dict[str, Any]:
+def _usage(results: Sequence[ModelResult], overlapped_ms: int | None = None) -> dict[str, Any]:
     tokens_in = sum(r.usage.prompt_tokens for r in results)
     tokens_out = sum(r.usage.completion_tokens for r in results)
     costs = [r.cost_estimate for r in results]
@@ -248,7 +248,7 @@ def instrument(spec: NodeSpec, ctx: RunContext) -> Callable[[ForesightState], di
                     update={"partial": True},
                     error=str(exc),
                 )
-            except MeshCallError as exc:
+            except ModelCallError as exc:
                 # Degrade (docs/06 §10.1): record it, keep the deterministic parts going. Calls
                 # made before a schema failure still count towards the budget and the cost.
                 spent = tuple(getattr(exc, "calls", ()))

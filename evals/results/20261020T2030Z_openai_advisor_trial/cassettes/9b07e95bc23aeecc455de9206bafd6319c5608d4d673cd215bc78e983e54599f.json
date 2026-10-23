@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports the claim that food delivery spending is above its usual level.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and gives a clear monthly cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal concerns food delivery spending, not a restricted financial topic.\"}]}",
     "cost_estimate_usd": 0.004414,
     "latency_ms": 4385,
-    "mesh_response_id": "chatcmpl-EbAaMKReydc2eXUpSdSIQsXGeWlqx",
+    "provider_response_id": "chatcmpl-EbAaMKReydc2eXUpSdSIQsXGeWlqx",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

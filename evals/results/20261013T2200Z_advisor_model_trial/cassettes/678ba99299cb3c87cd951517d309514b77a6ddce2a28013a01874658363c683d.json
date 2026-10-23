@@ -78,7 +78,7 @@
   "request_hash": "678ba99299cb3c87cd951517d309514b77a6ddce2a28013a01874658363c683d",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-68c4d7d845abfbcc5b96",
+    "provider_response_id": "chatcmpl-68c4d7d845abfbcc5b96",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"The category_spike finding for food.delivery supports the claim that delivery spending rose, and the baseline forecast supports the low-point concern.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the food.delivery category, a monthly cap amount and a clear cap action until the next payday, so it can be done today.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Wording is neutral and factual; the timeframe stays within the coming pay cycle covered by the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"A spending cap on a discretionary category is not investment, credit, tax, pension or loan advice, and it is not a REF recommendation.\"}]}",
     "usage": {

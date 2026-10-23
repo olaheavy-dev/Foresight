@@ -383,7 +383,7 @@
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Cap food delivery at \u00a3150/month\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"category_cap\",\"category_key\":\"food.delivery\",\"monthly_cap_minor\":15000,\"from_date\":\"2026-10-11\"}],\"assumptions\":[]},\"clarification\":null}",
     "cost_estimate_usd": 0.004844,
     "latency_ms": 2383,
-    "mesh_response_id": "chatcmpl-EbAiNT1eRnar4GZe11W9gPd6wNIyD",
+    "provider_response_id": "chatcmpl-EbAiNT1eRnar4GZe11W9gPd6wNIyD",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

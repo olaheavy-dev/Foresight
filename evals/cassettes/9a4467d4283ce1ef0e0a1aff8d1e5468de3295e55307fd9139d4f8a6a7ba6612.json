@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"I can\u2019t tell whether eating out has gone up from the figures available. They show food delivery spending, but not how eating-out spending changed over time.\",\"key_numbers\":[\"R10\"],\"main_visual\":\"SpendingBreakdownChart\"}",
     "cost_estimate_usd": 0.0001527,
     "latency_ms": 2903,
-    "mesh_response_id": "chatcmpl-EYqXSaP6N60GECU9LCWTSHYbvsYxT",
+    "provider_response_id": "chatcmpl-EYqXSaP6N60GECU9LCWTSHYbvsYxT",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

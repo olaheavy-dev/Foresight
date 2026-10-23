@@ -55,7 +55,7 @@ def test_the_configured_provider_is_allowed(monkeypatch: pytest.MonkeyPatch) -> 
         get_settings.cache_clear()
 
 
-def test_a_mesh_connection_is_blocked_under_openai(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_a_model_client_connection_is_blocked_under_openai(monkeypatch: pytest.MonkeyPatch) -> None:
     from backend.settings import get_settings
 
     monkeypatch.setenv("MODEL_PROVIDER", "openai")

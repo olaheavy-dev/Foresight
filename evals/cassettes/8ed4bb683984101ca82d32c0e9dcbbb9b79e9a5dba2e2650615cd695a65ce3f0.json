@@ -383,7 +383,7 @@
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Rent rises to \u00a31,300\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"recurring_change\",\"recurring_id\":\"rob_northside_lettings\",\"amount_minor\":130000,\"from_date\":\"2027-02-01\"}],\"assumptions\":[\"Northside Lettings is the rent payment.\"]},\"clarification\":null}",
     "cost_estimate_usd": 0.005788,
     "latency_ms": 3767,
-    "mesh_response_id": "chatcmpl-EbAeIAIcQbUiBSmgfFVQF8VE4tnaH",
+    "provider_response_id": "chatcmpl-EbAeIAIcQbUiBSmgfFVQF8VE4tnaH",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

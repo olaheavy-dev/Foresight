@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"I can show this month\u2019s food delivery spending ({{R10}}), but the available figures don\u2019t include a comparison with last month or transaction details to explain why it increased.\",\"key_numbers\":[\"R10\"],\"main_visual\":\"SpendingBreakdownChart\"}",
     "cost_estimate_usd": 0.0001718,
     "latency_ms": 3015,
-    "mesh_response_id": "chatcmpl-EYqXPpP3annd8DzuftU0IDGVSU2wn",
+    "provider_response_id": "chatcmpl-EYqXPpP3annd8DzuftU0IDGVSU2wn",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

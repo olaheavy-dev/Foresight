@@ -186,7 +186,7 @@
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_bp_003\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.delivery\",\"monthly_cap_minor\":15000},\"title\":\"Cap food delivery at {{cap}} a month\",\"rationale\":\"Food delivery spending is above its usual level. Keeping it within this cap would leave more cash in hand before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.delivery\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":13640,\"claimed_impact_text\":null},{\"proposal_id\":\"prp_streaming_001\",\"action\":\"cancel_recurring\",\"currency\":\"GBP\",\"params\":{\"recurring_id\":\"rob_netflix\"},\"title\":\"Cancel Netflix if you do not need both TV subscriptions\",\"rationale\":\"Netflix and Sky TV overlap. If you do not need both, cancelling Netflix would leave more cash in hand before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:subscription_overlap:rob_netflix+rob_sky\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":1299,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Replaced the nonexistent Netflix price-change reference on prp_bp_003 with the supplied food-delivery spike finding.\"]}",
     "cost_estimate_usd": 0.011334,
     "latency_ms": 8053,
-    "mesh_response_id": "chatcmpl-EbAjod45smaIqfBPuNFlZCCbgOHF0",
+    "provider_response_id": "chatcmpl-EbAjod45smaIqfBPuNFlZCCbgOHF0",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

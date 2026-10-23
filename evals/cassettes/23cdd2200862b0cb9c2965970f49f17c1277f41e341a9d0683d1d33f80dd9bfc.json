@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"You spent {{R9}} on groceries last month.\",\"key_numbers\":[\"R9\"],\"main_visual\":\"SpendingBreakdownChart\"}",
     "cost_estimate_usd": 0.0001076,
     "latency_ms": 1999,
-    "mesh_response_id": "chatcmpl-EYqX5iy51ZWH1JPVSd6NTuHs6J4HK",
+    "provider_response_id": "chatcmpl-EYqX5iy51ZWH1JPVSd6NTuHs6J4HK",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -192,7 +192,7 @@
   "request_hash": "c16fcd78ecd5ac39fe149621b665f5dda70e0d99333104d5d9c15ccdc4c3f9ac",
   "response": {
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_tr_b3\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\n        }\n      ,\"title\":\"Hold delivery at {{cap}} a month until the next payday\",\"rationale\":\"Delivery spending has risen above usual levels; capping it at {{cap}} helps protect your buffer before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.delivery\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":16454,\"claimed_impact_text\":null},{\"proposal_id\":\"prp_cancel_netflix\",\"action\":\"cancel_recurring\",\"currency\":\"GBP\",\"params\":{\n        }\n      ,\"title\":\"Cancel Netflix subscription\",\"rationale\":\"Cancelling an overlapping subscription frees up {{saving}} each month to support your cash flow.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:subscription_overlap:rob_netflix+rob_sky\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":1299,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Adjusted the cap for food delivery to 12186 minor units, which is 60% of the three-month median, meeting the constraint.\"]}",
-    "mesh_response_id": "chatcmpl-gemini-1791923062",
+    "provider_response_id": "chatcmpl-gemini-1791923062",
     "model": "gemini-3.8-flash",
     "tool_arguments": null,
     "usage": {

@@ -78,7 +78,7 @@
   "request_hash": "e58fc39c82897035639370d08790445c0ccbc1595defc76c0b0296653d5dacc8",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-89ebd3407610c6adbbf6",
+    "provider_response_id": "chatcmpl-89ebd3407610c6adbbf6",
     "model": "anthropic/claude-sonnet-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"Finding shows eating-out spend well above its usual level; the rationale claims only that, and a cap is a reasonable response. Forecast supports impact.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the category (eating out), a clear action (monthly cap) and a specific amount via the cap parameter.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral, respectful wording with no blame, and no claims beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Only a budgeting cap on a spending category; no investment, loan, credit, pension or tax advice.\"}]}",
     "usage": {

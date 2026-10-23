@@ -381,7 +381,7 @@
   "request_hash": "0d52ca3419bf31242af14a48f47fd58f970808ced8be0f31c6060e933ced04db",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Pay 10 days late\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"income_delay\",\"income_stream_id\":\"inc_salary\",\"days\":10,\"occurrences\":1}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVYrHrcKa1mJdihZbIomDK4FqJIm",
+    "provider_response_id": "chatcmpl-EYVYrHrcKa1mJdihZbIomDK4FqJIm",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

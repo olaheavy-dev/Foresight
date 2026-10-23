@@ -78,7 +78,7 @@
   "request_hash": "1fe90fc310fb112d83a40b080ffa8bf2910da6ed94162440c3255b8006f8945a",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-2112a87469b2430de765",
+    "provider_response_id": "chatcmpl-2112a87469b2430de765",
     "model": "anthropic/claude-sonnet-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"Spike finding supports higher eating-out spend; baseline forecast supports the pre-payday low point the cap aims to ease.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names category (eating out), a cap amount, and a clear action: hold monthly spending at the cap until payday.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral, respectful wording; no blame or speculation beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Only a budgeting cap on a spending category; no investment, loan, credit, pension or tax advice.\"}]}",
     "usage": {

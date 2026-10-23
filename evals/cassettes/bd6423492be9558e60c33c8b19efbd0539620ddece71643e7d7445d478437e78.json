@@ -103,7 +103,7 @@
   "request_hash": "bd6423492be9558e60c33c8b19efbd0539620ddece71643e7d7445d478437e78",
   "response": {
     "content": "{\"standalone_question\":\"Can I afford a \u00a31,000 holiday on 1 Dec?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":100000,\"date\":\"2026-12-01\",\"purpose\":\"holiday\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdMoQdZ9wMXPdhbO73hWtqThjB23",
+    "provider_response_id": "chatcmpl-EYdMoQdZ9wMXPdhbO73hWtqThjB23",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

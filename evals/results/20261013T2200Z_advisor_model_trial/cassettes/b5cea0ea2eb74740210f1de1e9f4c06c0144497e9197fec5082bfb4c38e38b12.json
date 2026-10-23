@@ -192,7 +192,7 @@
   "request_hash": "b5cea0ea2eb74740210f1de1e9f4c06c0144497e9197fec5082bfb4c38e38b12",
   "response": {
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_tr_b9\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\n        },\"title\":\"Hold food delivery spending to {{cap}} a month\",\"rationale\":\"Your food delivery spending has risen recently; capping it at {{cap}} a month helps protect your balance before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.delivery\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":13640,\"claimed_impact_text\":null}],\"critique_addressed\":[\"V-11: Replaced the Spotify price change citation with the food delivery category spike finding.\"]}",
-    "mesh_response_id": "chatcmpl-gemini-1791923351",
+    "provider_response_id": "chatcmpl-gemini-1791923351",
     "model": "gemini-3.8-flash",
     "tool_arguments": null,
     "usage": {

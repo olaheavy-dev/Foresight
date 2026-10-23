@@ -184,7 +184,7 @@
   "request_hash": "c3072ce03f5b6846b43f12bcd327ce7dd0763620f887e6304dfbb7f193bb09bc",
   "response": {
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_tr_b2\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.eating_out\",\"monthly_cap_minor\":20000},\"title\":\"Hold eating out at {{cap}} a month until the next payday\",\"rationale\":\"Your eating out spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday and could save about {{saving}}.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.eating_out\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":18993,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Recomputed the estimated monthly saving as 18993 minor units.\"]}",
-    "mesh_response_id": "resp_075a054ce011622c016ace91df2ee887d18cbaa04c9b04865f",
+    "provider_response_id": "resp_075a054ce011622c016ace91df2ee887d18cbaa04c9b04865f",
     "model": "openai-gpt-56-luna-pro",
     "tool_arguments": null,
     "usage": {

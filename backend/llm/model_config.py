@@ -1,4 +1,4 @@
-"""Loads `models.yaml` (or the file named by MESH_MODELS_FILE): per-model capabilities and prices
+"""Loads `models.yaml` (or the file named by MODELS_FILE): per-model capabilities and prices
 are configuration, so trying another model needs no code change (docs/06 §13)."""
 
 from __future__ import annotations
@@ -15,7 +15,7 @@ DEFAULT_FILE = Path(__file__).with_name("models.yaml")
 
 @lru_cache
 def load(path: str | None = None) -> dict[str, Any]:
-    source = Path(path or os.environ.get("MESH_MODELS_FILE") or DEFAULT_FILE)
+    source = Path(path or os.environ.get("MODELS_FILE") or DEFAULT_FILE)
     data = yaml.safe_load(source.read_text(encoding="utf-8")) or {}
     data.setdefault("defaults", {})
     data.setdefault("provider_defaults", {})

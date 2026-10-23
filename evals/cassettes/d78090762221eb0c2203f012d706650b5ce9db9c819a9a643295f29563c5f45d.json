@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"How was the \u00a3604 low figure worked out?\",\"intent\":\"explain_recommendation\",\"slots\":{\"amount_minor\":60400,\"subject\":\"number\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.96,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0003176,
     "latency_ms": 555,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHAZY3QNRCYWDXTKF2YPT0",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHAZY3QNRCYWDXTKF2YPT0",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

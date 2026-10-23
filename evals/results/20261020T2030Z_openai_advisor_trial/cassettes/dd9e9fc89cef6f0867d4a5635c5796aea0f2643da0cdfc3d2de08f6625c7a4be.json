@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The cited forecast summary describes what the forecast covers but does not establish that the balance dips below the buffer.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"It names eating out and gives a clear monthly cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported certainty about future outcomes.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation concerns everyday spending, not a restricted financial topic.\"}]}",
     "cost_estimate_usd": 0.005316,
     "latency_ms": 6164,
-    "mesh_response_id": "chatcmpl-EbAYmfhRIC0AeXbYaSn3MjWazjOlD",
+    "provider_response_id": "chatcmpl-EbAYmfhRIC0AeXbYaSn3MjWazjOlD",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

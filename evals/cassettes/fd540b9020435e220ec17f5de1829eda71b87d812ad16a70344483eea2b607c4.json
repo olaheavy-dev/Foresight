@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"I can show your spending for this period, but there isn\u2019t a comparison with your usual spending to tell whether it\u2019s up.\",\"key_numbers\":[\"R7\",\"R8\",\"R9\"],\"main_visual\":\"SpendingBreakdownChart\"}",
     "cost_estimate_usd": 0.0001683,
     "latency_ms": 3220,
-    "mesh_response_id": "chatcmpl-EYqbTLknLE6L18XMnQxH0dkoOeDtW",
+    "provider_response_id": "chatcmpl-EYqbTLknLE6L18XMnQxH0dkoOeDtW",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

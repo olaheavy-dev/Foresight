@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports the Netflix and Disney+ overlap, and the savings claim is conditional on cancelling Netflix.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names Netflix and specifies cancellation of its recurring subscription.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral, respectful, and conditional rather than promising an unsupported outcome.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Cancelling an overlapping entertainment subscription is within scope and involves no restricted financial advice.\"}]}",
     "cost_estimate_usd": 0.003112,
     "latency_ms": 5609,
-    "mesh_response_id": "chatcmpl-EbBc6hwDpopbmoCUCkdFx7lPJG220",
+    "provider_response_id": "chatcmpl-EbBc6hwDpopbmoCUCkdFx7lPJG220",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

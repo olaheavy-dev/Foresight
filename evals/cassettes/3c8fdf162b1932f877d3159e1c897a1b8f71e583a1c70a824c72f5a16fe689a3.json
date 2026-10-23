@@ -381,7 +381,7 @@
   "request_hash": "3c8fdf162b1932f877d3159e1c897a1b8f71e583a1c70a824c72f5a16fe689a3",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Vet bill\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-10-16\",\"amount_minor\":32000,\"label\":\"Vet bill\",\"category_key\":\"health\"}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVXpvWF4NTPzG8yOEk4moirCdtKF",
+    "provider_response_id": "chatcmpl-EYVXpvWF4NTPzG8yOEk4moirCdtKF",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

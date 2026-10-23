@@ -78,7 +78,7 @@
   "request_hash": "c3f6e70ea399cbc110645b34905221fc5f2b97eddd25b06139fd459404d7dfe4",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-d7367bdcd52ae85cf4ad",
+    "provider_response_id": "chatcmpl-d7367bdcd52ae85cf4ad",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"The spike finding on food.delivery supports the rise in spending, and the baseline forecast supports the buffer concern before payday.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the food.delivery category and a specific monthly cap action that can be applied today.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral, factual wording with no REF content and no claims beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"A category spending cap is a budgeting action, not REF advice or a REF recommendation.\"}]}",
     "usage": {

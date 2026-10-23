@@ -103,7 +103,7 @@
   "request_hash": "17bcdf9738cd83c0f4a7e96c7f2b8a4227892e3ac64b725d92b7d3f6f92002da",
   "response": {
     "content": "{\"standalone_question\":\"Show me the transactions that make up where my money goes.\",\"intent\":\"transaction_lookup\",\"slots\":{},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.96,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdMxhXNzmCfFKt3xOcjm9D48O3uy",
+    "provider_response_id": "chatcmpl-EYdMxhXNzmCfFKt3xOcjm9D48O3uy",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

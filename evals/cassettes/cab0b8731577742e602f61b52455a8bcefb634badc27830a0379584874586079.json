@@ -103,7 +103,7 @@
   "request_hash": "cab0b8731577742e602f61b52455a8bcefb634badc27830a0379584874586079",
   "response": {
     "content": "{\"standalone_question\":\"Food delivery seems high lately; why?\",\"intent\":\"trend_or_change\",\"slots\":{\"category_key\":\"food.delivery\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.96,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdTM3mwWqld4xMhnTlCxh3b9Zo2q",
+    "provider_response_id": "chatcmpl-EYdTM3mwWqld4xMhnTlCxh3b9Zo2q",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

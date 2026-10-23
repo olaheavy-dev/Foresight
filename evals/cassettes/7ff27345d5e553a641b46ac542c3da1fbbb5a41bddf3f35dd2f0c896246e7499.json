@@ -186,7 +186,7 @@
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_bp_028\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.delivery\",\"monthly_cap_minor\":20310},\"title\":\"Cap food delivery at {{cap}} a month\",\"rationale\":\"Food delivery spending is above its usual level. This cap keeps more cash in hand before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.delivery\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":8330,\"claimed_impact_text\":null},{\"proposal_id\":\"prp_cancel_netflix\",\"action\":\"cancel_recurring\",\"currency\":\"GBP\",\"params\":{\"recurring_id\":\"rob_netflix\"},\"title\":\"Cancel Netflix if you do not need both TV services\",\"rationale\":\"Netflix and Sky TV overlap. Cancelling Netflix keeps more cash in hand before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:subscription_overlap:rob_netflix+rob_sky\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":1299,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Replaced the council tax cap with a food delivery cap under the same proposal ID. The revised cap equals the category\u2019s three-month median and does not cut an essential or protected category.\"]}",
     "cost_estimate_usd": 0.012338,
     "latency_ms": 23467,
-    "mesh_response_id": "chatcmpl-EbB1aBqsneOZ3ScVrg8f7eIk1RUxF",
+    "provider_response_id": "chatcmpl-EbB1aBqsneOZ3ScVrg8f7eIk1RUxF",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

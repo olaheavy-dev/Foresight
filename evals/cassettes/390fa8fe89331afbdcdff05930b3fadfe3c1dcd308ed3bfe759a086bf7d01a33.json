@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"Here are your Amazon purchases.\",\"key_numbers\":[],\"main_visual\":\"TransactionTable\"}",
     "cost_estimate_usd": 0.0001228,
     "latency_ms": 433,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHC6HXP09D6BZTV683R148",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHC6HXP09D6BZTV683R148",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

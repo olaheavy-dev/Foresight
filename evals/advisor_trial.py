@@ -46,8 +46,8 @@ from backend.agents.advice.models import InterventionProposal, Verification
 from backend.agents.advice.rules import v10
 from backend.agents.advice.verifier import verify
 from backend.agents.guard.output import numerals_outside_placeholders
-from backend.mesh import mesh_client as mc
-from backend.mesh.prices import cost_estimate
+from backend.llm import client as mc
+from backend.llm.prices import cost_estimate
 from backend.settings import get_settings
 from evals.advice_world import BASELINE, base_world, case_world
 
@@ -291,14 +291,14 @@ CALLS: list[Call] = []
 
 
 def _instrument() -> None:
-    original = mc.MeshClient.structured
+    original = mc.ModelClient.structured
 
     def wrapped(self: Any, *args: Any, **kwargs: Any) -> Any:
         tier = str(getattr(kwargs.get("tier"), "value", kwargs.get("tier")))
         t0 = time.monotonic()
         try:
             out = original(self, *args, **kwargs)
-        except mc.MeshSchemaError:
+        except mc.ModelSchemaError:
             CALLS.append(Call(tier, "?", time.monotonic() - t0, 0, 0, 0.0, True, True, False))
             raise
         dt = time.monotonic() - t0
@@ -323,37 +323,39 @@ def _instrument() -> None:
             )
         return out
 
-    mc.MeshClient.structured = wrapped  # type: ignore[method-assign]
+    mc.ModelClient.structured = wrapped  # type: ignore[method-assign]
 
 
-def _mesh_for(arm: str, mode: str) -> mc.MeshClient:
+def _client_for(arm: str, mode: str) -> mc.ModelClient:
     models = ARMS[arm]
-    os.environ["MESH_MODEL_REASONING"] = models["reasoning"]
-    os.environ["MESH_MODEL_REASONING_FALLBACK"] = models["reasoning"]
-    os.environ["MESH_MODEL_VERIFIER"] = models["verifier"]
-    os.environ["MESH_MODEL_VERIFIER_FALLBACK"] = models["verifier"]
-    os.environ["MESH_CASSETTE_MODE"] = mode
-    os.environ["MESH_CASSETTE_DIR"] = str(RUN_DIR / "cassettes")
+    os.environ["MODEL_REASONING"] = models["reasoning"]
+    os.environ["MODEL_REASONING_FALLBACK"] = models["reasoning"]
+    os.environ["MODEL_VERIFIER"] = models["verifier"]
+    os.environ["MODEL_VERIFIER_FALLBACK"] = models["verifier"]
+    os.environ["MODEL_CASSETTE_MODE"] = mode
+    os.environ["MODEL_CASSETTE_DIR"] = str(RUN_DIR / "cassettes")
     get_settings.cache_clear()
-    return mc.MeshClient(settings=get_settings())
+    return mc.ModelClient(settings=get_settings())
 
 
 def run_arm(arm: str, mode: str = "record") -> list[CaseResult]:
     _instrument()
-    mesh = _mesh_for(arm, mode)
+    model_client = _client_for(arm, mode)
     results: list[CaseResult] = []
     for case in load_cases():
         world = case_world(case)
         proposal = _proposal(case)
         r = CaseResult(case["id"], case["expected"], case["defect"])
         try:
-            v: Verification = verify(proposal, world, round=1, mesh=mesh).verification
+            v: Verification = verify(
+                proposal, world, round=1, model_client=model_client
+            ).verification
             r.rounds.append(v.verdict)
             for _ in range(MAX_REVISIONS):
                 if v.verdict != "REJECT":
                     break
                 revision = [{"proposal": proposal.model_dump(), "critique": v.critique}]
-                advice = advise(world, mesh, forecast_id=BASELINE, revision=revision)
+                advice = advise(world, model_client, forecast_id=BASELINE, revision=revision)
                 if not advice.proposals:
                     r.withdrawn = True
                     break
@@ -363,7 +365,7 @@ def run_arm(arm: str, mode: str = "record") -> list[CaseResult]:
                     proposal,
                     world,
                     round=len(r.rounds) + 1,
-                    mesh=mesh,
+                    model_client=model_client,
                     impact=advice.impacts.get(proposal.proposal_id),
                 ).verification
                 r.rounds.append(v.verdict)
@@ -371,7 +373,7 @@ def run_arm(arm: str, mode: str = "record") -> list[CaseResult]:
             r.final_verdict = v.verdict
             if v.verdict == "REJECT":
                 r.withdrawn = True
-        except mc.MeshCallError as exc:
+        except mc.ModelCallError as exc:
             r.error = type(exc).__name__
         results.append(r)
         print(f"{arm} {r.case_id}: {r.rounds} withdrawn={r.withdrawn} err={r.error}", flush=True)

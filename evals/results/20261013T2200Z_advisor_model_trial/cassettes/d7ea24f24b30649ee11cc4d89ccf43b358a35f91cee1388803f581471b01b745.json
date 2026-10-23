@@ -192,7 +192,7 @@
   "request_hash": "d7ea24f24b30649ee11cc4d89ccf43b358a35f91cee1388803f581471b01b745",
   "response": {
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_tr_b7\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{},\"title\":\"Cap food delivery spend at {{cap}}\",\"rationale\":\"Spending on food delivery was higher than usual recently. Capping monthly orders at {{cap}} can save {{saving}} and reduce the risk of dipping below your buffer before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.delivery\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":13640,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Specifically named the food delivery category in the title and rationale to provide targeted advice.\"]}",
-    "mesh_response_id": "chatcmpl-gemini-1791923252",
+    "provider_response_id": "chatcmpl-gemini-1791923252",
     "model": "gemini-3.8-flash",
     "tool_arguments": null,
     "usage": {

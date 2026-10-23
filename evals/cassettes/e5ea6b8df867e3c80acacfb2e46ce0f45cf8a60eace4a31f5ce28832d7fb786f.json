@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Am I OK this month?\",\"intent\":\"risk_check\",\"slots\":{\"period\":\"this_month\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.66,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0003038,
     "latency_ms": 502,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHAWJYQ0Q2EDZKXJSY49C0",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHAWJYQ0Q2EDZKXJSY49C0",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -78,7 +78,7 @@
   "request_hash": "241ad5c91870b1c0bd495e07647eb1133d2cd6c991cf2358b6ffcfebd8f882e9",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-e5c7fea6084b333aa6b8",
+    "provider_response_id": "chatcmpl-e5c7fea6084b333aa6b8",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"The food.delivery spike finding and the baseline forecast's low-balance-before-payday projection support the claim that a delivery cap would ease the pre-payday low point.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the food.delivery category, a monthly cap amount and a clear action running until the next payday, so it can be done today.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Wording is neutral and factual; it refers to the forecast only as the existing baseline and makes no further future claims.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"A personal spending cap on a discretionary category is budgeting; it contains no investment, lending, credit, tax or REF advice.\"}]}",
     "usage": {

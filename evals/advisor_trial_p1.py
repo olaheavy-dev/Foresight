@@ -21,7 +21,7 @@ from backend.pipeline.seed_demo import seed_all
 from backend.storage import models as m
 from backend.storage.agent_repo import AgentStore
 from backend.storage.repositories import WorkspaceContext, demo_workspace
-from evals.advisor_trial import RUN_DIR, _mesh_for
+from evals.advisor_trial import RUN_DIR, _client_for
 from tests.integration.storage.disposable import alembic_config
 
 QUESTION = (
@@ -38,9 +38,15 @@ with sessionmaker(bind=engine, expire_on_commit=False)() as session:
     thread = store.create_thread()
     session.commit()
     arm = sys.argv[2]
-    mesh = _mesh_for(arm, "record")
-    assert mesh is not None
-    out = ask(store, thread_id=thread.id, text=QUESTION, client_msg_id="p1-canonical", mesh=mesh)
+    model_client = _client_for(arm, "record")
+    assert model_client is not None
+    out = ask(
+        store,
+        thread_id=thread.id,
+        text=QUESTION,
+        client_msg_id="p1-canonical",
+        model_client=model_client,
+    )
     steps = [
         {
             "seq": s.seq,

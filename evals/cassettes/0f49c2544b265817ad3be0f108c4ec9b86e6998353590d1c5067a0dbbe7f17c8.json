@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Is that a lot?\",\"intent\":\"smalltalk_or_out_of_scope\",\"slots\":{},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.2,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002597,
     "latency_ms": 528,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHB2RMWAWD3J2DE9HB4W1V",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHB2RMWAWD3J2DE9HB4W1V",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

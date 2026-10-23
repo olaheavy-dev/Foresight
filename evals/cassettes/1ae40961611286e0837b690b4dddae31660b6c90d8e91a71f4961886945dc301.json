@@ -381,7 +381,7 @@
   "request_hash": "1ae40961611286e0837b690b4dddae31660b6c90d8e91a71f4961886945dc301",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"New car insurance\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"recurring_add\",\"amount_minor\":4800,\"cadence\":\"monthly\",\"start_date\":\"2026-12-01\",\"label\":\"Car insurance\",\"category_key\":\"insurance\"}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVaNKp044CxMLl8Qd0LxGbVdOEKm",
+    "provider_response_id": "chatcmpl-EYVaNKp044CxMLl8Qd0LxGbVdOEKm",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

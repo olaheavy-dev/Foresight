@@ -103,7 +103,7 @@
   "request_hash": "9355b4d35a91efc033f7dab209c1bf652dc2a8c3da2678fee9a487ebb0ece2f2",
   "response": {
     "content": "{\"standalone_question\":\"My car needs a \u00a3650 repair on 14 October. Will I be OK before payday, and what should I do?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":65000,\"date\":\"2026-10-14\",\"purpose\":\"car_repair\",\"window\":\"to_next_payday\"},\"needs_forecast\":true,\"needs_advice\":true,\"confidence\":0.95,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdS3lIEtpT8ligESCJAY5mjLMIOa",
+    "provider_response_id": "chatcmpl-EYdS3lIEtpT8ligESCJAY5mjLMIOa",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

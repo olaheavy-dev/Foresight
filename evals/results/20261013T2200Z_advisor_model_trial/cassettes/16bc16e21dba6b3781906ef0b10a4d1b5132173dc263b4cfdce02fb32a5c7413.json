@@ -78,7 +78,7 @@
   "request_hash": "16bc16e21dba6b3781906ef0b10a4d1b5132173dc263b4cfdce02fb32a5c7413",
   "response": {
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports the food-delivery spending spike, and the forecast supports the pre-payday balance context.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and specifies a monthly spending cap as the clear action.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with a qualified balance benefit within the forecast context.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal only recommends a spending cap and contains no restricted financial advice or recommendations.\"}]}",
-    "mesh_response_id": "chatcmpl-EYdBXw3KdpcPQR6siLNhCTAt6bQFW",
+    "provider_response_id": "chatcmpl-EYdBXw3KdpcPQR6siLNhCTAt6bQFW",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

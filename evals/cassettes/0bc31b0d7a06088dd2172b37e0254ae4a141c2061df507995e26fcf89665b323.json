@@ -103,7 +103,7 @@
   "request_hash": "0bc31b0d7a06088dd2172b37e0254ae4a141c2061df507995e26fcf89665b323",
   "response": {
     "content": "{\"standalone_question\":\"Can I afford an \u00a3800 trip on 6 Nov?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":80000,\"date\":\"2026-11-06\",\"purpose\":\"trip\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdTuzaYcAVHA3L56Plhdm8g1R8bD",
+    "provider_response_id": "chatcmpl-EYdTuzaYcAVHA3L56Plhdm8g1R8bD",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

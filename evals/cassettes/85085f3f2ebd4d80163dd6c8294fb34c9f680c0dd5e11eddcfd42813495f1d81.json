@@ -381,7 +381,7 @@
   "request_hash": "85085f3f2ebd4d80163dd6c8294fb34c9f680c0dd5e11eddcfd42813495f1d81",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Reduce taxi spending\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"category_cut_pct\",\"category_key\":\"transport.taxi\",\"pct\":25,\"from_date\":\"2026-10-11\",\"to_date\":null}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVamJY049YAapH1CqvJq0ycqpuMI",
+    "provider_response_id": "chatcmpl-EYVamJY049YAapH1CqvJq0ycqpuMI",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

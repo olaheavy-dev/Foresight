@@ -28,7 +28,7 @@ repos:
         pass_filenames: false
         stages: [pre-push]
       - id: import-contracts
-        name: Mesh-only and module-boundary contracts
+        name: One-gateway and module-boundary contracts
         entry: lint-imports
         language: system
         pass_filenames: false

@@ -381,7 +381,7 @@
   "request_hash": "e893b7e9acdd0fcb802421f22b2ded5a195cfb598f751ac42e2d0164fc359d15",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Phone purchase over 6 months\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"split_outflow\",\"start_date\":\"2026-11-01\",\"amount_minor\":60000,\"instalments\":6,\"cadence\":\"monthly\",\"label\":\"Phone\"}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVYjWctGnGytis9YJkNjg6hJ7daG",
+    "provider_response_id": "chatcmpl-EYVYjWctGnGytis9YJkNjg6hJ7daG",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

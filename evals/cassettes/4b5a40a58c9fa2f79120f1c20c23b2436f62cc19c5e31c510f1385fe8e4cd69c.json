@@ -103,7 +103,7 @@
   "request_hash": "4b5a40a58c9fa2f79120f1c20c23b2436f62cc19c5e31c510f1385fe8e4cd69c",
   "response": {
     "content": "{\"standalone_question\":\"Can I spend 400 quid on presents on 12 December 2026?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":40000,\"date\":\"2026-12-12\",\"purpose\":\"present\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdUWF8GscWeih6aDaODB4zKbCCpG",
+    "provider_response_id": "chatcmpl-EYdUWF8GscWeih6aDaODB4zKbCCpG",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

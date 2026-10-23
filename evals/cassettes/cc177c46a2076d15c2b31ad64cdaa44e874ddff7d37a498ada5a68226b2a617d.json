@@ -186,7 +186,7 @@
     "content": "{\n  \"proposals\": [\n    {\n      \"proposal_id\": \"holiday_delivery_cap\",\n      \"action\": \"cap_category\",\n      \"currency\": \"GBP\",\n      \"params\": {\n        \"category_key\": \"food.delivery\",\n        \"monthly_cap_minor\": 20310\n      },\n      \"title\": \"Cap food delivery at {{cap}}\",\n      \"rationale\": \"Food delivery spending is above its usual level. A cap keeps more cash in hand before payday, though it would not remove the forecast shortfall.\",\n      \"trigger_refs\": [\n        {\n          \"kind\": \"finding\",\n          \"id\": \"fnd_01K742SG010000000000000001\",\n          \"role\": \"trigger\"\n        },\n        {\n          \"kind\": \"forecast\",\n          \"id\": \"calc_d9e3afcd8d1565faa32c320b\",\n          \"role\": \"trigger\"\n        }\n      ],\n      \"expected_direction\": \"improves_buffer\",\n      \"claimed_monthly_impact_minor\": 8330,\n      \"claimed_impact_text\": \"If the holiday payment is not already in the forecast, paying \u00a31,200 on 6 November would lower the projected pre-payday low from \u2212\u00a3940.14 to \u2212\u00a32,140.14. The forecast already shows a 100% chance of going below your buffer in that pay cycle. The delivery cap could save \u00a383.30 a month if recent spending would otherwise continue.\"\n    }\n  ],\n  \"critique_addressed\": null\n}",
     "cost_estimate_usd": 0.017032,
     "latency_ms": 17433,
-    "mesh_response_id": "chatcmpl-EbBhYntsunVma1aRnb7t8mamI82tW",
+    "provider_response_id": "chatcmpl-EbBhYntsunVma1aRnb7t8mamI82tW",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

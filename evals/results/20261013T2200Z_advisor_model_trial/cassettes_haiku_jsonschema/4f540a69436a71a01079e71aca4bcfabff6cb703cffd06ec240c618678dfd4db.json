@@ -86,7 +86,7 @@
   "request_hash": "4f540a69436a71a01079e71aca4bcfabff6cb703cffd06ec240c618678dfd4db",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-e24072d2e7c50ba4ea57",
+    "provider_response_id": "chatcmpl-e24072d2e7c50ba4ea57",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"The finding shows food.eating_out spending well above its recent norm, and the forecast supports the claim about the pre-payday low point.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"It names a category, a monthly cap, and an end point (until the next payday), so a person can act on it today.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"The wording is neutral and factual, with no REF content and no speculation beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"It is a spending cap on a discretionary category and contains no REF advice or recommendations.\"}]}",
     "usage": {

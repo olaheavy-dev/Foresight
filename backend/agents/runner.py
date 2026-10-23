@@ -14,7 +14,7 @@ from typing import Any
 from backend.agents.budget import Budget
 from backend.agents.runtime import NodeSpec, RunContext, deadline_for, utcnow
 from backend.agents.state import ForesightState
-from backend.mesh.mesh_client import MeshClient
+from backend.llm.client import ModelClient
 from backend.storage.agent_repo import AgentStore
 
 LOCALE_PACKS = {"GB": "uk", "IN": "in"}
@@ -56,7 +56,7 @@ def run_workflow(
     *,
     workflow: str,
     trigger: str,
-    mesh: MeshClient | None = None,
+    model_client: ModelClient | None = None,
     event: str | None = None,
     inputs: Mapping[str, Any] | None = None,
     nodes: Mapping[str, NodeSpec] | None = None,
@@ -85,7 +85,7 @@ def run_workflow(
         run_id=run.id,
         workflow=workflow,
         deadline_at=run.deadline_at,
-        mesh=mesh,
+        model_client=model_client,
         budget=budget or Budget(),
         clock=clock,
     )
@@ -143,7 +143,7 @@ def ask(
     thread_id: str,
     text: str,
     client_msg_id: str,
-    mesh: MeshClient | None,
+    model_client: ModelClient | None,
     action: Mapping[str, Any] | None = None,
     nodes: Mapping[str, NodeSpec] | None = None,
     checkpointer: Any = None,
@@ -189,7 +189,7 @@ def ask(
         store,
         workflow="conversation",
         trigger="user",
-        mesh=mesh,
+        model_client=model_client,
         inputs={
             "user_message": text,
             "history": history,
@@ -250,7 +250,7 @@ def run_followup(
     store: AgentStore,
     outcome: RunOutcome,
     *,
-    mesh: MeshClient | None,
+    model_client: ModelClient | None,
     nodes: Mapping[str, NodeSpec] | None = None,
     clock: Callable[[], datetime] = utcnow,
 ) -> RunOutcome | None:
@@ -265,7 +265,7 @@ def run_followup(
         workflow="advice_followup",
         trigger="event",
         event="advice_deferred",
-        mesh=mesh,
+        model_client=model_client,
         nodes=nodes,
         inputs=seed,
         thread_id=outcome.state.get("thread_id"),

@@ -78,7 +78,7 @@
   "request_hash": "5f48e14531112de6826808888d2918fdaa6c58b48e1c1bc581d1beb1415066f1",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-1f3147344bf9d3951837",
+    "provider_response_id": "chatcmpl-1f3147344bf9d3951837",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"The cited spike finding for food.delivery and the baseline low-balance forecast support the claim that a cap could ease the pre-payday low point.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the food.delivery category and a monthly cap amount with a clear action the person can take today.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral, respectful wording with no REF content and no claims beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Recommends a spending cap on a discretionary category only; no REF products or advice.\"}]}",
     "usage": {

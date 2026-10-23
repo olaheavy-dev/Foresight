@@ -381,7 +381,7 @@
   "request_hash": "9b06f9b2d8000399ce5b9c900273c8b2e0c4a0d943ddc4d33df005b6360f0ff7",
   "response": {
     "content": "{\"status\":\"needs_clarification\",\"spec\":null,\"clarification\":{\"question\":\"What does \u201cREF\u201d refer to?\",\"slot\":\"income_stream_id\",\"options\":[\"Acme Analytics Ltd (salary)\",\"Something else\"]}}",
-    "mesh_response_id": "chatcmpl-EYVZFdqR0CaehwFg7EI4ggv1cWnmF",
+    "provider_response_id": "chatcmpl-EYVZFdqR0CaehwFg7EI4ggv1cWnmF",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited food-delivery spending spike supports reducing that category to retain more cash.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and specifies a clear monthly spending cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported prediction.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation concerns discretionary spending, not restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003256,
     "latency_ms": 5541,
-    "mesh_response_id": "chatcmpl-EbBOcILEie2sfc3VOBscY5wjSeUfA",
+    "provider_response_id": "chatcmpl-EbBOcILEie2sfc3VOBscY5wjSeUfA",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

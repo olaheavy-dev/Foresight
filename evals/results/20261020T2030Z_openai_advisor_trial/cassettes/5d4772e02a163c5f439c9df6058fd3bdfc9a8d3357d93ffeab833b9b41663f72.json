@@ -186,7 +186,7 @@
     "content": "{\n  \"proposals\": [\n    {\n      \"proposal_id\": \"prp_tr_b9\",\n      \"action\": \"cap_category\",\n      \"currency\": \"GBP\",\n      \"params\": {\n        \"category_key\": \"food.delivery\",\n        \"monthly_cap_minor\": 15000\n      },\n      \"title\": \"Cap food delivery at {{cap}} a month\",\n      \"rationale\": \"Your food delivery spending is above its usual level. A monthly cap of {{cap}} reduces spending and keeps more cash in hand before payday.\",\n      \"trigger_refs\": [\n        {\n          \"kind\": \"finding\",\n          \"id\": \"fnd:category_spike:food.delivery\",\n          \"role\": \"trigger\"\n        },\n        {\n          \"kind\": \"forecast\",\n          \"id\": \"fc:baseline\",\n          \"role\": \"context\"\n        }\n      ],\n      \"expected_direction\": \"improves_buffer\",\n      \"claimed_monthly_impact_minor\": 13640,\n      \"claimed_impact_text\": \"Reduces monthly spending by {{saving}} compared with the last thirty days.\"\n    }\n  ],\n  \"critique_addressed\": [\n    \"V-11: Replaced the unrelated Spotify price-change citation with the food delivery category-spike finding, which supports the claim that delivery spending is above its usual level. Retained the baseline forecast only as context.\"\n  ]\n}",
     "cost_estimate_usd": 0.008048,
     "latency_ms": 5780,
-    "mesh_response_id": "chatcmpl-EbAZJpqynOtG5QYMC5gVQPzPZJGbg",
+    "provider_response_id": "chatcmpl-EbAZJpqynOtG5QYMC5gVQPzPZJGbg",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

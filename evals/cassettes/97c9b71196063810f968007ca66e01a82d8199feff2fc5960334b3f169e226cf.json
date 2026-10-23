@@ -103,7 +103,7 @@
   "request_hash": "97c9b71196063810f968007ca66e01a82d8199feff2fc5960334b3f169e226cf",
   "response": {
     "content": "{\"standalone_question\":\"What if I add \u00a350 a month to my emergency fund?\",\"intent\":\"scenario\",\"slots\":{\"amount_minor\":5000,\"purpose\":\"emergency_fund\",\"modifier\":\"recurring_add\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.97,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdPafsbTUWF2Aj6aDYlpAUZLE0Y3",
+    "provider_response_id": "chatcmpl-EYdPafsbTUWF2Aj6aDYlpAUZLE0Y3",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

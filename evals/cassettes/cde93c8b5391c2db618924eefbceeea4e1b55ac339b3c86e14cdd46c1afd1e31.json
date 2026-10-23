@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports elevated food-delivery spending, and reducing it would retain more cash.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and specifies a concrete monthly spending cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported promise about the future.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal concerns a discretionary spending cap and contains no restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003092,
     "latency_ms": 5270,
-    "mesh_response_id": "chatcmpl-EbBH6zh6D2LNjhLmySRiEd1dkxq4b",
+    "provider_response_id": "chatcmpl-EbBH6zh6D2LNjhLmySRiEd1dkxq4b",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

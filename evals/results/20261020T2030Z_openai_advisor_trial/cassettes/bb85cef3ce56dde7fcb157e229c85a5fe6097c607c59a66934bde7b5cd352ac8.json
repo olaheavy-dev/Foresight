@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast supports the pre-payday low-balance rationale for limiting eating-out spending.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"Names the eating-out category and sets a clear monthly cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"Wording is neutral and respectful, with future claims limited to the cited forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation is a spending cap, not advice on regulated financial products or tax steps.\"}]}",
     "cost_estimate_usd": 0.003082,
     "latency_ms": 4865,
-    "mesh_response_id": "chatcmpl-EbASyHZaDthB5ulnlhbWoRkyZJudu",
+    "provider_response_id": "chatcmpl-EbASyHZaDthB5ulnlhbWoRkyZJudu",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

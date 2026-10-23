@@ -381,7 +381,7 @@
   "request_hash": "96a80bc9e6abd6a0ff43b57f145d2999175a45e1e0aba1767e191a82f69447e4",
   "response": {
     "content": "{\"status\":\"needs_clarification\",\"spec\":null,\"clarification\":{\"question\":\"How many days late will your pay be?\",\"slot\":\"days\",\"options\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVcDgIbPM6ulrKYVjxP5liDpZVES",
+    "provider_response_id": "chatcmpl-EYVcDgIbPM6ulrKYVjxP5liDpZVES",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

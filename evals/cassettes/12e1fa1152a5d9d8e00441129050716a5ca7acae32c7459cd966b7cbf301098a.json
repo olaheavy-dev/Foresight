@@ -186,7 +186,7 @@
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_bp_004\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.delivery\",\"monthly_cap_minor\":15000},\"title\":\"Keep food delivery under {{cap}} a month\",\"rationale\":\"Food delivery spending is above its usual level. Keeping it under {{cap}} could leave more cash in hand before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.delivery\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":13640,\"claimed_impact_text\":null},{\"proposal_id\":\"prp_streaming_overlap\",\"action\":\"cancel_recurring\",\"currency\":\"GBP\",\"params\":{\"recurring_id\":\"rob_netflix\"},\"title\":\"Consider cancelling Netflix\",\"rationale\":\"Netflix and Sky TV overlap. If you prefer to keep Sky TV, cancelling Netflix would leave more cash in hand each month.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:subscription_overlap:rob_netflix+rob_sky\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":1299,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Updated prp_bp_004 to cite the food delivery finding that exists in this profile.\"]}",
     "cost_estimate_usd": 0.010196,
     "latency_ms": 7039,
-    "mesh_response_id": "chatcmpl-EbAk1u6rEx941ZWaCxt0NTZCF7p5i",
+    "provider_response_id": "chatcmpl-EbAk1u6rEx941ZWaCxt0NTZCF7p5i",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

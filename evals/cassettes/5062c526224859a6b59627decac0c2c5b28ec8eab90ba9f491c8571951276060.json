@@ -381,7 +381,7 @@
   "request_hash": "5062c526224859a6b59627decac0c2c5b28ec8eab90ba9f491c8571951276060",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Childcare from January\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"recurring_add\",\"amount_minor\":60000,\"cadence\":\"monthly\",\"start_date\":\"2027-01-01\",\"label\":\"Childcare\",\"category_key\":\"childcare\"}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVaWjBKMObtzgcviS6e12i92eGZ8",
+    "provider_response_id": "chatcmpl-EYVaWjBKMObtzgcviS6e12i92eGZ8",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -78,7 +78,7 @@
   "request_hash": "3c0b7d0180e451f9d85f051f721b509957241ff43a50f21a592a9228790a43fd",
   "response": {
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The evidence establishes a food-delivery spending spike but does not link it to Sky or support cancellation as a remedy.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names Sky and clearly directs cancellation of the identified recurring payment.\"},{\"rule\":\"V-13\",\"passed\":false,\"reason\":\"Saying cancellation \u201cfixes the spike\u201d promises a future outcome unsupported by any cited forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Cancelling a recurring Sky payment does not involve restricted financial advice or recommendations.\"}]}",
-    "mesh_response_id": "chatcmpl-EYWHMFB09sm2ry8DYj4KZ0ZCmrYyv",
+    "provider_response_id": "chatcmpl-EYWHMFB09sm2ry8DYj4KZ0ZCmrYyv",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

@@ -184,7 +184,7 @@
   "request_hash": "c83628aef1270ae2e3c95ef30e889b9aa7ffe4c15a49a32759cd0e3bc4105dfe",
   "response": {
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_tr_b1\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.delivery\",\"monthly_cap_minor\":15000},\"title\":\"Hold food delivery at {{cap}} a month until the next payday\",\"rationale\":\"Your food delivery spending has risen above its usual level; holding it at {{cap}} a month could ease the low point before payday, with an estimated saving of {{saving}}.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.delivery\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":13640,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Recomputed the estimated monthly saving as the last-30-day spend minus the proposed cap.\"]}",
-    "mesh_response_id": "resp_0f9712cf44b15fbc016ace91cf195887d18cfc52f4a1fdb237",
+    "provider_response_id": "resp_0f9712cf44b15fbc016ace91cf195887d18cfc52f4a1fdb237",
     "model": "openai-gpt-56-luna-pro",
     "tool_arguments": null,
     "usage": {

@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports the Sky TV and Netflix overlap; cancelling a subscription would retain cash.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names Sky TV and specifies cancelling its recurring subscription.\"},{\"rule\":\"V-13\",\"passed\":false,\"reason\":\"The title contains the prohibited text \u201cREF\u201d.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Cancelling a TV subscription is within scope and involves no restricted financial advice.\"}]}",
     "cost_estimate_usd": 0.004364,
     "latency_ms": 8060,
-    "mesh_response_id": "chatcmpl-EbAleAoqsydDnsPztEhf0EDAxkz95",
+    "provider_response_id": "chatcmpl-EbAleAoqsydDnsPztEhf0EDAxkz95",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

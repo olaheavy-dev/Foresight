@@ -381,7 +381,7 @@
   "request_hash": "ce5c21ac5a103c8e68556af8c89a92bdd2476f036cc1533cce811da1acea9fd1",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Laptop on Klarna\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"split_outflow\",\"start_date\":\"2026-10-20\",\"amount_minor\":120000,\"instalments\":3,\"cadence\":\"monthly\",\"label\":\"Laptop on Klarna\"}],\"assumptions\":[]}, \"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVYaOwbIHYhWiakoUbuyt3vFZqnT",
+    "provider_response_id": "chatcmpl-EYVYaOwbIHYhWiakoUbuyt3vFZqnT",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

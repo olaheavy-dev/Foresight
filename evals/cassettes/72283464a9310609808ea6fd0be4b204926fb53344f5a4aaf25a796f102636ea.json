@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports elevated food delivery spending, and a feasible cap directly limits that spending.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and specifies a monthly spending cap as the clear action.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported guarantee about future outcomes.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal concerns discretionary spending only and contains no restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.00311,
     "latency_ms": 9663,
-    "mesh_response_id": "chatcmpl-EbBEN7SUEK4BxDGBThHhLpPBJBZA2",
+    "provider_response_id": "chatcmpl-EbBEN7SUEK4BxDGBThHhLpPBJBZA2",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

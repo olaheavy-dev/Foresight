@@ -1,8 +1,8 @@
 """Ask API: threads, questions in the background, the typed run event stream with replay, stored
 answers, idempotent retries, limits and profile isolation (docs/05 §4.2, §6.4; docs/06 W5).
 
-Specialist slots are replaced by stand-ins (whatever state their own tasks are in) and Mesh is
-scripted: no network."""
+Specialist slots are replaced by stand-ins (whatever state their own tasks are in) and the model
+client is scripted: no network."""
 
 from __future__ import annotations
 
@@ -19,8 +19,8 @@ from backend.agents.runtime import NodeOutput, NodeSpec
 from backend.app.routers import ask as ask_router
 from backend.app.ui_contracts.response import AgentResponse
 from backend.app.ui_contracts.validation import check_skeleton
-from backend.mesh.availability import PAUSED_TEXT
-from tests.unit.mesh.fakes import ScriptedCompletions, client, json_ok, spend_limit
+from backend.llm.availability import PAUSED_TEXT
+from tests.unit.llm.fakes import ScriptedCompletions, client, json_ok, spend_limit
 
 pytestmark = pytest.mark.postgres
 
@@ -69,8 +69,8 @@ def stand_ins(monkeypatch: pytest.MonkeyPatch) -> None:
 @pytest.fixture
 def scripted(api: TestClient) -> Iterator[ScriptedCompletions]:
     completions = ScriptedCompletions()
-    mesh = client(completions)
-    api.app.dependency_overrides[ask_router.get_mesh] = lambda: mesh  # type: ignore[attr-defined]
+    model_client = client(completions)
+    api.app.dependency_overrides[ask_router.get_model_client] = lambda: model_client  # type: ignore[attr-defined]
     api.app.state.sse_poll_s = 0.02  # type: ignore[attr-defined]
     yield completions
     api.app.dependency_overrides.clear()  # type: ignore[attr-defined]
@@ -304,8 +304,8 @@ def test_a_repeated_question_is_answered_from_the_cache_while_paused(
     _, first = _ask(api, "How low will my balance get, exactly?", client_msg_id="f1")
     answered = _events(api, first)[-1]
     assert answered["event"] == "answer"
-    mesh = api.app.dependency_overrides[ask_router.get_mesh]()  # type: ignore[attr-defined]
-    mesh.availability.note_spend_limit()
+    model_client = api.app.dependency_overrides[ask_router.get_model_client]()  # type: ignore[attr-defined]
+    model_client.availability.note_spend_limit()
     _, second = _ask(api, "How low will my balance get, exactly?", client_msg_id="f2")
     last = _events(api, second)[-1]
     assert last["event"] == "answer"

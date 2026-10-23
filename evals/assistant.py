@@ -1,12 +1,12 @@
 """Shared harness for the model-backed Stage 2 suites (E-CTX, E-UI, E-ORC, E-SEC SEC-1).
 
 Model calls go through the product's own model client and prompts, so a recorded exchange is the
-exact request the app sends. Mode comes from `FORESIGHT_EVAL_MESH`:
+exact request the app sends. Mode comes from `FORESIGHT_EVAL_LLM`:
 
 - `replay` (default, CI): answers from `evals/cassettes/`; no key, no network. A request that was
   never recorded is reported as "not recorded", never guessed.
 - `record`: re-uses what is recorded and calls the model only for new or changed requests (needs
-  `MESH_API_KEY`); the cassettes are then committed.
+  `OPENAI_API_KEY`); the cassettes are then committed.
 
 Suites that need whole answers run against a disposable PostgreSQL database seeded with the P1/P2
 demo (only when `DATABASE_URL` points at a server); without one they say so.
@@ -28,13 +28,13 @@ from backend.agents import prompting
 from backend.agents.cache import answer_cache_key, prompt_bundle_version
 from backend.agents.contracts import IntentClassification
 from backend.agents.coordinator import UNDERSTAND_MAX_TOKENS, _understand_messages
-from backend.mesh.cassettes import CassetteMiss
-from backend.mesh.mesh_client import MeshCallError, MeshClient, ModelTier
+from backend.llm.cassettes import CassetteMiss
+from backend.llm.client import ModelCallError, ModelClient, ModelTier
 from backend.settings import get_settings
 from evals.common import ROOT
 
 CASSETTES = ROOT / "evals" / "cassettes"
-MODE_ENV = "FORESIGHT_EVAL_MESH"
+MODE_ENV = "FORESIGHT_EVAL_LLM"
 
 
 def eval_mode() -> str:
@@ -47,12 +47,12 @@ def eval_mode() -> str:
 HOLD_ENV = "FORESIGHT_EVAL_HOLD"  # e.g. "advisor,verifier_judge": answered from recordings only
 
 
-class HoldMesh:
+class HoldLLM:
     """Record mode, except the structured calls named in FORESIGHT_EVAL_HOLD: those are answered
     only from what is already recorded (a miss stays a miss, never a live call). Used to record
     everything else while a model choice for the held roles is pending."""
 
-    def __init__(self, inner: MeshClient, replay: MeshClient, hold: frozenset[str]) -> None:
+    def __init__(self, inner: ModelClient, replay: ModelClient, hold: frozenset[str]) -> None:
         self._inner = inner
         self._replay = replay
         self._hold = hold
@@ -65,20 +65,20 @@ class HoldMesh:
         return client.structured(**kwargs)
 
 
-def eval_mesh() -> MeshClient:
+def eval_model_client() -> ModelClient:
     """The product's model client in replay or record mode, on the committed cassettes.
 
     Recorded and replayed prompts must carry the fixed evaluation canary, never a per-process
     one, or no recording could ever be replayed; the prompts are told so explicitly."""
     prompting.force_eval_canary = True
     settings = get_settings().model_copy(
-        update={"mesh_cassette_mode": eval_mode(), "mesh_cassette_dir": str(CASSETTES)}
+        update={"model_cassette_mode": eval_mode(), "model_cassette_dir": str(CASSETTES)}
     )
-    client = MeshClient(settings=settings)
+    client = ModelClient(settings=settings)
     hold = frozenset(n.strip() for n in os.environ.get(HOLD_ENV, "").split(",") if n.strip())
     if hold and eval_mode() == "record":
-        replay = MeshClient(settings=settings.model_copy(update={"mesh_cassette_mode": "replay"}))
-        return HoldMesh(client, replay, hold)  # type: ignore[return-value]
+        replay = ModelClient(settings=settings.model_copy(update={"model_cassette_mode": "replay"}))
+        return HoldLLM(client, replay, hold)  # type: ignore[return-value]
     return client
 
 
@@ -89,23 +89,23 @@ class NotRecorded(LookupError):
     """Replay met a request that has no cassette."""
 
 
-def fresh_breaker(mesh: Any) -> None:
+def fresh_breaker(model_client: Any) -> None:
     """Each eval case starts with a closed circuit breaker: a transient model error while recording
     one case must not pause AI for the next ones, or recording and replay take different paths."""
-    from backend.mesh.breaker import CircuitBreaker
+    from backend.llm.breaker import CircuitBreaker
 
-    inner = getattr(mesh, "_inner", mesh)
+    inner = getattr(model_client, "_inner", model_client)
     if hasattr(inner, "breaker"):
         inner.breaker = CircuitBreaker()
 
 
 def understand(
-    mesh: MeshClient, message: str, history: list[dict[str, Any]], as_of: str
+    model_client: ModelClient, message: str, history: list[dict[str, Any]], as_of: str
 ) -> IntentClassification:
     """Exactly the request the Understand node sends (same prompt, payload and schema)."""
     state: Any = {"user_message": message, "history": history[-3:], "as_of": as_of}
     try:
-        result = mesh.structured(
+        result = model_client.structured(
             tier=ModelTier.FAST,
             messages=_understand_messages(state),
             output=IntentClassification,
@@ -193,11 +193,11 @@ def seeded_database() -> Iterator[sessionmaker[Session] | None]:
 __all__ = [
     "CASSETTES",
     "USAGE",
-    "MeshCallError",
+    "ModelCallError",
     "NotRecorded",
     "cache_key",
     "canonical",
-    "eval_mesh",
+    "eval_model_client",
     "eval_mode",
     "fresh_breaker",
     "seeded_database",

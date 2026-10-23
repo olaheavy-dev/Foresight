@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The food-delivery spike supports the rationale, and the cash-flow forecast provides relevant payday context.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal specifies food delivery and a concrete monthly cap to apply.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful and does not promise trip affordability or outcomes beyond the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation is a spending cap, with no restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003342,
     "latency_ms": 4485,
-    "mesh_response_id": "chatcmpl-EbBhRYVwnXvYwLuVVfaD58ZfmIBk6",
+    "provider_response_id": "chatcmpl-EbBhRYVwnXvYwLuVVfaD58ZfmIBk6",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

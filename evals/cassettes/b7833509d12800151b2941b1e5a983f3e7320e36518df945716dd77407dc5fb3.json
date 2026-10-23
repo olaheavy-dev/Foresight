@@ -383,7 +383,7 @@
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Holiday and delayed pay\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-11-06\",\"amount_minor\":120000,\"label\":\"Holiday\",\"category_key\":\"travel\"},{\"type\":\"income_delay\",\"income_stream_id\":\"inc_salary\",\"days\":7,\"occurrences\":1}],\"assumptions\":[]},\"clarification\":null}",
     "cost_estimate_usd": 0.00537,
     "latency_ms": 3014,
-    "mesh_response_id": "chatcmpl-EbAiP4DHnRFxCGLafOjuKWJluC57w",
+    "provider_response_id": "chatcmpl-EbAiP4DHnRFxCGLafOjuKWJluC57w",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

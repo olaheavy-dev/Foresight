@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"I don\u2019t have any checked recommendations to turn into a plan. The forecast\u2019s likely low before payday is {{R2}} on {{R3}}, with a {{R4}} chance of dipping below your buffer.\",\"key_numbers\":[\"R2\",\"R3\",\"R4\"],\"main_visual\":\"CashFlowForecastChart\"}",
     "cost_estimate_usd": 0.0001938,
     "latency_ms": 443,
-    "mesh_response_id": "chatcmpl-cached-req_01M4VJ0WTZ7Q7AHCR1SBX75KBP",
+    "provider_response_id": "chatcmpl-cached-req_01M4VJ0WTZ7Q7AHCR1SBX75KBP",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

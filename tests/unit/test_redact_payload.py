@@ -1,4 +1,4 @@
-"""backend/mesh/redact.py (docs/05 §7.3). Identifiers are assembled at runtime so this file does
+"""backend/llm/redact.py (docs/05 §7.3). Identifiers are assembled at runtime so this file does
 not itself contain identifier-shaped strings (the privacy pre-commit scan reads tests too)."""
 
 from __future__ import annotations
@@ -7,7 +7,7 @@ import json
 
 import pytest
 
-from backend.mesh.redact import default_merchants, redact, redact_text
+from backend.llm.redact import default_merchants, redact, redact_text
 
 
 def _j(*parts: str, sep: str = "") -> str:

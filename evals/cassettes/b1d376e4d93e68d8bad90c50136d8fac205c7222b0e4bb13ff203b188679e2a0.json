@@ -381,7 +381,7 @@
   "request_hash": "b1d376e4d93e68d8bad90c50136d8fac205c7222b0e4bb13ff203b188679e2a0",
   "response": {
     "content": "{\"status\":\"needs_clarification\",\"spec\":null,\"clarification\":{\"question\":\"Which shopping category should have a \u00a3150 monthly cap?\",\"slot\":\"category_key\",\"options\":[\"shopping.clothing\",\"shopping.general\",\"shopping.home\"]}}",
-    "mesh_response_id": "chatcmpl-EYVb1lt69geUXcVhySEoHmz6T4AB2",
+    "provider_response_id": "chatcmpl-EYVb1lt69geUXcVhySEoHmz6T4AB2",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

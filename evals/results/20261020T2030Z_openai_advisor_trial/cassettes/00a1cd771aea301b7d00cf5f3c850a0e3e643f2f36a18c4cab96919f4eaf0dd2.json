@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The delivery-spending spike and cash-flow forecast support the rationale, with impact already recomputed.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery, sets a monthly cap, and specifies holding it until the next payday.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no future claim beyond the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Capping food-delivery spending involves no prohibited financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003298,
     "latency_ms": 4310,
-    "mesh_response_id": "chatcmpl-EbAQxQLvnzihuPSXET5iyeC3kP9AU",
+    "provider_response_id": "chatcmpl-EbAQxQLvnzihuPSXET5iyeC3kP9AU",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

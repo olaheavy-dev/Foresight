@@ -383,7 +383,7 @@
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Cancel NOW and cut Deliveroo spending\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"recurring_cancel\",\"recurring_id\":\"rob_now\",\"from_date\":\"2026-10-11\"},{\"type\":\"category_cut_pct\",\"category_key\":\"food.delivery\",\"pct\":33,\"from_date\":\"2026-10-11\"}],\"assumptions\":[]},\"clarification\":null}",
     "cost_estimate_usd": 0.005446,
     "latency_ms": 3141,
-    "mesh_response_id": "chatcmpl-EbAiEXYXwdfQpehdta3P92XTsBFkQ",
+    "provider_response_id": "chatcmpl-EbAiEXYXwdfQpehdta3P92XTsBFkQ",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

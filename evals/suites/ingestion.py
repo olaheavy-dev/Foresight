@@ -14,7 +14,7 @@ from typing import Any
 from backend.agents import format_profile as fp
 from backend.finance_core.importers import blocking_questions
 from backend.finance_core.importers.table_locator import decode, locate_tables
-from backend.mesh.mesh_client import CassetteMiss, MeshCallError, MeshConfigError
+from backend.llm.client import CassetteMiss, ModelCallError, ModelConfigError
 from evals.common import (
     DATASETS,
     expected_rows,
@@ -79,9 +79,9 @@ def _table_locator(names: list[str]) -> dict[str, Any]:
 
 def _unseen_with_llm(names: list[str]) -> dict[str, Any]:
     """§4.1.3 heuristic+llm: propose columns for tables the heuristic can't read, confirm, parse."""
-    from evals.suites.categorisation import eval_mesh
+    from evals.suites.categorisation import eval_model_client
 
-    mesh = eval_mesh()
+    model_client = eval_model_client()
     ok = calls = proposals = reused = 0
     files: list[dict[str, Any]] = []
     for name in names:
@@ -97,15 +97,15 @@ def _unseen_with_llm(names: list[str]) -> dict[str, Any]:
                     continue
                 try:
                     proposal = fp.propose(
-                        located[i].headers, [c for _r, c in located[i].rows], mesh
+                        located[i].headers, [c for _r, c in located[i].rows], model_client
                     )
-                except (CassetteMiss, MeshConfigError, MeshCallError) as exc:
+                except (CassetteMiss, ModelConfigError, ModelCallError) as exc:
                     return {
                         "success": None,
                         "llm_calls_per_file": None,
                         "reuse_rate": None,
                         "note": f"not measured: no recorded model response ({type(exc).__name__}); "
-                        "re-record with MESH_CASSETTE_MODE=record",
+                        "re-record with MODEL_CASSETTE_MODE=record",
                     }
                 calls += len(proposal.calls)
                 proposals += 1

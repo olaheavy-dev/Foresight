@@ -53,14 +53,14 @@ def test_a_new_guest_profile_on_the_same_network_shares_the_days_checks(
 def test_a_guests_question_past_the_networks_allowance_is_refused_with_the_reason(
     make_client: type[TestClient], monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """The question path counts per network too. No model is ever called here: Mesh is
+    """The question path counts per network too. No model is ever called here: the model client is
     overridden to unavailable, so the first question degrades and the second is refused."""
     from backend.app.routers import ask as ask_router
 
     monkeypatch.setenv("GUEST_NETWORK_DAILY_QUESTIONS", "1")
     get_settings.cache_clear()
     app = create_app()
-    app.dependency_overrides[ask_router.get_mesh] = lambda: None
+    app.dependency_overrides[ask_router.get_model_client] = lambda: None
     with (
         make_client(app, base_url=BASE) as first,
         make_client(app, base_url=BASE) as second,
@@ -111,7 +111,7 @@ def test_only_an_admitted_question_counts_and_a_refusal_frees_its_slot(
     monkeypatch.setenv("GUEST_NETWORK_DAILY_QUESTIONS", "1")
     get_settings.cache_clear()
     app = create_app()
-    app.dependency_overrides[ask_router.get_mesh] = lambda: None
+    app.dependency_overrides[ask_router.get_model_client] = lambda: None
     real_admit = ask_router.limits.admit
     refusals = iter(["Too many questions in a short time. Please wait a few minutes."])
 

@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Are any subscriptions doubling up?\",\"intent\":\"subscription_review\",\"slots\":{\"focus\":\"overlap\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002458,
     "latency_ms": 500,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHB869EMFW6Z6MPY6QRHNR",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHB869EMFW6Z6MPY6QRHNR",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

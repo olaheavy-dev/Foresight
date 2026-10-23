@@ -381,7 +381,7 @@
   "request_hash": "95b341828c11929fcdb39d22ad9b6a1d07e66ed7e64051fcecbe42793238f3d9",
   "response": {
     "content": "{\"status\":\"needs_clarification\",\"spec\":null,\"clarification\":{\"question\":\"Which spending category would you like to cut back on, and by what percentage?\",\"slot\":\"category_and_percentage\"}}",
-    "mesh_response_id": "chatcmpl-EYVcIn2Kt4gyJxdFe6YJx03mhv230",
+    "provider_response_id": "chatcmpl-EYVcIn2Kt4gyJxdFe6YJx03mhv230",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

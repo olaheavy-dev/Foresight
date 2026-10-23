@@ -78,7 +78,7 @@
   "request_hash": "598d363242b53846ab925d09e2755f31e500658f2c443698000357b96bd1918e",
   "response": {
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast supports the buffer rationale, and the purchase-date impact has been recomputed.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal identifies the holiday purchase and specifies moving it from 6 November to 18 December 2026.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with future claims limited to the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Rescheduling a holiday purchase is within scope and does not recommend restricted financial actions.\"}]}",
-    "mesh_response_id": "chatcmpl-EYW8XQbrgy8BJRZtM7bsFTPNTQJFE",
+    "provider_response_id": "chatcmpl-EYW8XQbrgy8BJRZtM7bsFTPNTQJFE",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

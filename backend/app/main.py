@@ -77,7 +77,7 @@ def create_app() -> FastAPI:
             "sha": settings.build_sha,
             "database": db_ok,
             # A word only (ok | unavailable), never a spend figure.
-            "ai": ask.ai_status(ask.get_mesh()),
+            "ai": ask.ai_status(ask.get_model_client()),
         }
 
     @app.get("/api/features")

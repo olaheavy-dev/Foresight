@@ -103,7 +103,7 @@
   "request_hash": "e7d61beae739b769595c0c0b2e0266cf4b15cb69831e79e5ece53776543970f9",
   "response": {
     "content": "{\"standalone_question\":\"List payments over \u00a3100 last month.\",\"intent\":\"transaction_lookup\",\"slots\":{\"period\":\"last_month\",\"min_amount_minor\":10000},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdQ58b32H6of2lIDhkOJTYQMYuSY",
+    "provider_response_id": "chatcmpl-EYdQ58b32H6of2lIDhkOJTYQMYuSY",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

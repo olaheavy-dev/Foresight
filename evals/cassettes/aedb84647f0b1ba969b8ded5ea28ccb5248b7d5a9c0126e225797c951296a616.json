@@ -389,7 +389,7 @@
   "request_hash": "aedb84647f0b1ba969b8ded5ea28ccb5248b7d5a9c0126e225797c951296a616",
   "response": {
     "content": "{\"status\":\"needs_clarification\",\"spec\":null,\"clarification\":{\"question\":\"Which subscription would you like to cancel? Please name it.\",\"slot\":\"recurring_id\",\"options\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVcOpjrgJdBD23AzqyoXZFroyqsL",
+    "provider_response_id": "chatcmpl-EYVcOpjrgJdBD23AzqyoXZFroyqsL",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

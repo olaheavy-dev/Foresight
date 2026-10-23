@@ -186,7 +186,7 @@
     "content": "{\n  \"proposals\": [\n    {\n      \"proposal_id\": \"prp_tr_b7\",\n      \"action\": \"cap_category\",\n      \"currency\": \"GBP\",\n      \"params\": {\n        \"category_key\": \"food.delivery\",\n        \"monthly_cap_minor\": 15000\n      },\n      \"title\": \"Cap food delivery spending at {{cap}} a month\",\n      \"rationale\": \"Food delivery spending is above its usual level. Setting a monthly food delivery cap of {{cap}} reduces spending by {{saving}} compared with the last month and keeps more cash in hand before payday.\",\n      \"trigger_refs\": [\n        {\n          \"kind\": \"finding\",\n          \"id\": \"fnd:category_spike:food.delivery\",\n          \"role\": \"trigger\"\n        },\n        {\n          \"kind\": \"forecast\",\n          \"id\": \"fc:baseline\",\n          \"role\": \"trigger\"\n        }\n      ],\n      \"expected_direction\": \"improves_buffer\",\n      \"claimed_monthly_impact_minor\": 13640,\n      \"claimed_impact_text\": \"\u00a3136.40 less monthly spending compared with the last thirty days.\"\n    }\n  ],\n  \"critique_addressed\": [\n    \"Replaced generic advice with a specific food delivery category cap in both the title and rationale, retaining the original proposal ID.\"\n  ]\n}",
     "cost_estimate_usd": 0.007912,
     "latency_ms": 7431,
-    "mesh_response_id": "chatcmpl-EbAYWvviKUPgyt5nceOBwu1aB1wU0",
+    "provider_response_id": "chatcmpl-EbAYWvviKUPgyt5nceOBwu1aB1wU0",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

@@ -18,7 +18,7 @@ import math
 from collections.abc import Sequence
 from typing import Any
 
-from evals.assistant import eval_mesh, eval_mode
+from evals.assistant import eval_mode, eval_model_client
 from evals.common import read_jsonl
 from evals.efficiency import estimate_e2e
 from evals.suites import Target, target, ui
@@ -101,7 +101,7 @@ def run(fast: bool = False, cases: Any = None) -> dict[str, Any]:
     rows = read_jsonl(cases or ui.CASES)
     if fast:
         rows = rows[:8]
-    composed = ui.composition(rows, eval_mesh())
+    composed = ui.composition(rows, eval_model_client())
     if composed is None:
         return {
             "metrics": {"mode": eval_mode(), "answers": "not measured: needs DATABASE_URL"},

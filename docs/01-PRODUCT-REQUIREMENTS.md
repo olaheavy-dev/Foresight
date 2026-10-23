@@ -191,7 +191,7 @@ There are exactly **two generic importers**, `csv_statement` and `pdf_statement`
 | F-59 | Hand-labelled holdout set (300–500 txns, not generator-produced) | M |
 | F-60 | Eval runner `python -m evals.run --suite all` → `evals/results/*.json` and a markdown report | M |
 | F-61 | Baselines: rules-only and LLM-only categorisation; naive forecasts | M |
-| F-62 | Single LLM gateway `mesh/mesh_client.py` (OpenAI; a CI-passing Mesh configuration until 23 Oct 2026) | M |
+| F-62 | Single LLM gateway `llm/client.py` (OpenAI; a CI-passing Mesh configuration until 23 Oct 2026) | M |
 | F-63 | One-command local run (`docker compose up` / `make demo`: PostgreSQL + backend + frontend) with demo data | M |
 | F-73 | **Feature flags + generated release notes**: one `features.yaml`; each flag linked to the eval suites that must be green before it can be switched on; the README's "Built / Not shipped (planned)" sections and the UI's visible surfaces are generated from it (rev 5) | M |
 | F-74 | **Continuous deployment from day one** on the owner's VPS (Docker Compose: frontend, backend, PostgreSQL; Caddy TLS; GHCR images published only on green CI; Watchtower rollout): demo workspaces seeded from the generator on every deploy; no real data on the host; deploy SHA shown in the app footer and README (rev 5) | M |
@@ -336,7 +336,7 @@ Each FR is testable. The test type is noted: **U** = unit, **I** = integration, 
 
 ### 7.8 Orchestration and conversation (FR-56 – FR-63, FR-88 – FR-91)
 - **FR-56** The Coordinator is a LangGraph `StateGraph` with named nodes per agent. System events route by a fixed table. User questions route by LLM intent classification into the `IntentClassification.intent` enum in `06` §4.0 (mapped to response presentation intents by `08` §4.1). *(U, I)*
-- **FR-57** Every LLM call goes through `mesh/mesh_client.py` (base URL `https://api.openai.com/v1`, key from `OPENAI_API_KEY`; Mesh until 23 Oct 2026). No other module imports an LLM SDK (enforced by a test). *(U, CI)*
+- **FR-57** Every LLM call goes through `llm/client.py` (base URL `https://api.openai.com/v1`, key from `OPENAI_API_KEY`; Mesh until 23 Oct 2026). No other module imports an LLM SDK (enforced by a test). *(U, CI)*
 - **FR-58** Each agent node writes an `AgentStep` (agent, model, prompt version, input hash, output, tokens, latency, cost estimate, status). Each request writes a `run_`. *(I)*
 - **FR-59** Retries: a schema-invalid LLM output gets 1 repair retry with the validation error. A transport error gets 2 retries with backoff. After that the node degrades (categorisation → rules-only + `uncategorised`; layout proposal → mapping confirm shown to the user; narrative → template). *(U)*
 - **FR-60** Per-run budget (default ≤ 12 LLM calls, ≤ 60k tokens). Exceeding it stops gracefully with a partial response that says so. *(U)*

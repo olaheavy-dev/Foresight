@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"The available figures don\u2019t identify which payments are subscriptions. The transaction table can show your recorded transactions for review.\",\"key_numbers\":[],\"main_visual\":\"TransactionTable\"}",
     "cost_estimate_usd": 0.0001363,
     "latency_ms": 7355,
-    "mesh_response_id": "chatcmpl-EYqXiDbkijPVBpTVOV4csFCaPZk6u",
+    "provider_response_id": "chatcmpl-EYqXiDbkijPVBpTVOV4csFCaPZk6u",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -5,8 +5,8 @@
 - `unavailable` at once while the circuit breaker is open;
 - `unavailable` for five minutes after a call is refused for lack of credit (`note_spend_limit`,
   OpenAI's 429 `insufficient_quota`), then calls are tried again;
-- `unavailable` once today's model spend reaches `MESH_DAILY_BUDGET_USD`
-  (`backend/mesh/spend_guard.py`), until the next UTC day.
+- `unavailable` once today's model spend reaches `MODEL_DAILY_BUDGET_USD`
+  (`backend/llm/spend_guard.py`), until the next UTC day.
 
 OpenAI has no balance a project key can read, so there is no early "low" warning: running out
 shows as a refusal. Users never see billing words.

@@ -19,13 +19,13 @@ from typing import Any
 from backend.agents.runner import ask
 from backend.app.ui_contracts.response import AgentResponse
 from backend.app.ui_contracts.validation import check_skeleton, visible_tabs
-from backend.mesh.cassettes import CassetteMiss
+from backend.llm.cassettes import CassetteMiss
 from backend.storage.agent_repo import AgentStore
 from backend.storage.repositories import WorkspaceContext, demo_workspace
 from evals.assistant import (
     NotRecorded,
-    eval_mesh,
     eval_mode,
+    eval_model_client,
     fresh_breaker,
     seeded_database,
     understand,
@@ -47,12 +47,12 @@ def _rate(n: int, d: int) -> float | None:
     return r4(n / d) if d else None
 
 
-def _intent_scores(rows: list[dict[str, Any]], mesh: Any) -> dict[str, Any]:
+def _intent_scores(rows: list[dict[str, Any]], model_client: Any) -> dict[str, Any]:
     scored = correct = clarify_n = clarified = missing = 0
     per_class: dict[str, dict[str, int]] = {}
     for row in rows:
         try:
-            got = understand(mesh, row["question"], [], row["as_of"])
+            got = understand(model_client, row["question"], [], row["as_of"])
         except NotRecorded:
             missing += 1
             continue
@@ -93,17 +93,17 @@ def _expected_types(row: dict[str, Any]) -> set[str]:
 _ANSWERED: dict[tuple[str, tuple[str, ...]], dict[str, Any] | None] = {}
 
 
-def composition(rows: list[dict[str, Any]], mesh: Any) -> dict[str, Any] | None:
+def composition(rows: list[dict[str, Any]], model_client: Any) -> dict[str, Any] | None:
     """Whole answers to `rows`, scored; computed once per process and mode, since E-EFF reads the
     cost and latency of the same answers (`answers`)."""
     key = (eval_mode(), tuple(r["id"] for r in rows))
     if key not in _ANSWERED:
-        _ANSWERED[key] = _composition(rows, mesh)
+        _ANSWERED[key] = _composition(rows, model_client)
     return _ANSWERED[key]
 
 
-def _composition(rows: list[dict[str, Any]], mesh: Any) -> dict[str, Any] | None:
-    mesh = CallLog(mesh)
+def _composition(rows: list[dict[str, Any]], model_client: Any) -> dict[str, Any] | None:
+    model_client = CallLog(model_client)
     answers: list[dict[str, Any]] = []
     with seeded_database() as factory:
         if factory is None:
@@ -118,14 +118,14 @@ def _composition(rows: list[dict[str, Any]], mesh: Any) -> dict[str, Any] | None
                     failed += 1
                     continue
                 store = AgentStore(WorkspaceContext.open(session, ws.id))
-                fresh_breaker(mesh)
+                fresh_breaker(model_client)
                 thread = store.create_thread()
                 session.commit()
-                mesh.take()
+                model_client.take()
                 started, tick = datetime.now(timezone.utc), time.perf_counter()
                 try:
                     out = ask(store, thread_id=thread.id, text=row["question"],
-                              client_msg_id=uuid.uuid4().hex, mesh=mesh,
+                              client_msg_id=uuid.uuid4().hex, model_client=model_client,
                               as_of=row["as_of"])  # fmt: skip
                     wall_ms = int((time.perf_counter() - tick) * 1000)
                 except (CassetteMiss, LookupError):
@@ -139,7 +139,7 @@ def _composition(rows: list[dict[str, Any]], mesh: Any) -> dict[str, Any] | None
                     continue
                 answered += 1
                 answers.append({"case": row["id"], "intent": row["intent"], **answer_profile(
-                    store, out.run_id, started=started, wall_ms=wall_ms, calls=mesh.take(),
+                    store, out.run_id, started=started, wall_ms=wall_ms, calls=model_client.take(),
                     replayed=eval_mode() == "replay")})  # fmt: skip
                 try:
                     body = AgentResponse.model_validate(snapshot.body)
@@ -183,9 +183,9 @@ def run(fast: bool = False, cases: Any = None) -> dict[str, Any]:
     rows = read_jsonl(cases or CASES)
     if fast:
         rows = rows[:8]
-    mesh = eval_mesh()
-    intents = _intent_scores(rows, mesh)
-    composed = composition(rows, mesh)
+    model_client = eval_model_client()
+    intents = _intent_scores(rows, model_client)
+    composed = composition(rows, model_client)
     metrics: dict[str, Any] = {
         "mode": eval_mode(),
         "ui8_intent": intents,

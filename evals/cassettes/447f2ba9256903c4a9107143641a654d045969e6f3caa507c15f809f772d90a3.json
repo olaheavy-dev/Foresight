@@ -383,7 +383,7 @@
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Cut clothes shopping by 30% until Christmas\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"category_cut_pct\",\"category_key\":\"shopping.clothing\",\"pct\":30,\"from_date\":\"2026-10-11\",\"to_date\":\"2026-12-25\"}],\"assumptions\":[]},\"clarification\":null}",
     "cost_estimate_usd": 0.005436,
     "latency_ms": 3396,
-    "mesh_response_id": "chatcmpl-EbAiHrhGw0mcckDDLEYnvkcn9sv1D",
+    "provider_response_id": "chatcmpl-EbAiHrhGw0mcckDDLEYnvkcn9sv1D",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

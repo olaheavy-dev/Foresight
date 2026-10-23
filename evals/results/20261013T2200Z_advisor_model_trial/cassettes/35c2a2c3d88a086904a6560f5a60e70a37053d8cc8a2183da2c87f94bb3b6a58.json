@@ -192,7 +192,7 @@
   "request_hash": "35c2a2c3d88a086904a6560f5a60e70a37053d8cc8a2183da2c87f94bb3b6a58",
   "response": {
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_tr_b10\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\n  }\n  ,\"title\":\"Hold eating out at {{cap}} a month until the next payday\",\"rationale\":\"Your eating out spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.eating_out\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":18993,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Replaced the subscription overlap finding citation with fnd:category_spike:food.eating_out.\"]}",
-    "mesh_response_id": "chatcmpl-gemini-1791923395",
+    "provider_response_id": "chatcmpl-gemini-1791923395",
     "model": "gemini-3.8-flash",
     "tool_arguments": null,
     "usage": {

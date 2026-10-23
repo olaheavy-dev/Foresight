@@ -381,7 +381,7 @@
   "request_hash": "8a390007ea40db7dbfc69c475462cb24eed8f62256fb512b625c7eeba3e4f66c",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Clearpay \u00a3240 in 4 payments\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"split_outflow\",\"start_date\":\"2026-10-15\",\"amount_minor\":24000,\"instalments\":4,\"cadence\":\"fortnightly\",\"label\":\"Clearpay\"}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVYntKRfPf7nTHo9AhY9slvBzHCF",
+    "provider_response_id": "chatcmpl-EYVYntKRfPf7nTHo9AhY9slvBzHCF",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

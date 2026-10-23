@@ -103,7 +103,7 @@
   "request_hash": "fbe9b50cc7d90b5d6a9fc3e02b9f2fa638a374b19e7aebb2c5d4ce069230496a",
   "response": {
     "content": "{\"standalone_question\":\"Where is all my money going?\",\"intent\":\"spending_breakdown\",\"slots\":{},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.97,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdTJSjIXr5ciD1k2lvB5OYgxNYZF",
+    "provider_response_id": "chatcmpl-EYdTJSjIXr5ciD1k2lvB5OYgxNYZF",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

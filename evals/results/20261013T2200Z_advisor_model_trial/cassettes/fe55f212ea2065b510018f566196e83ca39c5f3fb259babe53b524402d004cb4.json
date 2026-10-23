@@ -78,7 +78,7 @@
   "request_hash": "fe55f212ea2065b510018f566196e83ca39c5f3fb259babe53b524402d004cb4",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-3b259581508739286c23",
+    "provider_response_id": "chatcmpl-3b259581508739286c23",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"The spike finding for food.eating_out and the baseline forecast's low pre-payday balance support the stated link between eating-out spending and the payday low point.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the food.eating_out category, a monthly cap action with a parameter, and a clear timeframe until the next payday.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Wording is neutral and respectful, and it makes no claims about the future beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Recommends a spending cap on one category only, with no investment, credit, loan, pension or tax advice.\"}]}",
     "usage": {

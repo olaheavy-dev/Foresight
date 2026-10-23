@@ -381,7 +381,7 @@
   "request_hash": "08b1e472f4216284fb2de7f751a67e7bf317e2e0c7775a03c734d37d3d88357c",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Reduce eating out\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"category_cut_pct\",\"category_key\":\"food.eating_out\",\"pct\":20,\"from_date\":\"2026-10-11\",\"to_date\":null}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVadGic7TuvdHlgohtZhp7zbGADn",
+    "provider_response_id": "chatcmpl-EYVadGic7TuvdHlgohtZhp7zbGADn",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

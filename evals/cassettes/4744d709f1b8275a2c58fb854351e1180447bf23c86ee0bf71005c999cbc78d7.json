@@ -103,7 +103,7 @@
   "request_hash": "4744d709f1b8275a2c58fb854351e1180447bf23c86ee0bf71005c999cbc78d7",
   "response": {
     "content": "{\"standalone_question\":\"Is a \u00a3350 phone on 20 October affordable?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":35000,\"date\":\"2026-10-20\",\"purpose\":\"phone\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdULGthnAeDr9mKtEH2QVWuhEcTH",
+    "provider_response_id": "chatcmpl-EYdULGthnAeDr9mKtEH2QVWuhEcTH",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

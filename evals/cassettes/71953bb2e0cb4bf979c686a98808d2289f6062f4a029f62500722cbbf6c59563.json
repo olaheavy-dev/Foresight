@@ -383,7 +383,7 @@
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Laptop in 3 payments; cancel Netflix\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"split_outflow\",\"start_date\":\"2026-10-20\",\"amount_minor\":120000,\"instalments\":3,\"cadence\":\"monthly\",\"label\":\"Klarna laptop\"},{\"type\":\"recurring_cancel\",\"recurring_id\":\"rob_netflix\",\"from_date\":\"2026-10-11\"}],\"assumptions\":[\"Interpreted Klarna \u2018in 3\u2019 as three monthly instalments.\"]},\"clarification\":null}",
     "cost_estimate_usd": 0.006304,
     "latency_ms": 4386,
-    "mesh_response_id": "chatcmpl-EbAiiYkbF0U1RUoW0SoWDYTjA6div",
+    "provider_response_id": "chatcmpl-EbAiiYkbF0U1RUoW0SoWDYTjA6div",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

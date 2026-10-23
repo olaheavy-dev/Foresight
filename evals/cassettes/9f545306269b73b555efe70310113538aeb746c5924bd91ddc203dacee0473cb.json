@@ -103,7 +103,7 @@
   "request_hash": "9f545306269b73b555efe70310113538aeb746c5924bd91ddc203dacee0473cb",
   "response": {
     "content": "{\"standalone_question\":\"What can I do about not being OK financially this month?\",\"intent\":\"advice_request\",\"slots\":{\"period\":\"this_month\"},\"needs_forecast\":false,\"needs_advice\":true,\"confidence\":0.64,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdOJUSpB19beIbifD4iLxpt6D5J5",
+    "provider_response_id": "chatcmpl-EYdOJUSpB19beIbifD4iLxpt6D5J5",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

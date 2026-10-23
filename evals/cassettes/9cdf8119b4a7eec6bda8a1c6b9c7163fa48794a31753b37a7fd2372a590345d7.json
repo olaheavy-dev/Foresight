@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"I can see your food-delivery spending, but there\u2019s no earlier period to compare, so I can\u2019t tell whether you\u2019ve been eating out more.\",\"key_numbers\":[\"R10\",\"R9\",\"R7\"],\"main_visual\":\"SpendingBreakdownChart\"}",
     "cost_estimate_usd": 0.0001637,
     "latency_ms": 3828,
-    "mesh_response_id": "chatcmpl-EYqaYwZA7LIRSXtsXc0yfwU8hSt9w",
+    "provider_response_id": "chatcmpl-EYqaYwZA7LIRSXtsXc0yfwU8hSt9w",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

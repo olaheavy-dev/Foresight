@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"List payments over \u00a3100 this month.\",\"intent\":\"transaction_lookup\",\"slots\":{\"period\":\"this_month\",\"min_amount_minor\":10000},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002899,
     "latency_ms": 441,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHAS4RW7JKCK5CKGMX7Z5E",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHAS4RW7JKCK5CKGMX7Z5E",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -782,7 +782,7 @@ Walk the chain for every recommendation produced in `E-GRD`:
 - LLM suites: 5 seeds, temperature 0 where the model supports it. Variance reported as mean ± std.
 - **No cherry-picking**: `python -m evals.report` builds the README table from `latest.json`. CI fails on drift.
 - Missed targets are shown with ✗ and a note.
-- Every result records `git_sha, engine_version, generator_version, holdout_version, layout_set_version, prompt_versions, mesh_models, mode, timestamp`.
+- Every result records `git_sha, engine_version, generator_version, holdout_version, layout_set_version, prompt_versions, llm_models, mode, timestamp`.
 
 ---
 
@@ -793,7 +793,7 @@ Walk the chain for every recommendation produced in `E-GRD`:
 | Mode | What it does | Needs |
 |---|---|---|
 | **Replay (default)** | Deterministic suites run for real. LLM suites **re-score recorded model responses from a named live run** in `evals/cassettes/` (request-hash keyed; each cassette stores the provider response id, the provider (`openai`, or `mesh` for recordings made through it to 21 Oct 2026), model, token usage, timestamp and the live run's commit sha). `CassetteMiss` fails loudly if a prompt or input changed | Python 3.12 |
-| **Live** | All LLM calls go through `mesh_client` to OpenAI (`https://api.openai.com/v1`; Mesh until 20–23 Oct 2026). Recording (`FORESIGHT_EVAL_MESH=record`, `EVAL_MESH_MODE=record`) refreshes cassettes and spends money: only under an owner-approved cap | `OPENAI_API_KEY` |
+| **Live** | All LLM calls go through `llm.client` to OpenAI (`https://api.openai.com/v1`; Mesh until 20–23 Oct 2026). Recording (`FORESIGHT_EVAL_LLM=record`, `EVAL_LLM_MODE=record`) refreshes cassettes and spends money: only under an owner-approved cap | `OPENAI_API_KEY` |
 
 Deterministic suites (`E-ING` except the profile-proposal arms §4.1.3/§4.3, `E-ALIAS`, `E-XFER`, `E-ACCT`, `E-INC`, `E-REC`, `E-ANOM`, `E-FC`, `E-SIM`, `E-AUD`, and the deterministic `E-LOC` arms; E-LOC-10/15 hybrid and LLM-only arms and E-LOC-14 layout proposals use cassettes) never touch cassettes.
 
@@ -846,7 +846,7 @@ make eval-live
   "holdout_version": "h-1",
   "layout_set_version": "pdf-1",
   "locales": ["uk", "in"], "home_currency_primary": "GBP",
-  "mesh_models": { "coordinator": "<id>", "ledger": "<id>", "advisor": "<id>", "verifier": "<id>" },
+  "llm_models": { "coordinator": "<id>", "ledger": "<id>", "advisor": "<id>", "verifier": "<id>" },
   "prompt_versions": { "ledger": "<sha256[:12]>" },
   "seeds": [1729],
   "suites": {
@@ -985,7 +985,7 @@ The owner has real statements: **12 monthly PDF statements from one UK bank**, p
 ### 17.1 Hard rules
 
 1. **Never committed.** Real files live outside the repo (default `~/.foresight-private/`). `.gitignore` also excludes `private/`, `*_real*`, and **all statement files (`*.pdf`, `*.csv`, `*.xls`, `*.xlsx`) except under `evals/datasets/**` and `evals/external/datasets/**`** (explicit `!` negations; this is the one canonical rule, also cited in 02). The pre-commit hook `tools/check_no_private_data.py` allow-lists generated and external fixture files whose sha256 is in the dataset manifest, and otherwise blocks UK sort codes (anchored, e.g. `(?<![\d-])\d{2}-\d{2}-\d{2}(?![\d-])` next to an account-number or "sort code" cue, so `dd-mm-yyyy` dates don't match), 8-digit account numbers next to sort codes, 16-digit card numbers, NI-number patterns, UK postcodes next to names, and any name on a private deny-list kept outside the repo.
-2. **Never sent to the model unredacted. One redactor:** product code and private runs use the same `mesh_client.redact()` path (`tools/redact.py` is a thin CLI over it, used only for holdout sourcing). By default the private track runs with `--llm=off` (rules-only categorisation, deterministic forecast); private importer runs use deterministic extraction and reconciliation; only unknown-format proposals may use Mesh with shape-only payloads. Private categorisation/backtesting remains deterministic. FormatProfile/LayoutProfile proposals on private PDFs receive redacted headers and sample rows only (00 §6b), and this is asserted.
+2. **Never sent to the model unredacted. One redactor:** product code and private runs use the same `llm.client.redact()` path (`tools/redact.py` is a thin CLI over it, used only for holdout sourcing). By default the private track runs with `--llm=off` (rules-only categorisation, deterministic forecast); private importer runs use deterministic extraction and reconciliation; only unknown-format proposals may use Mesh with shape-only payloads. Private categorisation/backtesting remains deterministic. FormatProfile/LayoutProfile proposals on private PDFs receive redacted headers and sample rows only (00 §6b), and this is asserted.
 3. **Aggregate metrics only** leave the private environment. No rows, merchant breakdowns or real balance charts.
 4. Every private number is labelled **"single real user, n = 1, private data, not reproducible by judges"** in a separate README subsection, never merged into the main table.
 

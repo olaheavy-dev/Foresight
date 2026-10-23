@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"I can\u2019t tell from the available figures whether any subscriptions are duplicated. Compare recurring charges in the transaction table.\",\"key_numbers\":[],\"main_visual\":\"TransactionTable\"}",
     "cost_estimate_usd": 0.0001537,
     "latency_ms": 3573,
-    "mesh_response_id": "chatcmpl-EYqagrBTNFkXhbK6w7YaOszO8e0Av",
+    "provider_response_id": "chatcmpl-EYqagrBTNFkXhbK6w7YaOszO8e0Av",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

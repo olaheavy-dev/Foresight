@@ -2,18 +2,17 @@
 
 Every model call in Foresight goes through this module to OpenAI (https://api.openai.com/v1;
 owner decision 20 Oct 2026, docs/00 §12 item 14). No other module may import an AI SDK; an
-import-linter contract and tests/unit/test_mesh_only.py enforce that (docs/05 §3.1). The module
-keeps its old name, `mesh`, from the gateway it first called.
+import-linter contract and tests/unit/test_one_gateway.py enforce that (docs/05 §3.1).
 
 What a call goes through (docs/05 §6.4, docs/06 §10.1):
 
-1. Redaction of every message by `backend.mesh.redact` (locale-aware, deterministic).
+1. Redaction of every message by `backend.llm.redact` (locale-aware, deterministic).
 2. Replay mode answers from a recorded cassette and never touches the network.
-3. Otherwise the circuit breaker may refuse at once (`MeshUnavailableError`).
-4. The tier's primary model: up to `mesh_max_retries` retries on transport errors, timeouts and 5xx
+3. Otherwise the circuit breaker may refuse at once (`ModelUnavailableError`).
+4. The tier's primary model: up to `model_max_retries` retries on transport errors, timeouts and 5xx
    (backoff 1 s, 4 s), honouring a 429 `Retry-After` up to 10 s; then one attempt on the tier's
    fallback model. A 429 `insufficient_quota` (no credit) stops at once with
-   `MeshSpendLimitError`.
+   `ModelSpendLimitError`.
 5. Each request is shaped by the model's capabilities (`capabilities.py`): temperature is never
    sent to a model that rejects it, and a forced tool choice only where it is accepted.
 6. Structured output: the model's preferred mode (`json_schema` or forced tool-call arguments),
@@ -44,13 +43,13 @@ from openai import (
 )
 from pydantic import BaseModel, ValidationError
 
-import backend.mesh.redact as redaction
-from backend.mesh.availability import AiAvailability
-from backend.mesh.breaker import BreakerState, CircuitBreaker
-from backend.mesh.capabilities import capabilities_for
-from backend.mesh.cassettes import CassetteMiss, CassetteStore, RecordedResponse, request_hash
-from backend.mesh.prices import cost_estimate
-from backend.mesh.spend_guard import DailySpendGuard
+import backend.llm.redact as redaction
+from backend.llm.availability import AiAvailability
+from backend.llm.breaker import BreakerState, CircuitBreaker
+from backend.llm.capabilities import capabilities_for
+from backend.llm.cassettes import CassetteMiss, CassetteStore, RecordedResponse, request_hash
+from backend.llm.prices import cost_estimate
+from backend.llm.spend_guard import DailySpendGuard
 from backend.settings import Settings, get_settings
 
 # Fixed, not configurable: no environment variable or setting can point the client at any other
@@ -62,13 +61,13 @@ __all__ = [
     "OPENAI_BASE_URL",
     "PROVIDER_BASE_URLS",
     "CassetteMiss",
-    "MeshCallError",
-    "MeshClient",
-    "MeshConfigError",
-    "MeshResult",
-    "MeshSchemaError",
-    "MeshSpendLimitError",
-    "MeshUnavailableError",
+    "ModelCallError",
+    "ModelClient",
+    "ModelConfigError",
+    "ModelResult",
+    "ModelSchemaError",
+    "ModelSpendLimitError",
+    "ModelUnavailableError",
     "ModelTier",
     "StructuredResult",
     "Usage",
@@ -82,30 +81,30 @@ class ModelTier(str, Enum):
     VERIFIER = "verifier"  # Verifier judge: a different model from the Advisor (docs/06 §13)
 
 
-class MeshConfigError(RuntimeError):
+class ModelConfigError(RuntimeError):
     """Raised when the model client is not configured (provider, key or model ID)."""
 
 
-class MeshCallError(RuntimeError):
+class ModelCallError(RuntimeError):
     """Raised when both the primary and fallback models fail."""
 
 
-class MeshSpendLimitError(MeshCallError):
+class ModelSpendLimitError(ModelCallError):
     """The provider refused for lack of credit (429 insufficient_quota). Callers degrade."""
 
 
-class MeshUnavailableError(MeshCallError):
+class ModelUnavailableError(ModelCallError):
     """The circuit breaker is open (the provider is failing) or today's budget is used, so no
     call was attempted."""
 
 
-class MeshSchemaError(MeshCallError):
+class ModelSchemaError(ModelCallError):
     """The model's output failed validation twice (initial attempt + one repair).
 
     `calls` holds every model call made before giving up, so budgets and cost still count them.
     """
 
-    def __init__(self, message: str, calls: tuple[MeshResult, ...] = ()) -> None:
+    def __init__(self, message: str, calls: tuple[ModelResult, ...] = ()) -> None:
         super().__init__(message)
         self.calls = calls
 
@@ -118,7 +117,7 @@ class Usage:
 
 
 @dataclass(frozen=True)
-class MeshResult:
+class ModelResult:
     text: str
     model: str
     response_id: str
@@ -146,14 +145,14 @@ T = TypeVar("T", bound=BaseModel)
 @dataclass(frozen=True)
 class StructuredResult(Generic[T]):
     value: T
-    result: MeshResult  # the call that produced `value` (after any repair)
+    result: ModelResult  # the call that produced `value` (after any repair)
     strategy: str  # json_schema | tools | json_object
     repaired: bool
-    calls: tuple[MeshResult, ...]  # every Mesh call made, for budgets and AgentStep accounting
+    calls: tuple[ModelResult, ...]  # every model call made, for budgets and AgentStep accounting
 
 
 # Second, transport-level layer (docs/05 §7.3: "a missed field at one layer is caught by the
-# other"). Plain identifier shapes only; it runs after `backend.mesh.redact` on the final text.
+# other"). Plain identifier shapes only; it runs after `backend.llm.redact` on the final text.
 _TRANSPORT_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"\b(?:\d[ -]?){13,19}\b"), "CARD"),
     (re.compile(r"\b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b"), "IBAN"),
@@ -204,7 +203,7 @@ def redact_messages(
 ) -> list[dict[str, str]]:
     """Mask identifiers in every message before it can leave the app (docs/05 §7.3, §7.4a L2).
 
-    Layer 1 is `backend.mesh.redact`: locale-aware (uk, in), deterministic; it masks cards, IBANs,
+    Layer 1 is `backend.llm.redact`: locale-aware (uk, in), deterministic; it masks cards, IBANs,
     sort codes, account numbers, references, phones, e-mail, UPI IDs, Indian identifiers and person
     names in transfer narrations. Layer 2 re-checks the final text for plain identifier shapes.
     """
@@ -297,7 +296,7 @@ def _normalise(response: Any) -> RecordedResponse:
     tool_arguments = tool_calls[0].function.arguments if tool_calls else None
     usage = getattr(response, "usage", None)
     return RecordedResponse(
-        mesh_response_id=str(response.id),
+        provider_response_id=str(response.id),
         model=str(response.model),
         content=message.content,
         tool_arguments=tool_arguments,
@@ -369,7 +368,7 @@ def _request_kwargs(
     return kwargs, sent_temperature, strategy
 
 
-class MeshClient:
+class ModelClient:
     def __init__(
         self,
         settings: Settings | None = None,
@@ -381,29 +380,29 @@ class MeshClient:
         spend_guard: DailySpendGuard | None = None,
     ) -> None:
         self._settings = settings or get_settings()
-        self._mode = self._settings.mesh_cassette_mode
+        self._mode = self._settings.model_cassette_mode
         self._local = threading.local()  # per-thread replay pass in record mode
         if self._mode not in {"live", "record", "replay"}:
-            raise MeshConfigError(f"unknown MESH_CASSETTE_MODE '{self._mode}'")
+            raise ModelConfigError(f"unknown MODEL_CASSETTE_MODE '{self._mode}'")
         self._provider = self._settings.model_provider
         if self._provider not in PROVIDER_BASE_URLS:
-            raise MeshConfigError(f"unknown MODEL_PROVIDER '{self._provider}'")
+            raise ModelConfigError(f"unknown MODEL_PROVIDER '{self._provider}'")
         if client is None and self._mode != "replay":
             if not self._settings.openai_api_key:
-                raise MeshConfigError("OPENAI_API_KEY is not set")
+                raise ModelConfigError("OPENAI_API_KEY is not set")
             client = OpenAI(
                 api_key=self._settings.openai_api_key,
                 base_url=PROVIDER_BASE_URLS[self._provider],
-                timeout=self._settings.mesh_timeout_reasoning_seconds,
+                timeout=self._settings.model_timeout_reasoning_seconds,
                 max_retries=0,  # retries are ours: counted, logged and visible to the breaker
             )
         self._client = client
         if self._mode != "replay":
             # Fail at start-up, not on the first Advisor call, when a tier can't be served.
             s = self._settings
-            for primary in (s.mesh_model_fast, s.mesh_model_reasoning, s.mesh_model_verifier):
+            for primary in (s.model_fast, s.model_reasoning, s.model_verifier):
                 if primary and not self._serves(primary):
-                    raise MeshConfigError(
+                    raise ModelConfigError(
                         f"MODEL_PROVIDER '{self._provider}' can't serve '{primary}'"
                     )
 
@@ -412,15 +411,15 @@ class MeshClient:
             def served(*models: str) -> set[str]:
                 return {m for m in models if m and self._serves(m)}
 
-            advisor = served(s.mesh_model_reasoning, s.mesh_model_reasoning_fallback)
-            judge = served(s.mesh_model_verifier, s.mesh_model_verifier_fallback)
+            advisor = served(s.model_reasoning, s.model_reasoning_fallback)
+            judge = served(s.model_verifier, s.model_verifier_fallback)
             if advisor & judge:
-                raise MeshConfigError(
+                raise ModelConfigError(
                     f"the Verifier judge can't use the Advisor's model: {sorted(advisor & judge)}"
                 )
         self._cassettes = cassettes or (
             CassetteStore(
-                self._settings.mesh_cassette_dir,
+                self._settings.model_cassette_dir,
                 live_run_sha=self._settings.build_sha,
                 provider=self._provider,
             )
@@ -431,7 +430,7 @@ class MeshClient:
         self._sleep = sleep
         # Live calls only: recordings for evals are capped by their own spend checks.
         self.spend_guard = spend_guard or (
-            DailySpendGuard(self._spent_on, budget_usd=self._settings.mesh_daily_budget_usd)
+            DailySpendGuard(self._spent_on, budget_usd=self._settings.model_daily_budget_usd)
             if self._mode == "live"
             else None
         )
@@ -483,16 +482,16 @@ class MeshClient:
     def models_for(self, tier: ModelTier) -> tuple[str, str]:
         s = self._settings
         primary, fallback = {
-            ModelTier.FAST: (s.mesh_model_fast, s.mesh_model_fast_fallback),
-            ModelTier.REASONING: (s.mesh_model_reasoning, s.mesh_model_reasoning_fallback),
-            ModelTier.VERIFIER: (s.mesh_model_verifier, s.mesh_model_verifier_fallback),
+            ModelTier.FAST: (s.model_fast, s.model_fast_fallback),
+            ModelTier.REASONING: (s.model_reasoning, s.model_reasoning_fallback),
+            ModelTier.VERIFIER: (s.model_verifier, s.model_verifier_fallback),
         }[tier]
         if not primary:
-            raise MeshConfigError(f"No model configured for tier '{tier.value}'")
+            raise ModelConfigError(f"No model configured for tier '{tier.value}'")
         # Replay never reaches a provider, so recordings of other models still answer.
         if self._mode != "replay":
             if not self._serves(primary):
-                raise MeshConfigError(
+                raise ModelConfigError(
                     f"MODEL_PROVIDER '{self._provider}' can't serve '{primary}' "
                     f"(tier '{tier.value}')"
                 )
@@ -504,8 +503,8 @@ class MeshClient:
         # The fast tier's fallback runs only after the primary failed, and may be a slower model
         # (GPT-6 Sol behind Luna): an answer matters more than speed, so it gets the long timeout.
         if tier is ModelTier.FAST and not fallback:
-            return self._settings.mesh_timeout_fast_seconds
-        return self._settings.mesh_timeout_reasoning_seconds
+            return self._settings.model_timeout_fast_seconds
+        return self._settings.model_timeout_reasoning_seconds
 
     # ------------------------------------------------------------------ public API
 
@@ -518,7 +517,7 @@ class MeshClient:
         temperature: float = 0.0,
         response_format: dict[str, Any] | None = None,
         locale_pack: str = "uk",
-    ) -> MeshResult:
+    ) -> ModelResult:
         """Run one chat completion, falling back to the tier's fallback model on failure."""
         _, result = self._call(
             tier=tier,
@@ -543,7 +542,7 @@ class MeshClient:
     ) -> StructuredResult[T]:
         """A typed answer: `output` validated by Pydantic, with one repair retry (docs/06 §10.1).
 
-        Raises `MeshSchemaError` if the output is still invalid after the repair, so the caller
+        Raises `ModelSchemaError` if the output is still invalid after the repair, so the caller
         can degrade (docs/06 §10.1).
         """
         schema = output.model_json_schema()
@@ -583,7 +582,7 @@ class MeshClient:
                 continue
         if first_miss is not None:
             raise first_miss
-        raise MeshCallError(
+        raise ModelCallError(
             f"no structured-output strategy was accepted for tier '{tier.value}'"
         ) from last_unsupported
 
@@ -616,7 +615,7 @@ class MeshClient:
     def check(self) -> bool:
         """Metadata call that spends no credits: confirms the key and base URL work."""
         if self._client is None:
-            raise MeshConfigError("replay mode has no live client")
+            raise ModelConfigError("replay mode has no live client")
         self._client.models.list()
         return True
 
@@ -631,7 +630,7 @@ class MeshClient:
         max_tokens: int,
         temperature: float,
     ) -> StructuredResult[T]:
-        calls: list[MeshResult] = []
+        calls: list[ModelResult] = []
         convo = list(messages)
         for repair in (False, True):
             recorded, result = self._call(
@@ -648,7 +647,7 @@ class MeshClient:
                 value = output.model_validate_json(raw)
             except ValidationError as exc:
                 if repair:
-                    raise MeshSchemaError(
+                    raise ModelSchemaError(
                         f"{structured.name}: output invalid after one repair "
                         f"({exc.error_count()} error(s))",
                         calls=tuple(calls),
@@ -682,7 +681,7 @@ class MeshClient:
         response_format: dict[str, Any] | None,
         max_tokens: int,
         temperature: float,
-    ) -> tuple[RecordedResponse, MeshResult]:
+    ) -> tuple[RecordedResponse, ModelResult]:
         primary, fallback = self.models_for(tier)
         # The cassette key is the request as asked for (primary model, requested shape), so a
         # replay answers exactly what the live run answered, whichever model served it.
@@ -727,14 +726,14 @@ class MeshClient:
             )
 
         if not self.breaker.allow():
-            raise MeshUnavailableError("the model circuit breaker is open")
+            raise ModelUnavailableError("the model circuit breaker is open")
         if self.spend_guard is not None and self.spend_guard.exhausted():
-            raise MeshUnavailableError("today's model budget is used")
+            raise ModelUnavailableError("today's model budget is used")
 
         assert self._client is not None
         attempts = 0
         last_error: Exception | None = None
-        plan = [(primary, False, 1 + self._settings.mesh_max_retries)]
+        plan = [(primary, False, 1 + self._settings.model_max_retries)]
         if fallback:
             plan.append((fallback, True, 1))
         for model, is_fallback, tries in plan:
@@ -762,7 +761,7 @@ class MeshClient:
                 except RateLimitError as exc:
                     if _error_code(exc) == "insufficient_quota":  # OpenAI's "no credit" is a 429
                         self.availability.note_spend_limit()
-                        raise MeshSpendLimitError("provider balance exhausted") from exc
+                        raise ModelSpendLimitError("provider balance exhausted") from exc
                     last_error = exc
                     self.breaker.record(False)
                     if attempt + 1 < tries:
@@ -771,7 +770,7 @@ class MeshClient:
                 except APIStatusError as exc:
                     status = _status(exc)
                     if status in (401, 403):
-                        raise MeshCallError(f"the provider rejected the key ({status})") from exc
+                        raise ModelCallError(f"the provider rejected the key ({status})") from exc
                     last_error = exc
                     self.breaker.record(False)
                     if attempt + 1 < tries:
@@ -810,7 +809,7 @@ class MeshClient:
                 )
             if not self.breaker.allow():
                 break
-        raise MeshCallError(f"Mesh call failed for tier '{tier.value}'") from last_error
+        raise ModelCallError(f"model call failed for tier '{tier.value}'") from last_error
 
     def _result(
         self,
@@ -823,17 +822,17 @@ class MeshClient:
         key: str,
         sent_temperature: float | None,
         strategy: str | None,
-    ) -> MeshResult:
+    ) -> ModelResult:
         text = recorded.content if recorded.content is not None else recorded.tool_arguments
         # A replay reports the live call's recorded latency, never the time to read a file.
         latency_ms = int((time.monotonic() - started) * 1000)
         measured = not replayed or recorded.latency_ms is not None
         if replayed and recorded.latency_ms is not None:
             latency_ms = recorded.latency_ms
-        return MeshResult(
+        return ModelResult(
             text=text or "",
             model=recorded.model,
-            response_id=recorded.mesh_response_id,
+            response_id=recorded.provider_response_id,
             usage=Usage(
                 prompt_tokens=recorded.prompt_tokens,
                 completion_tokens=recorded.completion_tokens,

@@ -381,7 +381,7 @@
   "request_hash": "89238247130a5903b84927d73488935f1a847bbaceac0914c50e03d3aeb9f351",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Add monthly phone contract\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"recurring_add\",\"amount_minor\":3500,\"cadence\":\"monthly\",\"start_date\":\"2026-11-01\",\"label\":\"Phone contract\",\"category_key\":\"utilities.mobile\"}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVaEdjGUHMJwTdhOiZ1zz7eEjFYP",
+    "provider_response_id": "chatcmpl-EYVaEdjGUHMJwTdhOiZ1zz7eEjFYP",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

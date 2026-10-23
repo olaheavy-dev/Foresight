@@ -184,7 +184,7 @@
   "request_hash": "b40f33d8c02f7c6e205786b400ab34b3989c883034a4e4dcfbe6473f07a7fcd7",
   "response": {
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_tr_b9\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.delivery\",\"monthly_cap_minor\":15000},\"title\":\"Hold food delivery at {{cap}} a month until the next payday\",\"rationale\":\"Food delivery spending is above its usual level, and setting a temporary cap could ease the projected low point before payday while preserving flexibility for other needs.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.delivery\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":13640,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Replaced the unrelated Spotify price-change evidence with the food-delivery spending finding, which directly supports this proposal.\"]}",
-    "mesh_response_id": "resp_09e1269af44378e4016ace991c4e8887d1aaab996bc15d0421",
+    "provider_response_id": "resp_09e1269af44378e4016ace991c4e8887d1aaab996bc15d0421",
     "model": "openai-gpt-56-luna-pro",
     "tool_arguments": null,
     "usage": {

@@ -1,5 +1,6 @@
 """Behaviour Analyst wording checks and ranking (AGT-04), deterministic finding candidates, and
-the ING-13 format proposal (shapes only, validation, parse check). Mesh is a scripted fake."""
+the ING-13 format proposal (shapes only, validation, parse check). The model client is a
+scripted fake."""
 
 from __future__ import annotations
 
@@ -21,7 +22,7 @@ from evals.common import (
     row_precision_recall,
     uk_categorisation_pack,
 )
-from tests.unit.mesh.fakes import ScriptedCompletions, client, json_ok
+from tests.unit.llm.fakes import ScriptedCompletions, client, json_ok
 
 # ------------------------------------------------------------------------------ findings
 

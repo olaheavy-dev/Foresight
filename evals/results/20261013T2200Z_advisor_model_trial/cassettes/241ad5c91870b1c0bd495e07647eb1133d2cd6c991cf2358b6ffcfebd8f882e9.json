@@ -78,7 +78,7 @@
   "request_hash": "241ad5c91870b1c0bd495e07647eb1133d2cd6c991cf2358b6ffcfebd8f882e9",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-074924c5d6a10d7aec79",
+    "provider_response_id": "chatcmpl-074924c5d6a10d7aec79",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"The spike finding supports the rise in food.delivery spending, and the baseline forecast covers the low balance before payday that the cap is meant to ease.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"It names the food.delivery category, a monthly cap amount, the cap_category action and a time frame ending at the next payday.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"The wording is neutral and respectful and makes no claims about the future beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"A monthly cap on a discretionary spending category is outside the REF scope and is not a REF recommendation.\"}]}",
     "usage": {

@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The food-delivery spending spike and pre-payday cash-flow forecast support the rationale, with the cap's impact already checked.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal specifies food delivery and a concrete monthly cap, giving a clear action.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no guarantees beyond the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"A food-delivery spending cap is ordinary budgeting advice, with no restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003422,
     "latency_ms": 3944,
-    "mesh_response_id": "chatcmpl-EYqf6wzugKye05Fz7tMcENSesOPli",
+    "provider_response_id": "chatcmpl-EYqf6wzugKye05Fz7tMcENSesOPli",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

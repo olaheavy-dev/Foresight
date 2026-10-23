@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast supports the pre-payday buffer concern, and the proposed cap directly reduces spending.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names general shopping and specifies a clear monthly cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with a conditional benefit rather than a promise.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation is a spending cap and contains no out-of-scope financial advice.\"}]}",
     "cost_estimate_usd": 0.003088,
     "latency_ms": 7808,
-    "mesh_response_id": "chatcmpl-EbBBI9Jo0KAm1wIz0CPe56gA5Wem0",
+    "provider_response_id": "chatcmpl-EbBBI9Jo0KAm1wIz0CPe56gA5Wem0",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

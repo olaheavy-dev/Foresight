@@ -28,7 +28,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from backend.agents.cache import PROMPTS_DIR, prompt_version
 from backend.agents.guard import prepare_for_model
 from backend.finance_core.importers.profiles import FormatProfile, normalise_header
-from backend.mesh.mesh_client import MeshClient, MeshResult, ModelTier
+from backend.llm.client import ModelClient, ModelResult, ModelTier
 
 PROMPT = "ledger_format_profile"
 MAX_SAMPLE_ROWS = 5
@@ -86,7 +86,7 @@ class ColumnProposal(BaseModel):
 class Proposal:
     profile: FormatProfile | None
     problems: list[str] = field(default_factory=list)
-    calls: list[MeshResult] = field(default_factory=list)
+    calls: list[ModelResult] = field(default_factory=list)
     withheld_headers: int = 0
     prompt_version: str = ""
     confidence: float | None = None
@@ -142,14 +142,14 @@ def profile_from(roles: dict[str, int], headers: Sequence[str], convention: str)
 def propose(
     headers: Sequence[str],
     rows: Sequence[Sequence[str]],
-    mesh: MeshClient,
+    model_client: ModelClient,
     *,
     locale_pack: str = "uk",
 ) -> Proposal:
     """One fast-tier call. The result stays `origin="proposed"` until the user confirms it."""
     payload, withheld = _payload(headers, rows)
     system = (PROMPTS_DIR / f"{PROMPT}.md").read_text(encoding="utf-8")
-    result = mesh.structured(
+    result = model_client.structured(
         tier=ModelTier.FAST,
         messages=[
             {"role": "system", "content": system},

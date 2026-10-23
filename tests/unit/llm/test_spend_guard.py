@@ -1,4 +1,4 @@
-"""Project-wide daily spend guard (backend/mesh/spend_guard.py)."""
+"""Project-wide daily spend guard (backend/llm/spend_guard.py)."""
 
 from __future__ import annotations
 
@@ -6,10 +6,10 @@ from datetime import date
 
 import pytest
 
-from backend.mesh.availability import AiAvailability
-from backend.mesh.mesh_client import MeshUnavailableError, ModelTier
-from backend.mesh.spend_guard import DailySpendGuard
-from tests.unit.mesh.fakes import ScriptedCompletions, client, ok
+from backend.llm.availability import AiAvailability
+from backend.llm.client import ModelTier, ModelUnavailableError
+from backend.llm.spend_guard import DailySpendGuard
+from tests.unit.llm.fakes import ScriptedCompletions, client, ok
 
 MSG = [{"role": "user", "content": "hello"}]
 
@@ -72,8 +72,8 @@ def test_used_budget_makes_ai_unavailable_and_refuses_live_calls() -> None:
     assert availability.status() == "unavailable"
 
     calls = ScriptedCompletions(ok())
-    mesh = client(calls, spend_guard=guard)
-    with pytest.raises(MeshUnavailableError):
-        mesh.complete(tier=ModelTier.FAST, messages=MSG)
+    model_client = client(calls, spend_guard=guard)
+    with pytest.raises(ModelUnavailableError):
+        model_client.complete(tier=ModelTier.FAST, messages=MSG)
     assert calls.calls == []
-    assert mesh.availability.status() == "unavailable"
+    assert model_client.availability.status() == "unavailable"

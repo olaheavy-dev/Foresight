@@ -103,7 +103,7 @@
   "request_hash": "02315aac9f990cffebb399f8e05014c06c4e2db97d1a82186a117a0a888f176f",
   "response": {
     "content": "{\"standalone_question\":\"How much did I spend on groceries last month?\",\"intent\":\"spending_breakdown\",\"slots\":{\"period\":\"last_month\",\"category_key\":\"groceries\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdUBxGvthctMV4yNLL8TlJOYtHyD",
+    "provider_response_id": "chatcmpl-EYdUBxGvthctMV4yNLL8TlJOYtHyD",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

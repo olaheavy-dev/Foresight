@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Food delivery seems high; why?\",\"intent\":\"trend_or_change\",\"slots\":{\"category_key\":\"food.delivery\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.76,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0003149,
     "latency_ms": 502,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHB69AB80AVM9SG1M9F332",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHB69AB80AVM9SG1M9F332",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

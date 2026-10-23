@@ -78,7 +78,7 @@
   "request_hash": "22aefbada293270e5551d7a5f84c9f9b7e1934711e7dcad7ac83dfe938a1ecc1",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-62a1b642a78b3738b380",
+    "provider_response_id": "chatcmpl-62a1b642a78b3738b380",
     "model": "anthropic/claude-sonnet-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": false, \"reason\": \"Rationale says eating out has risen, but the cited finding is a streaming subscription overlap; no evidence shows higher eating-out spending.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names a specific category (eating out) and a clear monthly cap action until payday.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral, respectful wording with no alarmist or speculative claims beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Concerns only budgeting of an eating-out category; no investment, loan, credit card, pension or tax advice.\"}]}",
     "usage": {

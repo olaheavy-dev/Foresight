@@ -103,7 +103,7 @@
   "request_hash": "21a8ffd48de1b8483ae605caf74e4095bd2c1bbf764e180a099c16067c4d7898",
   "response": {
     "content": "{\"standalone_question\":\"Can I afford a \u00a31,200 holiday on 6 November 2026?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":120000,\"date\":\"2026-11-06\",\"purpose\":\"holiday\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdRL3v9Als2HITwX2ZxSvpZueACA",
+    "provider_response_id": "chatcmpl-EYdRL3v9Als2HITwX2ZxSvpZueACA",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

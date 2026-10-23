@@ -78,7 +78,7 @@
   "request_hash": "09ed517c800f4e3faec15689ffe8b2e226fd4694606b45639175900500b9f525",
   "response": {
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited eating-out spending spike and baseline cash-flow forecast support the rationale for reducing this category's spending.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names restaurant and cafe spending and specifies a monthly cap that can be applied today.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with future claims limited to the forecast and estimated savings.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation is a spending-category cap, with no restricted financial advice or recommendations.\"}]}",
-    "mesh_response_id": "chatcmpl-EYdBnNe3ajTZnGwXbKgzwMp9Qd9pn",
+    "provider_response_id": "chatcmpl-EYdBnNe3ajTZnGwXbKgzwMp9Qd9pn",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

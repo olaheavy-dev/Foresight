@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Will I get through to payday?\",\"intent\":\"risk_check\",\"slots\":{\"window\":\"to_next_payday\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002464,
     "latency_ms": 498,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHAX2Z09858T63EZS2FC4T",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHAX2Z09858T63EZS2FC4T",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

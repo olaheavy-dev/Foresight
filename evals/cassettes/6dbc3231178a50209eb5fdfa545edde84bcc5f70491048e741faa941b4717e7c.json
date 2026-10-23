@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Can I afford a \u00a31,200 trip?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":120000,\"purpose\":\"trip\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.95,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002801,
     "latency_ms": 5253,
-    "mesh_response_id": "chatcmpl-EYe1Mi21KotvIp8GH1rc0rzpadjNf",
+    "provider_response_id": "chatcmpl-EYe1Mi21KotvIp8GH1rc0rzpadjNf",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

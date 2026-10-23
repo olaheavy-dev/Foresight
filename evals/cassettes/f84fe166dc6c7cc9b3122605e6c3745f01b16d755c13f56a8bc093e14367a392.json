@@ -381,7 +381,7 @@
   "request_hash": "f84fe166dc6c7cc9b3122605e6c3745f01b16d755c13f56a8bc093e14367a392",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Christmas train tickets\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-12-19\",\"amount_minor\":8500,\"label\":\"Train tickets home for Christmas\",\"category_key\":\"transport.public\"}],\"assumptions\":[]}, \"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVYGUyept9hNeiev6CT4IMzVZNcV",
+    "provider_response_id": "chatcmpl-EYVYGUyept9hNeiev6CT4IMzVZNcV",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

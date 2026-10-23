@@ -103,7 +103,7 @@
   "request_hash": "f2bed9c25e87e864477e913b038de6c2d7d4c2e88d4aa7201e25f87c8dcdf74e",
   "response": {
     "content": "{\"standalone_question\":\"How do I keep above my safety buffer?\",\"intent\":\"advice_request\",\"slots\":{},\"needs_forecast\":true,\"needs_advice\":true,\"confidence\":0.91,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdTlUeitW33qppKW0nHXtZALPHwZ",
+    "provider_response_id": "chatcmpl-EYdTlUeitW33qppKW0nHXtZALPHwZ",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

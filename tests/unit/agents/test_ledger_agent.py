@@ -1,5 +1,5 @@
 """Ledger Agent fallback (docs/06 §4.1, AGT-03): what is sent, what never is, validation, merge
-and merchant-memory rules. Mesh is a scripted fake: no network."""
+and merchant-memory rules. The model client is a scripted fake: no network."""
 
 from __future__ import annotations
 
@@ -18,9 +18,9 @@ from backend.finance_core.types import (
     FlowKind,
     Transaction,
 )
-from backend.mesh.mesh_client import MeshSchemaError
+from backend.llm.client import ModelSchemaError
 from evals.common import uk_categorisation_pack
-from tests.unit.mesh.fakes import ScriptedCompletions, client, json_ok
+from tests.unit.llm.fakes import ScriptedCompletions, client, json_ok
 
 
 def _pack() -> CategorisationPack:
@@ -137,10 +137,10 @@ def test_unknown_category_is_rejected_by_schema_and_degrades_the_batch_only() ->
 
 def test_schema_error_carries_its_calls_for_budget_and_cost() -> None:
     bad = json_ok({"nope": True})
-    mesh = client(ScriptedCompletions(bad, bad))
+    model_client = client(ScriptedCompletions(bad, bad))
     model = lg.batch_model(["groceries", "uncategorised"])
-    with pytest.raises(MeshSchemaError) as caught:
-        mesh.structured(
+    with pytest.raises(ModelSchemaError) as caught:
+        model_client.structured(
             tier=lg.ModelTier.FAST,
             messages=[{"role": "user", "content": "x"}],
             output=model,
