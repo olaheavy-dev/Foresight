@@ -143,6 +143,42 @@ def test_demo_copies_come_from_a_warm_pool_seeded_in_a_worker_process(
             assert db.get(m.Workspace, spare.id) is not None
 
 
+def test_a_claim_that_empties_the_pool_starts_a_seed_and_the_next_takes_it(
+    make_client: type[TestClient], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Under steady traffic claims are never quiet for REFILL_DELAY_SECONDS, so the debounced
+    top-up never runs. The claim that empties the pool starts one seed at once, and a visitor who
+    finds the pool empty takes that pending seed's copy rather than queueing a seed of their own
+    behind it ("Reset demo" needs a second copy and ran past 30 s in the 23 Oct smoke)."""
+    import time
+
+    from backend.app import demo_pool
+
+    monkeypatch.setenv("DEMO_POOL_SIZE", "1")
+    monkeypatch.setattr(demo_pool, "REFILL_DELAY_SECONDS", 3600.0)  # never quiet
+    get_settings.cache_clear()
+    try:
+        with (
+            make_client(create_app(), base_url=BASE) as first,
+            make_client(create_app(), base_url=BASE) as second,
+        ):
+            _drain_worker()
+            demo_pool._pool().submit(time.sleep, 3)  # hold the worker so the next seed is pending
+            demo(first)  # takes the only ready copy and starts one seed
+            claimed = demo(second)["workspace_id"]  # the pool is empty: waits for that seed
+            _drain_worker()
+            with _db() as db:
+                # The second claim emptied the pool again, so one more copy is ready, and it was
+                # seeded after the one the second visitor got (not queued ahead of theirs).
+                (spare,) = db.scalars(demo_pool._unowned("P1")).all()
+                got = db.get(m.Workspace, claimed)
+                assert got is not None
+                assert got.created_at < spare.created_at
+    finally:
+        if (timer := demo_pool._refills.get("P1")) is not None:
+            timer.cancel()
+
+
 def _legacy_cookie(workspace_id: str) -> str:
     """A `foresight_profile` cookie exactly as the pre-accounts API signed it."""
     import base64
