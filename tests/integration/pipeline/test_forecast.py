@@ -179,3 +179,38 @@ def test_any_stored_simulation_rebuilds_identically(session: Session) -> None:
     assert impact.calculation.params["purpose"] == "recommendation_impact"
     assert verify_simulation(ctx, impact.calculation.id) is True
     session.rollback()
+
+
+def test_the_calibration_is_fitted_once_per_data_version_across_requests(
+    session: Session, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """23 Oct 2026: every goal and Lab simulation refitted the band calibration (about 13 past
+    forecasts), most of their time (about 5 s of a goal on the 2-vCPU server). The fit is reused
+    from the stored forecast or the process cache until the ledger changes, and is identical to a
+    fresh fit."""
+    from backend.pipeline import forecast as fc
+
+    ctx, acct, on, _amount = _p1(session)
+    run_forecast(ctx, as_of=on, n_paths=200)  # seeding stores a forecast with its fit
+    fits: list[int] = []
+    real = fc._fit_calibration
+    monkeypatch.setattr(fc, "_fit_calibration", lambda *a, **k: fits.append(1) or real(*a, **k))
+
+    def fit_in_a_new_request() -> object:
+        request = WorkspaceContext.open(session, ctx.workspace_id)  # a fresh per-request memo
+        inputs = forecast_inputs(request, as_of=on, horizon_days=200)
+        return fc.calibration_for(request, inputs, fc.irregular_prior(inputs.currency))
+
+    # A cold API process: the demo pool's worker fitted it elsewhere.
+    getattr(fc, "_calibrations", {}).clear()
+    from_store = fit_in_a_new_request()
+    assert fits == []  # read from the stored forecast
+    assert fit_in_a_new_request() is from_store  # then from the process cache
+    assert fits == []
+    inputs = forecast_inputs(ctx, as_of=on)
+    assert from_store == real(ctx, inputs, fc.irregular_prior(inputs.currency), HISTORY_DAYS)
+
+    declare_balance(ctx, acct, on, 123_45)  # a ledger change bumps data_version
+    session.commit()
+    fit_in_a_new_request()
+    assert fits == [1]  # refitted for the new data

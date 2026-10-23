@@ -18,8 +18,9 @@ from __future__ import annotations
 
 import dataclasses
 import hashlib
+import threading
 import time
-from collections import defaultdict
+from collections import OrderedDict, defaultdict
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date, timedelta
@@ -253,6 +254,33 @@ def _daily_balances(ctx: WorkspaceContext, first: date, last: date) -> dict[date
     return out
 
 
+# The fit is most of a goal's or a Lab simulation's time (0.66 of 0.80 s on a laptop, about 5 s of
+# a goal on the 2-vCPU server, 23 Oct 2026), yet it only changes with the data. So it is also kept
+# across requests, under the same key plus the workspace: every input of the fit is ledger data,
+# and any ledger change bumps `data_version`, so a stale fit can't be served. Calibration is
+# frozen, so sharing one is safe. Bounded, per process, and gone on restart (the next request
+# refits).
+CALIBRATION_CACHE_SIZE = 512
+_calibrations: OrderedDict[str, Calibration | None] = OrderedDict()
+_calibrations_lock = threading.Lock()
+
+
+def _cached_calibration(key: str) -> tuple[bool, Calibration | None]:
+    with _calibrations_lock:
+        if key not in _calibrations:
+            return False, None
+        _calibrations.move_to_end(key)
+        return True, _calibrations[key]
+
+
+def _keep_calibration(key: str, fit: Calibration | None) -> None:
+    with _calibrations_lock:
+        _calibrations[key] = fit
+        _calibrations.move_to_end(key)
+        while len(_calibrations) > CALIBRATION_CACHE_SIZE:
+            _calibrations.popitem(last=False)
+
+
 def calibration_for(
     ctx: WorkspaceContext,
     inputs: ForecastInputs,
@@ -264,7 +292,8 @@ def calibration_for(
     balance is relative or there is too little history for a single past forecast.
 
     The fit doesn't depend on the horizon, so within one request it is computed once and reused
-    (listing five goals after a data change refitted it five times, #54 review)."""
+    (listing five goals after a data change refitted it five times, #54 review), and across
+    requests until the data changes (see CALIBRATION_CACHE_SIZE)."""
     if inputs.starting_balance_provenance == "relative":
         return None
     key = content_hash(
@@ -277,9 +306,63 @@ def calibration_for(
     )
     key = f"calibration:{key}"
     if key not in ctx.memo:  # a WorkspaceContext lives for one request or one run
-        ctx.memo[key] = _fit_calibration(ctx, inputs, prior, window_days)
+        # The ledger inputs themselves are in the key too, so a fit is never reused across
+        # databases that share reproducible ids (evals, tests) or after a missed bump.
+        ledger = content_hash(
+            {
+                "currency": inputs.currency,
+                "balance": inputs.starting_balance_minor,
+                "provenance": inputs.starting_balance_provenance,
+                "income": to_jsonable(inputs.income_streams),
+                "obligations": to_jsonable(inputs.obligations),
+                "discretionary": to_jsonable(inputs.discretionary_history),
+            }
+        )
+        shared = f"{ctx.workspace_id}:{key}:{ledger}"
+        found, fit = _cached_calibration(shared)
+        if not found:
+            found, fit = _stored_calibration(ctx, inputs, prior, window_days)
+        if not found:
+            fit = _fit_calibration(ctx, inputs, prior, window_days)
+        _keep_calibration(shared, fit)
+        ctx.memo[key] = fit
     cached: Calibration | None = ctx.memo[key]
     return cached
+
+
+def _stored_calibration(
+    ctx: WorkspaceContext,
+    inputs: ForecastInputs,
+    prior: IrregularPrior | None,
+    window_days: int,
+) -> tuple[bool, Calibration | None]:
+    """The fit stored with a forecast of this ledger, if one exists. A fresh demo copy is seeded,
+    and its forecast fitted, in the demo pool's own process, so without this its first goal or
+    simulation in the API process would fit again (about 5 s on the server). The match is the
+    one `_stored_forecast` relies on: the fit is a function of the ledger at `data_version`, the
+    as-of date, the window and the prior, and a change to its code bumps ENGINE_VERSION."""
+    want = to_jsonable(
+        {
+            "as_of": inputs.as_of.isoformat(),
+            "window_days": window_days,
+            "prior": None if prior is None else prior_json(prior),
+        }
+    )
+    stmt = (
+        ctx.select(m.Calculation)
+        .where(
+            m.Calculation.kind == "forecast",
+            m.Calculation.data_version == ctx.workspace.data_version,
+            m.Calculation.engine_version == ENGINE_VERSION,
+        )
+        .order_by(m.Calculation.created_at.desc())
+    )
+    for row in ctx.session.scalars(stmt):
+        params = row.params or {}
+        if "calibration" in params and all(params.get(k) == v for k, v in want.items()):
+            stored = params["calibration"]
+            return True, None if stored is None else calibration_from_json(stored)
+    return False, None
 
 
 def _fit_calibration(
