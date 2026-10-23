@@ -247,7 +247,8 @@ def test_rebuilding_the_goal_list_fits_the_calibration_once(
 ) -> None:
     """#54 review: after a data change every goal is projected again in one GET; the calibration
     fit doesn't depend on the horizon, so it runs once per request, not once per goal (5 goals
-    on 1 CPU: 2.5 s → 0.8 s)."""
+    on 1 CPU: 2.5 s → 0.8 s). Since 23 Oct 2026 it is also reused across requests until the
+    ledger changes, so a preference change (the buffer) refits nothing."""
     from backend.pipeline import forecast as fc
 
     with make_client(create_app(), base_url=BASE) as alice:
@@ -264,4 +265,13 @@ def test_rebuilding_the_goal_list_fits_the_calibration_once(
 
         monkeypatch.setattr(fc, "_fit_calibration", counting)
         assert all(g["projection"] for g in _goals(alice)["goals"])
-        assert len(fits) == 1
+        assert fits == []  # the buffer isn't ledger data: the stored fit is reused
+
+        (account,) = alice.get("/api/accounts").json()["accounts"]
+        declared = alice.post(
+            f"/api/accounts/{account['account_id']}/balance",
+            json={"as_of": date.today().isoformat(), "amount_minor": 250_000},
+        )
+        assert declared.status_code == 200  # a ledger change: every goal is projected again
+        assert all(g["projection"] for g in _goals(alice)["goals"])
+        assert len(fits) == 1  # once for the three goals, not once each
