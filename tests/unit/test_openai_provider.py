@@ -9,11 +9,11 @@ import httpx
 import pytest
 from openai import APITimeoutError, RateLimitError
 
-from backend.mesh.mesh_client import (
+from backend.llm.client import (
     OPENAI_BASE_URL,
-    MeshClient,
-    MeshConfigError,
-    MeshSpendLimitError,
+    ModelClient,
+    ModelConfigError,
+    ModelSpendLimitError,
     ModelTier,
 )
 from backend.settings import Settings
@@ -40,39 +40,39 @@ def _settings(**overrides: Any) -> Settings:
     values: dict[str, Any] = {
         "model_provider": "openai",
         "openai_api_key": "sk_test",
-        "mesh_model_fast": "openai/gpt-6-luna",
-        "mesh_model_fast_fallback": "anthropic/claude-haiku-5.5",
-        "mesh_model_reasoning": "openai/gpt-6-sol",
-        "mesh_model_reasoning_fallback": "google/gemini-3.1-pro",
+        "model_fast": "openai/gpt-6-luna",
+        "model_fast_fallback": "anthropic/claude-haiku-5.5",
+        "model_reasoning": "openai/gpt-6-sol",
+        "model_reasoning_fallback": "google/gemini-3.1-pro",
     }
     values.update(overrides)
     return Settings(**values)
 
 
-def _client(completions: StubCompletions, **overrides: Any) -> MeshClient:
+def _client(completions: StubCompletions, **overrides: Any) -> ModelClient:
     stub = SimpleNamespace(chat=SimpleNamespace(completions=completions))
-    return MeshClient(settings=_settings(**overrides), client=stub, sleep=lambda _: None)  # type: ignore[arg-type]
+    return ModelClient(settings=_settings(**overrides), client=stub, sleep=lambda _: None)  # type: ignore[arg-type]
 
 
-def _ask(client: MeshClient, tier: ModelTier = ModelTier.FAST) -> Any:
+def _ask(client: ModelClient, tier: ModelTier = ModelTier.FAST) -> Any:
     return client.complete(tier=tier, messages=[{"role": "user", "content": "hello"}])
 
 
 def test_openai_provider_uses_the_fixed_openai_address(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("OPENAI_BASE_URL", "https://example.invalid/v1")
-    client = MeshClient(settings=_settings())
+    client = ModelClient(settings=_settings())
     assert client.provider == "openai"
     assert client.base_url == OPENAI_BASE_URL
 
 
 def test_openai_provider_needs_its_own_key() -> None:
-    with pytest.raises(MeshConfigError, match="OPENAI_API_KEY"):
-        MeshClient(settings=_settings(openai_api_key=""))
+    with pytest.raises(ModelConfigError, match="OPENAI_API_KEY"):
+        ModelClient(settings=_settings(openai_api_key=""))
 
 
 def test_unknown_provider_is_a_config_error() -> None:
-    with pytest.raises(MeshConfigError, match="MODEL_PROVIDER"):
-        MeshClient(settings=_settings(model_provider="elsewhere"))
+    with pytest.raises(ModelConfigError, match="MODEL_PROVIDER"):
+        ModelClient(settings=_settings(model_provider="elsewhere"))
 
 
 def test_model_is_sent_without_its_prefix_and_priced() -> None:
@@ -100,19 +100,19 @@ def test_other_providers_fallbacks_are_skipped() -> None:
 
 def test_a_non_openai_primary_is_refused_at_start_up() -> None:
     """Codex on #67: the service mustn't look healthy and then fail every Advisor call."""
-    with pytest.raises(MeshConfigError, match="claude-sonnet"):
-        _client(StubCompletions(), mesh_model_reasoning="anthropic/claude-sonnet-5.5")
+    with pytest.raises(ModelConfigError, match="claude-sonnet"):
+        _client(StubCompletions(), model_reasoning="anthropic/claude-sonnet-5.5")
 
 
 def test_new_recordings_say_which_provider_served_them(tmp_path: Any) -> None:
     import json
 
-    from backend.mesh.cassettes import CassetteStore
+    from backend.llm.cassettes import CassetteStore
 
     store = CassetteStore(tmp_path, provider="openai")
     stub = SimpleNamespace(chat=SimpleNamespace(completions=StubCompletions()))
-    client = MeshClient(
-        settings=_settings(mesh_cassette_mode="record", mesh_cassette_dir=str(tmp_path)),
+    client = ModelClient(
+        settings=_settings(model_cassette_mode="record", model_cassette_dir=str(tmp_path)),
         client=stub,  # type: ignore[arg-type]
         cassettes=store,
         sleep=lambda _: None,
@@ -126,9 +126,9 @@ def test_new_recordings_say_which_provider_served_them(tmp_path: Any) -> None:
 
 def test_replay_still_answers_recordings_of_other_providers() -> None:
     """Recordings made through Mesh keep their keys (prefixed model IDs), so replay is unchanged."""
-    client = MeshClient(
+    client = ModelClient(
         settings=_settings(
-            mesh_cassette_mode="replay", mesh_model_reasoning="anthropic/claude-sonnet-5.5"
+            model_cassette_mode="replay", model_reasoning="anthropic/claude-sonnet-5.5"
         )
     )
     assert client.models_for(ModelTier.REASONING) == (
@@ -146,7 +146,7 @@ def test_insufficient_quota_is_a_spend_limit_not_a_retry() -> None:
     )
     completions = StubCompletions(error=error)
     client = _client(completions)
-    with pytest.raises(MeshSpendLimitError):
+    with pytest.raises(ModelSpendLimitError):
         _ask(client)
     assert len(completions.calls) == 1
 
@@ -159,55 +159,55 @@ def test_results_carry_the_provider_for_agent_steps() -> None:
 def test_the_advisor_can_never_fall_back_to_its_judge() -> None:
     """Codex on #67: in a degraded run the same model must not write and check advice."""
     s = Settings()
-    advisor_models = {s.mesh_model_reasoning, s.mesh_model_reasoning_fallback} - {""}
-    judge_models = {s.mesh_model_verifier, s.mesh_model_verifier_fallback} - {""}
+    advisor_models = {s.model_reasoning, s.model_reasoning_fallback} - {""}
+    judge_models = {s.model_verifier, s.model_verifier_fallback} - {""}
     assert not advisor_models & judge_models
 
 
 @pytest.mark.parametrize(
     "overrides",
     [
-        {"mesh_model_reasoning": "openai/gpt-6.1-sol"},
-        {"mesh_model_reasoning_fallback": "openai/gpt-6.1-sol"},
-        {"mesh_model_verifier_fallback": "openai/gpt-6-sol"},
+        {"model_reasoning": "openai/gpt-6.1-sol"},
+        {"model_reasoning_fallback": "openai/gpt-6.1-sol"},
+        {"model_verifier_fallback": "openai/gpt-6-sol"},
     ],
 )
 def test_a_configuration_where_the_advisor_judges_itself_is_refused(
     overrides: dict[str, str],
 ) -> None:
     """Codex on #67: an override must not make one model write and check advice."""
-    with pytest.raises(MeshConfigError, match="judge"):
+    with pytest.raises(ModelConfigError, match="judge"):
         _client(StubCompletions(), **overrides)
 
 
 def test_a_replay_keeps_the_provider_that_recorded_it(tmp_path: Any) -> None:
     """Codex on #67: a recording made through Mesh replays as "mesh", not as OpenAI."""
-    from backend.mesh.cassettes import CassetteStore
+    from backend.llm.cassettes import CassetteStore
 
     stub = SimpleNamespace(chat=SimpleNamespace(completions=StubCompletions()))
-    recorder = MeshClient(
-        settings=_settings(mesh_cassette_mode="record", mesh_cassette_dir=str(tmp_path)),
+    recorder = ModelClient(
+        settings=_settings(model_cassette_mode="record", model_cassette_dir=str(tmp_path)),
         client=stub,  # type: ignore[arg-type]
         cassettes=CassetteStore(tmp_path, provider="mesh"),
         sleep=lambda _: None,
     )
     _ask(recorder)
-    replayer = MeshClient(
-        settings=_settings(mesh_cassette_mode="replay", mesh_cassette_dir=str(tmp_path))
+    replayer = ModelClient(
+        settings=_settings(model_cassette_mode="replay", model_cassette_dir=str(tmp_path))
     )
     replayed = _ask(replayer)
     assert replayed.replayed
     assert replayed.provider == "mesh"
 
 
-def test_recordings_from_before_the_field_replay_as_mesh(tmp_path: Any) -> None:
+def test_recordings_from_before_the_field_replay_as_model_client(tmp_path: Any) -> None:
     import json
 
-    from backend.mesh.cassettes import CassetteStore
+    from backend.llm.cassettes import CassetteStore
 
     stub = SimpleNamespace(chat=SimpleNamespace(completions=StubCompletions()))
-    recorder = MeshClient(
-        settings=_settings(mesh_cassette_mode="record", mesh_cassette_dir=str(tmp_path)),
+    recorder = ModelClient(
+        settings=_settings(model_cassette_mode="record", model_cassette_dir=str(tmp_path)),
         client=stub,  # type: ignore[arg-type]
         cassettes=CassetteStore(tmp_path),
         sleep=lambda _: None,
@@ -215,19 +215,19 @@ def test_recordings_from_before_the_field_replay_as_mesh(tmp_path: Any) -> None:
     _ask(recorder)
     (saved,) = tmp_path.glob("*.json")
     assert "provider" not in json.loads(saved.read_text())
-    replayer = MeshClient(
-        settings=_settings(mesh_cassette_mode="replay", mesh_cassette_dir=str(tmp_path))
+    replayer = ModelClient(
+        settings=_settings(model_cassette_mode="replay", model_cassette_dir=str(tmp_path))
     )
     assert _ask(replayer).provider == "mesh"
 
 
-def test_a_migrated_mesh_config_with_skipped_shared_fallbacks_starts() -> None:
+def test_a_migrated_model_client_config_with_skipped_shared_fallbacks_starts() -> None:
     """Codex on #67: Gemini fallbacks left on both tiers are skipped under openai, never called,
     so they don't make the Advisor its own judge."""
     client = _client(
         StubCompletions(),
-        mesh_model_reasoning_fallback="google/gemini-3.1-pro",
-        mesh_model_verifier_fallback="google/gemini-3.1-pro",
+        model_reasoning_fallback="google/gemini-3.1-pro",
+        model_verifier_fallback="google/gemini-3.1-pro",
     )
     assert client.models_for(ModelTier.REASONING)[1] == ""
     assert client.models_for(ModelTier.VERIFIER)[1] == ""
@@ -244,10 +244,10 @@ def test_the_fast_fallback_gets_the_long_timeout() -> None:
             return super().create(**kwargs)
 
     completions = LunaTimesOut()
-    client = _client(completions, mesh_model_fast_fallback="openai/gpt-6-sol", mesh_max_retries=0)
+    client = _client(completions, model_fast_fallback="openai/gpt-6-sol", model_max_retries=0)
     assert _ask(client).text == "ok"
     s = client._settings
     assert [(c["model"], c["timeout"]) for c in completions.calls] == [
-        ("gpt-6-luna", s.mesh_timeout_fast_seconds),
-        ("gpt-6-sol", s.mesh_timeout_reasoning_seconds),
+        ("gpt-6-luna", s.model_timeout_fast_seconds),
+        ("gpt-6-sol", s.model_timeout_reasoning_seconds),
     ]

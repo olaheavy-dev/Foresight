@@ -383,7 +383,7 @@
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Buy laptop and cancel streaming subscriptions\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-11-01\",\"amount_minor\":90000,\"label\":\"Laptop\",\"category_key\":\"shopping.general\"},{\"type\":\"recurring_cancel\",\"recurring_id\":\"rob_disney\",\"from_date\":\"2026-10-11\"},{\"type\":\"recurring_cancel\",\"recurring_id\":\"rob_now\",\"from_date\":\"2026-10-11\"}],\"assumptions\":[]},\"clarification\":null}",
     "cost_estimate_usd": 0.005648,
     "latency_ms": 3160,
-    "mesh_response_id": "chatcmpl-EbAiSji7Gw2mAmoZewDA8K5nnyIPt",
+    "provider_response_id": "chatcmpl-EbAiSji7Gw2mAmoZewDA8K5nnyIPt",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

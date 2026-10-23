@@ -55,7 +55,7 @@
     "content": "{\"verdict\":\"I can\u2019t confirm whether the presents are affordable from the information available. Compare the likely lowest balance with the purchase, {{R8}}, with the likely lowest balance without it, {{R7}}.\",\"key_numbers\":[\"R8\",\"R7\"],\"main_visual\":\"InterventionCard\"}",
     "cost_estimate_usd": 0.0002601,
     "latency_ms": 3586,
-    "mesh_response_id": "chatcmpl-EbMO0TES4intubqdmAAz0rsQjWl2F",
+    "provider_response_id": "chatcmpl-EbMO0TES4intubqdmAAz0rsQjWl2F",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

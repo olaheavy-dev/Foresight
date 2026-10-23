@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited food-delivery spending spike and cash-flow forecast support the rationale for a cap to preserve cash before payday.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and gives a clear monthly cap action with a specified cap parameter.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, and the future benefit is conditional on recent spending continuing.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal is a spending-category cap and contains no restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003366,
     "latency_ms": 5489,
-    "mesh_response_id": "chatcmpl-EbAUrhrWFUF91dbAwByn2sOkrhjZ0",
+    "provider_response_id": "chatcmpl-EbAUrhrWFUF91dbAwByn2sOkrhjZ0",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

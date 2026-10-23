@@ -383,7 +383,7 @@
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Salary 10 days late\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"income_delay\",\"income_stream_id\":\"inc_acme_analytics\",\"days\":10,\"occurrences\":1}],\"assumptions\":[]},\"clarification\":null}",
     "cost_estimate_usd": 0.0002586,
     "latency_ms": 1580,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHCKKE38N8Y6AWGF658120",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHCKKE38N8Y6AWGF658120",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

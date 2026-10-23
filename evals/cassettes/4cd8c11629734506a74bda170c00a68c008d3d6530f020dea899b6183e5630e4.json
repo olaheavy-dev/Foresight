@@ -381,7 +381,7 @@
   "request_hash": "4cd8c11629734506a74bda170c00a68c008d3d6530f020dea899b6183e5630e4",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Flat deposit\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-11-30\",\"amount_minor\":100000,\"label\":\"Flat deposit\",\"category_key\":\"housing.rent\"}],\"assumptions\":[]}, \"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVbqZPE4NtbWH1DjmAXbagqZLE9Y",
+    "provider_response_id": "chatcmpl-EYVbqZPE4NtbWH1DjmAXbagqZLE9Y",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

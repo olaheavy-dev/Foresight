@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast supports the pre-payday balance concern, and a feasible spending cap preserves cash.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names eating out and specifies a monthly cap, giving a clear action to take today.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no claims about the future beyond the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation is limited to everyday spending and contains no restricted financial advice.\"}]}",
     "cost_estimate_usd": 0.00352,
     "latency_ms": 5143,
-    "mesh_response_id": "chatcmpl-EbBfZhsiQ82nxxqIiuJpjrEfLRxSL",
+    "provider_response_id": "chatcmpl-EbBfZhsiQ82nxxqIiuJpjrEfLRxSL",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

@@ -36,7 +36,7 @@ def api(seeded: Engine, monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClient]
     monkeypatch.setenv("SESSION_SECRET", "test-only-secret")
     monkeypatch.setenv("DEMO_POOL_SIZE", "0")
     monkeypatch.setenv("PROACTIVE_WORKER", "0")
-    monkeypatch.setattr(ask_router, "_mesh", None)  # no client cached from another test
+    monkeypatch.setattr(ask_router, "_model_client", None)  # no client cached from another test
     get_settings.cache_clear()
     with TestClient(create_app(), base_url="https://testserver", headers=CLIENT) as client:
         yield client
@@ -58,7 +58,7 @@ def make_client(seeded: Engine, monkeypatch: pytest.MonkeyPatch) -> Iterator[typ
     monkeypatch.setenv("SESSION_SECRET", "test-only-secret")
     monkeypatch.setenv("DEMO_POOL_SIZE", "0")
     monkeypatch.setenv("PROACTIVE_WORKER", "0")
-    monkeypatch.setattr(ask_router, "_mesh", None)  # no client cached from another test
+    monkeypatch.setattr(ask_router, "_model_client", None)  # no client cached from another test
     get_settings.cache_clear()
     yield BrowserClient
     get_settings.cache_clear()

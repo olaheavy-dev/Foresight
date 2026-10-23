@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited subscription-overlap finding supports cancelling one service, with the cash-flow forecast providing buffer context.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names Netflix and specifies cancellation of its recurring subscription.\"},{\"rule\":\"V-13\",\"passed\":false,\"reason\":\"The title contains \u201cREF,\u201d which violates the no-REF requirement.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Cancelling an entertainment subscription is within scope and does not involve restricted financial advice.\"}]}",
     "cost_estimate_usd": 0.00457,
     "latency_ms": 8691,
-    "mesh_response_id": "chatcmpl-EbAd7sX3GOEWP3DGXLUbNQD3hcGXa",
+    "provider_response_id": "chatcmpl-EbAd7sX3GOEWP3DGXLUbNQD3hcGXa",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

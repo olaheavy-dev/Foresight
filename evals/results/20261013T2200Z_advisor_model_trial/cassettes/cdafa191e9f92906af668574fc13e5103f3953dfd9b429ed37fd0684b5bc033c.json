@@ -78,7 +78,7 @@
   "request_hash": "cdafa191e9f92906af668574fc13e5103f3953dfd9b429ed37fd0684b5bc033c",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-60227d3a0e945c56c05d",
+    "provider_response_id": "chatcmpl-60227d3a0e945c56c05d",
     "model": "anthropic/claude-sonnet-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": false, \"reason\": \"Rationale says delivery spending has risen, but the cited finding is a Spotify price change, not delivery spending; the forecast only shows the pre-payday low.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names a category (food delivery), a monthly cap amount and a clear action (cap until next payday).\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral, respectful wording; no speculation beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Budget cap on food delivery only; no investment, loan, credit card, pension or tax advice.\"}]}",
     "usage": {

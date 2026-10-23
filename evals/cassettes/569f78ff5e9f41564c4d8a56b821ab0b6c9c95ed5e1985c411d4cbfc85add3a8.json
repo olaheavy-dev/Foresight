@@ -103,7 +103,7 @@
   "request_hash": "569f78ff5e9f41564c4d8a56b821ab0b6c9c95ed5e1985c411d4cbfc85add3a8",
   "response": {
     "content": "{\"standalone_question\":\"Is my emergency fund on track?\",\"intent\":\"goal_status\",\"slots\":{\"goal\":\"emergency_fund\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.94,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdUZbV23HGcHAclcW6EwPzvQ31ZS",
+    "provider_response_id": "chatcmpl-EYdUZbV23HGcHAclcW6EwPzvQ31ZS",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

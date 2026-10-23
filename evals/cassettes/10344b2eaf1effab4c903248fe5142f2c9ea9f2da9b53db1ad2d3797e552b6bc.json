@@ -103,7 +103,7 @@
   "request_hash": "10344b2eaf1effab4c903248fe5142f2c9ea9f2da9b53db1ad2d3797e552b6bc",
   "response": {
     "content": "{\"standalone_question\":\"What if my rent goes up to \u00a31,300 from March?\",\"intent\":\"scenario\",\"slots\":{\"amount_minor\":130000,\"date\":\"2027-03-01\",\"purpose\":\"rent\",\"modifier\":\"recurring_change\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdUseorwsE1Km7baTOjnXGp2QH2v",
+    "provider_response_id": "chatcmpl-EYdUseorwsE1Km7baTOjnXGp2QH2v",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

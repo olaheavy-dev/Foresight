@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The cited evidence concerns a Spotify price increase, not the cause of increased clothes shopping.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names clothes shopping and specifies a clear monthly spending cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no instructions embedded in the data.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation concerns a clothing spending cap, not restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003738,
     "latency_ms": 5514,
-    "mesh_response_id": "chatcmpl-EYq6bw3XZ9q7qZ8bc4YkoPxXmW72U",
+    "provider_response_id": "chatcmpl-EYq6bw3XZ9q7qZ8bc4YkoPxXmW72U",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

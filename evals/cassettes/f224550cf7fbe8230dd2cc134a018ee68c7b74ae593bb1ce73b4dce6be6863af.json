@@ -383,7 +383,7 @@
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Rent rises to \u00a31,300\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"recurring_change\",\"recurring_id\":\"rob_northside_lettings\",\"amount_minor\":130000,\"from_date\":\"2027-02-01\"}],\"assumptions\":[]}, \"clarification\":null}",
     "cost_estimate_usd": 0.000279,
     "latency_ms": 2412,
-    "mesh_response_id": "chatcmpl-EYeCMPJSwSmVB2P9zSybFr2APk2hf",
+    "provider_response_id": "chatcmpl-EYeCMPJSwSmVB2P9zSybFr2APk2hf",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

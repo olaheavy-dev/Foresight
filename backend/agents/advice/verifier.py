@@ -24,7 +24,7 @@ from backend.agents.advice.rules import VERSION, critique_for, deterministic_rul
 from backend.agents.advice.world import AdviceWorld
 from backend.agents.cache import prompt_version
 from backend.agents.prompting import system_prompt
-from backend.mesh.mesh_client import MeshCallError, MeshClient, MeshResult, ModelTier
+from backend.llm.client import ModelCallError, ModelClient, ModelResult, ModelTier
 
 JUDGE_PROMPT = "verifier_judge"
 ALWAYS_JUDGED = ("V-11", "V-12", "V-13", "V-14")
@@ -34,7 +34,7 @@ ALWAYS_JUDGED = ("V-11", "V-12", "V-13", "V-14")
 class VerifyOutcome:
     verification: Verification
     impact: Impact
-    llm: list[MeshResult] = field(default_factory=list)
+    llm: list[ModelResult] = field(default_factory=list)
     prompt_version: str | None = None
 
 
@@ -89,7 +89,7 @@ def verify(
     world: AdviceWorld,
     *,
     round: int,
-    mesh: MeshClient | None = None,
+    model_client: ModelClient | None = None,
     use_judge: bool = True,
     before_llm: Callable[[], None] | None = None,
     impact: Impact | None = None,
@@ -121,12 +121,12 @@ def verify(
             proposal_id=p.proposal_id, round=round, deterministic=det, verdict="APPROVE"
         )
         return VerifyOutcome(v, impact)
-    if mesh is None:
-        raise MeshCallError("the Verifier judge needs a Mesh client")
+    if model_client is None:
+        raise ModelCallError("the Verifier judge needs a model client")
     if before_llm is not None:
         before_llm()
     try:
-        result = mesh.structured(
+        result = model_client.structured(
             tier=ModelTier.VERIFIER,
             messages=_judge_messages(p, world, det),
             output=JudgeOutput,
@@ -134,7 +134,7 @@ def verify(
             max_tokens=700,
             locale_pack=world.locale_pack,
         )
-    except MeshCallError as exc:
+    except ModelCallError as exc:
         v = Verification(
             proposal_id=p.proposal_id,
             round=round,

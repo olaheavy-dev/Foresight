@@ -192,7 +192,7 @@
   "request_hash": "b9e60649949aa28dea9ac526469db140ba43eccc9f443e8fa7c2e4b1976603af",
   "response": {
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_tr_b10\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{},\"title\":\"Hold eating out at {{cap}} a month until the next payday\",\"rationale\":\"Your eating out spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday and saves {{saving}}.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.eating_out\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":12858,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Targeted food.eating_out from recent spending.\",\"Set monthly cap to 26135, respecting the median and 60% floor without cutting essentials.\",\"Claimed monthly impact of 12858 is above \u00a310.\",\"Updated claimed_monthly_impact_minor to exactly match last 30d spend minus the cap.\"]}",
-    "mesh_response_id": "chatcmpl-gemini-1791923420",
+    "provider_response_id": "chatcmpl-gemini-1791923420",
     "model": "gemini-3.8-flash",
     "tool_arguments": null,
     "usage": {

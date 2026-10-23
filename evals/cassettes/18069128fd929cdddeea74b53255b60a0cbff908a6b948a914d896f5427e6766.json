@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast supports the buffer-risk rationale, and the cash impact of the cap has been checked.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names taxi spending and gives a clear monthly cap to apply.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with future risk framed within the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Capping taxi spending is ordinary budgeting advice with no prohibited financial or other recommendations.\"}]}",
     "cost_estimate_usd": 0.00311,
     "latency_ms": 4489,
-    "mesh_response_id": "chatcmpl-EbAspYHrB5HCgnXPHHfgjM3g2SMrt",
+    "provider_response_id": "chatcmpl-EbAspYHrB5HCgnXPHHfgjM3g2SMrt",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

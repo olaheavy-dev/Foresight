@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"What if I pay for a laptop in 3 Klarna instalments?\",\"intent\":\"affordability\",\"slots\":{\"purpose\":\"laptop\",\"instalments\":3,\"modifier\":\"split_outflow\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.5,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002827,
     "latency_ms": 1529,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHAKBS40B2C6HN1QCZ4P4N",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHAKBS40B2C6HN1QCZ4P4N",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

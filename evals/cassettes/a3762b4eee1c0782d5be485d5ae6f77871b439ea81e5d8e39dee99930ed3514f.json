@@ -381,7 +381,7 @@
   "request_hash": "a3762b4eee1c0782d5be485d5ae6f77871b439ea81e5d8e39dee99930ed3514f",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Salary paid 3 days late\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"income_delay\",\"income_stream_id\":\"inc_salary\",\"days\":3,\"occurrences\":1}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVYyQeAR8ooZmU1wdOutjyhOJLz7",
+    "provider_response_id": "chatcmpl-EYVYyQeAR8ooZmU1wdOutjyhOJLz7",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

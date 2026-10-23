@@ -78,7 +78,7 @@
   "request_hash": "00a1cd771aea301b7d00cf5f3c850a0e3e643f2f36a18c4cab96919f4eaf0dd2",
   "response": {
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The delivery-spending spike and cash-flow forecast support the rationale, with the cap's impact already recomputed.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and sets a clear monthly cap to apply until the next payday.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with future claims limited to the forecast-supported cash-flow effect.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal is a spending-category cap and contains no out-of-scope financial advice or recommendations.\"}]}",
-    "mesh_response_id": "chatcmpl-EYd9j6GOKSgtkgselcHp2gZJ7Saor",
+    "provider_response_id": "chatcmpl-EYd9j6GOKSgtkgselcHp2gZJ7Saor",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

@@ -184,7 +184,7 @@
   "request_hash": "6ff1e06bd0f9981be0d85b21d40226b98cefb9ca490fa3c807b08e553f4cb58c",
   "response": {
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_tr_b10\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.eating_out\",\"monthly_cap_minor\":20000},\"title\":\"Hold eating out at {{cap}} a month until the next payday\",\"rationale\":\"Spending on eating out is above its usual level, and the forecast shows a high chance of falling below the buffer before payday. Holding this category at {{cap}} a month could ease the low point.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.eating_out\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":18993,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Replaced the unrelated streaming-overlap citation with the eating-out spending finding.\"]}",
-    "mesh_response_id": "resp_0b8dfb907dfaaf95016ace92a121b087d1b5d90bad99121166",
+    "provider_response_id": "resp_0b8dfb907dfaaf95016ace92a121b087d1b5d90bad99121166",
     "model": "openai-gpt-56-luna-pro",
     "tool_arguments": null,
     "usage": {

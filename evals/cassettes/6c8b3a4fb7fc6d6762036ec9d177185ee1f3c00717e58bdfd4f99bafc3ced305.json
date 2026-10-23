@@ -103,7 +103,7 @@
   "request_hash": "6c8b3a4fb7fc6d6762036ec9d177185ee1f3c00717e58bdfd4f99bafc3ced305",
   "response": {
     "content": "{\"standalone_question\":\"Am I going to be ok before payday?\",\"intent\":\"risk_check\",\"slots\":{\"window\":\"to_next_payday\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.96,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdTT2lp5q2NH27OzxYBSsz4xXg3T",
+    "provider_response_id": "chatcmpl-EYdTT2lp5q2NH27OzxYBSsz4xXg3T",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

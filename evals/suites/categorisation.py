@@ -4,7 +4,7 @@
 category as a weak prior, no merchant memory). `hybrid` sends the spending rows the rules leave
 below 0.85 to the Ledger Agent (fast tier, docs/06 §4.1); `llm_only` sends every test row.
 Both model arms run from recorded model responses (`evals/cassettes`, replay: no key, no network);
-`MESH_CASSETTE_MODE=record` re-records them. A missing recording leaves the arm null with a note
+`MODEL_CASSETTE_MODE=record` re-records them. A missing recording leaves the arm null with a note
 rather than inventing numbers. The UK hand-labelled holdout is not built yet, so its rows are null.
 """
 
@@ -18,7 +18,7 @@ from typing import Any
 from backend.agents.ledger import categorise_with_model, is_candidate, merge
 from backend.finance_core.categorise.pack import CategorisationPack
 from backend.finance_core.types import Categorisation, Transaction
-from backend.mesh.mesh_client import CassetteMiss, MeshCallError, MeshClient, MeshConfigError
+from backend.llm.client import CassetteMiss, ModelCallError, ModelClient, ModelConfigError
 from backend.settings import Settings
 from evals.common import (
     Ledger,
@@ -48,15 +48,15 @@ TAUS = (0.5, 0.7, 0.85, 0.95)
 CASSETTES = Path(__file__).resolve().parents[1] / "cassettes"
 
 
-def eval_mesh() -> MeshClient:
-    """Replay by default; `MESH_CASSETTE_MODE=record` (with MESH_API_KEY) re-records."""
-    mode = os.environ.get("MESH_CASSETTE_MODE", "replay")
+def eval_model_client() -> ModelClient:
+    """Replay by default; `MODEL_CASSETTE_MODE=record` (with OPENAI_API_KEY) re-records."""
+    mode = os.environ.get("MODEL_CASSETTE_MODE", "replay")
     if mode not in {"replay", "record"}:
         mode = "replay"  # evals never run open-ended live calls
-    return MeshClient(
+    return ModelClient(
         Settings(
-            mesh_cassette_mode=mode,
-            mesh_cassette_dir=str(CASSETTES),
+            model_cassette_mode=mode,
+            model_cassette_dir=str(CASSETTES),
             build_sha="eval",
         )
     )
@@ -66,21 +66,21 @@ def _model_arm(
     name: str,
     rows: list[tuple[Transaction, Categorisation, str, str]],
     pack: CategorisationPack,
-    mesh: MeshClient,
+    model_client: ModelClient,
 ) -> dict[str, Any]:
     """Score one model arm. `rows` = (txn, rule answer, gold category, gold flow) for test rows."""
     hybrid = name == "hybrid"
     send = [t for t, c, _g, _f in rows if (is_candidate(t, c) if hybrid else True)]
     try:
-        llm = categorise_with_model(send, pack, mesh, outflow_only=hybrid)
-    except (CassetteMiss, MeshConfigError, MeshCallError) as exc:
+        llm = categorise_with_model(send, pack, model_client, outflow_only=hybrid)
+    except (CassetteMiss, ModelConfigError, ModelCallError) as exc:
         return {
             "accuracy": None,
             "macro_f1": None,
             "flow_class_accuracy": None,
             "llm_call_rate": None,
             "note": f"not measured: no recorded model response ({type(exc).__name__}); "
-            "re-record with MESH_CASSETTE_MODE=record",
+            "re-record with MODEL_CASSETTE_MODE=record",
         }
     gold, pred, conf, amounts, gold_flow, pred_flow = [], [], [], [], [], []
     for t, c, g, gf in rows:
@@ -207,9 +207,9 @@ def run(fast: bool = False) -> dict[str, Any]:
             monzo_rules.append(ledger.cats[i].category_key)
 
     rules = _score(gold, pred, conf, amounts, gold_flow, pred_flow)
-    mesh = eval_mesh()
-    hybrid = _model_arm("hybrid", arm_rows, pack, mesh)
-    llm_only = _model_arm("llm_only", arm_rows, pack, mesh)
+    model_client = eval_model_client()
+    hybrid = _model_arm("hybrid", arm_rows, pack, model_client)
+    llm_only = _model_arm("llm_only", arm_rows, pack, model_client)
     majority = dev_labels.most_common(1)[0][0] if dev_labels else "uncategorised"
     maj_pred = [majority] * len(gold)
     errors = Counter((g, p) for g, p in zip(gold, pred, strict=True) if g != p)

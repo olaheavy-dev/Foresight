@@ -103,7 +103,7 @@
   "request_hash": "db62fa72449e0fb0129baa78f5a814fc4c0d003555dfc838e47528c5c479df59",
   "response": {
     "content": "{\"standalone_question\":\"What if I cancel Sky?\",\"intent\":\"scenario\",\"slots\":{\"modifier\":\"recurring_cancel\",\"merchant\":\"Sky\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.96,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdNnalXvOfbELMd1DyukmSQ0PI1i",
+    "provider_response_id": "chatcmpl-EYdNnalXvOfbELMd1DyukmSQ0PI1i",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

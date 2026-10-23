@@ -381,7 +381,7 @@
   "request_hash": "d0d947c8bd2c2649539b203a40a9b62d6a6e36933e7612b31ea873e61ddfbfe7",
   "response": {
     "content": "{\"status\":\"needs_clarification\",\"spec\":null,\"clarification\":{\"question\":\"How often will the \u00a310.99 Apple Music subscription be charged?\",\"slot\":\"cadence\",\"options\":[\"weekly\",\"fortnightly\",\"monthly\"]}}",
-    "mesh_response_id": "chatcmpl-EYVaRFYEQglGhjKR2rLF9UcwSXVCh",
+    "provider_response_id": "chatcmpl-EYVaRFYEQglGhjKR2rLF9UcwSXVCh",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

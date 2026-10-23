@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"Here are your Deliveroo payments.\",\"key_numbers\":[],\"main_visual\":\"TransactionTable\"}",
     "cost_estimate_usd": 0.0001037,
     "latency_ms": 471,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHCP3QBYNBF32QGJ15RWA9",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHCP3QBYNBF32QGJ15RWA9",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

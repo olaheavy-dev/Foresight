@@ -192,7 +192,7 @@
   "request_hash": "21f007fe36d933cb42eab3fc1fff59523fe7e57d4c6bdbd76333c20249eb8fb4",
   "response": {
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_tr_b5\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\n  }\n  ,\"title\":\"Hold delivery at {{cap}} a month until the next payday\",\"rationale\":\"Your delivery spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.delivery\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc",
-    "mesh_response_id": "chatcmpl-gemini-1791923166",
+    "provider_response_id": "chatcmpl-gemini-1791923166",
     "model": "gemini-3.8-flash",
     "tool_arguments": null,
     "usage": {

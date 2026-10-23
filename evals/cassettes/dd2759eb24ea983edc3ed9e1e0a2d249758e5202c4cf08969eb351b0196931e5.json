@@ -381,7 +381,7 @@
   "request_hash": "dd2759eb24ea983edc3ed9e1e0a2d249758e5202c4cf08969eb351b0196931e5",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Join climbing gym\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"recurring_add\",\"amount_minor\":3000,\"cadence\":\"monthly\",\"start_date\":\"2026-10-15\",\"label\":\"Climbing gym\",\"category_key\":\"subscriptions.fitness\"}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVaHdv2tO0yGxKJOthU2nW3tUk9W",
+    "provider_response_id": "chatcmpl-EYVaHdv2tO0yGxKJOthU2nW3tUk9W",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

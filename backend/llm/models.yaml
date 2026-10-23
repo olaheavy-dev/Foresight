@@ -1,7 +1,7 @@
 # The models Foresight may call, as data (docs/06 §13): what each accepts and what it costs. Every
 # call goes to OpenAI (owner decision 20 Oct 2026, docs/00 §12 item 14). Choosing or swapping a model
-# is configuration: set MESH_MODEL_<TIER> (and _FALLBACK), and add the model here if it is new;
-# MESH_MODELS_FILE can point at another copy of this file.
+# is configuration: set MODEL_<TIER> (and _FALLBACK), and add the model here if it is new;
+# MODELS_FILE can point at another copy of this file.
 #
 # History: capabilities were first probed through the Mesh gateway (13 Oct 2026), where the OpenAI
 # models accepted json_schema (strict) and a forced tool choice. The Anthropic and Google entries

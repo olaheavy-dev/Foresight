@@ -381,7 +381,7 @@
   "request_hash": "0abe08a77367b798fb8304e90841ffbec21ba3e69be1a599533b54d2ba5c3a1c",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Set buffer to zero\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"buffer_override\",\"buffer_minor\":0}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVbEBzpt09DR09kAyuAg7aoyzMN9",
+    "provider_response_id": "chatcmpl-EYVbEBzpt09DR09kAyuAg7aoyzMN9",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

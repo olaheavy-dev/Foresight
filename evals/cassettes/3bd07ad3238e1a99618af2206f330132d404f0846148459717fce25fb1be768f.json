@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"I can't identify your last rent payment from the available details.\",\"key_numbers\":[],\"main_visual\":\"TransactionTable\"}",
     "cost_estimate_usd": 0.0001153,
     "latency_ms": 428,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHC5BJRG34XXBGFYY5CV45",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHC5BJRG34XXBGFYY5CV45",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -383,7 +383,7 @@
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Tax refund and Christmas spending\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_inflow\",\"date\":\"2026-11-10\",\"amount_minor\":30000,\"label\":\"Tax refund\"},{\"type\":\"one_off_outflow\",\"date\":\"2026-12-12\",\"amount_minor\":40000,\"label\":\"Christmas spending\",\"category_key\":\"gifts\"}],\"assumptions\":[]},\"clarification\":null}",
     "cost_estimate_usd": 0.005634,
     "latency_ms": 3056,
-    "mesh_response_id": "chatcmpl-EbAimdtTPHizF0zkm6X4QOctTh4Gq",
+    "provider_response_id": "chatcmpl-EbAimdtTPHizF0zkm6X4QOctTh4Gq",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

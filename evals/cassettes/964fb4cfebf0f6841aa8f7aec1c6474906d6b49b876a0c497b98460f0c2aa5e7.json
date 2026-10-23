@@ -103,7 +103,7 @@
   "request_hash": "964fb4cfebf0f6841aa8f7aec1c6474906d6b49b876a0c497b98460f0c2aa5e7",
   "response": {
     "content": "{\"standalone_question\":\"Will I get through to payday next month?\",\"intent\":\"risk_check\",\"slots\":{},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.96,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdOW28aptFDk7ttBFcmQVgzzMhPs",
+    "provider_response_id": "chatcmpl-EYdOW28aptFDk7ttBFcmQVgzzMhPs",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

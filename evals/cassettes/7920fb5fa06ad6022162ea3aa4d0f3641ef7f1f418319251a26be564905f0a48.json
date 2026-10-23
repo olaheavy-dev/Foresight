@@ -381,7 +381,7 @@
   "request_hash": "7920fb5fa06ad6022162ea3aa4d0f3641ef7f1f418319251a26be564905f0a48",
   "response": {
     "content": "{\"status\":\"needs_clarification\",\"spec\":null,\"clarification\":{\"question\":\"What is the \u00a3800 for?\",\"slot\":\"purchase\",\"options\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVcAiYe5QCz5yf011W9UYLl9476Q",
+    "provider_response_id": "chatcmpl-EYVcAiYe5QCz5yf011W9UYLl9476Q",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -103,7 +103,7 @@
   "request_hash": "7ae052ac471fbaab27bf0ce105a6089fe1e7ed83aeeff4c7d59117c17090de43",
   "response": {
     "content": "{\"standalone_question\":\"What should I cut if I lose my job for two months?\",\"intent\":\"advice_request\",\"slots\":{\"modifier\":\"income_change_pct\",\"pct\":-100,\"months\":2},\"needs_forecast\":true,\"needs_advice\":true,\"confidence\":0.9,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdPDYvP5Tn5ig9dY0S1tMy2KjYmG",
+    "provider_response_id": "chatcmpl-EYdPDYvP5Tn5ig9dY0S1tMy2KjYmG",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -186,7 +186,7 @@
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_bp_038\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"shopping.general\",\"monthly_cap_minor\":15000},\"title\":\"Cap general shopping at {{cap}}\",\"rationale\":\"General shopping was recorded in the last month. Keeping it within {{cap}} would keep more cash in hand before payday, when the forecast shows a tighter balance.\",\"trigger_refs\":[{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":4338,\"claimed_impact_text\":\"Estimated monthly saving: {{saving}}.\"}],\"critique_addressed\":[\"General shopping has spending recorded in the last month.\",\"The cap's estimated monthly saving exceeds the minimum.\",\"The claimed impact is the last month's general shopping spend minus the proposed cap.\",\"The proposal names the specific category.\"]}",
     "cost_estimate_usd": 0.009004,
     "latency_ms": 6926,
-    "mesh_response_id": "chatcmpl-EbBAwnC7DC1iMpfe4TeVUTEIi0SLc",
+    "provider_response_id": "chatcmpl-EbBAwnC7DC1iMpfe4TeVUTEIi0SLc",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

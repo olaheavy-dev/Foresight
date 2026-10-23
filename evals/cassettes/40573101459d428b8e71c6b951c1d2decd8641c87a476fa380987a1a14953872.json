@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"Consider the checked change: the forecast low balance with it is {{R8}}, compared with {{R7}} without it. It helps you stay above your buffer only if the forecast with the change remains above that buffer.\",\"key_numbers\":[\"R8\",\"R7\"],\"main_visual\":\"InterventionCard\"}",
     "cost_estimate_usd": 0.0003412,
     "latency_ms": 6198,
-    "mesh_response_id": "chatcmpl-EbAegeVyDpcqfGfgILg3yVfbu3An4",
+    "provider_response_id": "chatcmpl-EbAegeVyDpcqfGfgILg3yVfbu3An4",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

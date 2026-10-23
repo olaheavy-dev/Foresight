@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Is an \u00a3800 trip in early November ok?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":80000,\"purpose\":\"trip\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.95,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002852,
     "latency_ms": 413,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHADWMQX00G5Y2NQWAY8W0",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHADWMQX00G5Y2NQWAY8W0",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

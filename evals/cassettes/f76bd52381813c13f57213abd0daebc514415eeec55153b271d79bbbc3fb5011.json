@@ -186,7 +186,7 @@
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_bp_029\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.delivery\",\"monthly_cap_minor\":20310},\"title\":\"Cap food delivery at {{cap}} a month\",\"rationale\":\"Food delivery spending is above its usual level. A cap at {{cap}} keeps more cash in hand before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.delivery\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":8330,\"claimed_impact_text\":null},{\"proposal_id\":\"prp_bp_030\",\"action\":\"cancel_recurring\",\"currency\":\"GBP\",\"params\":{\"recurring_id\":\"rob_netflix\"},\"title\":\"Cancel Netflix if you prefer to keep Sky TV\",\"rationale\":\"Netflix and Sky TV overlap. Cancelling Netflix would keep {{saving}} more cash in hand each month.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:subscription_overlap:rob_netflix+rob_sky\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":1299,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Withdrew the energy cap: energy is an essential that must not be cut. Kept the proposal ID for a replacement food delivery cap that is above the permitted minimum based on its three-month median.\"]}",
     "cost_estimate_usd": 0.011898,
     "latency_ms": 9640,
-    "mesh_response_id": "chatcmpl-EbB2p6ehVa9yqoUqZuPhAjhPDj0pE",
+    "provider_response_id": "chatcmpl-EbB2p6ehVa9yqoUqZuPhAjhPDj0pE",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

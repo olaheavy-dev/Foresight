@@ -103,7 +103,7 @@
   "request_hash": "1e593a43dca10719e2552b7a7fbc64908a279fd7b0da656ddf37b3d621286698",
   "response": {
     "content": "{\"standalone_question\":\"Can I buy a \u00a3350 phone on 20 October?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":35000,\"date\":\"2026-10-20\",\"purpose\":\"phone\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdUHUt1EquZJtLn6Rg2NCeIi1eve",
+    "provider_response_id": "chatcmpl-EYdUHUt1EquZJtLn6Rg2NCeIi1eve",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

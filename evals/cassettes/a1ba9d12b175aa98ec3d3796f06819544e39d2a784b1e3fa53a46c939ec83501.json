@@ -381,7 +381,7 @@
   "request_hash": "a1ba9d12b175aa98ec3d3796f06819544e39d2a784b1e3fa53a46c939ec83501",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"MOT and service\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-10-15\",\"amount_minor\":15000,\"label\":\"MOT and service\",\"category_key\":\"transport.car\"}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVbn0Ct6bgfnAxaI9Y3jvgTFeV8q",
+    "provider_response_id": "chatcmpl-EYVbn0Ct6bgfnAxaI9Y3jvgTFeV8q",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -186,7 +186,7 @@
     "content": "{\n  \"proposals\": [\n    {\n      \"proposal_id\": \"prp_tr_b6\",\n      \"action\": \"cap_category\",\n      \"currency\": \"GBP\",\n      \"params\": {\n        \"category_key\": \"food.eating_out\",\n        \"monthly_cap_minor\": 20000\n      },\n      \"title\": \"Cap eating out at {{cap}} a month\",\n      \"rationale\": \"The forecast shows a chance of going below your buffer before payday. Limiting eating-out spending to {{cap}} keeps more cash in hand, without guaranteeing that your balance stays above the buffer.\",\n      \"trigger_refs\": [\n        {\n          \"kind\": \"forecast\",\n          \"id\": \"fc:baseline\",\n          \"role\": \"trigger\"\n        }\n      ],\n      \"expected_direction\": \"improves_buffer\",\n      \"claimed_monthly_impact_minor\": 8321,\n      \"claimed_impact_text\": \"\u00a383.21 less monthly spending if you keep to the cap, compared with the supplied last thirty days\u2019 eating-out spend of \u00a3283.21.\"\n    }\n  ],\n  \"critique_addressed\": [\n    \"Replaced the assertion that balances fall below the buffer with the forecast-supported statement that there is a chance of going below it.\",\n    \"Separated the evidence sources: the forecast supplies the risk trigger; the supplied eating-out spending supplies the savings calculation, \u00a3283.21 minus the \u00a3200 cap. The cap is above sixty percent of the category\u2019s three-month median.\"\n  ]\n}",
     "cost_estimate_usd": 0.009784,
     "latency_ms": 11451,
-    "mesh_response_id": "chatcmpl-EbAYKAo0D9uUpfAPWAqztZQMwB6C8",
+    "provider_response_id": "chatcmpl-EbAYKAo0D9uUpfAPWAqztZQMwB6C8",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

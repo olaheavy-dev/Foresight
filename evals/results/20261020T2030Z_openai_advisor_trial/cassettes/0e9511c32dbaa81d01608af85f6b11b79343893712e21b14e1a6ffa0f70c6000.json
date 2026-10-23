@@ -186,7 +186,7 @@
     "content": "{\n  \"proposals\": [\n    {\n      \"proposal_id\": \"prp_tr_b3\",\n      \"action\": \"cap_category\",\n      \"currency\": \"GBP\",\n      \"params\": {\n        \"category_key\": \"food.delivery\",\n        \"monthly_cap_minor\": 20310\n      },\n      \"title\": \"Cap food delivery spending at {{cap}} a month\",\n      \"rationale\": \"Your food delivery spending is above its usual level. Bringing it back to {{cap}} a month keeps more cash in hand before payday.\",\n      \"trigger_refs\": [\n        {\n          \"kind\": \"finding\",\n          \"id\": \"fnd:category_spike:food.delivery\",\n          \"role\": \"trigger\"\n        },\n        {\n          \"kind\": \"forecast\",\n          \"id\": \"fc:baseline\",\n          \"role\": \"trigger\"\n        }\n      ],\n      \"expected_direction\": \"improves_buffer\",\n      \"claimed_monthly_impact_minor\": 8330,\n      \"claimed_impact_text\": \"Reduces monthly spending by {{saving}} compared with the last thirty days.\"\n    }\n  ],\n  \"critique_addressed\": [\n    \"Raised the food delivery cap to its three-month median, above the required minimum of 12186 minor units, and recalculated the monthly saving. No essential or protected category is changed.\"\n  ]\n}",
     "cost_estimate_usd": 0.00799,
     "latency_ms": 6577,
-    "mesh_response_id": "chatcmpl-EbAWuH5HpjNy1x1WWMMPnEnfZU5el",
+    "provider_response_id": "chatcmpl-EbAWuH5HpjNy1x1WWMMPnEnfZU5el",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

@@ -78,7 +78,7 @@
   "request_hash": "45bfbae58750767a3571710a1d1d1ffb30d998c15ff37e57820e344e5d118d98",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-0c01342755baf9dc96e0",
+    "provider_response_id": "chatcmpl-0c01342755baf9dc96e0",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"Cited spike finding for food.eating_out directly supports responding to elevated spending in that category; the forecast supports the buffer claim.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the category food.eating_out and a specific monthly cap amount (20000 minor), a clear action a person can take today.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Wording is neutral and factual, makes no predictions beyond the cited baseline forecast, and does not blame anyone.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"A discretionary spending cap on eating out is budgeting guidance; it contains no investment, credit, loan, pension, tax or REF recommendation.\"}]}",
     "usage": {

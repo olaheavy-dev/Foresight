@@ -192,7 +192,7 @@
   "request_hash": "c16a251c5562bcecb7c19a3e11d56da8f40aa7c47b8c95db73b1e3c1b68c28cc",
   "response": {
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_tr_b6\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\n  }\n  ,\"title\":\"Hold eating out at {{cap}} a month until the next payday\",\"rationale\":\"Your eating out spending has risen above its usual level; holding it at {{cap}} a month eases the low point before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.eating_out\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":18993,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Cite only evidence that exists in this profile: ['fnd:category_spike:entertainment'].\"]}",
-    "mesh_response_id": "chatcmpl-gemini-1791923192",
+    "provider_response_id": "chatcmpl-gemini-1791923192",
     "model": "gemini-3.8-flash",
     "tool_arguments": null,
     "usage": {

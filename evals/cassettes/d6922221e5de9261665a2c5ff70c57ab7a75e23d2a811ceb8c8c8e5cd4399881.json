@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"I can\u2019t tell from the figures provided whether Spotify got more expensive.\",\"key_numbers\":[],\"main_visual\":\"TransactionTable\"}",
     "cost_estimate_usd": 0.0001267,
     "latency_ms": 2495,
-    "mesh_response_id": "chatcmpl-EYqXpo2euBNOAFrczfdjsWBe1GduI",
+    "provider_response_id": "chatcmpl-EYqXpo2euBNOAFrczfdjsWBe1GduI",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

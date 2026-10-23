@@ -381,7 +381,7 @@
   "request_hash": "2dfd541686f6353bbeffc33a8b59e839b48e0ae3907d75dbb3b48ed112cfb1da",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Christmas presents\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-12-12\",\"amount_minor\":40000,\"label\":\"Christmas presents\",\"category_key\":\"gifts\"}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVXWBosdDS9TBURKb7XYQvQaYj5c",
+    "provider_response_id": "chatcmpl-EYVXWBosdDS9TBURKb7XYQvQaYj5c",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -103,7 +103,7 @@
   "request_hash": "4b434e2e2b270e57c4a216d1bf3544f7360f8216a997d8492aa6ef0d8e51375f",
   "response": {
     "content": "{\"standalone_question\":\"What if my salary arrives ten days late?\",\"intent\":\"scenario\",\"slots\":{\"modifier\":\"income_delay\",\"days\":10},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdTFSUu3edJCVIvpZ9RHsUvxEbY1",
+    "provider_response_id": "chatcmpl-EYdTFSUu3edJCVIvpZ9RHsUvxEbY1",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

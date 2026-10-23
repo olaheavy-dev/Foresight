@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Can I afford a \u00a31,200 holiday?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":120000,\"purpose\":\"holiday\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002602,
     "latency_ms": 3057,
-    "mesh_response_id": "chatcmpl-EYe0nAbWDHTl8k1gNQ9LvN9F7ZLyH",
+    "provider_response_id": "chatcmpl-EYe0nAbWDHTl8k1gNQ9LvN9F7ZLyH",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

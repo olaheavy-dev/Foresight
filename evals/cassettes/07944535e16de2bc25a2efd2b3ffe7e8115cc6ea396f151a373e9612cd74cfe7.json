@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast supports the buffer-risk rationale, and cancelling a recurring payment reduces outgoings.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names Spotify and specifies cancellation of the identified recurring payment.\"},{\"rule\":\"V-13\",\"passed\":false,\"reason\":\"The title contains \u201cREF,\u201d which the tone requirement explicitly prohibits.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Cancelling an entertainment subscription is within scope and does not involve restricted financial advice.\"}]}",
     "cost_estimate_usd": 0.004514,
     "latency_ms": 26643,
-    "mesh_response_id": "chatcmpl-cached-req_01M5DGCQ1TJN4D7F23YS0XQG3G",
+    "provider_response_id": "chatcmpl-cached-req_01M5DGCQ1TJN4D7F23YS0XQG3G",
     "model": "openai/gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

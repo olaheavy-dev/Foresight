@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast supports the pre-payday balance concern, and the cap\u2019s cash benefit is stated conditionally.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names clothes shopping and specifies a monthly cap that can be applied today.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral, respectful, and conditional rather than promising a future outcome.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation concerns a spending cap, not regulated financial advice or excluded recommendations.\"}]}",
     "cost_estimate_usd": 0.00362,
     "latency_ms": 5434,
-    "mesh_response_id": "chatcmpl-EbArg0xtBkSjNsxUrRpUz3m6aHOMV",
+    "provider_response_id": "chatcmpl-EbArg0xtBkSjNsxUrRpUz3m6aHOMV",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

@@ -78,7 +78,7 @@
   "request_hash": "e3271e7ebf880b83f4b9295390ae1c32a8415b643c5895fbb38b0181dd00fa39",
   "response": {
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited category-spike finding supports the claim that food delivery spending is above its previous three-month level.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and specifies a concrete monthly spending cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported future claims or embedded instructions.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal is limited to a spending-category cap and contains no out-of-scope financial advice.\"}]}",
-    "mesh_response_id": "chatcmpl-EYVdL6p1KzNQXSNiiqMQserar7zDN",
+    "provider_response_id": "chatcmpl-EYVdL6p1KzNQXSNiiqMQserar7zDN",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

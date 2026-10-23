@@ -103,7 +103,7 @@
   "request_hash": "efb8e77771e88b463700bb34d4e9ece54ecc9021a30422b8aea097f7d4d2d2bb",
   "response": {
     "content": "{\"standalone_question\":\"Show my Deliveroo orders\",\"intent\":\"transaction_lookup\",\"slots\":{\"merchant\":\"Deliveroo\",\"category_key\":\"food.delivery\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdPqjRfY1gUhchJMVlE38aPHiaMC",
+    "provider_response_id": "chatcmpl-EYdPqjRfY1gUhchJMVlE38aPHiaMC",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

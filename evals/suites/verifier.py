@@ -22,11 +22,11 @@ from typing import Any
 from backend.agents.advice.advisor import advise
 from backend.agents.advice.models import InterventionProposal, Verification
 from backend.agents.advice.verifier import verify
-from backend.mesh.mesh_client import MeshCallError, MeshClient
+from backend.llm.client import ModelCallError, ModelClient
 from evals.advice_world import BASELINE, case_world
 from evals.authored import AUTHORED_DIR
 from evals.common import read_jsonl
-from evals.mesh_eval import NOT_RECORDED, eval_mesh, eval_mode
+from evals.llm_eval import NOT_RECORDED, eval_mode, eval_model_client
 from evals.metrics import r4
 from evals.suites import Target, target
 
@@ -83,7 +83,9 @@ def _proposal(case: dict[str, Any]) -> InterventionProposal:
     return InterventionProposal.model_validate(case["proposal"])
 
 
-def _revise(case: dict[str, Any], mesh: MeshClient, run: CaseRun, first: Verification) -> None:
+def _revise(
+    case: dict[str, Any], model_client: ModelClient, run: CaseRun, first: Verification
+) -> None:
     world = case_world(case)
     proposal = _proposal(case)
     verdict = first
@@ -91,7 +93,7 @@ def _revise(case: dict[str, Any], mesh: MeshClient, run: CaseRun, first: Verific
         if verdict.verdict != "REJECT":
             break
         revision = [{"proposal": proposal.model_dump(), "critique": verdict.critique}]
-        advice = advise(world, mesh, forecast_id=BASELINE, question=None, revision=revision)
+        advice = advise(world, model_client, forecast_id=BASELINE, question=None, revision=revision)
         if not advice.proposals:
             break
         same = [p for p in advice.proposals if p.proposal_id == proposal.proposal_id]
@@ -100,7 +102,7 @@ def _revise(case: dict[str, Any], mesh: MeshClient, run: CaseRun, first: Verific
             proposal,
             world,
             round=len(run.rounds) + 1,
-            mesh=mesh,
+            model_client=model_client,
             impact=advice.impacts.get(proposal.proposal_id),
         ).verification
         run.rounds.append(verdict)
@@ -114,7 +116,7 @@ def run_cases(fast: bool, with_models: bool) -> tuple[list[CaseRun], int, str]:
     cases = read_jsonl(CASES)
     if fast:
         cases = cases[: FAST_CASES // 2] + cases[-FAST_CASES // 2 :]
-    mesh = eval_mesh() if with_models else None
+    model_client = eval_model_client() if with_models else None
     missing = 0
     runs: list[CaseRun] = []
     for case in cases:
@@ -123,18 +125,18 @@ def run_cases(fast: bool, with_models: bool) -> tuple[list[CaseRun], int, str]:
         det = verify(p, world, round=1, use_judge=False).verification
         run = CaseRun(case, det)
         runs.append(run)
-        if mesh is None:
+        if model_client is None:
             continue
         try:
-            full = verify(p, world, round=1, mesh=mesh).verification
+            full = verify(p, world, round=1, model_client=model_client).verification
             run.full = full
             run.rounds.append(full)
-            _revise(case, mesh, run, full)
+            _revise(case, model_client, run, full)
         except NOT_RECORDED:
             missing += 1
             run.full = None
             run.rounds = []
-        except MeshCallError as exc:
+        except ModelCallError as exc:
             run.error = type(exc).__name__
     return runs, missing, eval_mode()
 

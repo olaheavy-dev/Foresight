@@ -246,7 +246,7 @@ def forecaster_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
             pass
         else:
             return _simulated(state, update, forecast_id, dated, sim, [], [], None)
-    mesh = ctx.require_mesh()
+    model_client = ctx.require_model_client()
     with ctx.lock:
         recurring = [
             {"recurring_id": o.key, "label": o.label}
@@ -260,7 +260,7 @@ def forecaster_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
         categories = sorted(packs.categorisation_pack(ctx.store.ctx.workspace.country).categories)
     parsed = parse_scenario(
         str(intent.get("standalone_question") or question),
-        mesh,
+        model_client,
         today=inputs.as_of,
         currency=inputs.currency,
         categories=categories,
@@ -460,7 +460,7 @@ def advise_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
     ]
     advice = run_advisor(
         world,
-        ctx.require_mesh(),
+        ctx.require_model_client(),
         forecast_id=str(forecast_id),
         question=(state.get("intent") or {}).get("standalone_question")
         or state.get("user_message"),
@@ -560,7 +560,7 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
     world = world_from_store(ctx, state, inputs)
     round_ = int(state.get("revision_round") or 0) + 1
     last_round = round_ > MAX_REVISIONS
-    mesh = ctx.require_mesh()
+    model_client = ctx.require_model_client()
     llm = []
     verifications = list(state.get("verifications") or [])
     approved = list(state.get("approved_recs") or [])
@@ -589,7 +589,11 @@ def verify_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
             {k: v for k, v in raw.items() if k in InterventionProposal.model_fields}
         )
         try:
-            return raw, p, verify(p, world, round=round_, mesh=mesh, before_llm=guarded)
+            return (
+                raw,
+                p,
+                verify(p, world, round=round_, model_client=model_client, before_llm=guarded),
+            )
         except BudgetExceeded as exc:
             return raw, p, exc
 

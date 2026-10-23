@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The cited price change concerns Spotify, not delivery spending; the forecast does not establish that delivery spending rose.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"It names food delivery and gives a clear monthly cap to follow until the next payday.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation is limited to food-delivery spending.\"}]}",
     "cost_estimate_usd": 0.004052,
     "latency_ms": 4013,
-    "mesh_response_id": "chatcmpl-EbAZEmYobVjGxnRjELAaUovKV3nU5",
+    "provider_response_id": "chatcmpl-EbAZEmYobVjGxnRjELAaUovKV3nU5",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

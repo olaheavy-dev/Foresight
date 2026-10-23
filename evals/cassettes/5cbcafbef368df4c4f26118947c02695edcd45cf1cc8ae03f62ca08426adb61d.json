@@ -103,7 +103,7 @@
   "request_hash": "5cbcafbef368df4c4f26118947c02695edcd45cf1cc8ae03f62ca08426adb61d",
   "response": {
     "content": "{\"standalone_question\":\"What can I do about not being OK this month?\",\"intent\":\"advice_request\",\"slots\":{\"period\":\"this_month\"},\"needs_forecast\":true,\"needs_advice\":true,\"confidence\":0.95,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdOETbNuOx6GZEXRCyanrBUG6UXM",
+    "provider_response_id": "chatcmpl-EYdOETbNuOx6GZEXRCyanrBUG6UXM",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"Your spending is shown by category, with the largest items including housing at {{R8}}, groceries at {{R9}}, and food delivery at {{R10}}.\",\"key_numbers\":[\"R7\",\"R8\",\"R9\"],\"main_visual\":\"SpendingBreakdownChart\"}",
     "cost_estimate_usd": 0.0001322,
     "latency_ms": 2576,
-    "mesh_response_id": "chatcmpl-EYqX2xyuBcevMDXa7dcQEYZLcJsEh",
+    "provider_response_id": "chatcmpl-EYqX2xyuBcevMDXa7dcQEYZLcJsEh",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -186,7 +186,7 @@
     "content": "{\n  \"proposals\": [\n    {\n      \"proposal_id\": \"prp_tr_b6\",\n      \"action\": \"cap_category\",\n      \"currency\": \"GBP\",\n      \"params\": {\n        \"category_key\": \"food.eating_out\",\n        \"monthly_cap_minor\": 20000\n      },\n      \"title\": \"Cap eating out at {{cap}} a month\",\n      \"rationale\": \"The forecast shows balances below your buffer before payday. Capping eating out at {{cap}} reduces spending compared with the last month and keeps more cash in hand before payday.\",\n      \"trigger_refs\": [\n        {\n          \"kind\": \"forecast\",\n          \"id\": \"fc:baseline\",\n          \"role\": \"trigger\"\n        }\n      ],\n      \"expected_direction\": \"improves_buffer\",\n      \"claimed_monthly_impact_minor\": 8321,\n      \"claimed_impact_text\": \"\u00a383.21 less monthly spending compared with the last thirty days.\"\n    }\n  ],\n  \"critique_addressed\": [\n    \"Removed the unsupported entertainment finding and retained the supplied baseline forecast as the trigger. Kept the same proposal ID.\"\n  ]\n}",
     "cost_estimate_usd": 0.010022,
     "latency_ms": 12814,
-    "mesh_response_id": "chatcmpl-EbAY1RL68balMWWK1ayWOVgk7ES8F",
+    "provider_response_id": "chatcmpl-EbAY1RL68balMWWK1ayWOVgk7ES8F",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

@@ -78,7 +78,7 @@
   "request_hash": "f6bf7bf790fe018941c5066469312a3c138d5fdd44c9dac0a547fed573a57d46",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-7dea4ed1c505dd1aa75e",
+    "provider_response_id": "chatcmpl-7dea4ed1c505dd1aa75e",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"The overlap finding between rob_netflix and rob_sky supports the claim that the two services overlap, which is the basis for cancelling Netflix.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the specific subscription (Netflix) and a clear action (cancel the recurring payment), so it can be done today.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Wording is neutral and factual with no future claims beyond the forecast and no REF content.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Cancelling a streaming subscription is not REF advice or a REF recommendation.\"}]}",
     "usage": {

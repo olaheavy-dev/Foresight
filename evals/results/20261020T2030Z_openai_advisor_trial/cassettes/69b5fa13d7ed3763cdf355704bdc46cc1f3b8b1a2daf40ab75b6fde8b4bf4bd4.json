@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited forecast supports the stated risk of falling below the buffer; the savings calculation passed deterministic checks.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"It names eating out and gives a clear monthly spending cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and presents the buffer risk as a forecast, not a certainty.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"It recommends only a spending cap, with no out-of-scope financial advice.\"}]}",
     "cost_estimate_usd": 0.003888,
     "latency_ms": 5468,
-    "mesh_response_id": "chatcmpl-EbAZojRhrOYAz7ZAPl4fwwpZBf38T",
+    "provider_response_id": "chatcmpl-EbAZojRhrOYAz7ZAPl4fwwpZBf38T",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

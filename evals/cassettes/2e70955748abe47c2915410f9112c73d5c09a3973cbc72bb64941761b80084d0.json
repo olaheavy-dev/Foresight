@@ -181,7 +181,7 @@
   "request_hash": "2e70955748abe47c2915410f9112c73d5c09a3973cbc72bb64941761b80084d0",
   "response": {
     "content": "{\"date\":1,\"description\":2,\"amount\":null,\"money_in\":4,\"money_out\":3,\"balance\":null,\"id\":0,\"bank_category\":null,\"bank_type\":null,\"currency\":null,\"time\":null,\"sign_convention\":\"in_out\",\"confidence\":0.99}",
-    "mesh_response_id": "chatcmpl-EYW02QL4Nr0RX3qg9PXPu2maE3Mug",
+    "provider_response_id": "chatcmpl-EYW02QL4Nr0RX3qg9PXPu2maE3Mug",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

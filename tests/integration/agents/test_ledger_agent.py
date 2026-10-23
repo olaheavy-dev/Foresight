@@ -1,9 +1,10 @@
 """Ledger Agent, Analyst and ING-13 against PostgreSQL (docs/06 §4.1–4.2, §9 H1; docs/09 ORC-15).
 
-Mesh is a scripted fake: no network. Covers: suspicious narrations flagged at import and never
-sent; model answers appended as `llm` categorisations with merchant memory and an audit event;
-the Analyst persisting ranked findings; the saved transaction query; and ORC-15 (an unseen CSV →
-one proposal step → confirmation → exact parse → a second file of that layout needs no model).
+The model client is a scripted fake: no network. Covers: suspicious narrations flagged at import
+and never sent; model answers appended as `llm` categorisations with merchant memory and an
+audit event; the Analyst persisting ranked findings; the saved transaction query; and ORC-15
+(an unseen CSV → one proposal step → confirmation → exact parse → a second file of that layout
+needs no model).
 """
 
 from __future__ import annotations
@@ -22,7 +23,7 @@ from backend.storage import models as m
 from backend.storage.agent_repo import AgentStore
 from evals.common import expected_rows, load_dataset, row_key
 from tests.integration.pipeline.helpers import workspace_with_account
-from tests.unit.mesh.fakes import ScriptedCompletions, client, json_ok
+from tests.unit.llm.fakes import ScriptedCompletions, client, json_ok
 
 pytestmark = pytest.mark.postgres
 
@@ -98,7 +99,7 @@ def test_ledger_node_applies_model_answers_and_learns(session: Session) -> None:
     )
     out = run_workflow(
         store, workflow="ingestion", trigger="event", event="import_committed",
-        mesh=client(fake), inputs={"import_id": batch},
+        model_client=client(fake), inputs={"import_id": batch},
     )  # fmt: skip
     step = next(s for s in store.steps(out.run_id) if s.node == "ledger")
     assert step.status == "ok"
@@ -162,7 +163,7 @@ def test_analyst_persists_ranked_findings_on_p1(session: Session) -> None:
     only = {"analyst": ln.nodes()["analyst"]}
     out = run_workflow(
         store, workflow="risk_detection", trigger="cron", event="daily_refresh",
-        mesh=client(fake), nodes=only,
+        model_client=client(fake), nodes=only,
     )  # fmt: skip
     step = next(s for s in store.steps(out.run_id) if s.node == "analyst")
     assert step.llm_calls == 1
@@ -278,10 +279,10 @@ def test_orc15_unseen_csv_proposal_confirmation_and_reuse(session: Session) -> N
     )  # other profiles unaffected
 
 
-def _question_ctx(store: AgentStore, mesh: Any) -> RunContext:
+def _question_ctx(store: AgentStore, model_client: Any) -> RunContext:
     return RunContext(
         store=store, run_id="run_question", workflow="conversation",
-        deadline_at=deadline_for("conversation"), mesh=mesh,
+        deadline_at=deadline_for("conversation"), model_client=model_client,
     )  # fmt: skip
 
 
@@ -314,7 +315,8 @@ def test_questions_reuse_the_ranking_from_the_last_refresh(session: Session) -> 
 
     run_workflow(
         store, workflow="risk_detection", trigger="cron", event="daily_refresh",
-        mesh=client(ScriptedCompletions(default=respond)), nodes={"analyst": ln.nodes()["analyst"]},
+        model_client=client(ScriptedCompletions(default=respond)),
+        nodes={"analyst": ln.nodes()["analyst"]},
     )  # fmt: skip
     ranked = ln.stored_ranking(ctx)
     assert {f.wording_source for f in ranked} == {"llm"}

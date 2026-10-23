@@ -381,7 +381,7 @@
   "request_hash": "cb47e8478a214b1565d659f81894d5a8a79c0745acba2e24c6f80be6ca07a49a",
   "response": {
     "content": "{\"status\":\"needs_clarification\",\"spec\":null,\"clarification\":{\"question\":\"Which expense or category should get more expensive, and by how much (a new amount or percentage increase)?\",\"slot\":\"price_rise_reference_and_amount\",\"options\":[\"A specific recurring payment\",\"A spending category\",\"All expenses\"]}}",
-    "mesh_response_id": "chatcmpl-EYVcflTUygN9xov6y4ThvxN9UKPbj",
+    "provider_response_id": "chatcmpl-EYVcflTUygN9xov6y4ThvxN9UKPbj",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

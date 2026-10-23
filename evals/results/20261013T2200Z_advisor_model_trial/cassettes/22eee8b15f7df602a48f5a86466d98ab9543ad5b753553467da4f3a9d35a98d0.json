@@ -192,7 +192,7 @@
   "request_hash": "22eee8b15f7df602a48f5a86466d98ab9543ad5b753553467da4f3a9d35a98d0",
   "response": {
     "content": "{\"proposals\": [{\"proposal_id\": \"prp_tr_b8\", \"action\": \"cap_category\", \"currency\": \"GBP\", \"params\": {\n    }\n  , \"title\": \"Cap eating out spend\", \"rationale\": \"Limiting eating out spend to {{cap}} per month saves {{saving}} and helps maintain your cash buffer before payday.\", \"trigger_refs\": [{\"kind\": \"finding\", \"id\": \"fnd:category_spike:food.eating_out\", \"role\": \"trigger\"}, {\"kind\": \"forecast\", \"id\": \"fc:baseline\", \"role\": \"trigger\"}], \"expected_direction\": \"improves_buffer\", \"claimed_monthly_impact_minor\": 18993, \"claimed_impact_text\": null}, {\"proposal_id\": \"prp_cancel_netflix\", \"action\": \"cancel_recurring\", \"currency\": \"GBP\", \"params\": {\n    }\n  , \"title\": \"Cancel Netflix subscription\", \"rationale\": \"Cancelling your Netflix subscription saves {{saving}} each month and removes overlapping streaming services.\", \"trigger_refs\": [{\"kind\": \"finding\", \"id\": \"fnd:subscription_overlap:rob_netflix+rob_sky\", \"role\": \"trigger\"}, {\"kind\": \"forecast\", \"id\": \"fc:baseline\", \"role\": \"trigger\"}], \"expected_direction\": \"improves_buffer\", \"claimed_monthly_impact_minor\": 1299, \"claimed_impact_text\": null}], \"critique_addressed\": [\"Specified the exact category and added clear placeholder references instead of generic advice.\"]}",
-    "mesh_response_id": "chatcmpl-gemini-1791923302",
+    "provider_response_id": "chatcmpl-gemini-1791923302",
     "model": "gemini-3.8-flash",
     "tool_arguments": null,
     "usage": {

@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"This is your likely lowest balance before your next payday, based on the forecast of your expected income and spending.\",\"key_numbers\":[\"R2\"],\"main_visual\":\"EvidencePanel\"}",
     "cost_estimate_usd": 0.000164,
     "latency_ms": 3495,
-    "mesh_response_id": "chatcmpl-EYeCIx8O21cTOUOXT1xRtNslO0ODG",
+    "provider_response_id": "chatcmpl-EYeCIx8O21cTOUOXT1xRtNslO0ODG",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

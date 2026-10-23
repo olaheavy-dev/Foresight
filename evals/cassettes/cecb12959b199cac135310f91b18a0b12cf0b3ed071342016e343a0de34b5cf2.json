@@ -125,7 +125,7 @@
     "content": "{\"items\":[{\"row\":0,\"category\":\"uncategorised\",\"confidence\":0.45},{\"row\":1,\"category\":\"uncategorised\",\"confidence\":0.45},{\"row\":2,\"category\":\"uncategorised\",\"confidence\":0.45},{\"row\":3,\"category\":\"uncategorised\",\"confidence\":0.45}]}",
     "cost_estimate_usd": 0.0002839,
     "latency_ms": 3963,
-    "mesh_response_id": "chatcmpl-EYdumFCY2Z5SIqv7V7INVhacoOawi",
+    "provider_response_id": "chatcmpl-EYdumFCY2Z5SIqv7V7INVhacoOawi",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

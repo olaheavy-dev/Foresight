@@ -381,7 +381,7 @@
   "request_hash": "40588be7abd66b12003799dbd49157058522f9f28c5e9a2f6c5e9e14ad5d1b20",
   "response": {
     "content": "{\"status\":\"needs_clarification\",\"spec\":null,\"clarification\":{\"question\":\"What are you considering spending money on, and how much will it cost?\",\"slot\":\"purchase\",\"options\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVccGq5xLo15XeobW2Brs1eknzOY",
+    "provider_response_id": "chatcmpl-EYVccGq5xLo15XeobW2Brs1eknzOY",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

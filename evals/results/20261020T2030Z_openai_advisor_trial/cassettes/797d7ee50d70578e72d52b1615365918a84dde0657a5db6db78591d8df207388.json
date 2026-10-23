@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports that food-delivery spending is above its usual level, and the forecast covers pre-payday cash flow.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"It names food delivery and gives a clear monthly cap to apply.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported claim beyond the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation concerns food-delivery spending, not a restricted financial topic.\"}]}",
     "cost_estimate_usd": 0.004104,
     "latency_ms": 4349,
-    "mesh_response_id": "chatcmpl-EbAWFCwlYDNDlnUPwIjmOEKiISxhj",
+    "provider_response_id": "chatcmpl-EbAWFCwlYDNDlnUPwIjmOEKiISxhj",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

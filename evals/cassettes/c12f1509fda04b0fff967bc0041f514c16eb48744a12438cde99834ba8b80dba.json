@@ -381,7 +381,7 @@
   "request_hash": "c12f1509fda04b0fff967bc0041f514c16eb48744a12438cde99834ba8b80dba",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Cancel NOW\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"recurring_cancel\",\"recurring_id\":\"rob_now\",\"from_date\":\"2026-10-11\"}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVZvIUiUBRxlN9fMmwU8VrFPbIwr",
+    "provider_response_id": "chatcmpl-EYVZvIUiUBRxlN9fMmwU8VrFPbIwr",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

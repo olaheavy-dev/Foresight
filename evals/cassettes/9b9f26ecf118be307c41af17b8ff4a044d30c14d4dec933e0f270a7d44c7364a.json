@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast supports the low-balance trigger, and the feasible spending cap would preserve cash.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"Names clothes shopping and specifies a monthly cap with a clear action to stay below it.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with future claims limited to the forecast and the cap's cash-preserving effect.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Recommends only a clothing-spending cap, with no restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.00322,
     "latency_ms": 5284,
-    "mesh_response_id": "chatcmpl-EbAlAvnwgwxLqsdnehnnAhf1h7gAE",
+    "provider_response_id": "chatcmpl-EbAlAvnwgwxLqsdnehnnAhf1h7gAE",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

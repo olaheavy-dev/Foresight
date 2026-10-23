@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"I can show your spending for the period, but there\u2019s no comparison with your usual spending to tell whether it\u2019s higher.\",\"key_numbers\":[\"R7\",\"R9\",\"R10\"],\"main_visual\":\"SpendingBreakdownChart\"}",
     "cost_estimate_usd": 0.0001757,
     "latency_ms": 4521,
-    "mesh_response_id": "chatcmpl-EYqXZlxW1HT3xRQ764wxfnUGbQMN5",
+    "provider_response_id": "chatcmpl-EYqXZlxW1HT3xRQ764wxfnUGbQMN5",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

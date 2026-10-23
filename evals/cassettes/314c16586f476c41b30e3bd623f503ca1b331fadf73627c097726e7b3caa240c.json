@@ -103,7 +103,7 @@
   "request_hash": "314c16586f476c41b30e3bd623f503ca1b331fadf73627c097726e7b3caa240c",
   "response": {
     "content": "{\"standalone_question\":\"Can I afford \u00a3600 of Christmas presents on 12 December?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":60000,\"date\":\"2026-12-12\",\"purpose\":\"christmas_present\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdVIbyiGbS7OrBekyFPPkC3cIVAA",
+    "provider_response_id": "chatcmpl-EYdVIbyiGbS7OrBekyFPPkC3cIVAA",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

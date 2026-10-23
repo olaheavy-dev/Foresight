@@ -1,4 +1,4 @@
-"""MeshClient runtime: retries, 429, 402, breaker, model capabilities, structured output, repair,
+"""ModelClient runtime: retries, 429, 402, breaker, model capabilities, structured output, repair,
 cassettes, cost and redaction hook (docs/05 §6.4, docs/06 §10.1, docs/10 AGT-08/09).
 No test touches the network."""
 
@@ -9,18 +9,18 @@ from pathlib import Path
 import pytest
 from pydantic import BaseModel
 
-from backend.mesh.breaker import BreakerState, CircuitBreaker
-from backend.mesh.cassettes import CassetteStore
-from backend.mesh.mesh_client import (
+from backend.llm.breaker import BreakerState, CircuitBreaker
+from backend.llm.cassettes import CassetteStore
+from backend.llm.client import (
     CassetteMiss,
-    MeshCallError,
-    MeshClient,
-    MeshSchemaError,
-    MeshSpendLimitError,
-    MeshUnavailableError,
+    ModelCallError,
+    ModelClient,
+    ModelSchemaError,
+    ModelSpendLimitError,
     ModelTier,
+    ModelUnavailableError,
 )
-from tests.unit.mesh.fakes import (
+from tests.unit.llm.fakes import (
     ScriptedCompletions,
     bad_request,
     client,
@@ -41,7 +41,7 @@ class Category(BaseModel):
     confidence: float
 
 
-def ask(c: MeshClient, tier: ModelTier = ModelTier.FAST) -> object:
+def ask(c: ModelClient, tier: ModelTier = ModelTier.FAST) -> object:
     return c.complete(tier=tier, messages=MSG)
 
 
@@ -74,7 +74,7 @@ def test_retry_after_is_honoured_up_to_ten_seconds() -> None:
 
 def test_no_balance_stops_at_once_without_fallback() -> None:
     calls = ScriptedCompletions(spend_limit())
-    with pytest.raises(MeshSpendLimitError):
+    with pytest.raises(ModelSpendLimitError):
         client(calls).complete(tier=ModelTier.FAST, messages=MSG)
     assert len(calls.calls) == 1
 
@@ -102,13 +102,13 @@ def test_cost_and_usage_are_accounted() -> None:
 def test_breaker_opens_after_five_consecutive_failures_and_skips_calls() -> None:
     calls = ScriptedCompletions(default=connection_error())
     c = client(calls)
-    with pytest.raises(MeshCallError):
+    with pytest.raises(ModelCallError):
         c.complete(tier=ModelTier.FAST, messages=MSG)  # 4 failures (3 primary + 1 fallback)
-    with pytest.raises(MeshCallError):
+    with pytest.raises(ModelCallError):
         c.complete(tier=ModelTier.FAST, messages=MSG)  # 5th failure opens the breaker
     assert c.breaker.state is BreakerState.OPEN
     made = len(calls.calls)
-    with pytest.raises(MeshUnavailableError):
+    with pytest.raises(ModelUnavailableError):
         c.complete(tier=ModelTier.FAST, messages=MSG)
     assert len(calls.calls) == made  # no call attempted while open
 
@@ -195,7 +195,7 @@ def test_one_repair_retry_with_validation_errors() -> None:
 
 def test_invalid_twice_raises_schema_error() -> None:
     calls = ScriptedCompletions(ok("not json"), ok("still not json"))
-    with pytest.raises(MeshSchemaError):
+    with pytest.raises(ModelSchemaError):
         client(calls).structured(
             tier=ModelTier.FAST, messages=MSG, output=Category, name="categorise"
         )
@@ -208,14 +208,14 @@ def test_record_then_replay_without_key_or_network(tmp_path: Path) -> None:
     calls = ScriptedCompletions(json_ok({"category": "groceries", "confidence": 0.9}))
     recorder = client(
         calls,
-        settings=settings(mesh_cassette_mode="record"),
+        settings=settings(model_cassette_mode="record"),
         cassettes=CassetteStore(tmp_path, live_run_sha="abc1234"),
     )
     live = recorder.structured(tier=ModelTier.FAST, messages=MSG, output=Category, name="cat")
     assert len(list(tmp_path.glob("*.json"))) == 1
 
-    player = MeshClient(
-        settings=settings(mesh_cassette_mode="replay", mesh_api_key=""),
+    player = ModelClient(
+        settings=settings(model_cassette_mode="replay", model_client_api_key=""),
         cassettes=CassetteStore(tmp_path),
     )
     replayed = player.structured(tier=ModelTier.FAST, messages=MSG, output=Category, name="cat")
@@ -233,20 +233,20 @@ def test_record_mode_takes_the_path_replay_takes(tmp_path: Path) -> None:
         bad_request(),  # json_schema rejected live
         ok(None, tool_arguments=_json.dumps({"category": "groceries", "confidence": 0.9})),
     )
-    rec1 = client(first, settings=settings(mesh_cassette_mode="record"),
+    rec1 = client(first, settings=settings(model_cassette_mode="record"),
                   cassettes=CassetteStore(tmp_path, live_run_sha="abc1234"))  # fmt: skip
     one = rec1.structured(tier=ModelTier.FAST, messages=MSG, output=Category, name="cat")
     assert one.strategy == "tools"
 
     # A later recording session where json_schema would now answer differently.
     second = ScriptedCompletions(json_ok({"category": "other", "confidence": 0.5}))
-    rec2 = client(second, settings=settings(mesh_cassette_mode="record"),
+    rec2 = client(second, settings=settings(model_cassette_mode="record"),
                   cassettes=CassetteStore(tmp_path, live_run_sha="abc1234"))  # fmt: skip
     two = rec2.structured(tier=ModelTier.FAST, messages=MSG, output=Category, name="cat")
     assert two.value == one.value
     assert second.calls == []  # no live call
 
-    player = MeshClient(settings=settings(mesh_cassette_mode="replay", mesh_api_key=""),
+    player = ModelClient(settings=settings(model_cassette_mode="replay", model_client_api_key=""),
                         cassettes=CassetteStore(tmp_path))  # fmt: skip
     three = player.structured(tier=ModelTier.FAST, messages=MSG, output=Category, name="cat")
     assert three.value == one.value
@@ -257,7 +257,7 @@ def test_cassette_keeps_live_latency_and_replay_reports_it(tmp_path: Path) -> No
 
     recorder = client(
         ScriptedCompletions(ok()),
-        settings=settings(mesh_cassette_mode="record"),
+        settings=settings(model_cassette_mode="record"),
         cassettes=CassetteStore(tmp_path, live_run_sha="abc1234"),
     )
     live = recorder.complete(tier=ModelTier.FAST, messages=MSG)
@@ -268,7 +268,7 @@ def test_cassette_keeps_live_latency_and_replay_reports_it(tmp_path: Path) -> No
 
     entry["response"]["latency_ms"] = 4321  # as if the live call had taken 4.3 s
     path.write_text(_json.dumps(entry))
-    player = MeshClient(settings=settings(mesh_cassette_mode="replay", mesh_api_key=""),
+    player = ModelClient(settings=settings(model_cassette_mode="replay", model_client_api_key=""),
                         cassettes=CassetteStore(tmp_path))  # fmt: skip
     replayed = ask(player)
     assert replayed.latency_ms == 4321  # type: ignore[attr-defined]
@@ -280,8 +280,8 @@ def test_cassette_keeps_live_latency_and_replay_reports_it(tmp_path: Path) -> No
 
 
 def test_replay_of_changed_request_is_a_cassette_miss(tmp_path: Path) -> None:
-    player = MeshClient(
-        settings=settings(mesh_cassette_mode="replay", mesh_api_key=""),
+    player = ModelClient(
+        settings=settings(model_cassette_mode="replay", model_client_api_key=""),
         cassettes=CassetteStore(tmp_path),
     )
     with pytest.raises(CassetteMiss):
@@ -293,7 +293,7 @@ def test_replay_of_changed_request_is_a_cassette_miss(tmp_path: Path) -> None:
 
 def test_payload_redaction_runs_before_the_transport(monkeypatch: pytest.MonkeyPatch) -> None:
     fake = fake_redact_module(str.upper)
-    monkeypatch.setattr("backend.mesh.redact.redact", fake.redact)
+    monkeypatch.setattr("backend.llm.redact.redact", fake.redact)
     calls = ScriptedCompletions(ok())
     client(calls).complete(tier=ModelTier.FAST, messages=MSG, locale_pack="in")
     assert calls.calls[0]["messages"][0]["content"] == "CATEGORISE DEB TESCO STORES|in"

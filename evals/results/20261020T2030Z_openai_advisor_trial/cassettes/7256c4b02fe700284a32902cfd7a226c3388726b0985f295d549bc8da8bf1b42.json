@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast supports the pre-payday buffer concern, and limiting eating-out spending preserves cash.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names eating out and specifies a clear monthly spending cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, and frames the forecast outcome as a risk rather than a certainty.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation is a spending-category cap and contains no restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003496,
     "latency_ms": 4960,
-    "mesh_response_id": "chatcmpl-EbATmAIP5dWffbjqJ6t4YP0O09Ent",
+    "provider_response_id": "chatcmpl-EbATmAIP5dWffbjqJ6t4YP0O09Ent",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

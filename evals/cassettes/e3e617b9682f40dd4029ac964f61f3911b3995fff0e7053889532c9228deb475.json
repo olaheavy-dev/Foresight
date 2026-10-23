@@ -103,7 +103,7 @@
   "request_hash": "e3e617b9682f40dd4029ac964f61f3911b3995fff0e7053889532c9228deb475",
   "response": {
     "content": "{\"standalone_question\":\"Will my money last till payday?\",\"intent\":\"risk_check\",\"slots\":{\"window\":\"to_next_payday\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdUEf3lndBoZPkvFU395bANYc79t",
+    "provider_response_id": "chatcmpl-EYdUEf3lndBoZPkvFU395bANYc79t",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

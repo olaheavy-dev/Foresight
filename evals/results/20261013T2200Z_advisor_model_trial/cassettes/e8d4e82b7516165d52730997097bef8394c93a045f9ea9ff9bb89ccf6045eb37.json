@@ -78,7 +78,7 @@
   "request_hash": "e8d4e82b7516165d52730997097bef8394c93a045f9ea9ff9bb89ccf6045eb37",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-5ed41aad3b078afaba76",
+    "provider_response_id": "chatcmpl-5ed41aad3b078afaba76",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": false, \"reason\": \"Cited evidence is a streaming subscription overlap and a generic baseline forecast; nothing supports the claim that eating out spending has risen.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the food.eating_out category, a monthly cap amount and a clear action a person can take today.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Wording is neutral and respectful, with no REF content and no unsupported claims about the future.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"A spending cap on eating out is not REF advice or a REF recommendation.\"}]}",
     "usage": {

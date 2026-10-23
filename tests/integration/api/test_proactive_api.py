@@ -86,7 +86,7 @@ def test_without_ai_the_job_is_skipped_and_findings_still_show(api: TestClient) 
     _due_now(profile["workspace_id"])
     assert proactive.drain(get_settings().database_url) == 1
     (job,) = _jobs(profile["workspace_id"])
-    assert (job.status, job.note) == ("skipped", "ai_paused")  # no Mesh key in tests
+    assert (job.status, job.note) == ("skipped", "ai_paused")  # no model key in tests
     body = _insights(api)
     assert body["status"] == "paused"
     assert body["reason"] == "ai_paused"
@@ -178,7 +178,7 @@ def test_a_demo_copy_checks_on_request_once_a_day(
     body = _insights(api)
     assert body["status"] == "empty"
     assert body["findings"], "the demo shows its findings before any model run"
-    # No Mesh key in tests: the button is unavailable and a check is refused, not queued.
+    # No model key in tests: the button is unavailable and a check is refused, not queued.
     assert body["can_check"] is False
     assert api.post("/api/home/check").status_code == 409
 

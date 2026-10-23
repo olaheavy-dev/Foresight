@@ -381,7 +381,7 @@
   "request_hash": "699bbe55ecdb6713f7d942069d35896b7a4bfb78f735a67feb8519583a1ccf4c",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Birthday money\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_inflow\",\"date\":\"2026-12-03\",\"amount_minor\":10000,\"label\":\"Birthday money\",\"category_key\":\"income.other\"}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVYWI2HtBO9w7g9OquHPSBwqligk",
+    "provider_response_id": "chatcmpl-EYVYWI2HtBO9w7g9OquHPSBwqligk",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

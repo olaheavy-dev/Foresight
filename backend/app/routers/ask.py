@@ -36,9 +36,9 @@ from backend.app import network_cap
 from backend.app.session import Profile
 from backend.app.ui_contracts.primitives import Contract
 from backend.app.ui_contracts.response import AgentResponse
-from backend.mesh.availability import PAUSED_TEXT, AiStatus, user_status
-from backend.mesh.breaker import BreakerState
-from backend.mesh.mesh_client import MeshClient, MeshConfigError
+from backend.llm.availability import PAUSED_TEXT, AiStatus, user_status
+from backend.llm.breaker import BreakerState
+from backend.llm.client import ModelClient, ModelConfigError
 from backend.settings import get_settings
 from backend.storage import models as m
 from backend.storage.agent_repo import AgentStore
@@ -88,38 +88,38 @@ limits = Limits()
 
 
 log = logging.getLogger(__name__)
-_mesh_lock = threading.Lock()
-_mesh: MeshClient | None = None
-_mesh_refused = False  # the reason is logged once, not on every request
+_client_lock = threading.Lock()
+_model_client: ModelClient | None = None
+_client_refused = False  # the reason is logged once, not on every request
 
 
-def get_mesh() -> MeshClient | None:
+def get_model_client() -> ModelClient | None:
     """One model client per process (it carries the circuit breaker). None when no key is set:
     questions then degrade honestly instead of failing (docs/06 §10.1)."""
-    global _mesh, _mesh_refused
-    with _mesh_lock:
-        if _mesh is None:
+    global _model_client, _client_refused
+    with _client_lock:
+        if _model_client is None:
             try:
-                _mesh = MeshClient()
-            except MeshConfigError as exc:
+                _model_client = ModelClient()
+            except ModelConfigError as exc:
                 # Names settings, never values: e.g. a stale MODEL_PROVIDER=mesh or a model
                 # override OpenAI can't serve. The app still runs; AI answers show as paused.
-                if not _mesh_refused:
+                if not _client_refused:
                     log.warning("AI answers are off: %s", exc)
-                    _mesh_refused = True
+                    _client_refused = True
                 return None
-        return _mesh
+        return _model_client
 
 
-Mesh = Annotated[MeshClient | None, Depends(get_mesh)]
+ModelClientDep = Annotated[ModelClient | None, Depends(get_model_client)]
 
 
-def ai_status(mesh: MeshClient | None) -> AiStatus:
+def ai_status(model_client: ModelClient | None) -> AiStatus:
     """`ok` | `unavailable` (a word only; never a spend figure)."""
-    if mesh is None:
+    if model_client is None:
         return "unavailable"
     try:
-        return mesh.availability.status()
+        return model_client.availability.status()
     except Exception:  # noqa: BLE001 - availability must never break a request
         return "ok"
 
@@ -130,10 +130,14 @@ class AiStatusView(Contract):
 
 
 @router.get("/ai-status", response_model=AiStatusView)
-def get_ai_status(mesh: Mesh) -> AiStatusView:
+def get_ai_status(model_client: ModelClientDep) -> AiStatusView:
     """For the UI. `low` is reported as `ok`: users never see billing."""
-    status_, message = user_status(ai_status(mesh))
-    if status_ == "ok" and mesh is not None and mesh.breaker.state is BreakerState.HALF_OPEN:
+    status_, message = user_status(ai_status(model_client))
+    if (
+        status_ == "ok"
+        and model_client is not None
+        and model_client.breaker.state is BreakerState.HALF_OPEN
+    ):
         return AiStatusView(status="degraded", message="AI answers may be slower right now.")
     return AiStatusView(status=status_, message=message)  # type: ignore[arg-type]
 
@@ -278,7 +282,7 @@ def _run_in_background(
     text: str,
     client_msg_id: str,
     action: dict[str, Any] | None,
-    mesh: MeshClient | None,
+    model_client: ModelClient | None,
     created: Callable[[str], None],
     failed: Callable[[BaseException], None],
     reused: Callable[[str], None] = lambda _run_id: None,
@@ -292,7 +296,7 @@ def _run_in_background(
                     thread_id=thread_id,
                     text=text,
                     client_msg_id=client_msg_id,
-                    mesh=mesh,
+                    model_client=model_client,
                     action=action,
                     on_run_created=created,
                 )
@@ -300,7 +304,7 @@ def _run_in_background(
                     reused(outcome.run_id)
                 # The answer is saved and streamed; a question that ran out of time for its
                 # advice loop carries it on here (docs/06 §13), its answer added to the thread.
-                run_followup(store, outcome, mesh=mesh)
+                run_followup(store, outcome, model_client=model_client)
         except BaseException as exc:  # noqa: BLE001 - recorded on the run; reported to the caller
             failed(exc)
         finally:
@@ -315,7 +319,7 @@ def _run_in_background(
     response_model=RunAccepted,
 )
 def post_message(
-    request: Request, ctx: Profile, mesh: Mesh, thread_id: str, body: MessageBody
+    request: Request, ctx: Profile, model_client: ModelClientDep, thread_id: str, body: MessageBody
 ) -> RunAccepted:
     thread = _thread(ctx, thread_id)
     store = AgentStore(ctx)
@@ -383,7 +387,7 @@ def post_message(
             text=text,
             client_msg_id=body.client_msg_id,
             action=action,
-            mesh=mesh,
+            model_client=model_client,
             created=created,
             failed=failed,
             reused=reused,
@@ -595,4 +599,4 @@ def events(
     )
 
 
-__all__ = ["ai_status", "get_mesh", "limits", "router", "run_events"]
+__all__ = ["ai_status", "get_model_client", "limits", "router", "run_events"]

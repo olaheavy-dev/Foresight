@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"Here\u2019s your food-delivery spending by merchant.\",\"key_numbers\":[\"R10\"],\"main_visual\":\"SpendingBreakdownChart\"}",
     "cost_estimate_usd": 0.000133,
     "latency_ms": 7144,
-    "mesh_response_id": "chatcmpl-EYqXJswhptH4gtpIvpslrmZhN6pZs",
+    "provider_response_id": "chatcmpl-EYqXJswhptH4gtpIvpslrmZhN6pZs",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

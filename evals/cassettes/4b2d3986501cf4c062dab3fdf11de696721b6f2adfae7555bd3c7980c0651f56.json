@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Why did you recommend moving my savings transfer?\",\"intent\":\"explain_recommendation\",\"slots\":{\"subject\":\"recommendation\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002736,
     "latency_ms": 422,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHAZGKZP7PDJASG52MY8DE",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHAZGKZP7PDJASG52MY8DE",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cash-flow forecast supports the pre-payday cash rationale, and the cap's impact has been recomputed.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"Names general shopping and gives a concrete monthly cap the person can apply today.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"Uses neutral, respectful wording without unsupported assurances about the future.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Recommends only a spending cap, with no restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003602,
     "latency_ms": 6193,
-    "mesh_response_id": "chatcmpl-EbAtCZngWsY0z8SQUveBjhoWUn5AS",
+    "provider_response_id": "chatcmpl-EbAtCZngWsY0z8SQUveBjhoWUn5AS",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

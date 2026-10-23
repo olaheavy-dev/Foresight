@@ -78,7 +78,7 @@
   "request_hash": "8b5851f21606576091e23137e9000e4df70508dd38ea92a30e418f2dce39660e",
   "response": {
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited evidence supports elevated delivery spending and a forecast low balance before payday.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and gives a clear monthly cap to apply until the next payday.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with savings expressed conditionally and future claims tied to the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation is a spending-category cap, with no out-of-scope financial advice or recommendations.\"}]}",
-    "mesh_response_id": "chatcmpl-EYdC8FJcOoHIcLweu45HUUOjv1id3",
+    "provider_response_id": "chatcmpl-EYdC8FJcOoHIcLweu45HUUOjv1id3",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

@@ -78,7 +78,7 @@
   "request_hash": "8b46a831eaa657b5bcf1a87ff401b2401df3566b6bd34eb3c3292b5b3593e3e3",
   "response": {
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The cited subscription overlap does not support the claim that eating-out spending has risen above its usual level.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names eating out and specifies a monthly cap to apply until the next payday.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported future claim beyond the cash-flow forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal concerns a spending-category cap and contains no prohibited financial advice or recommendations.\"}]}",
-    "mesh_response_id": "chatcmpl-EYdCDKXEOzIVPQMQ9uZFXHbeEtrlI",
+    "provider_response_id": "chatcmpl-EYdCDKXEOzIVPQMQ9uZFXHbeEtrlI",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

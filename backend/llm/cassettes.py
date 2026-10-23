@@ -12,7 +12,7 @@ Entry format (`<request_hash>.json`):
       "request_hash": "<sha256>",
       "request": {"tier", "model", "messages", "temperature", "max_tokens",
                   "schema_name", "schema", "strategy"},
-      "response": {"mesh_response_id", "model", "content", "tool_arguments", "usage": {...},
+      "response": {"provider_response_id", "model", "content", "tool_arguments", "usage": {...},
                    "latency_ms", "cost_estimate_usd"},
       "recorded_at": "<ISO 8601 UTC>",
       "live_run_sha": "<git sha of the recording run>"
@@ -47,7 +47,7 @@ def request_hash(request: dict[str, Any]) -> str:
 
 @dataclass(frozen=True)
 class RecordedResponse:
-    mesh_response_id: str
+    provider_response_id: str
     model: str
     content: str | None
     tool_arguments: str | None
@@ -61,7 +61,7 @@ class RecordedResponse:
 
     def as_json(self) -> dict[str, Any]:
         return {
-            "mesh_response_id": self.mesh_response_id,
+            "provider_response_id": self.provider_response_id,
             "model": self.model,
             "content": self.content,
             "tool_arguments": self.tool_arguments,
@@ -77,7 +77,7 @@ class RecordedResponse:
     def from_json(cls, data: dict[str, Any]) -> RecordedResponse:
         usage = data.get("usage") or {}
         return cls(
-            mesh_response_id=str(data["mesh_response_id"]),
+            provider_response_id=str(data["provider_response_id"]),
             model=str(data["model"]),
             content=data.get("content"),
             tool_arguments=data.get("tool_arguments"),
@@ -112,7 +112,7 @@ class CassetteStore:
             raise CassetteMiss(
                 f"no recorded model response for request {key[:12]} "
                 f"(tier={request.get('tier')}, model={request.get('model')}); "
-                "re-record with MESH_CASSETTE_MODE=record"
+                "re-record with MODEL_CASSETTE_MODE=record"
             )
         entry = json.loads(path.read_text(encoding="utf-8"))
         if entry.get("format") != CASSETTE_FORMAT or entry.get("request_hash") != key:

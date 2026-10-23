@@ -90,7 +90,7 @@ from backend.app.ui_contracts.validation import (
 from backend.finance_core.calc import record
 from backend.finance_core.forecast.engine import ENGINE_VERSION
 from backend.finance_core.types import ScenarioSpec
-from backend.mesh.mesh_client import ModelTier
+from backend.llm.client import ModelTier
 from backend.pipeline.forecast import (
     NoLedgerData,
     StoredForecast,
@@ -1388,7 +1388,7 @@ def text_response(
 
 def paused_response(*, ctx: WorkspaceContext, state: ForesightState, run_id: str) -> dict[str, Any]:
     """AI answers are paused: say so, and still show the deterministic forecast (no model)."""
-    from backend.mesh.availability import PAUSED_TEXT
+    from backend.llm.availability import PAUSED_TEXT
 
     blocks: list[Any] = [
         Narrative(
@@ -1459,9 +1459,9 @@ def _advice_unchecked(state: ForesightState) -> bool:
 
 def ai_paused(ctx: RunContext) -> bool:
     """True when no model call should be made now (no client, or AI answers are paused)."""
-    if ctx.mesh is None:
+    if ctx.model_client is None:
         return True
-    availability = getattr(ctx.mesh, "availability", None)
+    availability = getattr(ctx.model_client, "availability", None)
     return availability is not None and availability.status() == "unavailable"
 
 
@@ -1494,12 +1494,12 @@ def compose(state: ForesightState, ctx: RunContext) -> NodeOutput:
         and not ai_paused(ctx)
         and composer.sources.values
     ):
-        assert ctx.mesh is not None
-        from backend.mesh.mesh_client import MeshCallError, MeshSpendLimitError
+        assert ctx.model_client is not None
+        from backend.llm.client import ModelCallError, ModelSpendLimitError
 
         try:
             ctx.before_llm()
-            result = ctx.mesh.structured(
+            result = ctx.model_client.structured(
                 tier=ModelTier.FAST,
                 messages=composer.model_messages(question),
                 output=ComposerOutput,
@@ -1523,9 +1523,9 @@ def compose(state: ForesightState, ctx: RunContext) -> NodeOutput:
                         after={"node": "compose", "kinds": blocked},
                         run_id=ctx.run_id,
                     )
-        except MeshCallError as exc:
+        except ModelCallError as exc:
             problems.append(f"model unavailable: {type(exc).__name__}")
-            if isinstance(exc, MeshSpendLimitError):
+            if isinstance(exc, ModelSpendLimitError):
                 # Mid-run spend refusal: engine numbers only, labelled, no model text.
                 spend_stopped = True
                 verdict = EXPLANATION_UNAVAILABLE
@@ -1557,7 +1557,7 @@ def compose(state: ForesightState, ctx: RunContext) -> NodeOutput:
         degraded = (
             bool(state.get("partial"))
             or spend_stopped
-            or (strategy == "template" and ctx.mesh is None)
+            or (strategy == "template" and ctx.model_client is None)
         )
         response = envelope(
             ctx=wctx,

@@ -2,7 +2,7 @@
 
 Specialist nodes are replaced by small deterministic stand-ins (a Forecaster that runs a real
 engine simulation, no-op advice), so these tests pin the composer and the guard wiring whatever
-state the specialist tasks are in. Mesh is scripted: no network.
+state the specialist tasks are in. The model client is scripted: no network.
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ from backend.pipeline.seed_demo import seed_all
 from backend.storage import models as m
 from backend.storage.agent_repo import AgentStore
 from backend.storage.repositories import WorkspaceContext, demo_workspace
-from tests.unit.mesh.fakes import ScriptedCompletions, client, json_ok, spend_limit
+from tests.unit.llm.fakes import ScriptedCompletions, client, json_ok, spend_limit
 
 pytestmark = pytest.mark.postgres
 
@@ -103,16 +103,16 @@ def _stand_ins(simulate: bool = True) -> dict[str, NodeSpec]:
     }
 
 
-def _ask(store: AgentStore, text: str, *mesh_steps: Any, simulate: bool = True) -> Any:
+def _ask(store: AgentStore, text: str, *client_steps: Any, simulate: bool = True) -> Any:
     thread = store.create_thread()
     store.session.commit()
-    completions = ScriptedCompletions(*mesh_steps)
+    completions = ScriptedCompletions(*client_steps)
     out = ask(
         store,
         thread_id=thread.id,
         text=text,
         client_msg_id=f"c-{thread.id}",
-        mesh=client(completions),
+        model_client=client(completions),
         nodes=_stand_ins(simulate),
     )
     return out, completions
@@ -261,7 +261,9 @@ def test_a_leaked_canary_is_dropped_and_audited(p1: AgentStore) -> None:
     assert "prompt_leak_blocked" in actions
 
 
-def test_mesh_unavailable_for_compose_still_answers_from_the_template(p1: AgentStore) -> None:
+def test_model_client_unavailable_for_compose_still_answers_from_the_template(
+    p1: AgentStore,
+) -> None:
     out, _ = _ask(p1, "spending?", json_ok(_spending_intent()), spend_limit(), spend_limit(),
                   spend_limit(), simulate=False)  # fmt: skip
     body = _body(p1, out.response_id)
@@ -409,7 +411,7 @@ def _ask_with(store: AgentStore, nodes: dict[str, NodeSpec], *steps: Any, **inte
     store.session.commit()
     completions = ScriptedCompletions(*steps)
     out = ask(store, thread_id=thread.id, text="car repair?", client_msg_id=f"v-{thread.id}",
-              mesh=client(completions), nodes=nodes)  # fmt: skip
+              model_client=client(completions), nodes=nodes)  # fmt: skip
     return out, completions
 
 

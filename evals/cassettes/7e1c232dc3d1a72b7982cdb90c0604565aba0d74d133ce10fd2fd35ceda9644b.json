@@ -103,7 +103,7 @@
   "request_hash": "7e1c232dc3d1a72b7982cdb90c0604565aba0d74d133ce10fd2fd35ceda9644b",
   "response": {
     "content": "{\"standalone_question\":\"Will I get through the November pay cycle?\",\"intent\":\"risk_check\",\"slots\":{\"period\":\"2026-11\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdVVhMaDnHXcPeZ2xoac9AOy9UQZ",
+    "provider_response_id": "chatcmpl-EYdVVhMaDnHXcPeZ2xoac9AOy9UQZ",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

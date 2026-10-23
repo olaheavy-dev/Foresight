@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"The {{R2}} figure is the forecast lowest balance before your next payday, found by projecting your balance across that period. It\u2019s expected to reach that low on {{R3}}.\",\"key_numbers\":[\"R2\",\"R3\"],\"main_visual\":\"EvidencePanel\"}",
     "cost_estimate_usd": 0.0002099,
     "latency_ms": 402,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHCC0CZSRWHJWJ081VPEGJ",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHCC0CZSRWHJWJ081VPEGJ",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

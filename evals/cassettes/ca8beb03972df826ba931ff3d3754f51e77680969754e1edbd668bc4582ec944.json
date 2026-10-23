@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Why was the first draft rejected?\",\"intent\":\"smalltalk_or_out_of_scope\",\"slots\":{},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":true,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002549,
     "latency_ms": 413,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHB0FZT4AX2BXWM7G2ABHH",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHB0FZT4AX2BXWM7G2ABHH",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

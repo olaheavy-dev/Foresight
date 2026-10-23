@@ -103,7 +103,7 @@
   "request_hash": "6160bd4798624475421a5cdb63d6089a731da0e6b87b1543614056537eb92174",
   "response": {
     "content": "{\"standalone_question\":\"Why is eating out up?\",\"intent\":\"trend_or_change\",\"slots\":{\"category_key\":\"food.eating_out\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdUmqYDmto6zDSo1BOSnf3hdPzNt",
+    "provider_response_id": "chatcmpl-EYdUmqYDmto6zDSo1BOSnf3hdPzNt",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

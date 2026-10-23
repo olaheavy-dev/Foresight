@@ -27,7 +27,7 @@ from backend.finance_core.calc import record
 from backend.finance_core.categorise.rules import learn
 from backend.finance_core.importers import blocking_questions, import_file
 from backend.finance_core.importers.profiles import FormatProfile
-from backend.mesh.mesh_client import MeshClient, MeshResult
+from backend.llm.client import ModelClient, ModelResult
 from backend.pipeline import ingest, ledger, packs
 from backend.storage import models as m
 from backend.storage.agent_repo import AgentStore
@@ -72,7 +72,7 @@ def ledger_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
     base = {"candidates": len(pending) + held, "suspicious_held_back": held}
     if not pending:
         return NodeOutput(output={**base, "sent": 0}, label="Categorising transactions")
-    if ctx.mesh is None:
+    if ctx.model_client is None:
         return NodeOutput(
             output={**base, "sent": 0, "model": "not configured"},
             label="Categorising transactions (rules only)",
@@ -82,7 +82,7 @@ def ledger_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
     result = lg.categorise_with_model(
         list(txns.values()),
         cpack,
-        ctx.mesh,
+        ctx.model_client,
         locale_pack=state.get("locale_pack") or "uk",
         max_batches=MAX_LEDGER_BATCHES,
         before_call=ctx.before_llm,
@@ -304,8 +304,8 @@ def analyst_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
             output={"candidates": 0},
             label="Analysing spending patterns",
         )
-    calls: Sequence[MeshResult] = ()
-    if question or ctx.mesh is None:
+    calls: Sequence[ModelResult] = ()
+    if question or ctx.model_client is None:
         ranking = an.template_ranking(pairs)
         label = (
             "Analysing spending patterns"
@@ -315,7 +315,7 @@ def analyst_node(state: ForesightState, ctx: RunContext) -> NodeOutput:
     else:
         ranking = an.rank_with_model(
             pairs,
-            ctx.mesh,
+            ctx.model_client,
             locale_pack=state.get("locale_pack") or "uk",
             before_call=ctx.before_llm,
             after_call=ctx.charge,
@@ -412,7 +412,7 @@ def tables_needing_columns(
 
 def propose_format_profiles(
     store: AgentStore,
-    mesh: MeshClient,
+    model_client: ModelClient,
     file_name: str,
     data: bytes,
 ) -> FormatProposalRun:
@@ -431,7 +431,11 @@ def propose_format_profiles(
     )
     store.session.flush()
     ctx = RunContext(
-        store=store, run_id=run.id, workflow="ingestion", deadline_at=run.deadline_at, mesh=mesh
+        store=store,
+        run_id=run.id,
+        workflow="ingestion",
+        deadline_at=run.deadline_at,
+        model_client=model_client,
     )
     out = FormatProposalRun(run_id=run.id)
     locale = "in" if ws.workspace.country.upper() == "IN" else "uk"
@@ -443,7 +447,7 @@ def propose_format_profiles(
         ) -> NodeOutput:
             rc.before_llm()
             proposal = fp.propose(
-                table.headers, [cells for _r, cells in table.rows], rc.require_mesh(),
+                table.headers, [cells for _r, cells in table.rows], rc.require_model_client(),
                 locale_pack=locale,
             )  # fmt: skip
             rc.charge(proposal.calls)

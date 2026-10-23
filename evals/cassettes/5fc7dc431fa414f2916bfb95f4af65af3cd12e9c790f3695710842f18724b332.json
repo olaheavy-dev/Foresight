@@ -103,7 +103,7 @@
   "request_hash": "5fc7dc431fa414f2916bfb95f4af65af3cd12e9c790f3695710842f18724b332",
   "response": {
     "content": "{\"standalone_question\":\"Show my Deliveroo orders over \u00a315.\",\"intent\":\"transaction_lookup\",\"slots\":{\"merchant\":\"Deliveroo\",\"category_key\":\"food.delivery\",\"min_amount_minor\":1500},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdPutYBQZjGpcqv4XxYYE7bMAknY",
+    "provider_response_id": "chatcmpl-EYdPutYBQZjGpcqv4XxYYE7bMAknY",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

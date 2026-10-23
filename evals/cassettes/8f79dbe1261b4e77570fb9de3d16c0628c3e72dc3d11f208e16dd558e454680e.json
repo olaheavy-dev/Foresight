@@ -103,7 +103,7 @@
   "request_hash": "8f79dbe1261b4e77570fb9de3d16c0628c3e72dc3d11f208e16dd558e454680e",
   "response": {
     "content": "{\"standalone_question\":\"Have taxis gone up?\",\"intent\":\"trend_or_change\",\"slots\":{\"category_key\":\"transport.taxi\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.94,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdVB7VRzUvmTzyvhTkn39vFHtYEa",
+    "provider_response_id": "chatcmpl-EYdVB7VRzUvmTzyvhTkn39vFHtYEa",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

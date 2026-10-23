@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Can I afford Christmas presents of \u00a3400?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":40000,\"purpose\":\"christmas_present\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002786,
     "latency_ms": 502,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHAF9GT7WA6Z6QETT7P1AP",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHAF9GT7WA6Z6QETT7P1AP",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -186,7 +186,7 @@
     "content": "{\"proposals\":[{\"proposal_id\":\"cap_food_delivery\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.delivery\",\"monthly_cap_minor\":20310},\"title\":\"Cap food delivery at {{cap}}\",\"rationale\":\"Food delivery is above its usual level. Capping it at {{cap}} keeps more cash in hand before payday, though the forecast is low even without this change.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd_01K742SG010000000000000001\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"calc_e209f3fff8d2ac1ae282eab8\",\"role\":\"context\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":8330,\"claimed_impact_text\":\"That is \u00a383.30 less than your food-delivery spend over the last 30 days. If the \u00a31,200 holiday payment on 6 November is additional to the baseline forecast, and nothing else changes, the forecast low before the November payday would fall from \u2212\u00a3940.14 to \u2212\u00a32,140.14. The forecast already shows a low chance of staying above your buffer in that cycle.\"}],\"critique_addressed\":[\"Recomputed the cap\u2019s monthly impact as 28,640 minus 20,310 minor units and retained the correct value of 8,330.\"]}",
     "cost_estimate_usd": 0.014478,
     "latency_ms": 13999,
-    "mesh_response_id": "chatcmpl-EbAg4wk1OOtxn8FVV9LOJDVF4g1RW",
+    "provider_response_id": "chatcmpl-EbAg4wk1OOtxn8FVV9LOJDVF4g1RW",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

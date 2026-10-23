@@ -23,7 +23,7 @@ from backend.agents.routes import WORKFLOW_ROUTES, route_for_intent
 from backend.agents.runtime import NodeOutput, RunContext
 from backend.agents.state import ForesightState
 from backend.finance_core.forecast.engine import ENGINE_VERSION
-from backend.mesh.mesh_client import ModelTier
+from backend.llm.client import ModelTier
 
 UNDERSTAND_PROMPT = "understand"
 # The fast model spends hidden reasoning tokens out of max_tokens; below ~800 it can return nothing.
@@ -178,9 +178,9 @@ def understand(state: ForesightState, ctx: RunContext) -> NodeOutput:
             output={"reason": "AI answers are paused"},
             label="AI answers are paused",
         )
-    mesh = ctx.require_mesh()
+    model_client = ctx.require_model_client()
     ctx.before_llm()
-    result = mesh.structured(
+    result = model_client.structured(
         tier=ModelTier.FAST,
         messages=_understand_messages(state),
         output=IntentClassification,

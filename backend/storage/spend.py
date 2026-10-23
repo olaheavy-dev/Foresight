@@ -1,4 +1,4 @@
-"""Model spend totals across every workspace, for the daily spend guard (backend/mesh)."""
+"""Model spend totals across every workspace, for the daily spend guard (backend/llm)."""
 
 from __future__ import annotations
 

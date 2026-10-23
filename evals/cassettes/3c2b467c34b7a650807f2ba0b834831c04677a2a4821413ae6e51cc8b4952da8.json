@@ -81,7 +81,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The evidence supports elevated food-delivery spending but does not establish a buffer shortfall before the payday following the holiday or the holiday\u2019s affordability.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and specifies a monthly cap that can be implemented today.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, and the future-facing conclusion is framed in terms of the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal recommends a spending cap, not advice on investments, pensions, borrowing, credit cards, or tax.\"}]}",
     "cost_estimate_usd": 0.004212,
     "latency_ms": 5826,
-    "mesh_response_id": "chatcmpl-EbMMKcF6I4cvf2QBjM73YLQZUnn9I",
+    "provider_response_id": "chatcmpl-EbMMKcF6I4cvf2QBjM73YLQZUnn9I",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

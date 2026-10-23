@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports the rise in delivery spending, and the forecast supports the reference to a low balance before payday.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"It names food delivery and gives a clear monthly cap to apply until the next payday.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral, respectful, and stays within the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation concerns delivery spending, not a restricted financial topic.\"}]}",
     "cost_estimate_usd": 0.004078,
     "latency_ms": 4980,
-    "mesh_response_id": "chatcmpl-EbAVifusA3KSbKT5qGAZARunzDKdI",
+    "provider_response_id": "chatcmpl-EbAVifusA3KSbKT5qGAZARunzDKdI",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

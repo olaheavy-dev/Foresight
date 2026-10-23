@@ -103,7 +103,7 @@
   "request_hash": "85a3aebf5307b5ef4286ee9b74230a768d7107f1162fe404523db02de7cb9f92",
   "response": {
     "content": "{\"standalone_question\":\"When did Spotify get more expensive?\",\"intent\":\"subscription_review\",\"slots\":{\"focus\":\"price_change\",\"merchant\":\"Spotify\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdNuY9SNM2jszaFO78tFU4CEXmUN",
+    "provider_response_id": "chatcmpl-EYdNuY9SNM2jszaFO78tFU4CEXmUN",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

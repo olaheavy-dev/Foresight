@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"I don\u2019t have any checked saving recommendations to suggest. Your forecast shows a likely low balance of {{R2}} before your next payday, compared with {{R1}} today.\",\"key_numbers\":[\"R2\",\"R1\"],\"main_visual\":\"CashFlowForecastChart\"}",
     "cost_estimate_usd": 0.0001732,
     "latency_ms": 456,
-    "mesh_response_id": "chatcmpl-cached-req_01M4VJ07V76J76Y4RMCF25709Z",
+    "provider_response_id": "chatcmpl-cached-req_01M4VJ07V76J76Y4RMCF25709Z",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

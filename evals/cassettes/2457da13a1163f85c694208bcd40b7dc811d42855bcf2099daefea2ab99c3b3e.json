@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"The chart shows your spending by category, including housing, groceries, and food delivery.\",\"key_numbers\":[\"R8\",\"R9\",\"R10\"],\"main_visual\":\"SpendingBreakdownChart\"}",
     "cost_estimate_usd": 0.000165,
     "latency_ms": 10626,
-    "mesh_response_id": "chatcmpl-cached-req_01M4WZCN4DYSSS32AN3AJ689G2",
+    "provider_response_id": "chatcmpl-cached-req_01M4WZCN4DYSSS32AN3AJ689G2",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

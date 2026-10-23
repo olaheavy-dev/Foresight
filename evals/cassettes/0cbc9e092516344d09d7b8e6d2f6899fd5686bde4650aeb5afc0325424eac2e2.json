@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Can I swing an 800 quid trip early November?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":80000,\"purpose\":\"trip\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.84,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002767,
     "latency_ms": 510,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHB3TC5XQCEQVM1FR4CTZG",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHB3TC5XQCEQVM1FR4CTZG",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

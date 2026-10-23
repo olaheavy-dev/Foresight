@@ -1,7 +1,7 @@
 import { defineConfig } from "@playwright/test";
 
 // The portfolio walkthrough (e2e/walkthrough.spec.ts): one scripted tour recorded as video on the
-// live site. It asks real questions, so it spends a little Mesh credit: run it only on purpose,
+// live site. It asks real questions, so it spends a little OpenAI credit: run it only on purpose,
 // `WALKTHROUGH=1 npx playwright test -c playwright.walkthrough.config.ts`.
 export default defineConfig({
   testDir: "./e2e",

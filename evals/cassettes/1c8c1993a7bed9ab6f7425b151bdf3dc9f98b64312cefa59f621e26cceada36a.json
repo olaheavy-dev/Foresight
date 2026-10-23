@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Has my eating out gone up?\",\"intent\":\"trend_or_change\",\"slots\":{\"category_key\":\"food.eating_out\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002524,
     "latency_ms": 508,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHAPK4KCV3W3BK5XGF5EBE",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHAPK4KCV3W3BK5XGF5EBE",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

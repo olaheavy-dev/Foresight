@@ -381,7 +381,7 @@
   "request_hash": "80a1fa995c176e59d16b7dc8a81c951d5ec0f82750772d3ba085a33d7ed1ba75",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Car repair\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-10-14\",\"amount_minor\":65000,\"label\":\"Car repair\",\"category_key\":\"transport.car\"}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYdS8GRPuBz6mbB8IBixbUE2FNj7l",
+    "provider_response_id": "chatcmpl-EYdS8GRPuBz6mbB8IBixbUE2FNj7l",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

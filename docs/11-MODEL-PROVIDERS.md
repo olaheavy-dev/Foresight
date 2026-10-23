@@ -6,7 +6,7 @@
 
 - **Advisor (reasoning tier): call Anthropic directly, with prompt caching on.** About 3,000 of the Advisor's ~4,200 input tokens are the same on every call (system prompt and rules), so cached reads cut an advice answer by about 20% at steady traffic.
 - **Understand, scenario parsing, categorisation (fast tier) and the Verifier: call OpenAI directly** (or Azure AI Foundry's Global deployment, at the same price).
-- **Keep our own single model gateway.** `backend/mesh/mesh_client.py` stays the only module that calls a model, with tiers, prices (`backend/mesh/models.yaml`), spend guards, recordings and redaction. Swapping a provider stays a configuration change, and the import contract that keeps model SDKs out of other modules stays.
+- **Keep our own single model gateway.** `backend/llm/client.py` stays the only module that calls a model, with tiers, prices (`backend/llm/models.yaml`), spend guards, recordings and redaction. Swapping a provider stays a configuration change, and the import contract that keeps model SDKs out of other modules stays.
 - **If EU data residency becomes a requirement:** use Azure's EU Data Zone for the OpenAI models and accept that Claude inference stays Global (see below).
 
 ## Why: cost

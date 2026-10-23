@@ -383,7 +383,7 @@
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Rent increase and pay rise\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"recurring_change\",\"recurring_id\":\"rob_rent\",\"amount_minor\":130000,\"from_date\":\"2027-02-01\"},{\"type\":\"income_change_pct\",\"income_stream_id\":\"inc_salary\",\"pct\":5,\"from_date\":\"2027-01-01\"}],\"assumptions\":[]},\"clarification\":null}",
     "cost_estimate_usd": 0.005522,
     "latency_ms": 4897,
-    "mesh_response_id": "chatcmpl-EbAiWwNWuV5V69pf0jGSJWNYxKOMG",
+    "provider_response_id": "chatcmpl-EbAiWwNWuV5V69pf0jGSJWNYxKOMG",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

@@ -78,7 +78,7 @@
   "request_hash": "4ecd041543b57dd39b2220e021f5e974244e878ff317aa26a3ee69a0c90ab803",
   "response": {
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast supports the buffer-risk trigger, and cancelling a recurring fee retains that money.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names Spotify and gives a clear cancellation action for the identified recurring payment.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with future risk framed as a chance shown by the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Cancelling an entertainment subscription is within scope and does not recommend restricted financial actions.\"}]}",
-    "mesh_response_id": "chatcmpl-EYWoKCG22gbkfzajhiYZP7iAHrBoV",
+    "provider_response_id": "chatcmpl-EYWoKCG22gbkfzajhiYZP7iAHrBoV",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

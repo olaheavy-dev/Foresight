@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Am I on track for my emergency fund?\",\"intent\":\"goal_status\",\"slots\":{\"goal\":\"emergency_fund\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.96,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002766,
     "latency_ms": 506,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHAVM7DN2FW7AS8WM8XFPD",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHAVM7DN2FW7AS8WM8XFPD",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

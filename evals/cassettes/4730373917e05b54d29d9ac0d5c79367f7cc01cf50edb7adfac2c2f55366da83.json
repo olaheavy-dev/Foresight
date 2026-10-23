@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Is my balance going to dip below \u00a3500?\",\"intent\":\"risk_check\",\"slots\":{\"threshold_minor\":50000},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.97,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002547,
     "latency_ms": 510,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHAXJNHVP2FVNEDMX8R5W5",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHAXJNHVP2FVNEDMX8R5W5",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

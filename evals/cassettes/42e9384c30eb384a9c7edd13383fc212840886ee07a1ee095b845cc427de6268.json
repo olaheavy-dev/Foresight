@@ -381,7 +381,7 @@
   "request_hash": "42e9384c30eb384a9c7edd13383fc212840886ee07a1ee095b845cc427de6268",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Part-time at 60% pay\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"income_change_pct\",\"income_stream_id\":\"inc_salary\",\"pct\":-40,\"from_date\":\"2026-12-01\",\"to_date\":null}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVZUKQPIxE47xIBRpGf74qB34vsh",
+    "provider_response_id": "chatcmpl-EYVZUKQPIxE47xIBRpGf74qB34vsh",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

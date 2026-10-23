@@ -16,7 +16,7 @@ from contextlib import contextmanager
 from typing import Any
 from urllib.parse import urlsplit
 
-from backend.mesh.mesh_client import PROVIDER_BASE_URLS
+from backend.llm.client import PROVIDER_BASE_URLS
 from backend.settings import get_settings
 
 # Services other than the model provider; the provider's host is added for MODEL_PROVIDER alone.

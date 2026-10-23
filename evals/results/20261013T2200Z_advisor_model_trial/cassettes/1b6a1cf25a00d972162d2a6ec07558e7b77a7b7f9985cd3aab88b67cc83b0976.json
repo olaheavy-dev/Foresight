@@ -78,7 +78,7 @@
   "request_hash": "1b6a1cf25a00d972162d2a6ec07558e7b77a7b7f9985cd3aab88b67cc83b0976",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-ebcfe42b54ca88966ecf",
+    "provider_response_id": "chatcmpl-ebcfe42b54ca88966ecf",
     "model": "anthropic/claude-sonnet-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"Spike finding supports 'above usual level'; baseline forecast supports the pre-payday low point. The claim is modest and grounded.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the category (eating out), a clear action (cap at a monthly amount) and a timeframe (until next payday).\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral, respectful wording with no blame or speculation beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Only a budgeting cap on a spending category; no investment, loan, credit card, pension or tax advice.\"}]}",
     "usage": {

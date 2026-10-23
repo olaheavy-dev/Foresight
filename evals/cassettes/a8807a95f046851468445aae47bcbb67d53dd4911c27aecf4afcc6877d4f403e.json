@@ -381,7 +381,7 @@
   "request_hash": "a8807a95f046851468445aae47bcbb67d53dd4911c27aecf4afcc6877d4f403e",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Lose job for two months\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"income_change_pct\",\"income_stream_id\":\"inc_salary\",\"pct\":-100,\"from_date\":\"2026-11-01\",\"to_date\":\"2026-12-31\"}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVZAl40Al6Ifrub6pN9jnTs6UYoe",
+    "provider_response_id": "chatcmpl-EYVZAl40Al6Ifrub6pN9jnTs6UYoe",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

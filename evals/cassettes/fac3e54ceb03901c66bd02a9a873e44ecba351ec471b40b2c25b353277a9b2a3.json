@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"What should I do to stay above my buffer?\",\"intent\":\"advice_request\",\"slots\":{},\"needs_forecast\":true,\"needs_advice\":true,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002612,
     "latency_ms": 501,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHAY2ZFZHC2QCF9QACWAE7",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHAY2ZFZHC2QCF9QACWAE7",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

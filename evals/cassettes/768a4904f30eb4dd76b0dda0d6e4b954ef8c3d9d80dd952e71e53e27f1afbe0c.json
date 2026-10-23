@@ -381,7 +381,7 @@
   "request_hash": "768a4904f30eb4dd76b0dda0d6e4b954ef8c3d9d80dd952e71e53e27f1afbe0c",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Stop Disney+ and Prime\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"recurring_cancel\",\"recurring_id\":\"rob_disney\",\"from_date\":\"2026-10-11\"},{\"type\":\"recurring_cancel\",\"recurring_id\":\"rob_prime\",\"from_date\":\"2026-10-11\"}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVa32251cKSaYtwRbaJ1DbrYwnpR",
+    "provider_response_id": "chatcmpl-EYVa32251cKSaYtwRbaJ1DbrYwnpR",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

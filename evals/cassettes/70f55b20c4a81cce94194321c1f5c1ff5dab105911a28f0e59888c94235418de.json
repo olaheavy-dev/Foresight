@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Show my spending by merchant for food delivery\",\"intent\":\"spending_breakdown\",\"slots\":{\"category_key\":\"food.delivery\",\"group_by\":\"merchant\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002535,
     "latency_ms": 483,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHANK706PE7BJZAX7V4SA7",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHANK706PE7BJZAX7V4SA7",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

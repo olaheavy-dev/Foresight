@@ -381,7 +381,7 @@
   "request_hash": "14af6b7435e1ca9dd45de6bfc23ccae86f75a31c7fe344323ab7fc8bd76011ba",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Buy a laptop\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-10-12\",\"amount_minor\":120000,\"label\":\"Laptop\",\"category_key\":\"shopping.general\"}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVXPPRM3GSBLRXiIX1vDZPhd2KF3",
+    "provider_response_id": "chatcmpl-EYVXPPRM3GSBLRXiIX1vDZPhd2KF3",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

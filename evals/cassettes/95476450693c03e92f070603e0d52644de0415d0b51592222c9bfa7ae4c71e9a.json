@@ -186,7 +186,7 @@
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_bp_023\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.delivery\",\"monthly_cap_minor\":20310},\"title\":\"Keep food delivery within {{cap}} a month\",\"rationale\":\"Food delivery spending is above its usual level. Keeping it within {{cap}} could leave more cash available for your buffer.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.delivery\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"context\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":8330,\"claimed_impact_text\":null},{\"proposal_id\":\"prp_cancel_netflix\",\"action\":\"cancel_recurring\",\"currency\":\"GBP\",\"params\":{\"recurring_id\":\"rob_netflix\"},\"title\":\"Cancel Netflix while keeping Sky TV\",\"rationale\":\"The finding flags overlap between Netflix and Sky TV. Cancelling Netflix would leave more cash available for your buffer.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:subscription_overlap:rob_netflix+rob_sky\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":1299,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Raised the food delivery cap above the required minimum. The revised cap is also at the category\u2019s usual spending level and does not affect essentials.\"]}",
     "cost_estimate_usd": 0.011162,
     "latency_ms": 9374,
-    "mesh_response_id": "chatcmpl-EbAvAd6Fql9DEWnrfLYmWTMWwJufG",
+    "provider_response_id": "chatcmpl-EbAvAd6Fql9DEWnrfLYmWTMWwJufG",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

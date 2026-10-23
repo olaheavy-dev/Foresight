@@ -676,13 +676,13 @@ class AgentStep(BaseModel):
     started_at: datetime; finished_at: datetime
 ```
 
-This feeds the `AgentExecutionTimeline` block (08), the Evidence drawer, and orchestration evals (09: "every specialist called at least once in W1", "W4 loops when given a bad proposal", "no LLM call outside mesh_client").
+This feeds the `AgentExecutionTimeline` block (08), the Evidence drawer, and orchestration evals (09: "every specialist called at least once in W1", "W4 loops when given a bad proposal", "no LLM call outside llm.client").
 
 ---
 
 ## 12. Deterministic vs probabilistic boundary
 
-| Concern | Deterministic (`finance_core`, tested) | Probabilistic (LLM via `mesh_client`) |
+| Concern | Deterministic (`finance_core`, tested) | Probabilistic (LLM via `llm.client`) |
 |---|---|---|
 | Narration parsing, masking | ✔ | |
 | Currency detection, number/date inference, holidays, locale-pack application | ✔ (unambiguous cases) | — (ambiguity goes to the user, H13, never to an LLM) |
@@ -712,13 +712,13 @@ Test: freeze the same accepted ledger interpretations, forecast inputs and typed
 | Verifier judge | verifier tier: a different model from the Advisor (until 20 Oct 2026, a different provider) | Independence | 0 |
 | Digest headline | fast | ≤ 20 words | 0.3 |
 
-Model IDs are configuration (settings `MESH_MODEL_<TIER>` and `MESH_MODEL_<TIER>_FALLBACK`); each model's capabilities and price are data in `backend/mesh/models.yaml` (or the file named by `MESH_MODELS_FILE`), so switching a model needs no code change. Chosen from Mesh's catalogue, probed live on 13 Oct 2026. The reasoning tier also serves the Analyst's ranking and the Forecaster's multi-modifier parse. **Selection rule** (docs/00 §8): drop any model that fails its tier's accuracy gates; drop any model that breaks the end-to-end latency targets; of what is left, pick the cheapest, and choose the faster one when costs are within 10%. Applied 13 Oct 2026 (owner decision; `evals/results/20261013T2200Z_advisor_model_trial/`, evals/CHANGELOG.md):
+Model IDs are configuration (settings `MODEL_<TIER>` and `MODEL_<TIER>_FALLBACK`); each model's capabilities and price are data in `backend/llm/models.yaml` (or the file named by `MODELS_FILE`), so switching a model needs no code change. Chosen from Mesh's catalogue, probed live on 13 Oct 2026. The reasoning tier also serves the Analyst's ranking and the Forecaster's multi-modifier parse. **Selection rule** (docs/00 §8): drop any model that fails its tier's accuracy gates; drop any model that breaks the end-to-end latency targets; of what is left, pick the cheapest, and choose the faster one when costs are within 10%. Applied 13 Oct 2026 (owner decision; `evals/results/20261013T2200Z_advisor_model_trial/`, evals/CHANGELOG.md):
 
 - **Reasoning tier stays on Claude Sonnet 5.5.** GPT-5.6 Luna Pro matched it on the Advisor's 18 dev cases at about 37% lower cost, then failed on whole answers: *accuracy*, the Analyst's ranking broke its output check even after the repair (explanations over the 240-character limit), so 21 of the 60 E-UI answers lost their Analyst step; *latency*, Advisor calls took 17–57 s, putting advice answers at about 44 s median and 62 s at worst (targets 35 s and 60 s). Gemini 3.8 Flash failed the Advisor schema.
 - **Verifier judge stays on GPT-6.1 Sol** (a different provider from the Advisor). Haiku 5.5 failed the E-VER accuracy gate as judge on the dev trial (52% repairs with json_schema; with tool calls, one correct fix withdrawn).
 
 - **20 Oct 2026, owner decision (`00` §12 item 14):** every tier moves to OpenAI, called directly. The judge must be a different model from the Advisor rather than a different provider; a same-family judge may share the Advisor's blind spots, so E-VER's flawed-proposal cases are the check that it still catches them. The models are picked by the selection rule above, on a trial using the remaining Mesh credit; applied 20–21 Oct 2026: GPT-6 Sol as Advisor won the dev-case trial (`evals/results/20261020T2030Z_openai_advisor_trial/`) and passed the whole-answer gates on re-recording (evals/CHANGELOG.md, `evalrun_20261021T085940Z_29b86eb`).
-- **23 Oct 2026:** the Mesh route is removed from the code. `MODEL_PROVIDER` accepts only `openai`; an env still naming `mesh`, or a tier primary OpenAI can't serve, turns AI answers off and logs why (the API still starts). Recordings made through Mesh still replay and keep `provider: "mesh"` on their steps.
+- **23 Oct 2026:** the Mesh route is removed from the code. `MODEL_PROVIDER` accepts only `openai`; an env still naming `mesh`, or a tier primary OpenAI can't serve, turns AI answers off and logs why (the API still starts). Recordings made through Mesh still replay and keep `provider: "mesh"` on their steps. The same day the gateway module moved to `backend/llm/client.py` and the settings were renamed `MODEL_*` (an env still setting the old `MESH_*` names gets the defaults).
 
 | Tier | Primary | Fallback |
 |---|---|---|
@@ -726,4 +726,4 @@ Model IDs are configuration (settings `MESH_MODEL_<TIER>` and `MESH_MODEL_<TIER>
 | reasoning | `openai/gpt-6-sol` | none (the only other Sol model is the judge's; an Advisor failure degrades to the deterministic answer) |
 | verifier | `openai/gpt-6.1-sol` | none (the only other Sol model is the Advisor's) |
 
-\* **Temperatures are the model default.** The GPT-6 models accept only their default temperature, so the client never sends one to them (`backend/mesh/models.yaml`; through Mesh, until 23 Oct 2026, the same was true of the Anthropic models then used). Each `AgentStep` records the temperature actually sent, with `null` meaning "model default". The eval suite records which models produced each result, so swapping a model shows up as a measurable change.
+\* **Temperatures are the model default.** The GPT-6 models accept only their default temperature, so the client never sends one to them (`backend/llm/models.yaml`; through Mesh, until 23 Oct 2026, the same was true of the Anthropic models then used). Each `AgentStep` records the temperature actually sent, with `null` meaning "model default". The eval suite records which models produced each result, so swapping a model shows up as a measurable change.

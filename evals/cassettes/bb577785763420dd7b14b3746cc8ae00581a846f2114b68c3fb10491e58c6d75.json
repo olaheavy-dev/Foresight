@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"What if my salary comes 10 days late?\",\"intent\":\"scenario\",\"slots\":{\"modifier\":\"income_delay\",\"days\":10},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002741,
     "latency_ms": 501,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHB4SEW50JVZ1Q7V67N7RA",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHB4SEW50JVZ1Q7V67N7RA",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

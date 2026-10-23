@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Do any of my subscriptions overlap?\",\"intent\":\"subscription_review\",\"slots\":{\"focus\":\"overlap\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002464,
     "latency_ms": 523,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHATJDSM1EY17A1KG2PWWP",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHATJDSM1EY17A1KG2PWWP",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

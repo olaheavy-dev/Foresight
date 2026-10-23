@@ -381,7 +381,7 @@
   "request_hash": "2a272b599b06d04ce6139db3f225eefdb072319171d0605d8c5c597f08dcc1a9",
   "response": {
     "content": "{\"status\":\"needs_clarification\",\"spec\":null,\"clarification\":{\"question\":\"By how much or by what percentage will the rent increase?\",\"slot\":\"increase_amount_or_percentage\",\"options\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVcFCGfqfzJId9tMRDLz3KrMVoZh",
+    "provider_response_id": "chatcmpl-EYVcFCGfqfzJId9tMRDLz3KrMVoZh",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

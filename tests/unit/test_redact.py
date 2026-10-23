@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from backend.mesh.redact import redact_text as redact
+from backend.llm.redact import redact_text as redact
 
 
 def test_masks_identifiers_but_keeps_merchant_text() -> None:
@@ -34,7 +34,7 @@ def test_dates_are_not_mistaken_for_sort_codes() -> None:
     ],
 )
 def test_phone_and_grouped_account_numbers_are_masked(identifier: str) -> None:
-    """Review finding: these formats used to reach Mesh unchanged."""
+    """Review finding: these formats used to reach the model unchanged."""
     out = redact(f"call {identifier} about the payment")
     assert identifier not in out
     assert "call" in out
@@ -47,7 +47,8 @@ def test_amounts_and_dates_survive(safe: str) -> None:
 
 
 def test_retrieval_references_and_ni_numbers_are_masked() -> None:
-    """Stricter than the retired text-only patterns: references never reach Mesh (docs/05 §7.3)."""
+    """Stricter than the retired text-only patterns: references never reach the model
+    (docs/05 §7.3)."""
     out = redact("UPI/DR/412345678901 and NI QQ123456C")
     assert "412345678901" not in out
     assert "QQ123456C" not in out

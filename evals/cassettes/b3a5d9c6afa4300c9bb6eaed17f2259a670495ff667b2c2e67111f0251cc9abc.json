@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"Your spending includes {{R8}} on rent, {{R9}} on groceries and {{R10}} on food delivery, out of {{R7}} total spending.\",\"key_numbers\":[\"R7\",\"R8\",\"R9\"],\"main_visual\":\"SpendingBreakdownChart\"}",
     "cost_estimate_usd": 0.0002073,
     "latency_ms": 4492,
-    "mesh_response_id": "chatcmpl-EYqaQjm2eeMcXRienWGZhyxe2k23B",
+    "provider_response_id": "chatcmpl-EYqaQjm2eeMcXRienWGZhyxe2k23B",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

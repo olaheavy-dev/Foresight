@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports the food delivery spike, and the verified cap supports the stated spending reduction.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"It names food delivery and gives a specific monthly cap to set.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and makes no claim beyond the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation concerns a spending cap, not a restricted financial product or action.\"}]}",
     "cost_estimate_usd": 0.00369,
     "latency_ms": 3608,
-    "mesh_response_id": "chatcmpl-EbAYdxFZ4yMPEOl33khF7WugssbTe",
+    "provider_response_id": "chatcmpl-EbAYdxFZ4yMPEOl33khF7WugssbTe",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

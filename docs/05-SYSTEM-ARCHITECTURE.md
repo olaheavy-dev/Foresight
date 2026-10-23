@@ -5,7 +5,7 @@
 
 Status: design. No production code exists yet. Code snippets are pseudocode that shows shape, not implementation.
 
-> **Model provider, 23 Oct 2026.** Model calls now go to OpenAI directly (`https://api.openai.com/v1`; owner decision 20 Oct 2026, `00` §12 item 14), and the Mesh gateway this document was designed around has been removed. The sections below that define current behaviour (§2 diagram, §3.1 rules, §5.3, §7.1, §7.3, deployment) say OpenAI; where an older passage still says "Mesh", read it as the model provider. The module keeps its name, `backend/mesh/mesh_client.py`, and the settings keep their `MESH_*` names, because the deployment's environment uses them.
+> **Model provider, 23 Oct 2026.** Model calls now go to OpenAI directly (`https://api.openai.com/v1`; owner decision 20 Oct 2026, `00` §12 item 14), and the Mesh gateway this document was designed around has been removed. The sections below that define current behaviour (§2 diagram, §3.1 rules, §5.3, §7.1, §7.3, deployment) say OpenAI; where an older passage still says "Mesh", read it as the model provider. On 23 Oct 2026 the module moved to `backend/llm/client.py` and the settings were renamed from `MESH_*` to `MODEL_*`.
 
 ---
 
@@ -14,7 +14,7 @@ Status: design. No production code exists yet. Code snippets are pseudocode that
 | # | Principle | Consequence in the design |
 |---|---|---|
 | A1 | **Numbers come from code, words come from models.** | `finance_core` is a pure, I/O-free Python package. LLM nodes can only *reference* `calc_…` IDs. The API hydrates values. |
-| A2 | **One gateway for AI.** | `backend/mesh/mesh_client.py` is the only module allowed to import `openai`. An `import-linter` forbidden contract (§3.1, rule list) fails the build if any other module imports an AI SDK. This makes the "every call goes through Mesh" rule provable. |
+| A2 | **One gateway for AI.** | `backend/llm/client.py` is the only module allowed to import `openai`. An `import-linter` forbidden contract (§3.1, rule list) fails the build if any other module imports an AI SDK. This makes the "every call goes through Mesh" rule provable. |
 | A3 | **Every step leaves a record.** | Every agent node writes an `AgentStep`. Every recommendation links to findings, calculations and verification results. Audit is a by-product of execution, not a separate feature. |
 | A4 | **Reproducible by default.** | Seeded simulations, `engine_version` stamped on every calculation, the same input hash gives the same output, and eval results are committed. |
 | A5 | **Read paths are cheap.** | The Home briefing, past analyses and scenarios are persisted snapshots. Opening a page never triggers an LLM call. |
@@ -89,7 +89,7 @@ flowchart TB
             GOAL[goal projection]
             BT[backtester]
         end
-        MESHC[mesh/mesh_client.py<br/>sole LLM gateway]
+        LLMC[llm/client.py<br/>sole LLM gateway]
         STORE[storage/ — SQLAlchemy repos<br/>workspace-scoped]
         SCHED[scheduler/ — APScheduler jobs<br/>digest renderers]
     end
@@ -105,7 +105,7 @@ flowchart TB
     APP --> AG
     APP --> STORE
     AG --> FC
-    AG --> MESHC
+    AG --> LLMC
     AG --> STORE
     SCHED --> AG
     SCHED --> STORE
@@ -129,11 +129,11 @@ Enforced with `import-linter` contracts in CI.
 | `evals` | `finance_core`, `agents`, `storage` (throwaway Postgres schema per run) | `app` | Datasets, metric computation, reports |
 
 The **one-gateway rule** (rev 4.3, first written for Mesh), enforced three ways:
-1. **Import contract.** An `import-linter` *forbidden* contract applies to every package except `backend.mesh`: no imports of `openai`, `langchain_openai`, `langchain_community`, `litellm`, `anthropic`, `google.genai`, `cohere`, `transformers`, `sentence_transformers` or `tiktoken`. LangGraph is used **only** for the graph (`langgraph` core); no LangChain model wrappers anywhere. Test stubs fake `mesh_client`; they never construct an `OpenAI()` client.
-2. **Egress allow-list.** Integration and eval runs install a socket guard allowing only the configured model provider (`api.openai.com`), the Telegram Bot API and the configured SMTP host (09 ORC-13). Any other outbound connection fails the run. `backend/mesh` may use `httpx` only through the `openai` client to the provider's fixed base URL.
+1. **Import contract.** An `import-linter` *forbidden* contract applies to every package except `backend.llm`: no imports of `openai`, `langchain_openai`, `langchain_community`, `litellm`, `anthropic`, `google.genai`, `cohere`, `transformers`, `sentence_transformers` or `tiktoken`. LangGraph is used **only** for the graph (`langgraph` core); no LangChain model wrappers anywhere. Test stubs fake `llm.client`; they never construct an `OpenAI()` client.
+2. **Egress allow-list.** Integration and eval runs install a socket guard allowing only the configured model provider (`api.openai.com`), the Telegram Bot API and the configured SMTP host (09 ORC-13). Any other outbound connection fails the run. `backend/llm` may use `httpx` only through the `openai` client to the provider's fixed base URL.
 3. **No silent telemetry.** Settings force `LANGSMITH_TRACING=false` and `LANGCHAIN_TRACING_V2=false` at start-up, and a unit test asserts it, so no run traces (which would contain financial data) leave the app.
 
-The README states it plainly: **every model call goes through `backend/mesh/mesh_client.py` to `https://api.openai.com/v1`; there are no embeddings, no OCR and no client-side AI (the Next.js app never calls a model).**
+The README states it plainly: **every model call goes through `backend/llm/client.py` to `https://api.openai.com/v1`; there are no embeddings, no OCR and no client-side AI (the Next.js app never calls a model).**
 
 ### 3.2 Import sources: two generic importers, bank knowledge as data (00 §3, §6b)
 
@@ -399,16 +399,16 @@ The stack is **decided** (see 00 §8). Each table records the alternatives consi
 | AutoGen | Strong for multi-agent chat | Conversation-shaped, so non-deterministic routing; poor fit for auditable, bounded pipelines | Rejected |
 | Custom orchestrator | Total control, no dependency | We would re-implement state, checkpoints and visualisation, and lose the "structured framework" bonus | Rejected (but nodes are plain functions, so they can be ported) |
 
-Constraint: we use **LangGraph only for the graph**. LLM calls go through `mesh_client` (via the `openai` SDK), not LangChain chat-model wrappers. This keeps the single route to the model provider unambiguous.
+Constraint: we use **LangGraph only for the graph**. LLM calls go through `llm.client` (via the `openai` SDK), not LangChain chat-model wrappers. This keeps the single route to the model provider unambiguous.
 
 ### 5.3 LLM access — **OpenAI via the `openai` SDK** (Mesh until 23 Oct 2026)
 
 ```
-# pseudocode — backend/mesh/mesh_client.py
+# pseudocode — backend/llm/client.py
 client = OpenAI(base_url="https://api.openai.com/v1", api_key=env["OPENAI_API_KEY"])
 
 def complete(tier, messages, response_schema, *, run_id, step_id, timeout_s, max_retries=2) -> ParsedOutput:
-    model = MODEL_TIERS[tier]                     # resolved from config (MESH_MODEL_<TIER>, models.yaml)
+    model = MODEL_TIERS[tier]                     # resolved from config (MODEL_<TIER>, models.yaml)
     messages = redact(messages)                   # §7.3
     resp = client.chat.completions.create(model=model, messages=messages,
                                           response_format=json_schema(response_schema), temperature=TIER_TEMP[tier])
@@ -535,7 +535,7 @@ The briefing stores `{data_version, prefs_version, engine_version, as_of}`. It i
 | Concern | Mechanism |
 |---|---|
 | **Slow model** | Per-node timeouts (`fast` 8 s, `reasoning` 25 s; a `fast` fallback gets 25 s, since it runs only after the primary failed and may be a slower model, 22 Oct 2026) and a per-run deadline (**75 s** for questions: raised from 45 s on 13 Oct 2026 after the first live P1 run reached it during the second Verifier round, and to 75 s on 14 Oct 2026 because live calls ran 1.5–2.5× slower than the recordings and a revision round no longer fitted; 120 s for ingestion). The judge calls for one round's proposals run concurrently (a pool of 3). At the deadline, nodes that still need a model are skipped, but withdraw, compose and persist always run deterministically: rejected drafts are withdrawn with the reason "deadline", and the answer is composed with no model call from engine numbers (the risk and simulation blocks) plus the note "No recommendation was checked in time", flagged `partial=true`. Any partial run (deadline or budget) composes the same way, so the user always gets an answer. |
-| **Mesh outage** | A circuit breaker inside `mesh_client`: 5 consecutive failures, or more than 50% failures over 60 s, opens it for 60 s. While open, LLM nodes skip straight to their degraded path (06 §10.1) instead of each waiting for its own timeout, and answers carry "AI explanation unavailable". One probe call closes it again. Breaker state is a step event and a `/healthz` field. |
+| **Mesh outage** | A circuit breaker inside `llm.client`: 5 consecutive failures, or more than 50% failures over 60 s, opens it for 60 s. While open, LLM nodes skip straight to their degraded path (06 §10.1) instead of each waiting for its own timeout, and answers carry "AI explanation unavailable". One probe call closes it again. Breaker state is a step event and a `/healthz` field. |
 | **Double submits and retries** | `client_msg_id` is unique per thread, so a retried POST returns the existing run. Digest runs are idempotent per schedule slot (06 W6). |
 | **Dropped connections** | Runs are independent of the SSE connection; `Last-Event-ID` replays missed events from `AgentStep` (§4.2). |
 | **Process restart mid-run** | Runs are checkpointed by `PostgresSaver`. On boot, runs still `running` past their deadline are marked `failed` with an `error` event, and the thread offers "Try again". Automatic resume of interrupted runs is a production item (§13); human-review interrupts (06 §9) already resume. |
@@ -581,7 +581,7 @@ The briefing stores `{data_version, prefs_version, engine_version, as_of}`. It i
 
 **Indian identifiers (`in` pack).** Before any Mesh call, redaction also masks: UPI IDs/VPAs (`name@bank`, `98xxxxxxxx@upi`) → `VPA_n`; UPI and IMPS reference numbers (12-digit RRNs) → `REF`; IFSC codes (`AAAA0XXXXXX`) → `IFSC`; Aadhaar-shaped (12 digits, optionally spaced 4-4-4) and PAN-shaped (`AAAAA9999A`) strings → `ID`; Indian mobile numbers → `PHONE`. The payee display name inside a UPI narration is kept only when it matches the pack's merchant lexicon; otherwise it is masked as `PERSON_n`. Fixtures with planted identifiers must produce zero leaks.
 
-Redaction runs inside `mesh_client.redact()` *and* at the call site, so a missed field at one layer is caught by the other. Redaction has unit tests with UK card, DD/SO, Faster Payments (FPO/FPI), Bacs and Monzo/Revolut narration fixtures, Indian UPI/NEFT/IMPS/NACH fixtures, and fictional PDF statements.
+Redaction runs inside `llm.client.redact()` *and* at the call site, so a missed field at one layer is caught by the other. Redaction has unit tests with UK card, DD/SO, Faster Payments (FPO/FPI), Bacs and Monzo/Revolut narration fixtures, Indian UPI/NEFT/IMPS/NACH fixtures, and fictional PDF statements.
 
 ### 7.4 Input handling
 
@@ -589,7 +589,7 @@ Redaction runs inside `mesh_client.redact()` *and* at the call site, so a missed
 - CSV: max 10 MB, max 20k rows, UTF-8/UTF-16/Windows-1252 detection, formula-injection guard on export (`=`, `+`, `-`, `@` prefixes are escaped), no evaluation of cell content.
 - Chat input: max 2,000 characters, Unicode-normalised with hidden control characters removed (§4.2 stage 0). The LLM has no tools that mutate financial data; all mutations go through API endpoints that require explicit user action. The full prompt-injection design, covering chat **and** imported statement text, is §7.4a.
 - Rate limits per session on `/threads/*/messages` and `/scenarios` to cap Mesh spend.
-- At most 10 questions per profile per 10 minutes (owner decision, 13 Oct 2026), and a project-wide daily model budget, `MESH_DAILY_BUDGET_USD` (default $0.50): today's spend is the sum of `AgentStep.cost_estimate_usd` since UTC midnight across every profile; once it is reached, AI answers pause (`/api/ai-status` reports `unavailable` with the usual paused wording, live Mesh calls are refused) until the next UTC day. The figure is never shown or logged (`backend/mesh/spend_guard.py`).
+- At most 10 questions per profile per 10 minutes (owner decision, 13 Oct 2026), and a project-wide daily model budget, `MODEL_DAILY_BUDGET_USD` (default $0.50): today's spend is the sum of `AgentStep.cost_estimate_usd` since UTC midnight across every profile; once it is reached, AI answers pause (`/api/ai-status` reports `unavailable` with the usual paused wording, live Mesh calls are refused) until the next UTC day. The figure is never shown or logged (`backend/llm/spend_guard.py`).
 
 ### 7.4a Prompt-injection defence in depth (rev 7)
 

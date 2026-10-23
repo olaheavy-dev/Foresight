@@ -383,7 +383,7 @@
     "content": "{\"status\":\"needs_clarification\",\"spec\":null,\"clarification\":{\"question\":\"When would you be out of work for two months?\",\"slot\":\"from_date\",\"options\":[]}}",
     "cost_estimate_usd": 0.0002976,
     "latency_ms": 450,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHCN6NVQK7W7QF34FN6CF2",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHCN6NVQK7W7QF34FN6CF2",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

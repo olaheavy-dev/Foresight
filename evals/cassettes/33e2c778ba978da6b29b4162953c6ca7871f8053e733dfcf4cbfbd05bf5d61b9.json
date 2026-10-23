@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The food-delivery spike is supported, but the forecast summary does not establish a November buffer shortfall or the holiday\u2019s affordability.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and specifies a monthly spending cap that can be applied today.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, and future statements are framed as forecast-based.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation is a spending cap and contains no restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.004688,
     "latency_ms": 8557,
-    "mesh_response_id": "chatcmpl-EbBiOgOq6UJR1IUFKKB4SQKSbIArg",
+    "provider_response_id": "chatcmpl-EbBiOgOq6UJR1IUFKKB4SQKSbIArg",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

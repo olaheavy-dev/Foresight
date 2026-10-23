@@ -186,7 +186,7 @@
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_tr_b9\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.delivery\",\"monthly_cap_minor\":15000},\"title\":\"Cap food delivery at {{cap}} a month\",\"rationale\":\"Food delivery spending is above its usual level. Keeping it within {{cap}} a month leaves more cash in hand before payday, though the forecast still shows a risk of falling below your buffer.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.delivery\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":13640,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Replaced the unrelated Spotify price-change trigger with the finding that specifically identifies the rise in food delivery spending.\"]}",
     "cost_estimate_usd": 0.010182,
     "latency_ms": 8643,
-    "mesh_response_id": "chatcmpl-EbATwFyDixSoJcZqQv08S0bUMe5Z7",
+    "provider_response_id": "chatcmpl-EbATwFyDixSoJcZqQv08S0bUMe5Z7",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

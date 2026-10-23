@@ -78,7 +78,7 @@
   "request_hash": "b3ec4ba4f7b3a96cde81b822f0dea9f9d7793030fbcad162ac7a1e73619c4fad",
   "response": {
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited eating-out spike and cash-flow forecast support the rationale, with the cap's impact already recomputed.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names eating out and specifies a monthly cap to apply until the next payday.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no future claims beyond the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation is limited to an eating-out spending cap and contains no prohibited financial advice.\"}]}",
-    "mesh_response_id": "chatcmpl-EYdARVaw8LThkN7loPLiPg6bxGQ0y",
+    "provider_response_id": "chatcmpl-EYdARVaw8LThkN7loPLiPg6bxGQ0y",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

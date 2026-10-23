@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"Here are the payments over \u00a3100 this month.\",\"key_numbers\":[],\"main_visual\":\"TransactionTable\"}",
     "cost_estimate_usd": 0.0001354,
     "latency_ms": 409,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHC5YW7C2VD1DWR21KEHTR",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHC5YW7C2VD1DWR21KEHTR",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

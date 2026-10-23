@@ -78,7 +78,7 @@
   "request_hash": "819dcd916f82c524f47c0af7a5f940ef08cdb069cd62b38b64e9952b59863c7a",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-bbc5b795e220d6f96845",
+    "provider_response_id": "chatcmpl-bbc5b795e220d6f96845",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"The cited spike finding for food.eating_out and the baseline low-balance forecast support a cap on that category as a way to ease the pre-payday low point.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"It names the category (food.eating_out), gives a monthly cap amount and a clear end point (until the next payday), so the user can act on it today.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"The wording is neutral and factual, with no REF content and no claims about the future beyond the baseline forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"A spending cap on eating out is a budgeting action, not REF advice or a REF recommendation.\"}]}",
     "usage": {

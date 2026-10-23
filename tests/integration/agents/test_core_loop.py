@@ -1,9 +1,9 @@
 """The core loop on the seeded P1 demo through the real graph (docs/06 W4; docs/09 ORC-4, ORC-5).
 
 Real nodes: Forecaster (baseline forecast from stored data), risk check, Advisor, Verifier
-(deterministic rules + judge). Only the Analyst is a no-op stand-in, and Mesh is scripted: the
-scripted Advisor reads the figures it was sent, so its claims are whatever the code would accept
-or reject on the real data.
+(deterministic rules + judge). Only the Analyst is a no-op stand-in, and the model client is
+scripted: the scripted Advisor reads the figures it was sent, so its claims are whatever the
+code would accept or reject on the real data.
 
 - ORC-4: an injected infeasible draft (a cap far below the usual level) is rejected by V-04
   without a judge call; the revision passes the rules and the judge; the recommendation is
@@ -32,7 +32,7 @@ from backend.pipeline.seed_demo import seed_all
 from backend.storage import models as m
 from backend.storage.agent_repo import AgentStore
 from backend.storage.repositories import WorkspaceContext, demo_workspace
-from tests.unit.mesh.fakes import ScriptedCompletions, client, json_ok
+from tests.unit.llm.fakes import ScriptedCompletions, client, json_ok
 
 pytestmark = pytest.mark.postgres
 
@@ -70,7 +70,7 @@ STAND_INS = {"analyst": NodeSpec("analyst", "analyst", "tool", _no_analyst, "Ana
 
 def _data(kwargs: dict[str, Any]) -> dict[str, Any]:
     user = [msg for msg in kwargs["messages"] if msg["role"] == "user"][0]
-    # Known issue: backend.mesh.redact masks bare 6+ digit figures in the JSON text as REF
+    # Known issue: backend.llm.redact masks bare 6+ digit figures in the JSON text as REF
     # (unquoted); a real model reads past it, so the scripted Advisor does too.
     text = re.sub(r"(?<=: )REF(?=[,}\]])", "null", user["content"])
     return dict(json.loads(text)["data"])
@@ -117,7 +117,7 @@ def _run(store: AgentStore, *steps: Any) -> Any:
         workflow="risk_detection",
         trigger="event",
         event="data_version_changed",
-        mesh=client(completions),
+        model_client=client(completions),
         nodes=STAND_INS,
     )
     return out, completions
@@ -322,7 +322,7 @@ def test_deadline_still_ends_with_a_deterministic_answer(p1: AgentStore) -> None
         thread_id=thread.id,
         text="My car needs a £650 repair on 14 October. Will I be OK before payday?",
         client_msg_id="deadline-1",
-        mesh=client(completions),
+        model_client=client(completions),
         nodes={"verify": NodeSpec("verify", "verifier", "llm", verify_then_late, "Checking")},
         clock=clock,
     )
@@ -407,7 +407,7 @@ def test_drafts_unchecked_at_the_deadline_are_withdrawn(p1: AgentStore) -> None:
         workflow="risk_detection",
         trigger="event",
         event="data_version_changed",
-        mesh=client(ScriptedCompletions(bad, bad)),
+        model_client=client(ScriptedCompletions(bad, bad)),
         nodes={**STAND_INS,
                "advise": NodeSpec("advise", "advisor", "llm", advise_then_late, "Drafting")},
         clock=clock,
@@ -459,7 +459,7 @@ def test_concurrent_judge_calls_share_the_run_budget_in_order(p1: AgentStore) ->
     completions = ScriptedCompletions(two_drafts, default=lambda _: JUDGE_PASS)
     out = run_workflow(
         p1, workflow="risk_detection", trigger="event", event="data_version_changed",
-        mesh=client(completions), nodes=STAND_INS, budget=Budget(max_calls=2),
+        model_client=client(completions), nodes=STAND_INS, budget=Budget(max_calls=2),
     )  # fmt: skip
     assert len(completions.calls) == 2  # the Advisor and one judge, never the second judge
     verify = next(s for s in p1.steps(out.run_id) if s.node == "verify")

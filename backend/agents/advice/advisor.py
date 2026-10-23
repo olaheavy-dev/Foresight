@@ -21,7 +21,7 @@ from backend.agents.cache import prompt_version
 from backend.agents.prompting import system_prompt
 from backend.finance_core.simulate import ScenarioError, simulate
 from backend.finance_core.types import ScenarioSpec
-from backend.mesh.mesh_client import MeshClient, MeshResult, ModelTier
+from backend.llm.client import ModelClient, ModelResult, ModelTier
 
 ADVISOR_PROMPT = "advisor"
 SPEND_FLOWS = frozenset({"spending", "commitment", "betting"})
@@ -32,7 +32,7 @@ MAX_CATEGORIES = 12
 class Advice:
     proposals: list[InterventionProposal]
     impacts: dict[str, Impact]
-    llm: list[MeshResult] = field(default_factory=list)
+    llm: list[ModelResult] = field(default_factory=list)
     prompt_version: str = ""
 
 
@@ -122,7 +122,7 @@ def advisor_messages(
 
 def advise(
     world: AdviceWorld,
-    mesh: MeshClient,
+    model_client: ModelClient,
     *,
     forecast_id: str,
     question: str | None = None,
@@ -131,7 +131,7 @@ def advise(
 ) -> Advice:
     if before_llm is not None:
         before_llm()
-    result = mesh.structured(
+    result = model_client.structured(
         tier=ModelTier.REASONING,
         messages=advisor_messages(
             world, forecast_id=forecast_id, question=question, revision=revision

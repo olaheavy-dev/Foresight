@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"What tips can I use to save before Christmas from my own spending?\",\"intent\":\"advice_request\",\"slots\":{},\"needs_forecast\":false,\"needs_advice\":true,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002831,
     "latency_ms": 501,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHBA9HB2W0YE34JQA3KN7T",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHBA9HB2W0YE34JQA3KN7T",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

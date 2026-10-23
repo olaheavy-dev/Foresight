@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited overlap finding supports cancelling a redundant subscription, with the forecast providing cash-flow context rather than establishing trip affordability.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names Netflix and specifies cancellation if the user prefers to retain only Disney+.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral, respects the user's choice, and avoids guarantees about future affordability.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Cancelling an entertainment subscription is within scope and involves no restricted financial advice.\"}]}",
     "cost_estimate_usd": 0.003838,
     "latency_ms": 6988,
-    "mesh_response_id": "chatcmpl-EbBhQnwngTPxrzYZsz3NZxU9IXKm6",
+    "provider_response_id": "chatcmpl-EbBhQnwngTPxrzYZsz3NZxU9IXKm6",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

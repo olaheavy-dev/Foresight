@@ -381,7 +381,7 @@
   "request_hash": "c5a69c857cf5ee8d6a67cef9ad59c19fce4a8633c3e13d01b6b52972d677c5d0",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Weekend away\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-11-21\",\"amount_minor\":25000,\"label\":\"Weekend away\",\"category_key\":\"travel\"}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVbu753lcH3ZkIKJcEaYwsmoCD3B",
+    "provider_response_id": "chatcmpl-EYVbu753lcH3ZkIKJcEaYwsmoCD3B",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

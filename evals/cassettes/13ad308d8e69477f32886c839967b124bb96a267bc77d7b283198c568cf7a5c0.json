@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Did any bills go up recently?\",\"intent\":\"subscription_review\",\"slots\":{\"focus\":\"price_change\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.84,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002884,
     "latency_ms": 593,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHAQ3BZ4R9ZBPQQ14WG3B3",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHAQ3BZ4R9ZBPQQ14WG3B3",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

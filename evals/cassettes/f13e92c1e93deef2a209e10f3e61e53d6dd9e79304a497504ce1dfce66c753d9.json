@@ -103,7 +103,7 @@
   "request_hash": "f13e92c1e93deef2a209e10f3e61e53d6dd9e79304a497504ce1dfce66c753d9",
   "response": {
     "content": "{\"standalone_question\":\"Can I afford Christmas presents of \u00a3600?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":60000,\"purpose\":\"christmas_present\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdQVAOvbyjGkE7CAJDgSh1C6PSug",
+    "provider_response_id": "chatcmpl-EYdQVAOvbyjGkE7CAJDgSh1C6PSug",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

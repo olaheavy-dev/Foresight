@@ -381,7 +381,7 @@
   "request_hash": "25203b227ef4829e1cf0e1a4b7221b4900c6cb0de19aa8ad7d08a3d4c9a52330",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Winter coat purchase\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-10-25\",\"amount_minor\":12000,\"label\":\"Winter coat\",\"category_key\":\"shopping.clothing\"}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVXsIkQtfqCYfxd0RsO8huXasxTp",
+    "provider_response_id": "chatcmpl-EYVXsIkQtfqCYfxd0RsO8huXasxTp",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

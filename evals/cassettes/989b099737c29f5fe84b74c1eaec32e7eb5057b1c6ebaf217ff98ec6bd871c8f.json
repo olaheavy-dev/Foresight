@@ -381,7 +381,7 @@
   "request_hash": "989b099737c29f5fe84b74c1eaec32e7eb5057b1c6ebaf217ff98ec6bd871c8f",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Pay delayed by two weeks\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"income_delay\",\"income_stream_id\":\"inc_salary\",\"days\":14,\"occurrences\":1}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVZ7vVmd01iCwMk1HhQSwLTBuPki",
+    "provider_response_id": "chatcmpl-EYVZ7vVmd01iCwMk1HhQSwLTBuPki",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

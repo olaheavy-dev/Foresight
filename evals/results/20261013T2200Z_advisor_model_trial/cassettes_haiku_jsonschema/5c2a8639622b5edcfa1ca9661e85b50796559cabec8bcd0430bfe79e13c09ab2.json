@@ -78,7 +78,7 @@
   "request_hash": "5c2a8639622b5edcfa1ca9661e85b50796559cabec8bcd0430bfe79e13c09ab2",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-557106d12f22c816a826",
+    "provider_response_id": "chatcmpl-557106d12f22c816a826",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{}",
     "usage": {

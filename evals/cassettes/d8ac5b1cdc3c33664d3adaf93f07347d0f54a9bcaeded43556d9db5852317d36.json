@@ -103,7 +103,7 @@
   "request_hash": "d8ac5b1cdc3c33664d3adaf93f07347d0f54a9bcaeded43556d9db5852317d36",
   "response": {
     "content": "{\"standalone_question\":\"What if rent goes up to \u00a31,350 from February?\",\"intent\":\"scenario\",\"slots\":{\"amount_minor\":135000,\"modifier\":\"recurring_change\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.96,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdUxdc8NU8bA4zU4ws7yFgasJZyt",
+    "provider_response_id": "chatcmpl-EYdUxdc8NU8bA4zU4ws7yFgasJZyt",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

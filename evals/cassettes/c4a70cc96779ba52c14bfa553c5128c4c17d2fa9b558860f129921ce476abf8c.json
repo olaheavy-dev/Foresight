@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports the Netflix\u2013Disney+ overlap underlying the cancellation recommendation.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names Netflix and specifies cancelling its recurring subscription.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, and late pay is framed as a possibility rather than a prediction.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Cancelling an entertainment subscription does not involve prohibited financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003552,
     "latency_ms": 5285,
-    "mesh_response_id": "chatcmpl-EbBfqgMqvRKm86CeJmcPeuQ26El3Z",
+    "provider_response_id": "chatcmpl-EbBfqgMqvRKm86CeJmcPeuQ26El3Z",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"Here are your Deliveroo orders.\",\"key_numbers\":[],\"main_visual\":\"TransactionTable\"}",
     "cost_estimate_usd": 0.0001142,
     "latency_ms": 2568,
-    "mesh_response_id": "chatcmpl-EYe5OReGiuWTzjaAgOVzScLQWSAe7",
+    "provider_response_id": "chatcmpl-EYe5OReGiuWTzjaAgOVzScLQWSAe7",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

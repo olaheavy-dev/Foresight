@@ -86,7 +86,7 @@
   "request_hash": "9c880a6017fcc1de70759669c4219f18c8e7577b089ce3a9eef67508a9c57fb0",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-4dff31a185e9458cf853",
+    "provider_response_id": "chatcmpl-4dff31a185e9458cf853",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"The food.delivery spike finding and the baseline low-balance forecast directly support the claim that a cap could ease the projected low point.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the food.delivery category, a specific monthly cap amount and a clear action running until the next payday.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Wording is neutral and respectful, with no forecast claims beyond the cited baseline.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Recommends only a spending cap on one category; no investment, credit, loan, tax or REF advice.\"}]}",
     "usage": {

@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Give me a plan to get through October.\",\"intent\":\"advice_request\",\"slots\":{\"period\":\"2026-10\"},\"needs_forecast\":true,\"needs_advice\":true,\"confidence\":0.87,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0003595,
     "latency_ms": 429,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHAZ34RQ3QFKW9604XYQQ8",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHAZ34RQ3QFKW9604XYQQ8",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

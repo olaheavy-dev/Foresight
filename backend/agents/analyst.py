@@ -27,7 +27,7 @@ from pydantic import BaseModel, ConfigDict, Field, create_model
 from backend.agents.cache import PROMPTS_DIR, prompt_version
 from backend.agents.findings import CandidateSpec
 from backend.agents.guard import output_screen
-from backend.mesh.mesh_client import MeshClient, MeshResult, ModelTier
+from backend.llm.client import ModelClient, ModelResult, ModelTier
 
 PROMPT = "analyst_rank"
 HEADLINE_MAX = 90
@@ -72,7 +72,7 @@ class Worded:
 class AnalystResult:
     ranked: list[Worded] = field(default_factory=list)
     discarded: dict[str, str] = field(default_factory=dict)  # id → reason
-    calls: list[MeshResult] = field(default_factory=list)
+    calls: list[ModelResult] = field(default_factory=list)
     violations: dict[str, list[str]] = field(default_factory=dict)  # id → problems found
     repaired: bool = False
     prompt_version: str = ""
@@ -122,11 +122,11 @@ def _payload(specs: Sequence[tuple[str, CandidateSpec]]) -> dict[str, Any]:
 
 def rank_with_model(
     specs: Sequence[tuple[str, CandidateSpec]],
-    mesh: MeshClient,
+    model_client: ModelClient,
     *,
     locale_pack: str = "uk",
     before_call: Callable[[], None] | None = None,
-    after_call: Callable[[Sequence[MeshResult]], None] | None = None,
+    after_call: Callable[[Sequence[ModelResult]], None] | None = None,
 ) -> AnalystResult:
     """Rank and word `specs` (finding id, candidate) with the reasoning tier."""
     by_id = dict(specs)
@@ -143,7 +143,7 @@ def rank_with_model(
     for round_ in (0, 1):
         if before_call is not None:
             before_call()
-        result = mesh.structured(
+        result = model_client.structured(
             tier=ModelTier.REASONING,
             messages=messages,
             output=schema,

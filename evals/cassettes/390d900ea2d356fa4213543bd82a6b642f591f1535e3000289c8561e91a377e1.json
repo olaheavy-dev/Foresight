@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"What stocks should I invest in?\",\"intent\":\"smalltalk_or_out_of_scope\",\"slots\":{},\"needs_forecast\":false,\"needs_advice\":true,\"confidence\":0.99,\"out_of_scope\":true,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002663,
     "latency_ms": 498,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHBBSFW0DNFVGFR3CTB6SY",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHBBSFW0DNFVGFR3CTB6SY",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

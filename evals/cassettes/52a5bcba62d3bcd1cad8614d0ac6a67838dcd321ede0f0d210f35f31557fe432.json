@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The cited evidence concerns overlapping streaming subscriptions, not the cause of increased taxi spending.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names the taxi category and specifies a monthly spending cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported future prediction beyond the cap's direct effect.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"A taxi spending cap does not involve restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003088,
     "latency_ms": 3641,
-    "mesh_response_id": "chatcmpl-EYq6wxkRyoBAixPkYHszJLOx3IpKd",
+    "provider_response_id": "chatcmpl-EYq6wxkRyoBAixPkYHszJLOx3IpKd",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

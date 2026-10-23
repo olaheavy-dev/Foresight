@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast supports the buffer-risk rationale, and the cap's impact has already been checked.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names general shopping and specifies a monthly cap as a clear action.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral, respectful, and conditional rather than promising a future outcome.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation is limited to a spending cap and contains no restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003198,
     "latency_ms": 4620,
-    "mesh_response_id": "chatcmpl-EbBcO3RgBw4JKwTgmOXu3rgtxFEyu",
+    "provider_response_id": "chatcmpl-EbBcO3RgBw4JKwTgmOXu3rgtxFEyu",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

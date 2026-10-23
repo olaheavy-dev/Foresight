@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports the claimed overlap between Sky TV and Netflix and the rationale for cancelling a duplicate subscription.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names Sky TV and specifies cancellation of its recurring subscription.\"},{\"rule\":\"V-13\",\"passed\":false,\"reason\":\"The title contains REF wording, which is prohibited by the tone criterion.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Cancelling a TV subscription is within scope and does not involve restricted financial advice.\"}]}",
     "cost_estimate_usd": 0.003792,
     "latency_ms": 6060,
-    "mesh_response_id": "chatcmpl-EbAlt6lMw0LLhoyDXmFvHw4XTF3ZJ",
+    "provider_response_id": "chatcmpl-EbAlt6lMw0LLhoyDXmFvHw4XTF3ZJ",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

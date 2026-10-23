@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast supports the buffer-risk rationale, and the feasible cap's impact has been recomputed.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names entertainment and specifies a clear monthly spending cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral, respectful, and conditional rather than promising a future outcome.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation is a spending-category cap, not restricted financial advice.\"}]}",
     "cost_estimate_usd": 0.003136,
     "latency_ms": 4008,
-    "mesh_response_id": "chatcmpl-EbBcO7he1WnbmioXNrsPVjsoyPJaq",
+    "provider_response_id": "chatcmpl-EbBcO7he1WnbmioXNrsPVjsoyPJaq",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

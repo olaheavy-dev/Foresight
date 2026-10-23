@@ -186,7 +186,7 @@
     "content": "{\"proposals\":[{\"proposal_id\":\"holiday_delivery_cap\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\"category_key\":\"food.delivery\",\"monthly_cap_minor\":20310},\"title\":\"Cap food delivery at {{cap}}\",\"rationale\":\"Food delivery spending is above its usual level. A cap would keep more cash in hand before payday, but would not prevent the forecast low point.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd_01K742SG010000000000000001\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"calc_d9e3afcd8d1565faa32c320b\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":8330,\"claimed_impact_text\":\"If the \u00a31,200 holiday payment is not already in the forecast, paying it on 6 November would lower the projected pre-payday low on 26 November from \u2212\u00a3940.14 to \u2212\u00a32,140.14, all else equal. The forecast already shows a 100% chance of going below your buffer in that pay cycle. The food delivery cap could save \u00a383.30 a month if recent spending would otherwise continue.\"}],\"critique_addressed\":[\"Confirmed the cap\u2019s monthly impact as 8,330 minor units: recent food delivery spending of 28,640 minus the proposed cap of 20,310.\"]}",
     "cost_estimate_usd": 0.01121,
     "latency_ms": 5885,
-    "mesh_response_id": "chatcmpl-EbBhqLPXrcs6trW1toJJZuj7uve7R",
+    "provider_response_id": "chatcmpl-EbBhqLPXrcs6trW1toJJZuj7uve7R",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

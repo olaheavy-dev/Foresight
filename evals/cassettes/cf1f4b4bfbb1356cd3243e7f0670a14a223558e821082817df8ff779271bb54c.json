@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast supports the buffer-risk rationale, and the cash benefit is conditional on otherwise matching recent spending.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names eating out and specifies a concrete monthly cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral, respectful, and conditional rather than promising a future outcome.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal is a spending-category cap with no restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003172,
     "latency_ms": 5935,
-    "mesh_response_id": "chatcmpl-EbBcPH3hx5DXbhviE51LkOVbLBu5g",
+    "provider_response_id": "chatcmpl-EbBcPH3hx5DXbhviE51LkOVbLBu5g",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

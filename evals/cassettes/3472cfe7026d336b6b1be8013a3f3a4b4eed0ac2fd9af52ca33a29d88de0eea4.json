@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited category-spike finding supports elevated food-delivery spending, and the cash-flow forecast supports the before-payday framing.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and specifies a concrete monthly spending cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported promise about future outcomes.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation is an ordinary spending cap and contains no out-of-scope financial advice.\"}]}",
     "cost_estimate_usd": 0.003306,
     "latency_ms": 4057,
-    "mesh_response_id": "chatcmpl-EbB2y6UhJgrO9GgbERcDdXC5cXB17",
+    "provider_response_id": "chatcmpl-EbB2y6UhJgrO9GgbERcDdXC5cXB17",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

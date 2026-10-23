@@ -103,7 +103,7 @@
   "request_hash": "0d970a9d2a37af964cf68c882cfb7f1543109d02a2ab7d9a0966bdcb611dc8e3",
   "response": {
     "content": "{\"standalone_question\":\"Has Spotify gone up in price?\",\"intent\":\"subscription_review\",\"slots\":{\"merchant\":\"Spotify\",\"focus\":\"price_change\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdU5KWOEK67qcYfusK0W1xwjBJg4",
+    "provider_response_id": "chatcmpl-EYdU5KWOEK67qcYfusK0W1xwjBJg4",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

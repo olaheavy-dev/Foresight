@@ -103,7 +103,7 @@
   "request_hash": "8d1a7974410e5c2feed6d5110e6ab7d3515edb4f00187ca6d09c197fd2186239",
   "response": {
     "content": "{\"standalone_question\":\"What if my pay is two weeks late every month?\",\"intent\":\"scenario\",\"slots\":{\"modifier\":\"income_delay\",\"days\":14},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdOli60jVtkInPCxaAKtcZEhpmVz",
+    "provider_response_id": "chatcmpl-EYdOli60jVtkInPCxaAKtcZEhpmVz",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

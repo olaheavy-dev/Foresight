@@ -381,7 +381,7 @@
   "request_hash": "80996095d8169b0645b18a490c03ddb5ce5f98da78f369e7b837599881c27901",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Friend repays \u00a360\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_inflow\",\"date\":\"2026-10-16\",\"amount_minor\":6000,\"label\":\"Friend repayment\",\"category_key\":\"transfer.reimbursement\"}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVYKMUBt9vSd1LoSBKmfvoMI8MJO",
+    "provider_response_id": "chatcmpl-EYVYKMUBt9vSd1LoSBKmfvoMI8MJO",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

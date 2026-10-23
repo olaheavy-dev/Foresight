@@ -78,7 +78,7 @@
   "request_hash": "bc8c7dccc9d0ab2fc5edf756a5a2bc244aa2c147bd819764a1c7d5f7e11090bc",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-9499595d83d922e27004",
+    "provider_response_id": "chatcmpl-9499595d83d922e27004",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"The cited category spike finding supports the claim that eating out spending is above its usual level, and the forecast supports the low point before payday.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the food.eating_out category, a monthly cap amount and a clear timeframe (until next payday), so the user can act today.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Wording is neutral and factual, with no blame and no claims about the future beyond the baseline forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"A spending cap on a discretionary category; contains no investment, lending, credit, pension, tax or REF recommendation.\"}]}",
     "usage": {

@@ -381,7 +381,7 @@
   "request_hash": "9c6486fc20e3d421b42e69eef1b3e7be82ede03a3cef68113db719bfc61b991d",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Buy a sofa\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-11-15\",\"amount_minor\":200000,\"label\":\"Sofa\",\"category_key\":\"shopping.home\"}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVY5KXo8KbHBSmIBrnmDyBqhQGqN",
+    "provider_response_id": "chatcmpl-EYVY5KXo8KbHBSmIBrnmDyBqhQGqN",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

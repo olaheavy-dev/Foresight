@@ -78,7 +78,7 @@
   "request_hash": "94ae7b54b0889f1654761e6daf05a472f356ab5ddc54bc3bbb59b419bb6cadce",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-3e544f704a2b77fb43aa",
+    "provider_response_id": "chatcmpl-3e544f704a2b77fb43aa",
     "model": "anthropic/claude-sonnet-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"Finding shows food delivery spike vs usual level; rationale only claims it is above usual, and the forecast supports the cash-flow impact.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names category (food delivery), clear action (monthly cap) with a cap value filled from calculation.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral, respectful wording with no blame or speculation beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Concerns only a budget cap on food delivery; no investment, loan, credit card, pension or tax advice.\"}]}",
     "usage": {

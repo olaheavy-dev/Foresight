@@ -78,7 +78,7 @@
   "request_hash": "2090ce4297f79b23a789e0108aae2d1f0452b5de3fdc2536a1d15e2dce7c8e0f",
   "response": {
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The cited evidence concerns a Spotify price increase, not the cause of higher food-delivery spending.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and specifies a clear monthly spending cap.\"},{\"rule\":\"V-13\",\"passed\":false,\"reason\":\"The claim that capping spending reverses the rise asserts an outcome beyond any cited forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal concerns a spending-category cap and contains no restricted financial advice or recommendations.\"}]}",
-    "mesh_response_id": "chatcmpl-EYWF5ZpPTOP6JWcwzUGs9A49jXZ08",
+    "provider_response_id": "chatcmpl-EYWF5ZpPTOP6JWcwzUGs9A49jXZ08",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

@@ -37,7 +37,7 @@ Three rules make this trustworthy:
 - **Pydantic v2 models** in `backend/app/ui_contracts/` are the source of truth (discriminated union on `type`).
 - `make contracts` exports JSON Schema (`model_json_schema()`) → `frontend/src/ui-contracts/schema.json` → TypeScript types (`json-schema-to-typescript`) and Zod validators (`json-schema-to-zod`).
 - CI fails if generated files are out of date (`git diff --exit-code` after regeneration).
-- The **plan schema** (LLM-facing) is a separate, smaller set of Pydantic models; its JSON Schema is passed to the model as the structured-output / tool schema through `mesh_client` (OpenAI `response_format: json_schema` where the selected model supports it; otherwise tool-call arguments; otherwise JSON mode + validation).
+- The **plan schema** (LLM-facing) is a separate, smaller set of Pydantic models; its JSON Schema is passed to the model as the structured-output / tool schema through `llm.client` (OpenAI `response_format: json_schema` where the selected model supports it; otherwise tool-call arguments; otherwise JSON mode + validation).
 
 ---
 

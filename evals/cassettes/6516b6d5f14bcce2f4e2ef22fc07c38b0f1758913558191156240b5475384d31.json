@@ -103,7 +103,7 @@
   "request_hash": "6516b6d5f14bcce2f4e2ef22fc07c38b0f1758913558191156240b5475384d31",
   "response": {
     "content": "{\"standalone_question\":\"Show my Uber Eats orders\",\"intent\":\"transaction_lookup\",\"slots\":{\"merchant\":\"Uber Eats\",\"category_key\":\"food.delivery\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdV4O3FLsBMTr9PRJwrJgKXY9NJU",
+    "provider_response_id": "chatcmpl-EYdV4O3FLsBMTr9PRJwrJgKXY9NJU",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

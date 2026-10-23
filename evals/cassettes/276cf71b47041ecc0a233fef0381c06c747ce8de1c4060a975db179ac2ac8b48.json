@@ -103,7 +103,7 @@
   "request_hash": "276cf71b47041ecc0a233fef0381c06c747ce8de1c4060a975db179ac2ac8b48",
   "response": {
     "content": "{\"standalone_question\":\"What if my pay is 14 days late?\",\"intent\":\"scenario\",\"slots\":{\"modifier\":\"income_delay\",\"days\":14},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdUjyaHgNBr8Te0AzPFbOiLTzMAm",
+    "provider_response_id": "chatcmpl-EYdUjyaHgNBr8Te0AzPFbOiLTzMAm",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

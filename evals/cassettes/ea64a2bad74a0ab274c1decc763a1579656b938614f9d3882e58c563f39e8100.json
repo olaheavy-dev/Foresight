@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The cited forecast does not establish last month's general-shopping spending or its contribution to the tighter balance.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names general shopping and specifies a clear monthly cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral, respectful, and frames the future balance in terms of the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation is a spending cap, not regulated financial advice or a prohibited recommendation.\"}]}",
     "cost_estimate_usd": 0.003572,
     "latency_ms": 6835,
-    "mesh_response_id": "chatcmpl-EbBB3L11Nj1iputu2B4JU16AVutiZ",
+    "provider_response_id": "chatcmpl-EbBB3L11Nj1iputu2B4JU16AVutiZ",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

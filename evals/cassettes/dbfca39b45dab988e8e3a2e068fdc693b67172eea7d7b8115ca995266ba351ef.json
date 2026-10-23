@@ -103,7 +103,7 @@
   "request_hash": "dbfca39b45dab988e8e3a2e068fdc693b67172eea7d7b8115ca995266ba351ef",
   "response": {
     "content": "{\"standalone_question\":\"Can I afford to pay \u00a31,200 for a holiday after payday?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":120000,\"purpose\":\"holiday\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.94,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdMaRRyuCGpYJzVsRABoPpzePh6A",
+    "provider_response_id": "chatcmpl-EYdMaRRyuCGpYJzVsRABoPpzePh6A",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -86,7 +86,7 @@
   "request_hash": "c3bb60a5d8e92faee483ea8074ce0e9f271ef32402b7b2e6ec2c150db4b3af10",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-8332859e92b4d24f7447",
+    "provider_response_id": "chatcmpl-8332859e92b4d24f7447",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"The category_spike finding for food.delivery supports the claim that delivery spending is above its usual level, and the baseline forecast supports the pre-payday low point.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the food.delivery category, a monthly cap placeholder and a cap_category action that can be applied directly.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Wording is neutral and respectful, and it makes no claims beyond the baseline forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"The proposal is a spending cap on a budget category and gives no investment, credit, loan, pension, tax or REF advice.\"}]}",
     "usage": {

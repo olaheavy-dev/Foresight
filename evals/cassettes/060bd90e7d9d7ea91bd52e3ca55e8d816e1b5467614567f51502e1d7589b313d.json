@@ -381,7 +381,7 @@
   "request_hash": "060bd90e7d9d7ea91bd52e3ca55e8d816e1b5467614567f51502e1d7589b313d",
   "response": {
     "content": "{\"status\":\"needs_clarification\",\"spec\":null,\"clarification\":{\"question\":\"Which subscription would you like to cancel?\",\"slot\":\"recurring_id\",\"options\":[\"Sky TV\",\"PureGym\",\"Netflix\",\"Spotify\",\"NOW\",\"Disney+\",\"Amazon Prime\",\"iCloud+\"]}}",
-    "mesh_response_id": "chatcmpl-EYVcLX4WiOMDgMFCDbSZAOrdgzMJ5",
+    "provider_response_id": "chatcmpl-EYVcLX4WiOMDgMFCDbSZAOrdgzMJ5",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

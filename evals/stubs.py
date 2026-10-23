@@ -1,6 +1,6 @@
 """Labelled stand-ins for single model roles in eval runs that need persisted agent output.
 
-`StubMesh` wraps the real eval Mesh client (cassette replay) and scripts only the roles it is asked
+`StubLLM` wraps the real eval model client (cassette replay) and scripts only the roles it is asked
 to: the Advisor (`advisor_mode`) and/or the Verifier's judge (`judge_pass`). Every scripted call's
 model name is `stub/<role>`, so the AgentStep rows say plainly which answers were scripted.
 Everything else (the deterministic Verifier rules, impact recomputation, simulation, persistence)
@@ -13,13 +13,13 @@ import json
 from typing import Any
 
 from backend.agents.advice.models import AdvisorOutput, JudgeOutput
-from backend.mesh.mesh_client import MeshResult, StructuredResult, Usage
+from backend.llm.client import ModelResult, StructuredResult, Usage
 
 JUDGE_RULES = ("V-11", "V-12", "V-13", "V-14")
 
 
 def _result(role: str, tier: str, value: Any) -> StructuredResult[Any]:
-    call = MeshResult(
+    call = ModelResult(
         text=value.model_dump_json(),
         model=f"stub/{role}",
         response_id=f"stub-{role}",
@@ -58,7 +58,7 @@ def cap_proposal(data: dict[str, Any], category: str, share: float, pid: str) ->
     }
 
 
-class StubMesh:
+class StubLLM:
     """`advisor_mode`: None (real Advisor) | "feasible" | "flawed_once" | "flawed_always".
     `judge_pass`: None (real judge) | True (every judge criterion passes)."""
 
@@ -107,4 +107,4 @@ class StubMesh:
         )
 
 
-__all__ = ["StubMesh", "cap_proposal"]
+__all__ = ["StubLLM", "cap_proposal"]

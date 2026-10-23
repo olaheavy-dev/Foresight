@@ -383,7 +383,7 @@
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Lose job in December and halve eating out\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"income_change_pct\",\"income_stream_id\":\"inc_salary\",\"pct\":-100,\"from_date\":\"2026-12-01\"},{\"type\":\"category_cut_pct\",\"category_key\":\"food.eating_out\",\"pct\":50,\"from_date\":\"2026-10-11\"}],\"assumptions\":[]},\"clarification\":null}",
     "cost_estimate_usd": 0.00577,
     "latency_ms": 3776,
-    "mesh_response_id": "chatcmpl-EbAiaK9HmnTnEJokGwZyWUTqutu1A",
+    "provider_response_id": "chatcmpl-EbAiaK9HmnTnEJokGwZyWUTqutu1A",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

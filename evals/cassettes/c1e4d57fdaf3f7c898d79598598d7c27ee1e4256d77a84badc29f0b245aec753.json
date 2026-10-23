@@ -54,7 +54,7 @@
     "content": "{\"verdict\":\"I can\u2019t determine how much you\u2019ll have saved by March from the available figures. The forecast only shows your lowest balance over the forecast, {{R5}}, and when it occurs, {{R6}}.\",\"key_numbers\":[\"R5\",\"R6\"],\"main_visual\":\"FinancialMetricGroup\"}",
     "cost_estimate_usd": 0.0001491,
     "latency_ms": 441,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHC82BVGVZNMAB0PJ8VHHM",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHC82BVGVZNMAB0PJ8VHHM",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

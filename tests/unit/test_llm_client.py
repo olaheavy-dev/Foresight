@@ -1,4 +1,4 @@
-"""MeshClient behaviour with a stubbed transport; no network, no real OpenAI client."""
+"""ModelClient behaviour with a stubbed transport; no network, no real OpenAI client."""
 
 from __future__ import annotations
 
@@ -9,10 +9,10 @@ import httpx
 import pytest
 from openai import APIConnectionError
 
-from backend.mesh.mesh_client import (
-    MeshCallError,
-    MeshClient,
-    MeshConfigError,
+from backend.llm.client import (
+    ModelCallError,
+    ModelClient,
+    ModelConfigError,
     ModelTier,
 )
 from backend.settings import Settings
@@ -35,31 +35,31 @@ class StubCompletions:
         )
 
 
-def _client(completions: StubCompletions, **overrides: str) -> MeshClient:
+def _client(completions: StubCompletions, **overrides: str) -> ModelClient:
     settings = Settings(
         model_provider="openai",
         openai_api_key="sk_test",
         # The wire name drops the prefix: the stub sees "fast-primary".
-        mesh_model_fast=overrides.get("fast", "openai/fast-primary"),
-        mesh_model_fast_fallback=overrides.get("fast_fallback", "openai/fast-backup"),
-        mesh_model_reasoning=overrides.get("reasoning", "openai/reason-primary"),
+        model_fast=overrides.get("fast", "openai/fast-primary"),
+        model_fast_fallback=overrides.get("fast_fallback", "openai/fast-backup"),
+        model_reasoning=overrides.get("reasoning", "openai/reason-primary"),
     )
     stub = SimpleNamespace(chat=SimpleNamespace(completions=completions))
-    return MeshClient(settings=settings, client=stub, sleep=lambda _: None)  # type: ignore[arg-type]
+    return ModelClient(settings=settings, client=stub, sleep=lambda _: None)  # type: ignore[arg-type]
 
 
-def _ask(client: MeshClient, content: str = "hello") -> Any:
+def _ask(client: ModelClient, content: str = "hello") -> Any:
     return client.complete(tier=ModelTier.FAST, messages=[{"role": "user", "content": content}])
 
 
 def test_missing_key_is_a_config_error() -> None:
-    with pytest.raises(MeshConfigError):
-        MeshClient(settings=Settings(model_provider="openai", openai_api_key=""))
+    with pytest.raises(ModelConfigError):
+        ModelClient(settings=Settings(model_provider="openai", openai_api_key=""))
 
 
 def test_missing_model_is_a_config_error() -> None:
     client = _client(StubCompletions(), fast="")
-    with pytest.raises(MeshConfigError):
+    with pytest.raises(ModelConfigError):
         _ask(client)
 
 
@@ -82,7 +82,7 @@ def test_falls_back_when_primary_fails() -> None:
 
 def test_raises_when_all_models_fail() -> None:
     completions = StubCompletions(fail_models={"fast-primary", "fast-backup"})
-    with pytest.raises(MeshCallError):
+    with pytest.raises(ModelCallError):
         _ask(_client(completions))
 
 
@@ -109,7 +109,7 @@ def test_transport_layer_never_turns_json_numbers_into_words() -> None:
     """Regression: layer 2 ran over raw JSON and produced `{"a": ACCOUNT}` (flaky analyst test)."""
     import json
 
-    from backend.mesh.mesh_client import redact_messages
+    from backend.llm.client import redact_messages
 
     payload = {
         "ts": 1760000000000,
@@ -129,7 +129,7 @@ def test_transport_layer_never_turns_json_numbers_into_words() -> None:
 def test_transport_layer_keeps_clean_json_byte_for_byte() -> None:
     import json
 
-    from backend.mesh.mesh_client import redact_messages
+    from backend.llm.client import redact_messages
 
     text = json.dumps({"findings": [{"id": "fnd_x", "recent_minor": 12977, "z": 2.5}]})
     assert redact_messages([{"role": "user", "content": text}])[0]["content"] == text
@@ -139,7 +139,7 @@ def test_masking_never_alters_foresight_reference_ids() -> None:
     """Regression: a calc id ending in eight digits was masked as ACCOUNT (flaky analyst test)."""
     import json
 
-    from backend.mesh.mesh_client import redact_messages
+    from backend.llm.client import redact_messages
 
     calc = "calc_0a1b2c3d4e5f612345678"
     placeholder = "{{" + calc + "#recent_minor|money}}"

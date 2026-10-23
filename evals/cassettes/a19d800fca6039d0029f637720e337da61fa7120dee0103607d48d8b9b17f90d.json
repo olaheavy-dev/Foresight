@@ -103,7 +103,7 @@
   "request_hash": "a19d800fca6039d0029f637720e337da61fa7120dee0103607d48d8b9b17f90d",
   "response": {
     "content": "{\"standalone_question\":\"Which food delivery orders?\",\"intent\":\"transaction_lookup\",\"slots\":{\"category_key\":\"food.delivery\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdN6dD5X95L8tGeX9ySLgBsEg87M",
+    "provider_response_id": "chatcmpl-EYdN6dD5X95L8tGeX9ySLgBsEg87M",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

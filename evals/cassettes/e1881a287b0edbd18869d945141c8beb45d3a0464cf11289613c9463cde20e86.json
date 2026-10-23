@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The evidence supports subscription overlap but not the claims about payday timing or holiday affordability.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal identifies Netflix and specifies cancelling its recurring subscription.\"},{\"rule\":\"V-13\",\"passed\":false,\"reason\":\"The holiday-affordability assertion goes beyond the supplied evidence, which contains no forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Cancelling an entertainment subscription is within scope and involves no restricted financial advice.\"}]}",
     "cost_estimate_usd": 0.004458,
     "latency_ms": 9481,
-    "mesh_response_id": "chatcmpl-EbBiNBuhvTQN2JSL0G2F6qm5E7ImG",
+    "provider_response_id": "chatcmpl-EbBiNBuhvTQN2JSL0G2F6qm5E7ImG",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

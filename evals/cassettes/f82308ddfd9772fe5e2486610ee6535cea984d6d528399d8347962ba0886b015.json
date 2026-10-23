@@ -78,7 +78,7 @@
   "request_hash": "f82308ddfd9772fe5e2486610ee6535cea984d6d528399d8347962ba0886b015",
   "response": {
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The evidence shows a larger Self Assessment payment, not that Spotify caused the increase or that cancelling it closes the gap.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names Spotify and specifies cancellation of its recurring payment.\"},{\"rule\":\"V-13\",\"passed\":false,\"reason\":\"The claim that cancellation closes the gap promises an outcome not supported by a forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Cancelling Spotify is subscription advice, not a tax step or other out-of-scope financial recommendation.\"}]}",
-    "mesh_response_id": "chatcmpl-EYWHsi1f6o5ZIzNqayPhaxKDuxVMG",
+    "provider_response_id": "chatcmpl-EYWHsi1f6o5ZIzNqayPhaxKDuxVMG",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

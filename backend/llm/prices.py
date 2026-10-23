@@ -8,7 +8,7 @@ An unknown model gets no estimate rather than a guessed one.
 
 from __future__ import annotations
 
-from backend.mesh import model_config
+from backend.llm import model_config
 
 
 def _prices() -> dict[str, tuple[float, float]]:

@@ -1,7 +1,7 @@
 """Cost and latency of whole answers, from recorded model calls (docs/09 E-EFF).
 
 Latency is only ever measured from real calls: every cassette stores the live call's wall time,
-and a replayed call reports it (`MeshResult.latency_measured`). An answer's end-to-end time is
+and a replayed call reports it (`ModelResult.latency_measured`). An answer's end-to-end time is
 the local time measured while it is replayed plus the model wait of each step
 (`AgentStep.model_ms`, which already overlaps concurrent judge calls), less the overlap of the two
 parallel opening branches (Understand runs while the forecast is prefetched). A call recorded
@@ -14,7 +14,7 @@ import threading
 from datetime import datetime
 from typing import Any
 
-from backend.mesh.mesh_client import MeshCallError, MeshResult
+from backend.llm.client import ModelCallError, ModelResult
 from backend.storage.agent_repo import AgentStore
 
 
@@ -24,7 +24,7 @@ class CallLog:
     def __init__(self, inner: Any) -> None:
         self._inner = inner
         self._lock = threading.Lock()
-        self.calls: list[MeshResult] = []
+        self.calls: list[ModelResult] = []
 
     def __getattr__(self, name: str) -> Any:
         return getattr(self._inner, name)
@@ -36,7 +36,7 @@ class CallLog:
     def structured(self, **kwargs: Any) -> Any:
         try:
             result = self._inner.structured(**kwargs)
-        except MeshCallError as exc:
+        except ModelCallError as exc:
             self._keep(getattr(exc, "calls", ()))
             raise
         self._keep(result.calls)
@@ -47,7 +47,7 @@ class CallLog:
         self._keep([result])
         return result
 
-    def take(self) -> list[MeshResult]:
+    def take(self) -> list[ModelResult]:
         with self._lock:
             out, self.calls = self.calls, []
         return out
@@ -63,7 +63,7 @@ def answer_profile(
     *,
     started: datetime,
     wall_ms: int,
-    calls: list[MeshResult],
+    calls: list[ModelResult],
     replayed: bool,
 ) -> dict[str, Any]:
     """Cost, end-to-end latency and time to the first progress step of one answered question."""

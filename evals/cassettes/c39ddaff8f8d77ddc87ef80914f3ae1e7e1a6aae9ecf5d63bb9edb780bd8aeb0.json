@@ -103,7 +103,7 @@
   "request_hash": "c39ddaff8f8d77ddc87ef80914f3ae1e7e1a6aae9ecf5d63bb9edb780bd8aeb0",
   "response": {
     "content": "{\"standalone_question\":\"What if I'm out of work for two months?\",\"intent\":\"scenario\",\"slots\":{\"modifier\":\"income_change_pct\",\"pct\":-100,\"months\":2},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.91,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdTqkhdSJqlqk2fCC8gZPIU98xIf",
+    "provider_response_id": "chatcmpl-EYdTqkhdSJqlqk2fCC8gZPIU98xIf",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

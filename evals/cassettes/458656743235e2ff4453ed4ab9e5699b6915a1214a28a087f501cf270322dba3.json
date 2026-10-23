@@ -103,7 +103,7 @@
   "request_hash": "458656743235e2ff4453ed4ab9e5699b6915a1214a28a087f501cf270322dba3",
   "response": {
     "content": "{\"standalone_question\":\"What should I do about the increase in my food delivery spending?\",\"intent\":\"advice_request\",\"slots\":{},\"needs_forecast\":false,\"needs_advice\":true,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdNFdSkrnZZ6VyMJC9ZEJmnsWiDA",
+    "provider_response_id": "chatcmpl-EYdNFdSkrnZZ6VyMJC9ZEJmnsWiDA",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

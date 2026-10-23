@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited forecast supports the buffer-risk rationale, and the cap's impact has already been checked.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"Names clothes shopping and specifies a monthly cap as the clear action.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"Uses neutral, respectful language and limits future claims to the forecast and checked impact.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Recommends only a clothing spending cap, with no out-of-scope financial advice.\"}]}",
     "cost_estimate_usd": 0.003356,
     "latency_ms": 6043,
-    "mesh_response_id": "chatcmpl-EYq3wraq2ReZLkaWUDWaAV7u4PlVT",
+    "provider_response_id": "chatcmpl-EYq3wraq2ReZLkaWUDWaAV7u4PlVT",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

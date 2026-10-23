@@ -103,7 +103,7 @@
   "request_hash": "8973e5412422477e13fad0d8ca21bdd472ba8d7a9f413dc5de67cde2be360009",
   "response": {
     "content": "{\"standalone_question\":\"Is \u00a3800 for a trip on 6 November 2026 alright?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":80000,\"date\":\"2026-11-06\",\"purpose\":\"trip\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.95,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdTysLbdLvdHdz3j9NTzgaKKJYQ3",
+    "provider_response_id": "chatcmpl-EYdTysLbdLvdHdz3j9NTzgaKKJYQ3",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -78,7 +78,7 @@
   "request_hash": "411317747ab84364f82051b1def89e392146ddd0a5aa7f4c32a19d51bb4c178d",
   "response": {
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast supports the pre-payday buffer concern underlying the transfer timing change.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal identifies the savings transfer and specifies moving it from 2026-10-15 to 2026-10-30.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with the future balance concern explicitly framed as a forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Rescheduling an existing savings transfer is cash-flow management, not advice on investments, borrowing, or tax.\"}]}",
-    "mesh_response_id": "chatcmpl-EYW7oFSOXtmBmoZQofC3F1Fa9kvfY",
+    "provider_response_id": "chatcmpl-EYW7oFSOXtmBmoZQofC3F1Fa9kvfY",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

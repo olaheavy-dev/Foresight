@@ -103,7 +103,7 @@
   "request_hash": "79a0671e7db93ce9bf1153632ab20269b9c2d03c7752e5fa1a59740e18b9cd8e",
   "response": {
     "content": "{\"standalone_question\":\"What if I lose my job for three months?\",\"intent\":\"scenario\",\"slots\":{\"modifier\":\"income_change_pct\",\"pct\":-100,\"months\":3},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.92,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdVOqomHzyqO5yaiYzBzuFKaYNnK",
+    "provider_response_id": "chatcmpl-EYdVOqomHzyqO5yaiYzBzuFKaYNnK",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

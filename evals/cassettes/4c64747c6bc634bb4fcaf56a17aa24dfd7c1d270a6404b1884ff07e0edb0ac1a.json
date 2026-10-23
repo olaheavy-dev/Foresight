@@ -113,7 +113,7 @@
     "content": "{\"findings\":[{\"finding_id\":\"fnd_01K742SG010000000000000001\",\"salience\":4,\"headline\":\"Food delivery spending increased {{calc_2e007299d7352297e0a52024#change_share|pct_change}}\",\"explanation\":\"Food delivery reached {{calc_2e007299d7352297e0a52024#recent_minor|money}} across {{calc_2e007299d7352297e0a52024#count|count}} transactions, above its usual {{calc_2e007299d7352297e0a52024#usual_minor|money}}.\"},{\"finding_id\":\"fnd_01K742SG020000000000000002\",\"salience\":2,\"headline\":\"Disney+ and Netflix are overlapping streaming subscriptions\",\"explanation\":\"Together, these {{calc_74b70e0c8d6d131995ad53e8#services|count}} services cost {{calc_74b70e0c8d6d131995ad53e8#monthly_total_minor|money}} per month.\"}],\"discarded\":[]}",
     "cost_estimate_usd": 0.00753,
     "latency_ms": 9032,
-    "mesh_response_id": "chatcmpl-EbBbnQH1I2uBMp1P4LrVdfSZ1PX8v",
+    "provider_response_id": "chatcmpl-EbBbnQH1I2uBMp1P4LrVdfSZ1PX8v",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

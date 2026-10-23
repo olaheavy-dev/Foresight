@@ -381,7 +381,7 @@
   "request_hash": "aebba96c80ee50f346ade62296b99cd5f39075ee2ac99bd2d38c5b8c323eba3e",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Rent increase\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"recurring_change\",\"recurring_id\":\"rob_rent\",\"amount_minor\":130000,\"from_date\":\"2027-02-01\"}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVZi6z9iHpmmtxmHfifIiKd01DOV",
+    "provider_response_id": "chatcmpl-EYVZi6z9iHpmmtxmHfifIiKd01DOV",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

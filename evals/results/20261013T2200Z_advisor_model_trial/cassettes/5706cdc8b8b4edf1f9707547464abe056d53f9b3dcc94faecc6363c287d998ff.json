@@ -78,7 +78,7 @@
   "request_hash": "5706cdc8b8b4edf1f9707547464abe056d53f9b3dcc94faecc6363c287d998ff",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-11d99ee9c78ad7421985",
+    "provider_response_id": "chatcmpl-11d99ee9c78ad7421985",
     "model": "anthropic/claude-sonnet-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"Spike finding in food.delivery supports 'risen above usual level'; baseline forecast supports the pre-payday low point. No causal misattribution.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names category food.delivery, a clear monthly cap action and a timeframe (until next payday).\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral, respectful wording; 'could ease' stays within the forecast and doesn't blame anyone.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Only budgeting for a spending category; no investment, loan, credit card, pension or tax advice.\"}]}",
     "usage": {

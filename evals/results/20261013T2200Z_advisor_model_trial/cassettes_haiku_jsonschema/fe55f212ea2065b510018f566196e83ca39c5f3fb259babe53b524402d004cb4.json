@@ -78,7 +78,7 @@
   "request_hash": "fe55f212ea2065b510018f566196e83ca39c5f3fb259babe53b524402d004cb4",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-6b5662503497348a3f66",
+    "provider_response_id": "chatcmpl-6b5662503497348a3f66",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"Finding shows eating out spending well above its usual level, which supports the trigger claim and the cap rationale.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the food.eating_out category and a monthly cap amount with a clear action until next payday.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral, respectful wording with no REF content and no claims beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Spending cap on a discretionary category; no investment, lending, credit, pension, tax or REF recommendation.\"}]}",
     "usage": {

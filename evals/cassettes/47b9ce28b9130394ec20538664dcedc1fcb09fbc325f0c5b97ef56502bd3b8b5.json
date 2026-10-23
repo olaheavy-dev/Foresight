@@ -381,7 +381,7 @@
   "request_hash": "47b9ce28b9130394ec20538664dcedc1fcb09fbc325f0c5b97ef56502bd3b8b5",
   "response": {
     "content": "{\"status\":\"needs_clarification\",\"spec\":null,\"clarification\":{\"question\":\"When would you lose the income, and for how long?\",\"slot\":\"start_date_or_duration\",\"options\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVcTbi9EaDOxbhTykkPckZaEP4Rs",
+    "provider_response_id": "chatcmpl-EYVcTbi9EaDOxbhTykkPckZaEP4Rs",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

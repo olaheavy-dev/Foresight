@@ -381,7 +381,7 @@
   "request_hash": "8247addc1d6af86f786e0d9f9f42b17b1628b4a6118de46c00013fa7367ac14b",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Holiday in three payments\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"split_outflow\",\"start_date\":\"2026-11-01\",\"amount_minor\":90000,\"instalments\":3,\"cadence\":\"monthly\",\"label\":\"Holiday\"}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVYg2AWhDxUdR53zlTYweHqy6ES0",
+    "provider_response_id": "chatcmpl-EYVYg2AWhDxUdR53zlTYweHqy6ES0",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

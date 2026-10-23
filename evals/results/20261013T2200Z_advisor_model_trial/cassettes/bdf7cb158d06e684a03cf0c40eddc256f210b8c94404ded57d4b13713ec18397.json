@@ -192,7 +192,7 @@
   "request_hash": "bdf7cb158d06e684a03cf0c40eddc256f210b8c94404ded57d4b13713ec18397",
   "response": {
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_tr_b1\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{\n          }\n    ,\"title\":\"Cap monthly food delivery spend at {{cap}}\",\"rationale\":\"Food delivery spending has",
-    "mesh_response_id": "chatcmpl-gemini-1791922998",
+    "provider_response_id": "chatcmpl-gemini-1791922998",
     "model": "gemini-3.8-flash",
     "tool_arguments": null,
     "usage": {

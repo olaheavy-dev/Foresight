@@ -103,7 +103,7 @@
   "request_hash": "1d448f14090eaef9afec1c3b751e981d4e902093c073ee2883ede29638157425",
   "response": {
     "content": "{\"standalone_question\":\"Has eating out gone up?\",\"intent\":\"trend_or_change\",\"slots\":{\"category_key\":\"food.eating_out\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.99,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdNJerZzcynO44JasBq4eA9OisBv",
+    "provider_response_id": "chatcmpl-EYdNJerZzcynO44JasBq4eA9OisBv",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

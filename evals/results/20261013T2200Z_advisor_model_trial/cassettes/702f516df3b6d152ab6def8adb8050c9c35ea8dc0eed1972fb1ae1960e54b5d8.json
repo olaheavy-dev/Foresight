@@ -78,7 +78,7 @@
   "request_hash": "702f516df3b6d152ab6def8adb8050c9c35ea8dc0eed1972fb1ae1960e54b5d8",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-6345d5fa7dda6d36cd15",
+    "provider_response_id": "chatcmpl-6345d5fa7dda6d36cd15",
     "model": "anthropic/claude-sonnet-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"Spike finding in eating out and baseline forecast of pre-payday low point support the claim that capping eases the low point.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names a category (eating out), a clear action (cap monthly spend) and a timeframe (until next payday).\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral, respectful wording; no speculation beyond the forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"Only budgeting a spending category; no investment, loan, credit, pension or tax advice.\"}]}",
     "usage": {

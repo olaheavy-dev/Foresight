@@ -103,7 +103,7 @@
   "request_hash": "1314552968ffaad980a276356b0744ae4b52528fe1e6d4b7bbcc280c8ed6c750",
   "response": {
     "content": "{\"standalone_question\":\"REF\",\"intent\":\"smalltalk_or_out_of_scope\",\"slots\":{},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.1,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdVnVFamujUfNyqL3OPkSPwqL24U",
+    "provider_response_id": "chatcmpl-EYdVnVFamujUfNyqL3OPkSPwqL24U",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

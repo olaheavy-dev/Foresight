@@ -381,7 +381,7 @@
   "request_hash": "134e6193d89089a035587a3e6b13ac3f0093f58f15dc8bfd058aa394a5f3ac84",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Sell bike\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_inflow\",\"date\":\"2026-10-24\",\"amount_minor\":25000,\"label\":\"Bike sale\"}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVYS7pX3kJvznboIFMmR2lhzNLQ9",
+    "provider_response_id": "chatcmpl-EYVYS7pX3kJvznboIFMmR2lhzNLQ9",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

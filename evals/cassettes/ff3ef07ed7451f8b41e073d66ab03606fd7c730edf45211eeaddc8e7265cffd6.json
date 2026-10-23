@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Explain the \u00a3604 figure.\",\"intent\":\"explain_recommendation\",\"slots\":{\"amount_minor\":60400,\"subject\":\"number\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.9,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002733,
     "latency_ms": 510,
-    "mesh_response_id": "chatcmpl-cached-req_01M4XHBB94HHWB3NMBMDT2AD9P",
+    "provider_response_id": "chatcmpl-cached-req_01M4XHBB94HHWB3NMBMDT2AD9P",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

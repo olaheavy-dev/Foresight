@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The baseline forecast describes pre-payday balances but does not establish the claimed effect of the eating-out cap.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names eating out and specifies a concrete monthly spending cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported promises about the future.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation concerns a spending cap and contains no restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.0037,
     "latency_ms": 5296,
-    "mesh_response_id": "chatcmpl-EbAynJD9L7Arn2OKoVIppaDBqUijL",
+    "provider_response_id": "chatcmpl-EbAynJD9L7Arn2OKoVIppaDBqUijL",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

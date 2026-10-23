@@ -105,7 +105,7 @@
     "content": "{\"standalone_question\":\"Would a \u00a31,200 holiday break my buffer?\",\"intent\":\"affordability\",\"slots\":{\"amount_minor\":120000,\"purpose\":\"holiday\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
     "cost_estimate_usd": 0.0002732,
     "latency_ms": 3467,
-    "mesh_response_id": "chatcmpl-EYe4qRzbeO1j0uzABnRDPVyqY07sy",
+    "provider_response_id": "chatcmpl-EYe4qRzbeO1j0uzABnRDPVyqY07sy",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -242,7 +242,7 @@ Scope note: the user has explicitly confirmed **nothing in the original brief is
 |---|---|---|
 | API | Python 3.12 runtime (images, CI); source kept compatible with **3.11**, the interpreter the organiser's checks use to compile every file (confirmed 12 Oct from the organiser workflow); FastAPI, Pydantic v2 | same |
 | Orchestration | LangGraph (StateGraph, explicit nodes, `PostgresSaver` checkpointer) | same, workers separated |
-| LLM | `openai` SDK with `base_url=https://api.meshapi.ai/v1`, wrapped in one `mesh_client` module (the only place an LLM is called) | same + model routing/fallback via Mesh |
+| LLM | `openai` SDK with `base_url=https://api.meshapi.ai/v1`, wrapped in one `llm.client` module (the only place an LLM is called) | same + model routing/fallback via Mesh |
 | Finance engine | `finance_core` pure-Python package (NumPy, pandas) — no I/O, fully unit-tested | same |
 | Storage | **PostgreSQL 16 everywhere** (CI service container, `docker compose up` for local/judges, the VPS) via SQLAlchemy 2.0 + Alembic (migrations on boot); `BIGINT` minor units, `JSONB` snapshots; every row scoped by `workspace_id` in the repository layer, with row-level security policies added in Stage 3. SQLite rejected (rev 5.2): concurrent API + scheduler + LangGraph writes, one engine everywhere, RLS | Managed PostgreSQL with RLS and PITR |
 | Frontend | **Next.js (App Router) + TypeScript**, Tailwind with custom tokens, Visx/D3 for charts (Recharts acceptable fallback) | same |
@@ -252,7 +252,7 @@ Scope note: the user has explicitly confirmed **nothing in the original brief is
 | Hosting | Owner's VPS (Docker Compose, Caddy, GHCR, Watchtower; `05` §12); Docker Compose also for judges' local runs | Separate managed services |
 | Observability | Every agent node writes `AgentStep` rows (model, tokens, latency, model wait, cost, inputs hash, output) + structured logs | + OpenTelemetry/Langfuse |
 
-**Core metrics and model selection (owner decision, 13 Oct 2026).** Cost, accuracy and latency are the three core metrics. Every model choice follows one rule: drop any model that fails its tier's accuracy gates; drop any model that breaks the end-to-end latency targets; of what is left, pick the cheapest, and choose the faster one when costs are within 10%. Accuracy is each tier's eval gates (docs/09 §10f lists them); cost and latency are measured by `E-EFF` from real calls (each recording stores the live call's latency). Targets: mean cost ≤ $0.03 per answer, ≤ $0.055 per advice answer (raised from $0.05 by the owner on 14 Oct 2026, after the gen-1.1.0 re-recording measured $0.0505), p95 ≤ $0.10; first progress step ≤ 2 s; simple answers p50 ≤ 10 s; advice answers p50 ≤ 35 s and p95 ≤ 60 s. The question deadline is 75 s (owner, 14 Oct 2026; 60 s before): live model calls ran 1.5–2.5× slower than the recordings, so a revision round no longer fitted in 60 s and the first live advice answer came back without a recommendation. A project-wide daily model budget (`MESH_DAILY_BUDGET_USD`, $0.50) pauses AI answers until the next UTC day once reached, and a profile may ask at most 10 questions per 10 minutes (docs/05 §7.4).
+**Core metrics and model selection (owner decision, 13 Oct 2026).** Cost, accuracy and latency are the three core metrics. Every model choice follows one rule: drop any model that fails its tier's accuracy gates; drop any model that breaks the end-to-end latency targets; of what is left, pick the cheapest, and choose the faster one when costs are within 10%. Accuracy is each tier's eval gates (docs/09 §10f lists them); cost and latency are measured by `E-EFF` from real calls (each recording stores the live call's latency). Targets: mean cost ≤ $0.03 per answer, ≤ $0.055 per advice answer (raised from $0.05 by the owner on 14 Oct 2026, after the gen-1.1.0 re-recording measured $0.0505), p95 ≤ $0.10; first progress step ≤ 2 s; simple answers p50 ≤ 10 s; advice answers p50 ≤ 35 s and p95 ≤ 60 s. The question deadline is 75 s (owner, 14 Oct 2026; 60 s before): live model calls ran 1.5–2.5× slower than the recordings, so a revision round no longer fitted in 60 s and the first live advice answer came back without a recommendation. A project-wide daily model budget (`MODEL_DAILY_BUDGET_USD`, $0.50) pauses AI answers until the next UTC day once reached, and a profile may ask at most 10 questions per 10 minutes (docs/05 §7.4).
 
 ## 9. Visual direction (DECIDED — rev 6) — "Atelier light"
 
@@ -344,7 +344,7 @@ foresight/
     app/            # FastAPI routers, schemas (no business logic)
     agents/         # LangGraph graph, nodes, prompts/
     finance_core/   # pure deterministic engine (categorise rules, detectors, forecast, simulate)
-    mesh/           # mesh_client.py — sole LLM gateway
+    llm/            # client.py — sole LLM gateway
     storage/        # SQLAlchemy models, repositories
     scheduler/      # APScheduler jobs, digest renderers
   frontend/         # Next.js app, ui-contracts (generated TS types), block renderers

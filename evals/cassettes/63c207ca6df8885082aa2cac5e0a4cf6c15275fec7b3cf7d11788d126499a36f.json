@@ -381,7 +381,7 @@
   "request_hash": "63c207ca6df8885082aa2cac5e0a4cf6c15275fec7b3cf7d11788d126499a36f",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Concert ticket\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-11-05\",\"amount_minor\":9000,\"label\":\"Concert ticket\",\"category_key\":\"entertainment\"}],\"assumptions\":[]}, \"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVXaMfTWGSG2Xoif4c2xxTgtR6XA",
+    "provider_response_id": "chatcmpl-EYVXaMfTWGSG2Xoif4c2xxTgtR6XA",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

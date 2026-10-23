@@ -21,7 +21,7 @@ force_eval_canary = False
 
 
 def active_canary() -> str:
-    if force_eval_canary or get_settings().mesh_cassette_mode in {"record", "replay"}:
+    if force_eval_canary or get_settings().model_cassette_mode in {"record", "replay"}:
         return make_canary(EVAL_CANARY_SECRET)
     return prompt_canary()
 

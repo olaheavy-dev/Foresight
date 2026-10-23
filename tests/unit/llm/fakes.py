@@ -10,7 +10,7 @@ from typing import Any
 import httpx
 from openai import APIConnectionError, APIStatusError, BadRequestError, RateLimitError
 
-from backend.mesh.mesh_client import MeshClient
+from backend.llm.client import ModelClient
 from backend.settings import Settings
 
 URL = "https://api.openai.com/v1/chat/completions"
@@ -92,7 +92,7 @@ class ScriptedCompletions:
         self.calls.append(kwargs)
         step = self.steps.pop(0) if self.steps else self.default
         if step is None:
-            raise AssertionError("unexpected extra Mesh call")
+            raise AssertionError("unexpected extra model call")
         if callable(step) and not isinstance(step, SimpleNamespace):
             step = step(kwargs)
         if isinstance(step, BaseException):
@@ -104,13 +104,13 @@ def settings(**overrides: Any) -> Settings:
     base: dict[str, Any] = {
         "model_provider": "openai",  # explicit, not the developer's .env
         "openai_api_key": "sk_test",
-        "mesh_model_fast": "openai/gpt-6-luna",
-        "mesh_model_fast_fallback": "openai/gpt-6-sol",
-        "mesh_model_reasoning": "openai/gpt-6-sol",
-        "mesh_model_reasoning_fallback": "",
-        "mesh_model_verifier": "openai/gpt-6.1-sol",
-        "mesh_model_verifier_fallback": "",  # never the Advisor's model (docs/06 §13)
-        "mesh_daily_budget_usd": 0.0,  # the daily guard has its own tests (test_spend_guard.py)
+        "model_fast": "openai/gpt-6-luna",
+        "model_fast_fallback": "openai/gpt-6-sol",
+        "model_reasoning": "openai/gpt-6-sol",
+        "model_reasoning_fallback": "",
+        "model_verifier": "openai/gpt-6.1-sol",
+        "model_verifier_fallback": "",  # never the Advisor's model (docs/06 §13)
+        "model_daily_budget_usd": 0.0,  # the daily guard has its own tests (test_spend_guard.py)
     }
     base.update(overrides)
     return Settings(**base)
@@ -121,14 +121,14 @@ def client(
     *,
     sleeps: list[float] | None = None,
     **kwargs: Any,
-) -> MeshClient:
+) -> ModelClient:
     record: Callable[[float], None] = sleeps.append if sleeps is not None else lambda _: None
     stub = (
         SimpleNamespace(chat=SimpleNamespace(completions=completions), base_url=URL)
         if completions is not None
         else None
     )
-    return MeshClient(
+    return ModelClient(
         settings=kwargs.pop("settings", None) or settings(),
         client=stub,  # type: ignore[arg-type]
         sleep=record,
@@ -137,7 +137,7 @@ def client(
 
 
 def fake_redact_module(transform: Callable[[str], str]) -> ModuleType:
-    module = ModuleType("backend.mesh.redact")
+    module = ModuleType("backend.llm.redact")
 
     def redact(payload: dict[str, Any], *, locale_pack: str) -> dict[str, Any]:
         return {

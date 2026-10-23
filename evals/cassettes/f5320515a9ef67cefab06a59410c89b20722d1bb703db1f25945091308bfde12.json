@@ -383,7 +383,7 @@
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"\u00a31,200 holiday\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-11-06\",\"amount_minor\":120000,\"label\":\"Holiday\",\"category_key\":\"travel\"}],\"assumptions\":[]},\"clarification\":null}",
     "cost_estimate_usd": 0.0002701,
     "latency_ms": 427,
-    "mesh_response_id": "chatcmpl-cached-req_01M4VH9VHZC3FAMV4N8PF1JMHG",
+    "provider_response_id": "chatcmpl-cached-req_01M4VH9VHZC3FAMV4N8PF1JMHG",
     "model": "openai/gpt-6-luna",
     "tool_arguments": null,
     "usage": {

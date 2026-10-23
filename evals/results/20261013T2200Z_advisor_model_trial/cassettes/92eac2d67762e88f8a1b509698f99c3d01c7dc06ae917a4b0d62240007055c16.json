@@ -192,7 +192,7 @@
   "request_hash": "92eac2d67762e88f8a1b509698f99c3d01c7dc06ae917a4b0d62240007055c16",
   "response": {
     "content": "{\"proposals\":[{\"proposal_id\":\"prp_tr_b4\",\"action\":\"cap_category\",\"currency\":\"GBP\",\"params\":{},\"title\":\"Cap eating out spend at {{cap}} a month\",\"rationale\":\"Spending on eating out was higher than usual over the last month. Capping it at {{cap}} eases pressure on your cash balance before payday.\",\"trigger_refs\":[{\"kind\":\"finding\",\"id\":\"fnd:category_spike:food.eating_out\",\"role\":\"trigger\"},{\"kind\":\"forecast\",\"id\":\"fc:baseline\",\"role\":\"trigger\"}],\"expected_direction\":\"improves_buffer\",\"claimed_monthly_impact_minor\":12858,\"claimed_impact_text\":null}],\"critique_addressed\":[\"Added missing parameters with category food.eating_out and set cap above the sixty percent median threshold\",\"Recomputed claimed monthly impact to twelve thousand eight hundred fifty-eight minor units\"]}",
-    "mesh_response_id": "chatcmpl-gemini-1791923139",
+    "provider_response_id": "chatcmpl-gemini-1791923139",
     "model": "gemini-3.8-flash",
     "tool_arguments": null,
     "usage": {

@@ -383,7 +383,7 @@
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Cut groceries by 10% from November\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"category_cut_pct\",\"category_key\":\"groceries\",\"pct\":10,\"from_date\":\"2026-11-01\"}],\"assumptions\":[]},\"clarification\":null}",
     "cost_estimate_usd": 0.004834,
     "latency_ms": 2184,
-    "mesh_response_id": "chatcmpl-EbAiKUc5luWIKWnHFlQysSY7lb1eW",
+    "provider_response_id": "chatcmpl-EbAiKUc5luWIKWnHFlQysSY7lb1eW",
     "model": "gpt-6-sol",
     "tool_arguments": null,
     "usage": {

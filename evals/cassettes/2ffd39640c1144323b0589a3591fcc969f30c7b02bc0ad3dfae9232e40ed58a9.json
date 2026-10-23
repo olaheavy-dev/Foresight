@@ -103,7 +103,7 @@
   "request_hash": "2ffd39640c1144323b0589a3591fcc969f30c7b02bc0ad3dfae9232e40ed58a9",
   "response": {
     "content": "{\"standalone_question\":\"What if I cancel Netflix?\",\"intent\":\"scenario\",\"slots\":{\"modifier\":\"recurring_cancel\",\"merchant\":\"Netflix\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.98,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdVErKmms8L4itv0Wecgs9djcbyW",
+    "provider_response_id": "chatcmpl-EYdVErKmms8L4itv0Wecgs9djcbyW",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

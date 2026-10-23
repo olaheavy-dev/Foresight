@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":false,\"reason\":\"The subscription-overlap finding does not support targeting eating out, and the baseline forecast does not establish the effect of that cap.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names the eating-out category, specifies a monthly cap, and sets a timeframe through the next payday.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported certainty about future outcomes.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal is a spending-category cap, not advice on investments, pensions, borrowing, credit cards, or tax.\"}]}",
     "cost_estimate_usd": 0.003464,
     "latency_ms": 5041,
-    "mesh_response_id": "chatcmpl-EbAU9Cjpss9l3zZP8gB9CmV7S7UmK",
+    "provider_response_id": "chatcmpl-EbAU9Cjpss9l3zZP8gB9CmV7S7UmK",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

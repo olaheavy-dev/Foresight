@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited spending spike and cash-flow forecast support limiting food delivery to preserve buffer cash.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and specifies a monthly spending cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with a conditional benefit rather than a promise.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal is a spending cap and contains no restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003208,
     "latency_ms": 5104,
-    "mesh_response_id": "chatcmpl-EbAvJfdq1fM8D5sfGZkFfl8NEUZRB",
+    "provider_response_id": "chatcmpl-EbAvJfdq1fM8D5sfGZkFfl8NEUZRB",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

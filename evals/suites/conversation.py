@@ -20,8 +20,8 @@ from evals.assistant import (
     NotRecorded,
     cache_key,
     canonical,
-    eval_mesh,
     eval_mode,
+    eval_model_client,
     slots_match,
     understand,
 )
@@ -46,7 +46,7 @@ def run(fast: bool = False, cases: Any = None) -> dict[str, Any]:
     pairs = [r for r in rows if r["kind"] in {"paraphrase_pair", "near_miss_pair"}]
     if fast:
         conversations, pairs = conversations[:5], pairs[:4] + pairs[20:24]
-    mesh = eval_mesh()
+    model_client = eval_model_client()
     missing = 0
     calls = 0
     tokens_before = USAGE["tokens"]
@@ -56,7 +56,7 @@ def run(fast: bool = False, cases: Any = None) -> dict[str, Any]:
         nonlocal missing, calls
         try:
             calls += 1
-            return understand(mesh, message, history, as_of)
+            return understand(model_client, message, history, as_of)
         except NotRecorded:
             missing += 1
             return None

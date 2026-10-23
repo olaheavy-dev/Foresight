@@ -103,7 +103,7 @@
   "request_hash": "064b6773f3191799012e9b66c4c3b2fdf64f4aa7bf5fba159a62f464bf319966",
   "response": {
     "content": "{\"standalone_question\":\"Why am I not OK this month?\",\"intent\":\"explain_recommendation\",\"slots\":{\"subject\":\"risk\",\"period\":\"this_month\"},\"needs_forecast\":true,\"needs_advice\":false,\"confidence\":0.86,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdO4BJXiIerw6coNjbd1gIAHv8XO",
+    "provider_response_id": "chatcmpl-EYdO4BJXiIerw6coNjbd1gIAHv8XO",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -381,7 +381,7 @@
   "request_hash": "1f1b397257dfcea143c69c2a201a524b649994b40d711c65ac5be42fb2c60717",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Buy a phone\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-10-20\",\"amount_minor\":35000,\"label\":\"Phone\",\"category_key\":\"shopping.general\",\"start_date\":null,\"from_date\":null,\"to_date\":null,\"income_stream_id\":null,\"recurring_id\":null,\"days\":null,\"occurrences\":null,\"pct\":null,\"cadence\":null,\"instalments\":null,\"monthly_cap_minor\":null,\"buffer_minor\":null}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVXSFxKMW2YaARjTfJujMBLFf6oS",
+    "provider_response_id": "chatcmpl-EYVXSFxKMW2YaARjTfJujMBLFf6oS",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

@@ -81,7 +81,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited overlap finding supports cancelling Netflix while retaining Disney+, with the forecast used only as cash-flow context.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names Netflix and specifies cancellation of its identified recurring subscription.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and conditional, and explicitly avoids claiming that the holiday is affordable.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Cancelling a streaming subscription is within scope and does not provide regulated financial advice.\"}]}",
     "cost_estimate_usd": 0.003334,
     "latency_ms": 3550,
-    "mesh_response_id": "chatcmpl-EbMMZX3WEknVglKOtzOH37Uag2PTd",
+    "provider_response_id": "chatcmpl-EbMMZX3WEknVglKOtzOH37Uag2PTd",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

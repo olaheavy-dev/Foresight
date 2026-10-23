@@ -80,7 +80,7 @@
     "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports the subscription overlap, and cancelling one avoids its recurring cost.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names Sky TV and gives a clear cancellation action for the identified subscription.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, without unsupported predictions or embedded instructions.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Cancelling a TV subscription is within scope and contains no restricted financial advice or recommendations.\"}]}",
     "cost_estimate_usd": 0.003452,
     "latency_ms": 5342,
-    "mesh_response_id": "chatcmpl-EbAtu1f89c9fi9DFxrTTkr3R32zQW",
+    "provider_response_id": "chatcmpl-EbAtu1f89c9fi9DFxrTTkr3R32zQW",
     "model": "gpt-6.1-sol",
     "tool_arguments": null,
     "usage": {

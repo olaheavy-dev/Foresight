@@ -86,7 +86,7 @@
   "request_hash": "fa3036cebecb6af168cd6cb55f67eeaadab167237f6ad0ed0e2a7a1f0b1e6baf",
   "response": {
     "content": null,
-    "mesh_response_id": "chatcmpl-068d1e7707520eb9f5f7",
+    "provider_response_id": "chatcmpl-068d1e7707520eb9f5f7",
     "model": "anthropic/claude-haiku-5.5",
     "tool_arguments": "{\"criteria\": [{\"rule\": \"V-11\", \"passed\": true, \"reason\": \"The spike finding supports the eating-out increase, and the baseline forecast supports the low-balance-before-payday claim.\"}, {\"rule\": \"V-12\", \"passed\": true, \"reason\": \"Names the food.eating_out category, a monthly cap amount, and a clear window until the next payday.\"}, {\"rule\": \"V-13\", \"passed\": true, \"reason\": \"Neutral wording with no forward-looking claims beyond the baseline forecast.\"}, {\"rule\": \"V-14\", \"passed\": true, \"reason\": \"A spending cap on a discretionary category; no REF product, advice or recommendation.\"}]}",
     "usage": {

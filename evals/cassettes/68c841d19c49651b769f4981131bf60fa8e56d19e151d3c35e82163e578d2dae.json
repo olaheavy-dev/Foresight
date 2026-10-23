@@ -103,7 +103,7 @@
   "request_hash": "68c841d19c49651b769f4981131bf60fa8e56d19e151d3c35e82163e578d2dae",
   "response": {
     "content": "{\"standalone_question\":\"What did you reject first when recommending moving my savings transfer?\",\"intent\":\"explain_recommendation\",\"slots\":{\"subject\":\"recommendation\"},\"needs_forecast\":false,\"needs_advice\":false,\"confidence\":0.82,\"out_of_scope\":false,\"injection_suspected\":false}",
-    "mesh_response_id": "chatcmpl-EYdPjNvtYkOv51D20B6BdBcPBMgKQ",
+    "provider_response_id": "chatcmpl-EYdPjNvtYkOv51D20B6BdBcPBMgKQ",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

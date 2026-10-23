@@ -381,7 +381,7 @@
   "request_hash": "9c704af9f9aa72d7ce6a1efa6964fcd9aa26c499494c53dcf717d531fadff298",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"Cancel Netflix\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"recurring_cancel\",\"recurring_id\":\"rob_netflix\",\"from_date\":\"2026-10-11\"}],\"assumptions\":[]},\"clarification\":null}",
-    "mesh_response_id": "chatcmpl-EYVaC72lSuQ4sSlMUTfIDP0GZ0Yxw",
+    "provider_response_id": "chatcmpl-EYVaC72lSuQ4sSlMUTfIDP0GZ0Yxw",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {

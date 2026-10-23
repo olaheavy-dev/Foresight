@@ -381,7 +381,7 @@
   "request_hash": "2dae0bd16b3a5eb651f4ef80e82e27ddc78bf642701ef9e2dfa3877e056817b2",
   "response": {
     "content": "{\"status\":\"parsed\",\"spec\":{\"schema\":\"scenario_spec/1\",\"name\":\"\u00a31,500 holiday\",\"currency\":\"GBP\",\"scope\":\"mine\",\"modifiers\":[{\"type\":\"one_off_outflow\",\"date\":\"2026-12-01\",\"amount_minor\":150000,\"label\":\"Holiday\",\"category_key\":\"travel\"}],\"assumptions\":[]}}",
-    "mesh_response_id": "chatcmpl-EYVXFGqMYHB2VOzdjQMl5R9E0GJKu",
+    "provider_response_id": "chatcmpl-EYVXFGqMYHB2VOzdjQMl5R9E0GJKu",
     "model": "gpt-6-luna",
     "tool_arguments": null,
     "usage": {
