@@ -75,8 +75,26 @@ def test_behind_a_cdn_the_edges_header_or_trusted_ranges_name_the_visitor(
     req.headers["CF-Connecting-IP"] = "81.2.69.161"
     assert client_network(req) == "81.2.69.0/24"
     req.headers["CF-Connecting-IP"] = "10.0.0.1"
-    assert client_network(req) is None  # a private value counts nothing
+    assert client_network(req) == "104.16.0.0/24"  # not a public value: X-Forwarded-For instead
     get_settings.cache_clear()
+
+
+def test_a_configured_header_that_never_arrives_still_counts_the_visitor(monkeypatch: Any) -> None:
+    """23 Oct 2026: CLIENT_IP_HEADER=CF-Connecting-IP on a server Cloudflare doesn't proxy. No
+    request carries the header, and a request with no network isn't counted, so the guest cap was
+    lifted for everyone. Without the header the visitor comes from X-Forwarded-For as usual."""
+    from backend.settings import get_settings
+
+    monkeypatch.setenv("CLIENT_IP_HEADER", "CF-Connecting-IP")
+    get_settings.cache_clear()
+    try:
+        assert _net("81.2.69.160, 172.18.0.5") == "81.2.69.0/24"
+        cap = NetworkAllowance()
+        visitor: Any = _Req("81.2.69.160")
+        assert cap.take(visitor, "question", 1)
+        assert not cap.take(visitor, "question", 1)  # the second question is refused
+    finally:
+        get_settings.cache_clear()
 
 
 def test_a_use_that_never_started_is_given_back() -> None:
