@@ -51,12 +51,16 @@ from backend.mesh.prices import cost_estimate
 from backend.mesh.spend_guard import DailySpendGuard
 from backend.settings import Settings, get_settings
 
-# Fixed, not configurable: the hackathon requires every model call to go through Mesh, so no
-# environment variable or setting can point the client anywhere else.
+# Fixed, not configurable: `model_provider` picks one of these, and no environment variable or
+# setting can point the client at any other address.
 MESH_BASE_URL = "https://api.meshapi.ai/v1"
+OPENAI_BASE_URL = "https://api.openai.com/v1"
+PROVIDER_BASE_URLS = {"mesh": MESH_BASE_URL, "openai": OPENAI_BASE_URL}
 
 __all__ = [
     "MESH_BASE_URL",
+    "OPENAI_BASE_URL",
+    "PROVIDER_BASE_URLS",
     "CassetteMiss",
     "MeshCallError",
     "MeshClient",
@@ -130,6 +134,7 @@ class MeshResult:
     strategy: str | None = None  # json_schema | tools | json_object for structured calls
     # False when a replayed call has no recorded live latency (latency_ms is then local time).
     latency_measured: bool = True
+    provider: str = "mesh"  # the configured route (MODEL_PROVIDER), stored on each AgentStep
 
 
 T = TypeVar("T", bound=BaseModel)
@@ -377,18 +382,50 @@ class MeshClient:
         self._local = threading.local()  # per-thread replay pass in record mode
         if self._mode not in {"live", "record", "replay"}:
             raise MeshConfigError(f"unknown MESH_CASSETTE_MODE '{self._mode}'")
+        self._provider = self._settings.model_provider
+        if self._provider not in PROVIDER_BASE_URLS:
+            raise MeshConfigError(f"unknown MODEL_PROVIDER '{self._provider}'")
         if client is None and self._mode != "replay":
-            if not self._settings.mesh_api_key:
-                raise MeshConfigError("MESH_API_KEY is not set")
+            key_name, api_key = (
+                ("OPENAI_API_KEY", self._settings.openai_api_key)
+                if self._provider == "openai"
+                else ("MESH_API_KEY", self._settings.mesh_api_key)
+            )
+            if not api_key:
+                raise MeshConfigError(f"{key_name} is not set")
             client = OpenAI(
-                api_key=self._settings.mesh_api_key,
-                base_url=MESH_BASE_URL,
+                api_key=api_key,
+                base_url=PROVIDER_BASE_URLS[self._provider],
                 timeout=self._settings.mesh_timeout_reasoning_seconds,
                 max_retries=0,  # retries are ours: counted, logged and visible to the breaker
             )
         self._client = client
+        if self._mode != "replay":
+            # Fail at start-up, not on the first Advisor call, when a tier can't be served.
+            s = self._settings
+            for primary in (s.mesh_model_fast, s.mesh_model_reasoning, s.mesh_model_verifier):
+                if primary and not self._serves(primary):
+                    raise MeshConfigError(
+                        f"MODEL_PROVIDER '{self._provider}' can't serve '{primary}'"
+                    )
+
+            # The judge is a different model from the Advisor (docs/06 §13), fallbacks included;
+            # a fallback the provider skips (models_for) is never called, so it doesn't count.
+            def served(*models: str) -> set[str]:
+                return {m for m in models if m and self._serves(m)}
+
+            advisor = served(s.mesh_model_reasoning, s.mesh_model_reasoning_fallback)
+            judge = served(s.mesh_model_verifier, s.mesh_model_verifier_fallback)
+            if advisor & judge:
+                raise MeshConfigError(
+                    f"the Verifier judge can't use the Advisor's model: {sorted(advisor & judge)}"
+                )
         self._cassettes = cassettes or (
-            CassetteStore(self._settings.mesh_cassette_dir, live_run_sha=self._settings.build_sha)
+            CassetteStore(
+                self._settings.mesh_cassette_dir,
+                live_run_sha=self._settings.build_sha,
+                provider=self._provider,
+            )
             if self._mode != "live"
             else None
         )
@@ -418,8 +455,9 @@ class MeshClient:
 
     def _available_usd(self) -> float | None:
         """Mesh `GET /v1/balance` (costs no credit). None when it can't be read (replay mode,
-        no live client): availability then rests on the breaker and spend refusals alone."""
-        if self._client is None or self._mode == "replay":
+        no live client, or a provider without a balance endpoint): availability then rests on the
+        breaker, the daily spend guard and spend refusals alone."""
+        if self._client is None or self._mode == "replay" or self._provider != "mesh":
             return None
         body = self._client.get("/balance", cast_to=object, options={"timeout": 3.0})
         if isinstance(body, dict) and body.get("available_usd") is not None:
@@ -433,10 +471,31 @@ class MeshClient:
         return self._mode
 
     @property
+    def provider(self) -> str:
+        return self._provider
+
+    @property
     def base_url(self) -> str:
         if self._client is None:
-            return MESH_BASE_URL
+            return PROVIDER_BASE_URLS[self._provider]
         return str(self._client.base_url).rstrip("/")
+
+    def _wire_model(self, model: str) -> str:
+        """The model ID as the provider expects it: OpenAI takes "gpt-6-luna", not
+        "openai/gpt-6-luna". Settings, prices and cassette keys keep the prefixed ID."""
+        if self._provider == "openai":
+            return model.removeprefix("openai/")
+        return model
+
+    def _token_limit(self, max_tokens: int) -> dict[str, Any]:
+        """OpenAI rejects `max_tokens` for the GPT-6 models (400 unsupported_parameter, probed
+        21 Oct 2026) and takes `max_completion_tokens`; Mesh translated it for us."""
+        if self._provider == "openai":
+            return {"max_completion_tokens": max_tokens}
+        return {"max_tokens": max_tokens}
+
+    def _serves(self, model: str) -> bool:
+        return self._provider == "mesh" or model.startswith("openai/")
 
     def models_for(self, tier: ModelTier) -> tuple[str, str]:
         s = self._settings
@@ -447,10 +506,21 @@ class MeshClient:
         }[tier]
         if not primary:
             raise MeshConfigError(f"No Mesh model configured for tier '{tier.value}'")
+        # Replay never reaches a provider, so recordings made through Mesh still answer.
+        if self._mode != "replay":
+            if not self._serves(primary):
+                raise MeshConfigError(
+                    f"MODEL_PROVIDER '{self._provider}' can't serve '{primary}' "
+                    f"(tier '{tier.value}')"
+                )
+            if fallback and not self._serves(fallback):
+                fallback = ""
         return primary, fallback
 
-    def _timeout(self, tier: ModelTier) -> float:
-        if tier is ModelTier.FAST:
+    def _timeout(self, tier: ModelTier, *, fallback: bool = False) -> float:
+        # The fast tier's fallback runs only after the primary failed, and may be a slower model
+        # (GPT-6 Sol behind Luna): an answer matters more than speed, so it gets the long timeout.
+        if tier is ModelTier.FAST and not fallback:
             return self._settings.mesh_timeout_fast_seconds
         return self._settings.mesh_timeout_reasoning_seconds
 
@@ -696,7 +766,12 @@ class MeshClient:
                 attempts += 1
                 try:
                     response = self._client.chat.completions.create(
-                        **kwargs, max_tokens=max_tokens, timeout=self._timeout(tier)
+                        **{
+                            **kwargs,
+                            "model": self._wire_model(model),
+                            **self._token_limit(max_tokens),
+                        },
+                        timeout=self._timeout(tier, fallback=is_fallback),
                     )
                 except BadRequestError as exc:
                     if _error_code(exc) == "spend_limit_exceeded":
@@ -705,6 +780,9 @@ class MeshClient:
                     # The request shape was rejected; not an outage, so the breaker isn't told.
                     raise _UnsupportedRequest(str(exc)) from exc
                 except RateLimitError as exc:
+                    if _error_code(exc) == "insufficient_quota":  # OpenAI's "no credit" is a 429
+                        self.availability.note_spend_limit()
+                        raise MeshSpendLimitError("provider balance exhausted") from exc
                     last_error = exc
                     self.breaker.record(False)
                     if attempt + 1 < tries:
@@ -759,8 +837,8 @@ class MeshClient:
                 break
         raise MeshCallError(f"Mesh call failed for tier '{tier.value}'") from last_error
 
-    @staticmethod
     def _result(
+        self,
         recorded: RecordedResponse,
         tier: ModelTier,
         started: float,
@@ -798,4 +876,6 @@ class MeshClient:
             tier=tier.value,
             temperature=sent_temperature,
             strategy=strategy,
+            # A replay keeps the route its latency and cost came from (Codex on #67).
+            provider=(recorded.provider or self._provider) if replayed else self._provider,
         )

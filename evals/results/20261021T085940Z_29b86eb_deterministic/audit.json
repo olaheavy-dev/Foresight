@@ -1,0 +1,146 @@
+{
+  "duration_s": 8.89,
+  "error": null,
+  "metrics": {
+    "audit_hash_chain_valid": true,
+    "broken_link_kinds": {},
+    "by_status": {
+      "approved": 6,
+      "withdrawn": 3
+    },
+    "complete_chains": 9,
+    "detail": [
+      {
+        "broken": [],
+        "mode": "feasible",
+        "persona": "P1",
+        "rec": "rec_01K742SG010000000000000001",
+        "status": "approved"
+      },
+      {
+        "broken": [],
+        "mode": "feasible",
+        "persona": "P1",
+        "rec": "rec_01K742SG020000000000000002",
+        "status": "approved"
+      },
+      {
+        "broken": [],
+        "mode": "flawed_once",
+        "persona": "P1",
+        "rec": "rec_01K742SG030000000000000003",
+        "status": "approved"
+      },
+      {
+        "broken": [],
+        "mode": "flawed_once",
+        "persona": "P1",
+        "rec": "rec_01K742SG040000000000000004",
+        "status": "approved"
+      },
+      {
+        "broken": [],
+        "mode": "flawed_always",
+        "persona": "P1",
+        "rec": "rec_01K742SG050000000000000005",
+        "status": "withdrawn"
+      },
+      {
+        "broken": [],
+        "mode": "flawed_always",
+        "persona": "P1",
+        "rec": "rec_01K742SG060000000000000006",
+        "status": "withdrawn"
+      },
+      {
+        "broken": [],
+        "mode": "feasible",
+        "persona": "P2",
+        "rec": "rec_01K742SG070000000000000007",
+        "status": "approved"
+      },
+      {
+        "broken": [],
+        "mode": "flawed_once",
+        "persona": "P2",
+        "rec": "rec_01K742SG080000000000000008",
+        "status": "approved"
+      },
+      {
+        "broken": [],
+        "mode": "flawed_always",
+        "persona": "P2",
+        "rec": "rec_01K742SG090000000000000009",
+        "status": "withdrawn"
+      }
+    ],
+    "mode": "replay",
+    "provenance": {
+      "chains_calcs": 8,
+      "labelled": 8
+    },
+    "recommendations": 9,
+    "recomputed": {
+      "identical": 10,
+      "not_rebuildable": 0,
+      "sampled": 10
+    },
+    "rejections": {
+      "total": 12,
+      "with_critique": 12
+    }
+  },
+  "name": "audit",
+  "notes": [
+    "replay mode. Advisor drafts and judge verdicts are scripted (stub/advisor, stub/judge in the step rows); the chain under test is written by the product's code.",
+    "The P1 canonical live traces are not re-walked: their recorded model requests depend on wall-clock deadlines, so a replay would take a different path."
+  ],
+  "suite": "E-AUD",
+  "targets": [
+    {
+      "dataset": "9 recommendations",
+      "id": "AUD-complete",
+      "label": "Audit completeness (unbroken chains)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "P1, P2 audit log",
+      "id": "AUD-hashchain",
+      "label": "Audit event hash chain intact",
+      "met": true,
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "10 calculations",
+      "id": "AUD-recompute",
+      "label": "Recomputability (identical result hash)",
+      "met": true,
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "12 rejections",
+      "id": "AUD-rejected",
+      "label": "Rejected/withdrawn traceability",
+      "met": true,
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "8 calculations",
+      "id": "AUD-provenance",
+      "label": "Provenance labels on chain calculations",
+      "met": true,
+      "stage1": true,
+      "target": ">= 1.0",
+      "value": 1.0
+    }
+  ]
+}

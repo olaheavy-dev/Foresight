@@ -174,6 +174,12 @@ def _common(
     result.assertions["expected_agents_invoked"] = set(case["expected_agents"]) <= set(
         result.agents
     )
+    # An expected agent that only failed (its work done by a deterministic fallback) did not
+    # do the job the case tests: each needs a step that succeeded.
+    result.assertions["expected_agents_succeeded"] = all(
+        any(s.agent == a and s.status in ("ok", "retried") for s in steps)
+        for a in case["expected_agents"]
+    )
     return steps
 
 
@@ -336,6 +342,7 @@ def _conversation(case: dict[str, Any], session: Any, mesh: Any, result: CaseRes
         # own 3-call budget when a node needs a repair call, so the agent list is not asserted
         # for the budget case (reported in the suite notes; the case file is unchanged).
         result.assertions.pop("expected_agents_invoked", None)
+        result.assertions.pop("expected_agents_succeeded", None)
         result.note = "ORC-10 checked as docs/09 defines it (agent list not asserted)"
     else:
         result.assertions["answer_stored"] = out.response_id is not None
@@ -456,6 +463,7 @@ def _fault(case: dict[str, Any], session: Any, result: CaseResult) -> None:
     # The case's expected agents assume the specialist ran; with a degraded Understand the
     # route is the fallback one, so this case asserts the fault handling, not the agent set.
     result.assertions.pop("expected_agents_invoked", None)
+    result.assertions.pop("expected_agents_succeeded", None)
 
 
 def _snapshot(case: dict[str, Any], session: Any, result: CaseResult) -> None:

@@ -1,22 +1,22 @@
 {
   "durations_s": {
-    "E-ANOM": 2.34,
-    "E-AUD": 21.04,
-    "E-CAT": 1.24,
-    "E-CTX": 1.18,
+    "E-ANOM": 0.8,
+    "E-AUD": 8.61,
+    "E-CAT": 0.43,
+    "E-CTX": 0.53,
     "E-EFF": 0.0,
-    "E-FC": 28.58,
-    "E-GRD": 18.25,
-    "E-INC": 2.1,
-    "E-ING": 1.78,
-    "E-LOC": 0.89,
-    "E-ORC": 85.66,
-    "E-REC": 1.18,
-    "E-SCN": 0.54,
-    "E-SEC": 0.65,
-    "E-SIM": 73.36,
-    "E-UI": 85.93,
-    "E-VER": 44.6
+    "E-FC": 10.03,
+    "E-GRD": 6.89,
+    "E-INC": 0.76,
+    "E-ING": 0.65,
+    "E-LOC": 0.31,
+    "E-ORC": 26.48,
+    "E-REC": 0.41,
+    "E-SCN": 0.26,
+    "E-SEC": 0.27,
+    "E-SIM": 25.85,
+    "E-UI": 24.07,
+    "E-VER": 15.24
   },
   "engine_version": "fc-1.3.0",
   "errors": {},
@@ -170,7 +170,7 @@
   },
   "generator_version": "gen-1.1.0",
   "git_dirty": false,
-  "git_sha": "6770a22cfd0b913a90faebb843f05aea8ee97cc0",
+  "git_sha": "680a4918d38aad95e004ede1e6d36075aa586f0e",
   "holdout_version": null,
   "home_currency_primary": "GBP",
   "layout_set_version": null,
@@ -189,7 +189,7 @@
     "null = not run. Gates: a suite that did not run is 'fail'; see gate_detail.rule."
   ],
   "prompt_versions": {},
-  "run_id": "evalrun_20261017T092618Z_6770a22",
+  "run_id": "evalrun_20261022T100645Z_680a491",
   "schema_version": "1.1",
   "seeds": [
     1729
@@ -347,7 +347,7 @@
         "model_calls_per_cache_hit_after_understand": 0,
         "model_calls_per_cache_miss": 1,
         "recorded_tokens_total": 447216,
-        "replay_seconds": 1.17
+        "replay_seconds": 0.53
       },
       "followup_turns_scored": 45,
       "mode": "replay",
@@ -1095,43 +1095,43 @@
     "efficiency": {
       "by_answer_type": {
         "advice": {
-          "cost_mean_usd": 0.04361,
-          "cost_p95_usd": 0.08247,
+          "cost_mean_usd": 0.01855,
+          "cost_p95_usd": 0.03681,
           "count": 13,
           "degraded_left_out": 0,
-          "first_step_p95_s": 0.06,
-          "latency_estimated_p50_s": 21.87,
-          "latency_estimated_p95_s": 45.76,
+          "first_step_p95_s": 0.02,
+          "latency_estimated_p50_s": 15.57,
+          "latency_estimated_p95_s": 35.07,
           "latency_measured": 13,
-          "latency_p50_s": 21.87,
-          "latency_p50_s_measured_only": 21.87,
-          "latency_p95_s": 45.76
+          "latency_p50_s": 15.57,
+          "latency_p50_s_measured_only": 15.57,
+          "latency_p95_s": 35.07
         },
         "all": {
-          "cost_mean_usd": 0.00993,
-          "cost_p95_usd": 0.06753,
+          "cost_mean_usd": 0.00442,
+          "cost_p95_usd": 0.01724,
           "count": 60,
           "degraded_left_out": 0,
-          "first_step_p95_s": 0.05,
-          "latency_estimated_p50_s": 3.74,
-          "latency_estimated_p95_s": 38.46,
+          "first_step_p95_s": 0.02,
+          "latency_estimated_p50_s": 3.41,
+          "latency_estimated_p95_s": 21.65,
           "latency_measured": 60,
-          "latency_p50_s": 3.74,
-          "latency_p50_s_measured_only": 3.74,
-          "latency_p95_s": 38.46
+          "latency_p50_s": 3.41,
+          "latency_p50_s_measured_only": 3.41,
+          "latency_p95_s": 21.65
         },
         "simple": {
-          "cost_mean_usd": 0.00061,
+          "cost_mean_usd": 0.00051,
           "cost_p95_usd": 0.00063,
           "count": 47,
           "degraded_left_out": 0,
-          "first_step_p95_s": 0.05,
-          "latency_estimated_p50_s": 2.31,
-          "latency_estimated_p95_s": 7.95,
+          "first_step_p95_s": 0.02,
+          "latency_estimated_p50_s": 2.23,
+          "latency_estimated_p95_s": 7.19,
           "latency_measured": 47,
-          "latency_p50_s": 2.31,
-          "latency_p50_s_measured_only": 2.31,
-          "latency_p95_s": 7.95
+          "latency_p50_s": 2.23,
+          "latency_p50_s_measured_only": 2.23,
+          "latency_p95_s": 7.19
         }
       },
       "by_tier": {
@@ -1158,25 +1158,25 @@
             "E-ORC",
             "E-GRD"
           ],
-          "call_latency_p50_s": 10.75,
-          "call_latency_p95_s": 12.55,
-          "calls": 25,
-          "cost_per_answer_usd": 0.00932,
-          "cost_per_call_usd": 0.02237,
-          "latency_measured": 25,
+          "call_latency_p50_s": 11.31,
+          "call_latency_p95_s": 16.19,
+          "calls": 17,
+          "cost_per_answer_usd": 0.00379,
+          "cost_per_call_usd": 0.01339,
+          "latency_measured": 17,
           "models": [
-            "anthropic/claude-sonnet-5.5"
+            "gpt-6-sol"
           ]
         },
         "verifier": {
           "accuracy_gates": [
             "E-VER"
           ],
-          "call_latency_p50_s": 6.17,
-          "call_latency_p95_s": 6.95,
+          "call_latency_p50_s": 5.04,
+          "call_latency_p95_s": 8.24,
           "calls": 4,
-          "cost_per_answer_usd": 0.00023,
-          "cost_per_call_usd": 0.00346,
+          "cost_per_answer_usd": 0.00024,
+          "cost_per_call_usd": 0.00362,
           "latency_measured": 4,
           "models": [
             "gpt-6.1-sol"
@@ -1386,7 +1386,7 @@
       }
     },
     "grounding": {
-      "approved": 91,
+      "approved": 94,
       "commitment_cuts_unrequested": 0,
       "evidence_ref_validity": 1.0,
       "generic_advice_rate": 0.0,
@@ -1615,7 +1615,7 @@
         "tool_calls_outside_allow_list": []
       },
       "mode": "replay",
-      "seconds": 85.7
+      "seconds": 26.5
     },
     "recurring": {
       "council_tax_months_exact": true,
@@ -1633,10 +1633,10 @@
       "exact_match": 0.8571,
       "field_accuracy": {
         "amount": 0.9839,
-        "date": 0.9855,
+        "date": 0.971,
         "duration": 0.875,
-        "target": 0.9492,
-        "type": 1.0
+        "target": 0.9322,
+        "type": 0.987
       },
       "scored": 80,
       "tiers": {
@@ -1780,8 +1780,8 @@
         "not_answered": 0,
         "ui10_skeleton": 1.0,
         "ui1_schema_valid": 1.0,
-        "ui2_block_precision": 0.9526,
-        "ui2_block_recall": 0.8419,
+        "ui2_block_precision": 0.9581,
+        "ui2_block_recall": 0.8512,
         "ui7_overview_budget": 1.0,
         "ui9_tab_placement": 1.0
       },
@@ -1861,13 +1861,13 @@
       "headline_arm": "full",
       "loop": {
         "outcomes": {
-          "1_revision(s)": 49,
-          "2_revision(s)": 8,
-          "withdrawn": 5
+          "1_revision(s)": 58,
+          "2_revision(s)": 2,
+          "withdrawn": 2
         },
         "rejected_in_round_1": 62,
         "revisable": 41,
-        "revision_success": 0.9268,
+        "revision_success": 0.9512,
         "unrevisable": 21,
         "withdraw_correctness": 1.0
       }
@@ -2092,7 +2092,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 0.03",
-        "value": 0.00993
+        "value": 0.00442
       },
       {
         "dataset": "13 advice answers",
@@ -2101,7 +2101,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 0.055",
-        "value": 0.04361
+        "value": 0.01855
       },
       {
         "dataset": "60 E-UI answers",
@@ -2110,7 +2110,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 0.1",
-        "value": 0.06753
+        "value": 0.01724
       },
       {
         "dataset": "60 E-UI answers",
@@ -2119,7 +2119,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 2.0",
-        "value": 0.05
+        "value": 0.02
       },
       {
         "dataset": "47 simple answers",
@@ -2128,7 +2128,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 10.0",
-        "value": 2.31
+        "value": 2.23
       },
       {
         "dataset": "13 advice answers",
@@ -2137,7 +2137,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 35.0",
-        "value": 21.87
+        "value": 15.57
       },
       {
         "dataset": "13 advice answers",
@@ -2146,7 +2146,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 60.0",
-        "value": 45.76
+        "value": 35.07
       }
     ],
     "E-FC": [
@@ -2598,7 +2598,7 @@
         "met": true,
         "stage1": true,
         "target": ">= 0.95",
-        "value": 0.9855
+        "value": 0.971
       },
       {
         "dataset": "10 ambiguous prompts",
@@ -2712,7 +2712,7 @@
         "met": true,
         "stage1": false,
         "target": ">= 0.85",
-        "value": 0.9526
+        "value": 0.9581
       },
       {
         "dataset": "60 answers",
@@ -2721,7 +2721,7 @@
         "met": true,
         "stage1": false,
         "target": ">= 0.8",
-        "value": 0.8419
+        "value": 0.8512
       },
       {
         "dataset": "60 answers",
@@ -2781,5 +2781,5 @@
       }
     ]
   },
-  "timestamp_utc": "2026-10-17T09:26:18Z"
+  "timestamp_utc": "2026-10-22T10:06:45Z"
 }

@@ -37,6 +37,7 @@ class StubCompletions:
 
 def _client(completions: StubCompletions, **overrides: str) -> MeshClient:
     settings = Settings(
+        model_provider="mesh",  # the Mesh route; OpenAI is in test_openai_provider.py
         mesh_api_key="rsk_test",
         mesh_model_fast=overrides.get("fast", "fast-primary"),
         mesh_model_fast_fallback=overrides.get("fast_fallback", "fast-backup"),
@@ -52,7 +53,7 @@ def _ask(client: MeshClient, content: str = "hello") -> Any:
 
 def test_missing_key_is_a_config_error() -> None:
     with pytest.raises(MeshConfigError):
-        MeshClient(settings=Settings(mesh_api_key=""))
+        MeshClient(settings=Settings(model_provider="mesh", mesh_api_key=""))
 
 
 def test_missing_model_is_a_config_error() -> None:

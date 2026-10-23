@@ -190,7 +190,7 @@ def test_question_records_model_tokens_cost_and_standalone_question(session: Ses
     assert (u.kind, u.provider, u.model, u.tier) == ("llm", "mesh", "openai/gpt-6-luna", "fast")
     assert (u.tokens_in, u.tokens_out, u.llm_calls) == (900, 80, 1)
     assert u.cost_estimate_usd == pytest.approx((900 * 0.10 + 80 * 0.50) / 1_000_000)
-    assert u.temperature == 0.0
+    assert u.temperature is None  # GPT-6 models take only their default (models.yaml)
     assert u.prompt_version
     assert {
         "prefetch",

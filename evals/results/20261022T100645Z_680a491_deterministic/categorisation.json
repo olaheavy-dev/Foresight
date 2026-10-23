@@ -1,0 +1,555 @@
+{
+  "duration_s": 0.43,
+  "error": null,
+  "metrics": {
+    "arms": {
+      "hybrid": {
+        "abstention_rate": 0.0,
+        "accuracy": 0.9418,
+        "accuracy_ci95": [
+          0.9176,
+          0.9592
+        ],
+        "amount_weighted_accuracy": 0.4314,
+        "coverage": {
+          "0.5": {
+            "coverage": 1.0,
+            "selective_accuracy": 0.9418
+          },
+          "0.7": {
+            "coverage": 0.988,
+            "selective_accuracy": 0.9472
+          },
+          "0.85": {
+            "coverage": 0.9598,
+            "selective_accuracy": 0.9749
+          },
+          "0.95": {
+            "coverage": 0.004,
+            "selective_accuracy": 0.5
+          }
+        },
+        "ece": 0.0893,
+        "flow_class_accuracy": 0.9659,
+        "llm": {
+          "batches": 1,
+          "calls": 1,
+          "failed_batches": 0,
+          "invalid_or_missing_items": 0,
+          "models": [
+            "gpt-6-luna"
+          ],
+          "prompt_version": "46aa0e745f08",
+          "replayed": true,
+          "rows_sent": 4,
+          "rows_withheld_suspicious": 0,
+          "tokens": 2218,
+          "usd_estimate": 0.0004
+        },
+        "llm_call_rate": 0.008,
+        "macro_f1": 0.8068,
+        "n": 498,
+        "weighted_f1": 0.9403
+      },
+      "llm_only": {
+        "accuracy": null,
+        "flow_class_accuracy": null,
+        "llm_call_rate": null,
+        "macro_f1": null,
+        "note": "not measured: no recorded Mesh response (CassetteMiss); re-record with MESH_CASSETTE_MODE=record"
+      },
+      "majority_class": {
+        "accuracy": 0.2048,
+        "label": "groceries",
+        "macro_f1": 0.0121
+      },
+      "monzo_category_mapped": {
+        "accuracy": 0.3592,
+        "macro_f1": 0.1717,
+        "n": 284,
+        "rules_only_on_same_rows": 0.9683
+      },
+      "rules_only": {
+        "abstention_rate": 0.008,
+        "accuracy": 0.9418,
+        "accuracy_ci95": [
+          0.9176,
+          0.9592
+        ],
+        "amount_weighted_accuracy": 0.4035,
+        "coverage": {
+          "0.5": {
+            "coverage": 0.992,
+            "selective_accuracy": 0.9494
+          },
+          "0.7": {
+            "coverage": 0.9859,
+            "selective_accuracy": 0.9491
+          },
+          "0.85": {
+            "coverage": 0.9578,
+            "selective_accuracy": 0.9769
+          },
+          "0.95": {
+            "coverage": 0.0,
+            "selective_accuracy": null
+          }
+        },
+        "ece": 0.0952,
+        "flow_class_accuracy": 0.9659,
+        "llm_call_rate": 0.0,
+        "macro_f1": 0.807,
+        "n": 498,
+        "weighted_f1": 0.9412
+      }
+    },
+    "by_dataset": {
+      "P1-base": {
+        "dev_n": 842,
+        "rules_only": {
+          "abstention_rate": 0.0106,
+          "accuracy": 0.9683,
+          "accuracy_ci95": [
+            0.9409,
+            0.9832
+          ],
+          "amount_weighted_accuracy": 0.9933,
+          "coverage": {
+            "0.5": {
+              "coverage": 0.9894,
+              "selective_accuracy": 0.9786
+            },
+            "0.7": {
+              "coverage": 0.9789,
+              "selective_accuracy": 0.9784
+            },
+            "0.85": {
+              "coverage": 0.9718,
+              "selective_accuracy": 0.9855
+            },
+            "0.95": {
+              "coverage": 0.0,
+              "selective_accuracy": null
+            }
+          },
+          "ece": 0.0777,
+          "flow_class_accuracy": 0.993,
+          "llm_call_rate": 0.0,
+          "macro_f1": 0.8486,
+          "n": 284,
+          "weighted_f1": 0.9705
+        }
+      },
+      "P2-base": {
+        "dev_n": 1038,
+        "rules_only": {
+          "abstention_rate": 0.0047,
+          "accuracy": 0.9065,
+          "accuracy_ci95": [
+            0.8601,
+            0.9387
+          ],
+          "amount_weighted_accuracy": 0.1747,
+          "coverage": {
+            "0.5": {
+              "coverage": 0.9953,
+              "selective_accuracy": 0.9108
+            },
+            "0.7": {
+              "coverage": 0.9953,
+              "selective_accuracy": 0.9108
+            },
+            "0.85": {
+              "coverage": 0.9393,
+              "selective_accuracy": 0.9652
+            },
+            "0.95": {
+              "coverage": 0.0,
+              "selective_accuracy": null
+            }
+          },
+          "ece": 0.1279,
+          "flow_class_accuracy": 0.9299,
+          "llm_call_rate": 0.0,
+          "macro_f1": 0.9037,
+          "n": 214,
+          "weighted_f1": 0.9088
+        }
+      }
+    },
+    "confusion": {
+      "cash.withdrawal": {
+        "cash.withdrawal": 2
+      },
+      "entertainment": {
+        "entertainment": 7
+      },
+      "family_support_abroad": {
+        "family_support_abroad": 3
+      },
+      "food.delivery": {
+        "food.delivery": 55
+      },
+      "food.eating_out": {
+        "food.eating_out": 102
+      },
+      "groceries": {
+        "groceries": 102
+      },
+      "health": {
+        "health": 5
+      },
+      "housing.council_tax": {
+        "housing.council_tax": 5
+      },
+      "housing.rent": {
+        "housing.rent": 6
+      },
+      "income.salary": {
+        "income.salary": 3
+      },
+      "income.self_employed": {
+        "income.salary": 4,
+        "inflow_unconfirmed": 12
+      },
+      "personal_care": {
+        "personal_care": 5
+      },
+      "refund": {
+        "inflow_unconfirmed": 1
+      },
+      "savings_investment": {
+        "savings_investment": 3
+      },
+      "shopping.clothing": {
+        "shopping.clothing": 12
+      },
+      "shopping.general": {
+        "health": 4,
+        "shopping.general": 45,
+        "uncategorised": 1
+      },
+      "subscriptions.fitness": {
+        "subscriptions.fitness": 3
+      },
+      "subscriptions.software_cloud": {
+        "subscriptions.software_cloud": 3,
+        "uncategorised": 3
+      },
+      "subscriptions.streaming": {
+        "subscriptions.streaming": 18
+      },
+      "tax.self_assessment": {
+        "tax.self_assessment": 1
+      },
+      "transfer.reimbursement": {
+        "inflow_unconfirmed": 1
+      },
+      "transfer.untracked": {
+        "savings_investment": 3
+      },
+      "transport.public": {
+        "transport.public": 54
+      },
+      "transport.taxi": {
+        "transport.taxi": 11
+      },
+      "utilities.broadband_tv": {
+        "utilities.broadband_tv": 9
+      },
+      "utilities.energy": {
+        "utilities.energy": 6
+      },
+      "utilities.mobile": {
+        "utilities.mobile": 3
+      },
+      "utilities.water": {
+        "utilities.water": 6
+      }
+    },
+    "dataset": "generated test split (last 3 months) of P1-base, P2-base",
+    "holdout": {
+      "accuracy": null,
+      "dataset": "holdout_narrations@h-1",
+      "macro_f1": null,
+      "note": "UK hand-labelled holdout not built yet"
+    },
+    "per_class": {
+      "cash.withdrawal": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 2
+      },
+      "entertainment": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 7
+      },
+      "family_support_abroad": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 3
+      },
+      "food.delivery": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 55
+      },
+      "food.eating_out": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 102
+      },
+      "groceries": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 102
+      },
+      "health": {
+        "f1": 0.7143,
+        "precision": 0.5556,
+        "recall": 1.0,
+        "support": 5
+      },
+      "housing.council_tax": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 5
+      },
+      "housing.rent": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 6
+      },
+      "income.salary": {
+        "f1": 0.6,
+        "precision": 0.4286,
+        "recall": 1.0,
+        "support": 3
+      },
+      "income.self_employed": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 16
+      },
+      "personal_care": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 5
+      },
+      "refund": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 1
+      },
+      "savings_investment": {
+        "f1": 0.6667,
+        "precision": 0.5,
+        "recall": 1.0,
+        "support": 3
+      },
+      "shopping.clothing": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 12
+      },
+      "shopping.general": {
+        "f1": 0.9474,
+        "precision": 1.0,
+        "recall": 0.9,
+        "support": 50
+      },
+      "subscriptions.fitness": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 3
+      },
+      "subscriptions.software_cloud": {
+        "f1": 0.6667,
+        "precision": 1.0,
+        "recall": 0.5,
+        "support": 6
+      },
+      "subscriptions.streaming": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 18
+      },
+      "tax.self_assessment": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 1
+      },
+      "transfer.reimbursement": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 1
+      },
+      "transfer.untracked": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 3
+      },
+      "transport.public": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 54
+      },
+      "transport.taxi": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 11
+      },
+      "utilities.broadband_tv": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 9
+      },
+      "utilities.energy": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 6
+      },
+      "utilities.mobile": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 3
+      },
+      "utilities.water": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "support": 6
+      }
+    },
+    "top_errors": [
+      {
+        "count": 12,
+        "gold": "income.self_employed",
+        "pred": "inflow_unconfirmed"
+      },
+      {
+        "count": 4,
+        "gold": "shopping.general",
+        "pred": "health"
+      },
+      {
+        "count": 4,
+        "gold": "income.self_employed",
+        "pred": "income.salary"
+      },
+      {
+        "count": 3,
+        "gold": "subscriptions.software_cloud",
+        "pred": "uncategorised"
+      },
+      {
+        "count": 3,
+        "gold": "transfer.untracked",
+        "pred": "savings_investment"
+      },
+      {
+        "count": 1,
+        "gold": "refund",
+        "pred": "inflow_unconfirmed"
+      },
+      {
+        "count": 1,
+        "gold": "transfer.reimbursement",
+        "pred": "inflow_unconfirmed"
+      },
+      {
+        "count": 1,
+        "gold": "shopping.general",
+        "pred": "uncategorised"
+      }
+    ]
+  },
+  "name": "categorisation",
+  "notes": [
+    "Hybrid and LLM-only arms replay recorded Mesh responses (evals/cassettes); the holdout targets stay null until the UK hand-labelled holdout exists.",
+    "Majority-class baseline predicts 'groceries' (most frequent dev-split label)."
+  ],
+  "suite": "E-CAT",
+  "targets": [
+    {
+      "dataset": "P1, P2 test split",
+      "id": "CAT-hybrid-acc-generated",
+      "label": "Accuracy, hybrid (generated test split)",
+      "met": true,
+      "stage1": false,
+      "target": ">= 0.93",
+      "value": 0.9418
+    },
+    {
+      "dataset": "UK holdout",
+      "gated": false,
+      "id": "CAT-hybrid-acc",
+      "label": "Accuracy, hybrid (holdout)",
+      "met": null,
+      "not_gated_because": "the independent, hand-labelled UK holdout doesn't exist yet; hybrid accuracy is measured on the generated test split (CAT-hybrid-acc-generated)",
+      "not_gated_kind": "dataset_missing",
+      "stage1": false,
+      "target": ">= 0.85",
+      "value": null
+    },
+    {
+      "dataset": "UK holdout",
+      "gated": false,
+      "id": "CAT-hybrid-f1",
+      "label": "Macro-F1, hybrid (holdout)",
+      "met": null,
+      "not_gated_because": "the independent, hand-labelled UK holdout doesn't exist yet; hybrid accuracy is measured on the generated test split (CAT-hybrid-acc-generated)",
+      "not_gated_kind": "dataset_missing",
+      "stage1": false,
+      "target": ">= 0.8",
+      "value": null
+    },
+    {
+      "dataset": "UK holdout",
+      "gated": false,
+      "id": "CAT-hybrid-flow",
+      "label": "Flow-class accuracy, hybrid (holdout)",
+      "met": null,
+      "not_gated_because": "the independent, hand-labelled UK holdout doesn't exist yet; hybrid accuracy is measured on the generated test split (CAT-hybrid-acc-generated)",
+      "not_gated_kind": "dataset_missing",
+      "stage1": false,
+      "target": ">= 0.95",
+      "value": null
+    },
+    {
+      "dataset": "UK holdout",
+      "gated": false,
+      "id": "CAT-selective",
+      "label": "Selective accuracy@0.85 (holdout)",
+      "met": null,
+      "not_gated_because": "the independent, hand-labelled UK holdout doesn't exist yet; hybrid accuracy is measured on the generated test split (CAT-hybrid-acc-generated)",
+      "not_gated_kind": "dataset_missing",
+      "stage1": false,
+      "target": ">= 0.95",
+      "value": null
+    }
+  ]
+}

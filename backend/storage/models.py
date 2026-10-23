@@ -461,7 +461,7 @@ class AgentStep(Base):
     node: Mapped[str] = mapped_column(String(64))
     agent: Mapped[str] = mapped_column(String(16))  # coordinator|ledger|…|verifier|system
     kind: Mapped[str] = mapped_column(String(8))  # llm | tool | control
-    provider: Mapped[str | None] = mapped_column(String(8))  # mesh, LLM steps only
+    provider: Mapped[str | None] = mapped_column(String(8))  # mesh | openai, LLM steps only
     model: Mapped[str | None] = mapped_column(String(80))
     tier: Mapped[str | None] = mapped_column(String(12))
     prompt_version: Mapped[str | None] = mapped_column(String(24))

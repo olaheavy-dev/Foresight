@@ -1,7 +1,8 @@
 """Outbound-connection guard for eval runs (docs/05 §3.1 rule 2, docs/09 ORC-13).
 
-While installed, Python-level name lookups and socket connects are allowed only to the Mesh API,
-the Telegram Bot API, the configured SMTP host and loopback; anything else raises `EgressBlocked`.
+While installed, Python-level name lookups and socket connects are allowed only to the configured
+model provider (`MODEL_PROVIDER`: OpenAI, or Mesh until it is removed), the Telegram Bot API, the
+configured SMTP host and loopback; anything else raises `EgressBlocked`.
 PostgreSQL is reached through libpq (C), not Python sockets, so the database is unaffected, which
 matches the rule: the database is internal to the app network, not egress.
 """
@@ -13,10 +14,13 @@ import socket
 from collections.abc import Iterator
 from contextlib import contextmanager
 from typing import Any
+from urllib.parse import urlsplit
 
+from backend.mesh.mesh_client import PROVIDER_BASE_URLS
 from backend.settings import get_settings
 
-ALLOWED_HOSTS = frozenset({"api.meshapi.ai", "api.telegram.org"})
+# Services other than the model provider; the provider's host is added for MODEL_PROVIDER alone.
+ALLOWED_HOSTS = frozenset({"api.telegram.org"})
 
 
 class EgressBlocked(ConnectionError):
@@ -24,8 +28,11 @@ class EgressBlocked(ConnectionError):
 
 
 def allowed_hosts() -> frozenset[str]:
-    smtp = (getattr(get_settings(), "smtp_host", "") or "").strip().lower()
-    return ALLOWED_HOSTS | ({smtp} if smtp else set())
+    settings = get_settings()
+    smtp = (getattr(settings, "smtp_host", "") or "").strip().lower()
+    base = PROVIDER_BASE_URLS.get(settings.model_provider.strip().lower(), "")
+    provider = urlsplit(base).hostname or ""
+    return ALLOWED_HOSTS | {h for h in (smtp, provider) if h}
 
 
 def _is_loopback(host: str) -> bool:

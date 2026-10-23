@@ -101,13 +101,14 @@ class ScriptedCompletions:
 
 def settings(**overrides: Any) -> Settings:
     base: dict[str, Any] = {
+        "model_provider": "mesh",  # not the developer's .env: these fixtures name Mesh models
         "mesh_api_key": "rsk_test",
         "mesh_model_fast": "openai/gpt-6-luna",
         "mesh_model_fast_fallback": "anthropic/claude-haiku-5.5",
         "mesh_model_reasoning": "anthropic/claude-sonnet-5.5",
         "mesh_model_reasoning_fallback": "google/gemini-3.1-pro",
         "mesh_model_verifier": "openai/gpt-6.1-sol",
-        "mesh_model_verifier_fallback": "google/gemini-3.1-pro",
+        "mesh_model_verifier_fallback": "",  # never the Advisor's model (docs/06 §13)
         "mesh_daily_budget_usd": 0.0,  # the daily guard has its own tests (test_spend_guard.py)
     }
     base.update(overrides)

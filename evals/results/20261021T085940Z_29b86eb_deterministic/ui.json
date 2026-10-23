@@ -1,0 +1,3388 @@
+{
+  "duration_s": 24.66,
+  "error": null,
+  "metrics": {
+    "composition": {
+      "answered": 60,
+      "answers": [
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002656,
+              "latency_ms": 618,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.01839,
+              "latency_ms": 17847,
+              "model": "gpt-6-sol",
+              "tier": "reasoning"
+            },
+            {
+              "cost_usd": 0.003352,
+              "latency_ms": 5702,
+              "model": "gpt-6.1-sol",
+              "tier": "verifier"
+            },
+            {
+              "cost_usd": 0.00457,
+              "latency_ms": 8691,
+              "model": "gpt-6.1-sol",
+              "tier": "verifier"
+            }
+          ],
+          "case": "UIQ-001",
+          "cost_usd": 0.026578,
+          "degraded": false,
+          "e2e_ms": 28329,
+          "failed_steps": [],
+          "first_step_ms": 25,
+          "intent": "affordability",
+          "kind": "advice",
+          "model_calls": 4,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 618,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 17847,
+              "node": "advise",
+              "tier": "reasoning"
+            },
+            {
+              "llm_calls": 2,
+              "model_ms": 8691,
+              "node": "verify",
+              "tier": "verifier"
+            }
+          ],
+          "wall_ms": 1176
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002852,
+              "latency_ms": 413,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.01596,
+              "latency_ms": 15773,
+              "model": "gpt-6-sol",
+              "tier": "reasoning"
+            },
+            {
+              "cost_usd": 0.003392,
+              "latency_ms": 4274,
+              "model": "gpt-6.1-sol",
+              "tier": "verifier"
+            }
+          ],
+          "case": "UIQ-002",
+          "cost_usd": 0.019637,
+          "degraded": false,
+          "e2e_ms": 21580,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "affordability",
+          "kind": "advice",
+          "model_calls": 3,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 413,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 15773,
+              "node": "advise",
+              "tier": "reasoning"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 4274,
+              "node": "verify",
+              "tier": "verifier"
+            }
+          ],
+          "wall_ms": 1123
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0003252,
+              "latency_ms": 486,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.015842,
+              "latency_ms": 13991,
+              "model": "gpt-6-sol",
+              "tier": "reasoning"
+            }
+          ],
+          "case": "UIQ-003",
+          "cost_usd": 0.016167,
+          "degraded": false,
+          "e2e_ms": 15618,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "affordability",
+          "kind": "advice",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 486,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 13991,
+              "node": "advise",
+              "tier": "reasoning"
+            }
+          ],
+          "wall_ms": 1144
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002735,
+              "latency_ms": 500,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.014528,
+              "latency_ms": 14106,
+              "model": "gpt-6-sol",
+              "tier": "reasoning"
+            }
+          ],
+          "case": "UIQ-004",
+          "cost_usd": 0.014801,
+          "degraded": false,
+          "e2e_ms": 15721,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "affordability",
+          "kind": "advice",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 500,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 14106,
+              "node": "advise",
+              "tier": "reasoning"
+            }
+          ],
+          "wall_ms": 1118
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002786,
+              "latency_ms": 502,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0132,
+              "latency_ms": 11304,
+              "model": "gpt-6-sol",
+              "tier": "reasoning"
+            }
+          ],
+          "case": "UIQ-005",
+          "cost_usd": 0.013479,
+          "degraded": false,
+          "e2e_ms": 12948,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "affordability",
+          "kind": "advice",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 502,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 11304,
+              "node": "advise",
+              "tier": "reasoning"
+            }
+          ],
+          "wall_ms": 1145
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002547,
+              "latency_ms": 498,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0002631,
+              "latency_ms": 1543,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-006",
+          "cost_usd": 0.000518,
+          "degraded": false,
+          "e2e_ms": 2679,
+          "failed_steps": [],
+          "first_step_ms": 19,
+          "intent": "scenario",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 5,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 498,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 1543,
+              "node": "forecaster",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 643
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0003351,
+              "latency_ms": 1528,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.005788,
+              "latency_ms": 3767,
+              "model": "gpt-6-sol",
+              "tier": "reasoning"
+            }
+          ],
+          "case": "UIQ-007",
+          "cost_usd": 0.006123,
+          "degraded": false,
+          "e2e_ms": 6038,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "scenario",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 1528,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 3767,
+              "node": "forecaster",
+              "tier": "reasoning"
+            }
+          ],
+          "wall_ms": 746
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0003337,
+              "latency_ms": 502,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0004846,
+              "latency_ms": 1511,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-008",
+          "cost_usd": 0.000818,
+          "degraded": false,
+          "e2e_ms": 2696,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "scenario",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 502,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 1511,
+              "node": "forecaster",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 686
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002827,
+              "latency_ms": 1529,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-009",
+          "cost_usd": 0.000283,
+          "degraded": false,
+          "e2e_ms": 1561,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "scenario",
+          "kind": "simple",
+          "model_calls": 1,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 1529,
+              "node": "understand",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 35
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002453,
+              "latency_ms": 913,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001322,
+              "latency_ms": 2576,
+              "model": "gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-010",
+          "cost_usd": 0.000378,
+          "degraded": false,
+          "e2e_ms": 3590,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "spending_breakdown",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 913,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 2576,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 104
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002682,
+              "latency_ms": 439,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001076,
+              "latency_ms": 1999,
+              "model": "gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-011",
+          "cost_usd": 0.000376,
+          "degraded": false,
+          "e2e_ms": 2552,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "spending_breakdown",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 439,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 1999,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 117
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002626,
+              "latency_ms": 459,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.000165,
+              "latency_ms": 10626,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-012",
+          "cost_usd": 0.000428,
+          "degraded": false,
+          "e2e_ms": 11159,
+          "failed_steps": [],
+          "first_step_ms": 17,
+          "intent": "spending_breakdown",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 459,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 10626,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 77
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002535,
+              "latency_ms": 483,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.000133,
+              "latency_ms": 7144,
+              "model": "gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-013",
+          "cost_usd": 0.000387,
+          "degraded": false,
+          "e2e_ms": 7700,
+          "failed_steps": [],
+          "first_step_ms": 17,
+          "intent": "spending_breakdown",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 483,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 7144,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 76
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002625,
+              "latency_ms": 518,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001718,
+              "latency_ms": 3015,
+              "model": "gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-014",
+          "cost_usd": 0.000434,
+          "degraded": false,
+          "e2e_ms": 3642,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "trend_or_change",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 518,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 3015,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 112
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002524,
+              "latency_ms": 508,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001527,
+              "latency_ms": 2903,
+              "model": "gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-015",
+          "cost_usd": 0.000405,
+          "degraded": false,
+          "e2e_ms": 3485,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "trend_or_change",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 508,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 2903,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 77
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002884,
+              "latency_ms": 593,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001378,
+              "latency_ms": 2669,
+              "model": "gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-016",
+          "cost_usd": 0.000426,
+          "degraded": false,
+          "e2e_ms": 3336,
+          "failed_steps": [],
+          "first_step_ms": 17,
+          "intent": "trend_or_change",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 593,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 2669,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 77
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002609,
+              "latency_ms": 434,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001757,
+              "latency_ms": 4521,
+              "model": "gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-017",
+          "cost_usd": 0.000437,
+          "degraded": false,
+          "e2e_ms": 5064,
+          "failed_steps": [],
+          "first_step_ms": 17,
+          "intent": "trend_or_change",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 434,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 4521,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 112
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002673,
+              "latency_ms": 576,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001098,
+              "latency_ms": 1547,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-018",
+          "cost_usd": 0.000377,
+          "degraded": false,
+          "e2e_ms": 2202,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "transaction_lookup",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 576,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 1547,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 82
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002559,
+              "latency_ms": 452,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001153,
+              "latency_ms": 428,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-019",
+          "cost_usd": 0.000371,
+          "degraded": false,
+          "e2e_ms": 956,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "transaction_lookup",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 452,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 428,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 79
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002899,
+              "latency_ms": 441,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001354,
+              "latency_ms": 409,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-020",
+          "cost_usd": 0.000425,
+          "degraded": false,
+          "e2e_ms": 924,
+          "failed_steps": [],
+          "first_step_ms": 17,
+          "intent": "transaction_lookup",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 441,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 409,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 77
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002598,
+              "latency_ms": 508,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001228,
+              "latency_ms": 433,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-021",
+          "cost_usd": 0.000383,
+          "degraded": false,
+          "e2e_ms": 1055,
+          "failed_steps": [],
+          "first_step_ms": 17,
+          "intent": "transaction_lookup",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 508,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 433,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 117
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002459,
+              "latency_ms": 483,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001363,
+              "latency_ms": 7355,
+              "model": "gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-022",
+          "cost_usd": 0.000382,
+          "degraded": false,
+          "e2e_ms": 7912,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "subscription_review",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 483,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 7355,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 77
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002464,
+              "latency_ms": 523,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001353,
+              "latency_ms": 4029,
+              "model": "gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-023",
+          "cost_usd": 0.000382,
+          "degraded": false,
+          "e2e_ms": 4625,
+          "failed_steps": [],
+          "first_step_ms": 17,
+          "intent": "subscription_review",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 523,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 4029,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 76
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002523,
+              "latency_ms": 497,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001267,
+              "latency_ms": 2495,
+              "model": "gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-024",
+          "cost_usd": 0.000379,
+          "degraded": false,
+          "e2e_ms": 3101,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "subscription_review",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 497,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 2495,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 112
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002766,
+              "latency_ms": 506,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0002011,
+              "latency_ms": 423,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-025",
+          "cost_usd": 0.000478,
+          "degraded": false,
+          "e2e_ms": 1016,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "goal_status",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 506,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 423,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 90
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0004141,
+              "latency_ms": 498,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001491,
+              "latency_ms": 441,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-026",
+          "cost_usd": 0.000563,
+          "degraded": false,
+          "e2e_ms": 1064,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "goal_status",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 498,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 441,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 128
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0003038,
+              "latency_ms": 502,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-027",
+          "cost_usd": 0.000304,
+          "degraded": false,
+          "e2e_ms": 666,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "risk_check",
+          "kind": "simple",
+          "model_calls": 1,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 502,
+              "node": "understand",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 167
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002464,
+              "latency_ms": 498,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-028",
+          "cost_usd": 0.000246,
+          "degraded": false,
+          "e2e_ms": 655,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "risk_check",
+          "kind": "simple",
+          "model_calls": 1,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 498,
+              "node": "understand",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 160
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002547,
+              "latency_ms": 510,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-029",
+          "cost_usd": 0.000255,
+          "degraded": false,
+          "e2e_ms": 664,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "risk_check",
+          "kind": "simple",
+          "model_calls": 1,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 510,
+              "node": "understand",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 157
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002612,
+              "latency_ms": 501,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.013352,
+              "latency_ms": 11314,
+              "model": "gpt-6-sol",
+              "tier": "reasoning"
+            },
+            {
+              "cost_usd": 0.003164,
+              "latency_ms": 4374,
+              "model": "gpt-6.1-sol",
+              "tier": "verifier"
+            },
+            {
+              "cost_usd": 0.0003412,
+              "latency_ms": 6198,
+              "model": "gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-030",
+          "cost_usd": 0.017118,
+          "degraded": false,
+          "e2e_ms": 23662,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "advice_request",
+          "kind": "advice",
+          "model_calls": 4,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 501,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 11314,
+              "node": "advise",
+              "tier": "reasoning"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 4374,
+              "node": "verify",
+              "tier": "verifier"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 6198,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 1278
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0003965,
+              "latency_ms": 503,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.011938,
+              "latency_ms": 10066,
+              "model": "gpt-6-sol",
+              "tier": "reasoning"
+            },
+            {
+              "cost_usd": 0.0001732,
+              "latency_ms": 456,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-031",
+          "cost_usd": 0.012508,
+          "degraded": false,
+          "e2e_ms": 11796,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "advice_request",
+          "kind": "advice",
+          "model_calls": 3,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 503,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 10066,
+              "node": "advise",
+              "tier": "reasoning"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 456,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 774
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0003595,
+              "latency_ms": 429,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.01277,
+              "latency_ms": 10155,
+              "model": "gpt-6-sol",
+              "tier": "reasoning"
+            },
+            {
+              "cost_usd": 0.0001938,
+              "latency_ms": 443,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-032",
+          "cost_usd": 0.013323,
+          "degraded": false,
+          "e2e_ms": 11782,
+          "failed_steps": [],
+          "first_step_ms": 17,
+          "intent": "advice_request",
+          "kind": "advice",
+          "model_calls": 3,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 429,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 10155,
+              "node": "advise",
+              "tier": "reasoning"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 443,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 758
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002736,
+              "latency_ms": 422,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001983,
+              "latency_ms": 477,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-033",
+          "cost_usd": 0.000472,
+          "degraded": false,
+          "e2e_ms": 1002,
+          "failed_steps": [],
+          "first_step_ms": 17,
+          "intent": "explain_recommendation",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 422,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 477,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 106
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0003176,
+              "latency_ms": 555,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0002099,
+              "latency_ms": 402,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-034",
+          "cost_usd": 0.000527,
+          "degraded": false,
+          "e2e_ms": 1022,
+          "failed_steps": [],
+          "first_step_ms": 17,
+          "intent": "explain_recommendation",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 555,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 402,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 68
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002549,
+              "latency_ms": 413,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-035",
+          "cost_usd": 0.000255,
+          "degraded": false,
+          "e2e_ms": 444,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "explain_recommendation",
+          "kind": "simple",
+          "model_calls": 1,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 413,
+              "node": "understand",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 34
+        },
+        {
+          "calls": [],
+          "case": "UIQ-036",
+          "cost_usd": 0,
+          "degraded": false,
+          "e2e_ms": 35,
+          "failed_steps": [],
+          "first_step_ms": 21,
+          "intent": "smalltalk_or_out_of_scope",
+          "kind": "simple",
+          "model_calls": 0,
+          "overlap_ms": 0,
+          "steps": [],
+          "wall_ms": 35
+        },
+        {
+          "calls": [],
+          "case": "UIQ-037",
+          "cost_usd": 0,
+          "degraded": false,
+          "e2e_ms": 34,
+          "failed_steps": [],
+          "first_step_ms": 20,
+          "intent": "smalltalk_or_out_of_scope",
+          "kind": "simple",
+          "model_calls": 0,
+          "overlap_ms": 0,
+          "steps": [],
+          "wall_ms": 34
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002617,
+              "latency_ms": 439,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-038",
+          "cost_usd": 0.000262,
+          "degraded": false,
+          "e2e_ms": 470,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "clarify",
+          "kind": "simple",
+          "model_calls": 1,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 439,
+              "node": "understand",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 34
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0003257,
+              "latency_ms": 472,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-039",
+          "cost_usd": 0.000326,
+          "degraded": false,
+          "e2e_ms": 504,
+          "failed_steps": [],
+          "first_step_ms": 17,
+          "intent": "clarify",
+          "kind": "simple",
+          "model_calls": 1,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 472,
+              "node": "understand",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 35
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002597,
+              "latency_ms": 528,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIQ-040",
+          "cost_usd": 0.00026,
+          "degraded": false,
+          "e2e_ms": 560,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "clarify",
+          "kind": "simple",
+          "model_calls": 1,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 528,
+              "node": "understand",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 35
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.000292,
+              "latency_ms": 488,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.015094,
+              "latency_ms": 14267,
+              "model": "gpt-6-sol",
+              "tier": "reasoning"
+            }
+          ],
+          "case": "UIP-001",
+          "cost_usd": 0.015386,
+          "degraded": false,
+          "e2e_ms": 15916,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "affordability",
+          "kind": "advice",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 488,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 14267,
+              "node": "advise",
+              "tier": "reasoning"
+            }
+          ],
+          "wall_ms": 1164
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002767,
+              "latency_ms": 510,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.012872,
+              "latency_ms": 10917,
+              "model": "gpt-6-sol",
+              "tier": "reasoning"
+            }
+          ],
+          "case": "UIP-002",
+          "cost_usd": 0.013149,
+          "degraded": false,
+          "e2e_ms": 12535,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "affordability",
+          "kind": "advice",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 510,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 10917,
+              "node": "advise",
+              "tier": "reasoning"
+            }
+          ],
+          "wall_ms": 1111
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002723,
+              "latency_ms": 497,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.015802,
+              "latency_ms": 15313,
+              "model": "gpt-6-sol",
+              "tier": "reasoning"
+            },
+            {
+              "cost_usd": 0.00966,
+              "latency_ms": 5631,
+              "model": "gpt-6-sol",
+              "tier": "reasoning"
+            },
+            {
+              "cost_usd": 0.01194,
+              "latency_ms": 8330,
+              "model": "gpt-6-sol",
+              "tier": "reasoning"
+            },
+            {
+              "cost_usd": 0.014478,
+              "latency_ms": 13999,
+              "model": "gpt-6-sol",
+              "tier": "reasoning"
+            }
+          ],
+          "case": "UIP-003",
+          "cost_usd": 0.052152,
+          "degraded": false,
+          "e2e_ms": 45319,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "affordability",
+          "kind": "advice",
+          "model_calls": 5,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 497,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 2,
+              "model_ms": 20944,
+              "node": "advise",
+              "tier": "reasoning"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 8330,
+              "node": "advise",
+              "tier": "reasoning"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 13999,
+              "node": "advise",
+              "tier": "reasoning"
+            }
+          ],
+          "wall_ms": 1552
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002741,
+              "latency_ms": 501,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0002586,
+              "latency_ms": 1580,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIP-004",
+          "cost_usd": 0.000533,
+          "degraded": false,
+          "e2e_ms": 2774,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "scenario",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 501,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 1580,
+              "node": "forecaster",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 696
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002906,
+              "latency_ms": 502,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0002976,
+              "latency_ms": 450,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIP-005",
+          "cost_usd": 0.000588,
+          "degraded": false,
+          "e2e_ms": 1041,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "scenario",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 502,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 450,
+              "node": "forecaster",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 92
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002483,
+              "latency_ms": 502,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0002073,
+              "latency_ms": 4492,
+              "model": "gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIP-006",
+          "cost_usd": 0.000456,
+          "degraded": false,
+          "e2e_ms": 5068,
+          "failed_steps": [],
+          "first_step_ms": 17,
+          "intent": "spending_breakdown",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 502,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 4492,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 77
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0003149,
+              "latency_ms": 502,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001612,
+              "latency_ms": 3208,
+              "model": "gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIP-007",
+          "cost_usd": 0.000476,
+          "degraded": false,
+          "e2e_ms": 3823,
+          "failed_steps": [],
+          "first_step_ms": 17,
+          "intent": "trend_or_change",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 502,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 3208,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 116
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002574,
+              "latency_ms": 506,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001637,
+              "latency_ms": 3828,
+              "model": "gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIP-008",
+          "cost_usd": 0.000421,
+          "degraded": false,
+          "e2e_ms": 4410,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "trend_or_change",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 506,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 3828,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 79
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002542,
+              "latency_ms": 443,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001037,
+              "latency_ms": 471,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIP-009",
+          "cost_usd": 0.000358,
+          "degraded": false,
+          "e2e_ms": 989,
+          "failed_steps": [],
+          "first_step_ms": 17,
+          "intent": "transaction_lookup",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 443,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 471,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 78
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002463,
+              "latency_ms": 458,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001412,
+              "latency_ms": 2945,
+              "model": "gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIP-010",
+          "cost_usd": 0.000388,
+          "degraded": false,
+          "e2e_ms": 3515,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "subscription_review",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 458,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 2945,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 115
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002458,
+              "latency_ms": 500,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001537,
+              "latency_ms": 3573,
+              "model": "gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIP-011",
+          "cost_usd": 0.0004,
+          "degraded": false,
+          "e2e_ms": 4146,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "subscription_review",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 500,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 3573,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 76
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002655,
+              "latency_ms": 500,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIP-012",
+          "cost_usd": 0.000266,
+          "degraded": false,
+          "e2e_ms": 666,
+          "failed_steps": [],
+          "first_step_ms": 17,
+          "intent": "risk_check",
+          "kind": "simple",
+          "model_calls": 1,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 500,
+              "node": "understand",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 169
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002694,
+              "latency_ms": 603,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIP-013",
+          "cost_usd": 0.000269,
+          "degraded": false,
+          "e2e_ms": 761,
+          "failed_steps": [],
+          "first_step_ms": 17,
+          "intent": "risk_check",
+          "kind": "simple",
+          "model_calls": 1,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 603,
+              "node": "understand",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 161
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.000287,
+              "latency_ms": 502,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.01376,
+              "latency_ms": 12038,
+              "model": "gpt-6-sol",
+              "tier": "reasoning"
+            },
+            {
+              "cost_usd": 0.0001798,
+              "latency_ms": 1536,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIP-014",
+          "cost_usd": 0.014227,
+          "degraded": false,
+          "e2e_ms": 14842,
+          "failed_steps": [],
+          "first_step_ms": 17,
+          "intent": "advice_request",
+          "kind": "advice",
+          "model_calls": 3,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 502,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 12038,
+              "node": "advise",
+              "tier": "reasoning"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 1536,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 769
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002831,
+              "latency_ms": 501,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.01225,
+              "latency_ms": 10678,
+              "model": "gpt-6-sol",
+              "tier": "reasoning"
+            },
+            {
+              "cost_usd": 0.0001563,
+              "latency_ms": 405,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIP-015",
+          "cost_usd": 0.012689,
+          "degraded": false,
+          "e2e_ms": 12353,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "advice_request",
+          "kind": "advice",
+          "model_calls": 3,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 501,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 10678,
+              "node": "advise",
+              "tier": "reasoning"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 405,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 772
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0003318,
+              "latency_ms": 498,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.000267,
+              "latency_ms": 1497,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIP-016",
+          "cost_usd": 0.000599,
+          "degraded": false,
+          "e2e_ms": 2061,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "explain_recommendation",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 498,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 1497,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 69
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002733,
+              "latency_ms": 510,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.000164,
+              "latency_ms": 3495,
+              "model": "gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIP-017",
+          "cost_usd": 0.000437,
+          "degraded": false,
+          "e2e_ms": 4109,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "explain_recommendation",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 510,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 3495,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 107
+        },
+        {
+          "calls": [],
+          "case": "UIP-018",
+          "cost_usd": 0,
+          "degraded": false,
+          "e2e_ms": 33,
+          "failed_steps": [],
+          "first_step_ms": 20,
+          "intent": "smalltalk_or_out_of_scope",
+          "kind": "simple",
+          "model_calls": 0,
+          "overlap_ms": 0,
+          "steps": [],
+          "wall_ms": 33
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.000359,
+              "latency_ms": 505,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.000279,
+              "latency_ms": 2412,
+              "model": "gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIP-019",
+          "cost_usd": 0.000638,
+          "degraded": false,
+          "e2e_ms": 3589,
+          "failed_steps": [],
+          "first_step_ms": 17,
+          "intent": "scenario",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 505,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 2412,
+              "node": "forecaster",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 675
+        },
+        {
+          "calls": [
+            {
+              "cost_usd": 0.0002565,
+              "latency_ms": 497,
+              "model": "openai/gpt-6-luna",
+              "tier": "fast"
+            },
+            {
+              "cost_usd": 0.0001683,
+              "latency_ms": 3220,
+              "model": "gpt-6-luna",
+              "tier": "fast"
+            }
+          ],
+          "case": "UIP-020",
+          "cost_usd": 0.000425,
+          "degraded": false,
+          "e2e_ms": 3829,
+          "failed_steps": [],
+          "first_step_ms": 18,
+          "intent": "trend_or_change",
+          "kind": "simple",
+          "model_calls": 2,
+          "overlap_ms": 3,
+          "steps": [
+            {
+              "llm_calls": 1,
+              "model_ms": 497,
+              "node": "understand",
+              "tier": "fast"
+            },
+            {
+              "llm_calls": 1,
+              "model_ms": 3220,
+              "node": "compose",
+              "tier": "fast"
+            }
+          ],
+          "wall_ms": 115
+        }
+      ],
+      "detail": [
+        {
+          "case": "UIQ-001",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "ScenarioComparison"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIQ-002",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "ScenarioComparison"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIQ-003",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "ScenarioComparison"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIQ-004",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "ScenarioComparison"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIQ-005",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "ScenarioComparison"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIQ-006",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "ScenarioComparison"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIQ-007",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "ScenarioComparison"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIQ-008",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "ScenarioComparison"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIQ-009",
+          "got": [
+            "ClarifyingQuestion"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIQ-010",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ]
+        },
+        {
+          "case": "UIQ-011",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ]
+        },
+        {
+          "case": "UIQ-012",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ]
+        },
+        {
+          "case": "UIQ-013",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ]
+        },
+        {
+          "case": "UIQ-014",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ]
+        },
+        {
+          "case": "UIQ-015",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ]
+        },
+        {
+          "case": "UIQ-016",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart",
+            "TransactionTable"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ]
+        },
+        {
+          "case": "UIQ-017",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ]
+        },
+        {
+          "case": "UIQ-018",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "TransactionTable"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "TransactionTable"
+          ]
+        },
+        {
+          "case": "UIQ-019",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "TransactionTable"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "TransactionTable"
+          ]
+        },
+        {
+          "case": "UIQ-020",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "TransactionTable"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "TransactionTable"
+          ]
+        },
+        {
+          "case": "UIQ-021",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "TransactionTable"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "TransactionTable"
+          ]
+        },
+        {
+          "case": "UIQ-022",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart",
+            "TransactionTable"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "SpendingBreakdownChart",
+            "TransactionTable"
+          ]
+        },
+        {
+          "case": "UIQ-023",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart",
+            "TransactionTable"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "SpendingBreakdownChart",
+            "TransactionTable"
+          ]
+        },
+        {
+          "case": "UIQ-024",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart",
+            "TransactionTable"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart",
+            "TransactionTable"
+          ]
+        },
+        {
+          "case": "UIQ-025",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIQ-026",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIQ-027",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "RiskAssessment"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "RiskAssessment"
+          ]
+        },
+        {
+          "case": "UIQ-028",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "RiskAssessment"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "RiskAssessment"
+          ]
+        },
+        {
+          "case": "UIQ-029",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "RiskAssessment"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "RiskAssessment"
+          ]
+        },
+        {
+          "case": "UIQ-030",
+          "got": [
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "ScenarioComparison"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIQ-031",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIQ-032",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIQ-033",
+          "got": [
+            "EvidencePanel",
+            "FinancialMetricGroup",
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "EvidencePanel",
+            "FinancialMetricGroup",
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIQ-034",
+          "got": [
+            "EvidencePanel",
+            "FinancialMetricGroup",
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "EvidencePanel",
+            "FinancialMetricGroup",
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIQ-035",
+          "got": [
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "EvidencePanel",
+            "FinancialMetricGroup",
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIQ-036",
+          "got": [
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIQ-037",
+          "got": [
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIQ-038",
+          "got": [
+            "ClarifyingQuestion"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIQ-039",
+          "got": [
+            "ClarifyingQuestion"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIQ-040",
+          "got": [
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIP-001",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "ScenarioComparison"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIP-002",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "ScenarioComparison"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIP-003",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "ScenarioComparison"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIP-004",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "ScenarioComparison"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIP-005",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIP-006",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ]
+        },
+        {
+          "case": "UIP-007",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ]
+        },
+        {
+          "case": "UIP-008",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ]
+        },
+        {
+          "case": "UIP-009",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "TransactionTable"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "TransactionTable"
+          ]
+        },
+        {
+          "case": "UIP-010",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart",
+            "TransactionTable"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "SpendingBreakdownChart",
+            "TransactionTable"
+          ]
+        },
+        {
+          "case": "UIP-011",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart",
+            "TransactionTable"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "SpendingBreakdownChart",
+            "TransactionTable"
+          ]
+        },
+        {
+          "case": "UIP-012",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "RiskAssessment"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "RiskAssessment"
+          ]
+        },
+        {
+          "case": "UIP-013",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "RiskAssessment"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "RiskAssessment"
+          ]
+        },
+        {
+          "case": "UIP-014",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIP-015",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "InterventionCard",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIP-016",
+          "got": [
+            "EvidencePanel",
+            "FinancialMetricGroup",
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "EvidencePanel",
+            "FinancialMetricGroup",
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIP-017",
+          "got": [
+            "EvidencePanel",
+            "FinancialMetricGroup",
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "EvidencePanel",
+            "FinancialMetricGroup",
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIP-018",
+          "got": [
+            "Narrative"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "Narrative"
+          ]
+        },
+        {
+          "case": "UIP-019",
+          "got": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "ScenarioComparison"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "CashFlowForecastChart",
+            "FinancialMetricGroup",
+            "Narrative",
+            "ScenarioComparison"
+          ]
+        },
+        {
+          "case": "UIP-020",
+          "got": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ],
+          "skeleton_issues": [],
+          "want": [
+            "FinancialMetricGroup",
+            "Narrative",
+            "SpendingBreakdownChart"
+          ]
+        }
+      ],
+      "not_answered": 0,
+      "ui10_skeleton": 1.0,
+      "ui1_schema_valid": 1.0,
+      "ui2_block_precision": 0.9581,
+      "ui2_block_recall": 0.8512,
+      "ui7_overview_budget": 1.0,
+      "ui9_tab_placement": 1.0
+    },
+    "mode": "replay",
+    "ui8_intent": {
+      "accuracy": 0.9474,
+      "low_confidence_clarified": 1.0,
+      "macro_f1": 0.9493,
+      "not_recorded": 0,
+      "scored": 60
+    }
+  },
+  "name": "ui",
+  "notes": [
+    "replay mode; 0 Understand requests not recorded.",
+    "Composition scores depend on the specialist nodes present when they were recorded (compose's value catalogue follows their outputs); re-record after specialist changes."
+  ],
+  "suite": "E-UI",
+  "targets": [
+    {
+      "dataset": "60 questions",
+      "id": "UI-8",
+      "label": "Intent accuracy (Understand)",
+      "met": true,
+      "stage1": false,
+      "target": ">= 0.9",
+      "value": 0.9474
+    },
+    {
+      "dataset": "clarify rows",
+      "id": "UI-8b",
+      "label": "Low-confidence questions clarified",
+      "met": true,
+      "stage1": false,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "60 answers",
+      "id": "UI-1",
+      "label": "Schema validity",
+      "met": true,
+      "stage1": false,
+      "target": ">= 0.98",
+      "value": 1.0
+    },
+    {
+      "dataset": "60 answers",
+      "id": "UI-2",
+      "label": "Block-selection precision",
+      "met": true,
+      "stage1": false,
+      "target": ">= 0.85",
+      "value": 0.9581
+    },
+    {
+      "dataset": "60 answers",
+      "id": "UI-2b",
+      "label": "Block-selection recall",
+      "met": true,
+      "stage1": false,
+      "target": ">= 0.8",
+      "value": 0.8512
+    },
+    {
+      "dataset": "60 answers",
+      "id": "UI-7",
+      "label": "Overview budget respected",
+      "met": true,
+      "stage1": false,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "60 answers",
+      "id": "UI-9",
+      "label": "Tab placement",
+      "met": true,
+      "stage1": false,
+      "target": ">= 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "60 answers",
+      "id": "UI-10",
+      "label": "Answer skeleton followed",
+      "met": true,
+      "stage1": false,
+      "target": ">= 1.0",
+      "value": 1.0
+    }
+  ]
+}

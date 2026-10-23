@@ -36,7 +36,7 @@ features:
   # Stage 2 — agents and the checked-advice loop
   agents:
     stage: 2
-    title: Coordinator and five specialist agents (LangGraph, Mesh)
+    title: Coordinator and five specialist agents (LangGraph, OpenAI)
     enabled: true
     suites: [E-ORC]
   anomaly_detection:

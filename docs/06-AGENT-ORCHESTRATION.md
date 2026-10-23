@@ -617,7 +617,7 @@ The system **never** executes financial actions (no payments, no cancellations).
 | Mesh transport error / 5xx / timeout | ≤ 2 retries, exponential backoff (1s, 4s), then fallback model in the same tier, 1 attempt | Step error. Deterministic parts still returned (e.g. findings without LLM ranking use the deterministic salience score) |
 | Mesh 429 | Respect `Retry-After` up to 10s, then as above | Same |
 | Mesh outage (circuit breaker open, 05 §6.4) | none: nodes skip to the degraded path at once | Same as above, without waiting for timeouts |
-| Node timeout (`fast` 8 s, `reasoning` 25 s) or run deadline (75 s questions, 120 s ingestion) | timeout counts as a transport error; deadline: none | Withdraw unchecked drafts ("deadline"), compose deterministically from engine numbers with "No recommendation was checked in time", `partial=true` (05 §6.4) |
+| Node timeout (`fast` 8 s, its fallback 25 s; `reasoning` 25 s) or run deadline (75 s questions, 120 s ingestion) | timeout counts as a transport error; deadline: none | Withdraw unchecked drafts ("deadline"), compose deterministically from engine numbers with "No recommendation was checked in time", `partial=true` (05 §6.4) |
 | Prompt canary in output, or output screen failure (05 §7.4a) | none | Output dropped, step `failed`, `AuditEvent prompt_leak_blocked`; the block falls back to a deterministic template |
 | Schema-invalid LLM output | 1 repair retry (validation errors fed back), then degrade; two total attempts | Ledger rows → `uncategorised` + review; Advisor → no proposals ("couldn't generate advice"); plan → default block plan for the intent |
 | Verifier revision loop | max 2 revisions (3 rounds) | `WITHDRAW` |
@@ -709,7 +709,7 @@ Test: freeze the same accepted ledger interpretations, forecast inputs and typed
 | Analyst ranking & wording | reasoning | Judgement about salience; one call per refresh (questions reuse it, §6.1) | model default* |
 | Forecaster scenario parse | fast → reasoning if multi-modifier or low confidence | Most scenarios are simple | 0 |
 | Advisor | reasoning | Hardest judgement task | model default* |
-| Verifier judge | verifier tier: a different provider from the Advisor | Independence | 0 |
+| Verifier judge | verifier tier: a different model from the Advisor (until 20 Oct 2026, a different provider) | Independence | 0 |
 | Digest headline | fast | ≤ 20 words | 0.3 |
 
 Model IDs are configuration (settings `MESH_MODEL_<TIER>` and `MESH_MODEL_<TIER>_FALLBACK`); each model's capabilities and price are data in `backend/mesh/models.yaml` (or the file named by `MESH_MODELS_FILE`), so switching a model needs no code change. Chosen from Mesh's catalogue, probed live on 13 Oct 2026. The reasoning tier also serves the Analyst's ranking and the Forecaster's multi-modifier parse. **Selection rule** (docs/00 §8): drop any model that fails its tier's accuracy gates; drop any model that breaks the end-to-end latency targets; of what is left, pick the cheapest, and choose the faster one when costs are within 10%. Applied 13 Oct 2026 (owner decision; `evals/results/20261013T2200Z_advisor_model_trial/`, evals/CHANGELOG.md):
@@ -717,10 +717,12 @@ Model IDs are configuration (settings `MESH_MODEL_<TIER>` and `MESH_MODEL_<TIER>
 - **Reasoning tier stays on Claude Sonnet 5.5.** GPT-5.6 Luna Pro matched it on the Advisor's 18 dev cases at about 37% lower cost, then failed on whole answers: *accuracy*, the Analyst's ranking broke its output check even after the repair (explanations over the 240-character limit), so 21 of the 60 E-UI answers lost their Analyst step; *latency*, Advisor calls took 17–57 s, putting advice answers at about 44 s median and 62 s at worst (targets 35 s and 60 s). Gemini 3.8 Flash failed the Advisor schema.
 - **Verifier judge stays on GPT-6.1 Sol** (a different provider from the Advisor). Haiku 5.5 failed the E-VER accuracy gate as judge on the dev trial (52% repairs with json_schema; with tool calls, one correct fix withdrawn).
 
+- **20 Oct 2026, owner decision (`00` §12 item 14):** every tier moves to OpenAI, called directly. The judge must be a different model from the Advisor rather than a different provider; a same-family judge may share the Advisor's blind spots, so E-VER's flawed-proposal cases are the check that it still catches them. The models are picked by the selection rule above, on a trial using the remaining Mesh credit; applied 20–21 Oct 2026: GPT-6 Sol as Advisor won the dev-case trial (`evals/results/20261020T2030Z_openai_advisor_trial/`) and passed the whole-answer gates on re-recording (evals/CHANGELOG.md, `evalrun_20261021T085940Z_29b86eb`).
+
 | Tier | Primary | Fallback |
 |---|---|---|
-| fast | `openai/gpt-6-luna` | `anthropic/claude-haiku-5.5` |
-| reasoning | `anthropic/claude-sonnet-5.5` | `google/gemini-3.1-pro` |
-| verifier | `openai/gpt-6.1-sol` | `google/gemini-3.1-pro` |
+| fast | `openai/gpt-6-luna` | `openai/gpt-6-sol` |
+| reasoning | `openai/gpt-6-sol` | none (the only other Sol model is the judge's; an Advisor failure degrades to the deterministic answer) |
+| verifier | `openai/gpt-6.1-sol` | none (the only other Sol model is the Advisor's) |
 
 \* **Anthropic-tier temperatures are the model default.** Through Mesh, Anthropic models reject a `temperature` parameter and a forced `tool_choice`, so the client never sends either to them (`backend/mesh/models.yaml`); their structured output uses `json_schema`, or tool calls with `tool_choice: "auto"`. `google/gemini-3.1-pro` uses the tool-call path because its `json_schema` output didn't parse. Each `AgentStep` records the temperature actually sent, with `null` meaning "model default". The eval suite records which models produced each result, so swapping a model shows up as a measurable change.
