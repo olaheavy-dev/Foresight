@@ -13,7 +13,7 @@ from openai import APIConnectionError, APIStatusError, BadRequestError, RateLimi
 from backend.mesh.mesh_client import MeshClient
 from backend.settings import Settings
 
-URL = "https://api.meshapi.ai/v1/chat/completions"
+URL = "https://api.openai.com/v1/chat/completions"
 
 Step = Any  # a response namespace, an exception, or a callable(kwargs) -> either
 
@@ -60,17 +60,18 @@ def status_error(
     response = httpx.Response(
         status, request=httpx.Request("POST", URL), headers=headers or {}, json=body or {}
     )
-    return cls("mesh error", response=response, body=body)
+    return cls("provider error", response=response, body=body)
 
 
 def service_unavailable() -> APIStatusError:
-    """A transient Mesh 503 (retried with backoff, docs/06 §10.1)."""
+    """A transient 503 (retried with backoff, docs/06 §10.1)."""
     return status_error(APIStatusError, 503)
 
 
 def spend_limit() -> APIStatusError:
-    body = {"error": {"code": "spend_limit_exceeded", "message": "Insufficient balance."}}
-    return status_error(APIStatusError, 402, body)
+    """OpenAI's "no credit": a 429 with code insufficient_quota (not retried)."""
+    body = {"error": {"code": "insufficient_quota", "message": "You exceeded your current quota."}}
+    return status_error(RateLimitError, 429, body)
 
 
 def rate_limited(retry_after: str) -> APIStatusError:
@@ -101,12 +102,12 @@ class ScriptedCompletions:
 
 def settings(**overrides: Any) -> Settings:
     base: dict[str, Any] = {
-        "model_provider": "mesh",  # not the developer's .env: these fixtures name Mesh models
-        "mesh_api_key": "rsk_test",
+        "model_provider": "openai",  # explicit, not the developer's .env
+        "openai_api_key": "sk_test",
         "mesh_model_fast": "openai/gpt-6-luna",
-        "mesh_model_fast_fallback": "anthropic/claude-haiku-5.5",
-        "mesh_model_reasoning": "anthropic/claude-sonnet-5.5",
-        "mesh_model_reasoning_fallback": "google/gemini-3.1-pro",
+        "mesh_model_fast_fallback": "openai/gpt-6-sol",
+        "mesh_model_reasoning": "openai/gpt-6-sol",
+        "mesh_model_reasoning_fallback": "",
         "mesh_model_verifier": "openai/gpt-6.1-sol",
         "mesh_model_verifier_fallback": "",  # never the Advisor's model (docs/06 §13)
         "mesh_daily_budget_usd": 0.0,  # the daily guard has its own tests (test_spend_guard.py)

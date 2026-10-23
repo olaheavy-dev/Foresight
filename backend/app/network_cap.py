@@ -1,7 +1,7 @@
 """A daily allowance per network for guests' AI work (hardening, 16 Oct 2026).
 
 Per-profile limits (ask.py, proactive.py) reset when a visitor clears cookies and starts a new
-guest profile, so on their own they let one network spend the whole day's Mesh budget. Guests'
+guest profile, so on their own they let one network spend the whole day's model budget. Guests'
 questions and manual proactive checks are therefore also counted per network per UTC day.
 Signed-in Google accounts keep only the per-profile limits.
 

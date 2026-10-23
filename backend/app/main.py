@@ -76,7 +76,7 @@ def create_app() -> FastAPI:
             "status": "ok" if ready else "unavailable",
             "sha": settings.build_sha,
             "database": db_ok,
-            # A word only (ok | low | unavailable), never a balance figure.
+            # A word only (ok | unavailable), never a spend figure.
             "ai": ask.ai_status(ask.get_mesh()),
         }
 

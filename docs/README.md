@@ -19,7 +19,7 @@ Markets: **UK (primary demo, GBP) and India (second locale, INR, synthetic-valid
 | 08 | [Generative UI Contracts](08-GENERATIVE-UI-CONTRACTS.md) | AgentResponse envelope, 10 components + Narrative, the answer skeleton (§7a), hydration, snapshots |
 | 09 | [Evaluation Strategy](09-EVALUATION-STRATEGY.md) | Personas, holdout, suites, metrics, baselines, reproduction commands |
 | 10 | [Implementation Roadmap](10-IMPLEMENTATION-ROADMAP.md) | One-builder capacity, Stages 0–5 build order, critical path, tasks, acceptance criteria per stage, feature flags and what ships |
-| 11 | [Model Providers](11-MODEL-PROVIDERS.md) | After the hackathon: Mesh vs direct providers vs Azure AI Foundry, cost per answer, terms and residency (proposed, 16 Oct 2026) |
+| 11 | [Model Providers](11-MODEL-PROVIDERS.md) | After the hackathon: Mesh vs direct providers vs Azure AI Foundry, cost per answer, terms and residency (16 Oct 2026; superseded in part by all-OpenAI on 20 Oct, Mesh removed 23 Oct) |
 
 Other artifacts:
 - **Design brief, IA and UI build plan** — `.design/foresight/DESIGN_BRIEF.md`, `INFORMATION_ARCHITECTURE.md` (routes, nav, answer skeleton), `TASKS.md` (the frontend build plan, mapped to `10` WEB-*), `DESIGN_REVIEW.md`.

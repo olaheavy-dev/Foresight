@@ -46,7 +46,7 @@ Review every change against these rules. A finding names the rule, the file and 
 
 ### 3. Models: one gateway, recorded and costed
 
-- All application model calls go through `MeshClient` (`backend/mesh/mesh_client.py`), the only module that may import a model SDK or call a provider; `make imports` enforces this. The provider is `MODEL_PROVIDER` (`openai`; `mesh` until it is removed), each with a base URL fixed in code.
+- All application model calls go through `MeshClient` (`backend/mesh/mesh_client.py`), the only module that may import a model SDK or call a provider; `make imports` enforces this. The provider is OpenAI (`MODEL_PROVIDER=openai`, the only value accepted since Mesh was removed on 23 Oct 2026), with its base URL fixed in code. The module and the `MESH_*` settings keep their old names.
 - A new or changed prompt, schema or model invalidates recordings. The PR says which suites need re-recording and the estimated cost, and recording waits for an approved cap.
 - Report model cost and latency changes against the core metrics (E-EFF: cost, accuracy, latency).
 

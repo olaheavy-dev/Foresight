@@ -61,7 +61,7 @@ export default function PrivacyPage() {
         <p>
           Every figure you see is calculated by Foresight’s own engine, not by an AI model. When you ask a question,
           Foresight sends your question and summaries the engine has computed (such as category totals, forecast figures
-          and findings) to an AI model through the Mesh API gateway, under Mesh’s terms. It doesn’t send your raw
+          and findings) to an AI model from OpenAI, through OpenAI’s API and under its terms. It doesn’t send your raw
           transaction list or account numbers, and account numbers and payment references are masked before any text
           leaves the app.
         </p>

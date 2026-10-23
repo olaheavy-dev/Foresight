@@ -7,7 +7,7 @@ What goes to the model, and what never does (docs/05 §7.3, §7.4a):
   confirmation (docs/06 H8): a model never decides that money is income;
 - the cleaned narration (`normalised`: references, long numbers and card fragments already
   stripped), passed through `prepare_for_model` (quarantined, length-capped) and then
-  `backend.mesh.redact` inside the Mesh client;
+  `backend.mesh.redact` inside the model client;
 - an amount *band*, the direction, the weekday and the payment type. Never the exact amount, the
   balance, the account, the date or the raw description;
 - rows flagged `suspicious_text` at import are not sent at all: they keep their rule result and
@@ -167,7 +167,7 @@ def messages_for(
     locale_pack: str = "uk",
 ) -> list[dict[str, str]]:
     # Rows are redacted here, before serialising, so person names in transfer narrations become
-    # PERSON_n consistently across the batch; the Mesh client redacts the text again in transit.
+    # PERSON_n consistently across the batch; the model client redacts the text again in transit.
     safe_rows = redact({"rows": [r.payload for r in rows]}, locale_pack=locale_pack)["rows"]
     payload = {
         "categories": [

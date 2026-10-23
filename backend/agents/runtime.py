@@ -6,10 +6,10 @@ node that:
 - skips it when the run deadline has passed (the run becomes `partial`);
 - refuses model work once the run budget is used (docs/01 FR-60), with an audit event;
 - writes exactly one `AgentStep` for it: timing, model wait (`model_ms`), status, model, tokens,
-  cost (Mesh `usage` × the price table, never model text), temperature sent ("model default" =
+  cost (provider `usage` × the price table, never model text), temperature sent ("model default" =
   None), templated label;
-- turns a Mesh failure into a recorded, degraded step (docs/06 §10.1), while any other exception
-  fails the run loudly: no fabricated fallback numbers.
+- turns a model-call failure into a recorded, degraded step (docs/06 §10.1), while any other
+  exception fails the run loudly: no fabricated fallback numbers.
 """
 
 from __future__ import annotations

@@ -37,7 +37,7 @@ Three rules make this trustworthy:
 - **Pydantic v2 models** in `backend/app/ui_contracts/` are the source of truth (discriminated union on `type`).
 - `make contracts` exports JSON Schema (`model_json_schema()`) → `frontend/src/ui-contracts/schema.json` → TypeScript types (`json-schema-to-typescript`) and Zod validators (`json-schema-to-zod`).
 - CI fails if generated files are out of date (`git diff --exit-code` after regeneration).
-- The **plan schema** (LLM-facing) is a separate, smaller set of Pydantic models; its JSON Schema is passed to the model as the structured-output / tool schema through Mesh (OpenAI-compatible `response_format: json_schema` where the selected model supports it; otherwise tool-call arguments; otherwise JSON mode + validation).
+- The **plan schema** (LLM-facing) is a separate, smaller set of Pydantic models; its JSON Schema is passed to the model as the structured-output / tool schema through `mesh_client` (OpenAI `response_format: json_schema` where the selected model supports it; otherwise tool-call arguments; otherwise JSON mode + validation).
 
 ---
 
@@ -474,7 +474,7 @@ hydrate(plan, workspace_ctx):
 | Plan JSON invalid after 1 repair | Deterministic template for the classified intent (e.g. affordability → ScenarioComparison + CashFlowForecastChart from the Forecaster's outputs, Narrative from fixed template) | Full answer, `status: degraded`, small "simplified view" note |
 | Single block invalid / ref missing | Drop block; insert `Narrative` "I couldn't show the {block label}; the figures are in the evidence." | Rest of answer |
 | Hydrator exception | Same as invalid block; error logged with `run_id` | Rest of answer |
-| Mesh unavailable | Coordinator skips LLM composition entirely → template response; ingestion falls back to rules + memory categorisation with `needs_review` flags | Banner "AI explanations unavailable; numbers are unaffected" |
+| Model provider unavailable | Coordinator skips LLM composition entirely → template response; ingestion falls back to rules + memory categorisation with `needs_review` flags | Banner "AI explanations unavailable; numbers are unaffected" |
 | Client-side Zod failure | `BlockError` component | Error tile with Evidence link |
 
 Because numbers never depend on the LLM, every fallback still shows correct figures.

@@ -37,7 +37,7 @@ jobs:
         run: ruff check . && ruff format --check .
       - name: Types
         run: mypy
-      - name: Mesh-only and module-boundary contracts
+      - name: One-gateway and module-boundary contracts
         run: lint-imports
       - name: Unit and integration tests (PostgreSQL)
         run: python -m pytest

@@ -7061,7 +7061,7 @@
     },
     "RunCost": {
       "additionalProperties": false,
-      "description": "Sums of the run's AgentStep usage (docs/08 §5.10, docs/00 §7). Shown only in How it was\nchecked; `usd_estimate` = Mesh-reported tokens × catalogue price, labelled estimated.",
+      "description": "Sums of the run's AgentStep usage (docs/08 §5.10, docs/00 §7). Shown only in How it was\nchecked; `usd_estimate` = provider-reported tokens × catalogue price, labelled estimated.",
       "properties": {
         "cached": {
           "title": "Cached",

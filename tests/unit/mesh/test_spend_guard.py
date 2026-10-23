@@ -68,10 +68,7 @@ def test_used_budget_makes_ai_unavailable_and_refuses_live_calls() -> None:
     store, day, now = Store(), [date(2026, 10, 14)], [0.0]
     store.by_day[day[0]] = 0.50
     guard = make(store, day, now)
-    availability = AiAvailability(
-        lambda: None, lambda: False, low_usd=2.0, worst_case_usd=0.3,
-        budget_used=guard.exhausted,
-    )  # fmt: skip
+    availability = AiAvailability(lambda: False, budget_used=guard.exhausted)
     assert availability.status() == "unavailable"
 
     calls = ScriptedCompletions(ok())

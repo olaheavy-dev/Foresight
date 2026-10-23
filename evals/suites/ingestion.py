@@ -1,7 +1,7 @@
 """E-ING: the generic `csv_statement` importer (docs/09 §4.1). Deterministic arms only.
 
 C1–C4 run heuristic-only (low by design) and with the Ledger Agent's proposed FormatProfile
-(§4.1.3 `heuristic+llm`), replayed from recorded Mesh responses: a proposal counts as a success
+(§4.1.3 `heuristic+llm`), replayed from recorded model responses: a proposal counts as a success
 only if the file then parses with row precision and recall 1.000; the confirmed profile is then
 reused by signature with no model call. Every `pdf_statement` row is Tier 2 and stays null.
 """
@@ -104,7 +104,7 @@ def _unseen_with_llm(names: list[str]) -> dict[str, Any]:
                         "success": None,
                         "llm_calls_per_file": None,
                         "reuse_rate": None,
-                        "note": f"not measured: no recorded Mesh response ({type(exc).__name__}); "
+                        "note": f"not measured: no recorded model response ({type(exc).__name__}); "
                         "re-record with MESH_CASSETTE_MODE=record",
                     }
                 calls += len(proposal.calls)
@@ -429,7 +429,7 @@ def run(fast: bool = False) -> dict[str, Any]:
     ]
     notes = [
         "C1–C4 also run heuristic+llm: the Ledger Agent's proposed FormatProfile, replayed from "
-        "recorded Mesh responses, with the user's confirmation simulated (§4.1.3).",
+        "recorded model responses, with the user's confirmation simulated (§4.1.3).",
         "CSV-CORRUPT files that raise a blocking question are re-imported with the locale default "
         "answer, as a user accepting the pre-selected option would.",
         "Truth row match = equal date and signed amount to the penny (multiset).",

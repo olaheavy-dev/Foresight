@@ -33,7 +33,7 @@ strict = true
 testpaths = ["tests"]
 markers = ["postgres: needs a reachable PostgreSQL (DATABASE_URL)"]
 
-# Mesh-only rule (docs/05 §3.1): no AI SDK may be imported outside backend.mesh.
+# One-gateway rule (docs/05 §3.1): no AI SDK may be imported outside backend.mesh.
 [tool.importlinter]
 root_packages = ["backend", "tools"]
 include_external_packages = true

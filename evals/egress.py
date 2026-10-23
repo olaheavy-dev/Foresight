@@ -1,7 +1,7 @@
 """Outbound-connection guard for eval runs (docs/05 §3.1 rule 2, docs/09 ORC-13).
 
 While installed, Python-level name lookups and socket connects are allowed only to the configured
-model provider (`MODEL_PROVIDER`: OpenAI, or Mesh until it is removed), the Telegram Bot API, the
+model provider (`MODEL_PROVIDER`, OpenAI), the Telegram Bot API, the
 configured SMTP host and loopback; anything else raises `EgressBlocked`.
 PostgreSQL is reached through libpq (C), not Python sockets, so the database is unaffected, which
 matches the rule: the database is internal to the app network, not egress.

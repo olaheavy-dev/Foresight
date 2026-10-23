@@ -24,7 +24,7 @@ const TRIGGER: Record<string, string> = {
 };
 
 const seconds = (ms: number | null | undefined) => (ms == null ? "—" : `${(ms / 1000).toFixed(ms < 10_000 ? 1 : 0)} s`);
-// Estimated: Mesh-reported usage × catalogue prices, not a bill (docs/00 §7, owner decision 13 Oct).
+// Estimated: provider-reported usage × catalogue prices, not a bill (docs/00 §7, owner decision 13 Oct).
 const dollars = (usd: number | null | undefined) =>
   usd == null ? "—" : `about $${usd < 0.01 ? usd.toFixed(4) : usd.toFixed(3)}`;
 const when = (iso: string, locale: string, timeZone: string) =>
@@ -114,8 +114,7 @@ function Run({ run, locale, timeZone }: { run: ActivityRun; locale: string; time
           </table>
         </div>
         <p className="act-note">
-          {run.llm_calls} model call{run.llm_calls === 1 ? "" : "s"} through Mesh · {run.tokens_in} tokens in,{" "}
-          {run.tokens_out} out
+          {run.llm_calls} model call{run.llm_calls === 1 ? "" : "s"} · {run.tokens_in} tokens in, {run.tokens_out} out
           {run.revisions ? ` · revised ${run.revisions === 1 ? "once" : `${run.revisions} times`} before showing` : ""}.
         </p>
       </details>

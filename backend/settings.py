@@ -22,12 +22,11 @@ class Settings(BaseSettings):
     # A blank value in .env (e.g. `MESH_MODEL_FAST=`) means "use the default", never "".
     model_config = SettingsConfigDict(env_file=".env", extra="ignore", env_ignore_empty=True)
 
-    mesh_api_key: str = ""
-    # Where model calls go: "openai" (OpenAI directly; owner decision 20 Oct 2026, docs/00 §12 item
-    # 14) or "mesh" (the old gateway, until it is removed). The default is openai, so an env without
-    # MODEL_PROVIDER never stays on Mesh. Model IDs keep their provider prefix either way, so
-    # recordings replay unchanged; under "openai" every tier's primary must be an `openai/` model
-    # (start-up refuses a stale override) and other providers' fallbacks are skipped.
+    # Where model calls go: OpenAI directly (owner decision 20 Oct 2026, docs/00 §12 item 14; the
+    # Mesh gateway was removed on 23 Oct). Any other value, such as a stale "mesh", fails at
+    # start-up. Model IDs keep their `openai/` prefix, so recordings replay unchanged; every tier's
+    # primary must be an `openai/` model (start-up refuses a stale override) and other providers'
+    # fallbacks are skipped. The MESH_* setting names are kept: they are the deployment's env.
     model_provider: str = "openai"
     openai_api_key: str = ""
     # Model IDs per tier (docs/06 §13). Owner decision 20 Oct 2026 (docs/00 §12 item 14): every tier
@@ -47,14 +46,10 @@ class Settings(BaseSettings):
     mesh_timeout_fast_seconds: float = 8.0
     mesh_timeout_reasoning_seconds: float = 25.0
     mesh_max_retries: int = 2
-    # live: call Mesh · record: call Mesh and save each exchange · replay: answer only from saved
+    # live: call the model · record: call it and save each exchange · replay: answer only from saved
     # exchanges (no key, no network); a request that was never recorded raises CassetteMiss.
     mesh_cassette_mode: str = "live"
     mesh_cassette_dir: str = "evals/cassettes"
-    # AI availability (backend/mesh/availability.py): below the first, status is `low`; at or
-    # below the per-question worst case, AI answers pause. Figures never reach users or logs.
-    mesh_low_balance_usd: float = 2.00
-    mesh_question_worst_case_usd: float = 0.30
     # Project-wide cap on model spend per UTC day (backend/mesh/spend_guard.py); 0 disables it.
     mesh_daily_budget_usd: float = 0.50
     # Guests' AI work per network per UTC day (backend/app/network_cap.py); 0 disables a cap.

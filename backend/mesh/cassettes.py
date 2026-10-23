@@ -1,4 +1,4 @@
-"""Record and replay of Mesh exchanges (docs/09 §16, docs/10 AGT-09).
+"""Record and replay of model exchanges (docs/09 §16, docs/10 AGT-09).
 
 A cassette entry is one JSON file named after the request hash, so evals and CI can run every LLM
 suite with no key and no network. The hash covers exactly what was sent (tier, primary model,
@@ -110,7 +110,7 @@ class CassetteStore:
         path = self._path(key)
         if not path.exists():
             raise CassetteMiss(
-                f"no recorded Mesh response for request {key[:12]} "
+                f"no recorded model response for request {key[:12]} "
                 f"(tier={request.get('tier')}, model={request.get('model')}); "
                 "re-record with MESH_CASSETTE_MODE=record"
             )

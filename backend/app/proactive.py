@@ -11,7 +11,7 @@ after a short quiet period:
   recorded as skipped with the reason, and Home says advice is paused.
 
 Spend stays bounded: at most RUNS_PER_DAY event runs per profile (1 for a demo copy, started
-only by its "Run the proactive check" button), inside the Mesh client's own daily cap.
+only by its "Run the proactive check" button), inside the model client's own daily cap.
 """
 
 from __future__ import annotations

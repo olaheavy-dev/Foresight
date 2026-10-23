@@ -1,6 +1,7 @@
 # 02 — Hackathon Requirements Traceability Matrix
 
 > Source of truth for requirements: the official Agent Arena 2026 page (FinPilot track), as summarised in [`00`](00-DECISION-REGISTER.md) §2 (register rev 4).
+> **Status, 23 Oct 2026: a record.** Foresight left the hackathon (20 Oct 2026), so requirement H (every call through Mesh) no longer applies: model calls go to OpenAI directly (`00` §12 item 14) and the Mesh route was removed on 23 Oct. The rows below are kept as they were written.
 > Feature (`F-xx`) and functional requirement (`FR-xx`) IDs refer to [`01`](01-PRODUCT-REQUIREMENTS.md).
 > "How a judge sees it" names the concrete artefact: a repo path, a screen, an eval output or a log/DB record. Paths follow the proposed layout (`00` §11) and are build targets, not existing files.
 > **Judge path = single account.** Every mandatory requirement is demonstrable from one P1 Monzo CSV. The multi-account and PDF layers (Stage 4, flag-gated) strengthen B, C and #5 when they ship; the private real-data check (PRV-06) is time-boxed and non-blocking. The public judge path remains single-account CSV. Rev 4 adds **any-currency** handling (Tier 1) and an **India locale pack** with persona P4 (T2, synthetic-validated only); both strengthen B, D, #5 and #6 without changing the judge path.

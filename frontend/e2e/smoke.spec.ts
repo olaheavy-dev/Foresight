@@ -83,7 +83,7 @@ test("Home shows the demo's findings, and each links to its transactions (R2)", 
   await openDemo(page);
   const insights = page.getByRole("region", { name: "Proactive insights" });
   await expect(insights).toBeVisible();
-  // The local and CI stacks have no Mesh key: findings show, advice says why it isn't there.
+  // The local and CI stacks have no OpenAI key: findings show, advice says why it isn't there.
   await expect(insights).toContainText("come straight from the demo’s data");
   const findings = insights.getByRole("list", { name: "Findings" }).getByRole("listitem");
   await expect(findings.first()).toBeVisible();

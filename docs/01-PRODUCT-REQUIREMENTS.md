@@ -191,7 +191,7 @@ There are exactly **two generic importers**, `csv_statement` and `pdf_statement`
 | F-59 | Hand-labelled holdout set (300–500 txns, not generator-produced) | M |
 | F-60 | Eval runner `python -m evals.run --suite all` → `evals/results/*.json` and a markdown report | M |
 | F-61 | Baselines: rules-only and LLM-only categorisation; naive forecasts | M |
-| F-62 | Single LLM gateway `mesh/mesh_client.py` and a CI-passing Mesh configuration | M |
+| F-62 | Single LLM gateway `mesh/mesh_client.py` (OpenAI; a CI-passing Mesh configuration until 23 Oct 2026) | M |
 | F-63 | One-command local run (`docker compose up` / `make demo`: PostgreSQL + backend + frontend) with demo data | M |
 | F-73 | **Feature flags + generated release notes**: one `features.yaml`; each flag linked to the eval suites that must be green before it can be switched on; the README's "Built / Not shipped (planned)" sections and the UI's visible surfaces are generated from it (rev 5) | M |
 | F-74 | **Continuous deployment from day one** on the owner's VPS (Docker Compose: frontend, backend, PostgreSQL; Caddy TLS; GHCR images published only on green CI; Watchtower rollout): demo workspaces seeded from the generator on every deploy; no real data on the host; deploy SHA shown in the app footer and README (rev 5) | M |
@@ -336,7 +336,7 @@ Each FR is testable. The test type is noted: **U** = unit, **I** = integration, 
 
 ### 7.8 Orchestration and conversation (FR-56 – FR-63, FR-88 – FR-91)
 - **FR-56** The Coordinator is a LangGraph `StateGraph` with named nodes per agent. System events route by a fixed table. User questions route by LLM intent classification into the `IntentClassification.intent` enum in `06` §4.0 (mapped to response presentation intents by `08` §4.1). *(U, I)*
-- **FR-57** Every LLM call goes through `mesh/mesh_client.py` (base URL `https://api.meshapi.ai/v1`, key from `MESH_API_KEY`). No other module imports an LLM SDK (enforced by a test). *(U, CI)*
+- **FR-57** Every LLM call goes through `mesh/mesh_client.py` (base URL `https://api.openai.com/v1`, key from `OPENAI_API_KEY`; Mesh until 23 Oct 2026). No other module imports an LLM SDK (enforced by a test). *(U, CI)*
 - **FR-58** Each agent node writes an `AgentStep` (agent, model, prompt version, input hash, output, tokens, latency, cost estimate, status). Each request writes a `run_`. *(I)*
 - **FR-59** Retries: a schema-invalid LLM output gets 1 repair retry with the validation error. A transport error gets 2 retries with backoff. After that the node degrades (categorisation → rules-only + `uncategorised`; layout proposal → mapping confirm shown to the user; narrative → template). *(U)*
 - **FR-60** Per-run budget (default ≤ 12 LLM calls, ≤ 60k tokens). Exceeding it stops gracefully with a partial response that says so. *(U)*
@@ -391,7 +391,7 @@ Each FR is testable. The test type is noted: **U** = unit, **I** = integration, 
 | NFR-04 | Latency | Single-file onboarding (12 months, ~1,000 txns, CSV) from drop to Home < 60 s, incl. LLM categorisation of the unresolved remainder. A PDF statement (≤ 10 pages, known layout) parses in < 5 s; an unknown layout adds one LLM call. |
 | NFR-05 | Reproducibility | Same inputs + seed + engine version → identical forecast/simulation JSON (hash compared in tests). The eval runner pins seeds and records model IDs and prompt versions. |
 | NFR-06 | Reproducibility | A fresh clone reaches a running demo with `make demo` (or `docker compose up`: PostgreSQL 16 + backend + frontend, migrations and demo seeding automatic) plus a `.env` holding `MESH_API_KEY` in ≤ 10 minutes. Requires Docker; the same PostgreSQL engine runs in CI and in the deployed app. Evals run with `python -m evals.run --suite all`; deterministic suites (forecast, simulation, detectors, importers with built-in profiles, reconciliation) need no key. |
-| NFR-07 | Cost | Per-run budget enforced (FR-60). Targets ≤ US$0.02 per AI Workspace turn and ≤ US$0.05 per 1,000-txn ingestion. Actual cost is measured from Mesh usage and recorded in `AgentStep`, not assumed. |
+| NFR-07 | Cost | Per-run budget enforced (FR-60). Targets ≤ US$0.02 per AI Workspace turn and ≤ US$0.05 per 1,000-txn ingestion. Actual cost is measured from provider usage and recorded in `AgentStep`, not assumed. |
 | NFR-08 | Reliability | No agent failure blocks deterministic output. If every LLM call fails, the user still sees the forecast, findings (template text) and ledger. |
 | NFR-09 | Accessibility | WCAG 2.2 AA: text contrast ≥ 4.5:1 (using the measured token amendments in `00` §9); series distinguished by line style and label as well as colour; full keyboard navigation; every chart has a data-table alternative; `prefers-reduced-motion` respected; tabular figures. |
 | NFR-10 | Responsiveness | Usable from 360 px to 1,920 px. The Evidence drawer becomes a bottom sheet on mobile. |
@@ -404,7 +404,7 @@ Each FR is testable. The test type is noted: **U** = unit, **I** = integration, 
 
 | ID | Requirement |
 |---|---|
-| TSP-01 | Secrets only from the environment (`MESH_API_KEY`, `TELEGRAM_BOT_TOKEN`, `SMTP_*`, `SESSION_SECRET`). `.env` is gitignored; `.env.example` is committed. |
+| TSP-01 | Secrets only from the environment (`OPENAI_API_KEY`, `TELEGRAM_BOT_TOKEN`, `SMTP_*`, `SESSION_SECRET`). `.env` is gitignored; `.env.example` is committed. |
 | TSP-02 | Data minimisation to the LLM: categorisation sends only the normalised description, an amount bucket, direction and payment type. Account numbers, sort codes, card numbers and payment references are masked before any Mesh call. |
 | TSP-03 | No raw transaction table goes to the LLM for advice: Advisor/Verifier get findings and calculations plus ≤ 20 masked supporting transactions. PDF layout proposals get only a redacted header and ≤ 5 redacted sample rows (amounts replaced by placeholders). |
 | TSP-04 | Workspace isolation: all workspace-owned rows carry `workspace_id`; system categories, ISO currency data and built-in format/layout profiles are read-only reference-data exceptions; repository enforcement (FR-73); a signed session cookie binds the session to its user and the selected workspace. Production: a `User` (managed auth) owns ≥ 1 workspace, enforced by Postgres row-level security. |
@@ -415,7 +415,7 @@ Each FR is testable. The test type is noted: **U** = unit, **I** = integration, 
 | TSP-09 | Prompt-injection defence (FR-91, `05` §7.4a): descriptions, headers, filenames and PDF text are data inside masked, length-capped JSON fields; rows with instruction-like text never reach a model verbatim; LLM output is schema-validated and screened (prompt canary, URL allow-list, no model-authored numbers); statement text can never change routing or tool selection. |
 | TSP-10 | User control: mute a finding type, delete an import, undo a counterparty merge, export or delete all data, pause the digest. |
 | TSP-11 | **Minimal personal data:** net take-home income only. Foresight never asks for gross salary, National Insurance number, date of birth, bank login credentials or one-time passcodes. Employer names in descriptions are used only to detect the income stream. The full list of what is collected is the basic-info table in `00` §6a, and onboarding asks nothing beyond it. |
-| TSP-12 | **Joint-account privacy:** partner consent before a joint import; joint spending never attributed to an individual; partner and counterparty names masked before any Mesh call. |
+| TSP-12 | **Joint-account privacy:** partner consent before a joint import; joint spending never attributed to an individual; partner and counterparty names masked before any model call. |
 | TSP-13 | **Sensitive categories:** betting insights are off by default and neutral when enabled; family support abroad is never framed as waste. Both are verifier-enforced. |
 | TSP-15 | **Never collected, any locale:** Aadhaar, PAN, National Insurance number, date of birth, bank or UPI credentials, UPI PINs, statement passwords (used in memory only). UPI IDs and VPAs are redacted before any Mesh call. |
 | TSP-14 | **Owner data:** no real person, account or figure from the product owner's statements appears in the repository, fixtures, prompts or evals (`00` §4). Private validation results are reported only as allowlisted aggregate counts and error metrics (09 §17), never individual amounts or rows. |
@@ -424,12 +424,12 @@ Each FR is testable. The test type is noted: **U** = unit, **I** = integration, 
 
 1. Synthetic data is acceptable for judging (confirmed on the official page).
 2. UK banks offer CSV export (Monzo, Revolut, Starling and most card providers) or text-based PDF statements. Scanned statements are rare enough to defer.
-3. Mesh exposes at least one fast/cheap and one stronger chat model with structured-output support through the OpenAI-compatible API. Exact model IDs are an open decision (`00` §12.1).
+3. The model provider (Mesh until 23 Oct 2026, now OpenAI) offers at least one fast/cheap and one stronger chat model with structured-output support. The model IDs in use are in `06` §13.
 4. A 90-day horizon suits salary-cycle decisions. Extended scenarios and goal dates use the same calendar + Monte Carlo model and are labelled lower-confidence beyond 90 days.
 5. A single local user with a profile switcher satisfies the user-level data isolation intent for the hackathon.
 6. Most users will start with one main account. The multi-account layer is validated on P3 and stress variants.
 7. Bank data cannot identify who spent from a joint account; Foresight doesn't try.
-8. Judges run evals with their own `MESH_API_KEY`; deterministic suites also run without one.
+8. Every eval runs from recorded responses with no key; a live run needs an `OPENAI_API_KEY`.
 9. Indian banks commonly export XLS/CSV or password-protected text PDFs. **We have no real Indian samples**; India formats in the generator are our best reconstruction and are labelled as such.
 10. Users rarely need cross-currency totals for cash-flow decisions; per-currency forecasts are sufficient for v1.
 
@@ -441,7 +441,7 @@ Each FR is testable. The test type is noted: **U** = unit, **I** = integration, 
 | R-02 | Generative UI renderer eats the schedule | M | H | Backend contracts and Narrative fallback first; build components in priority order. |
 | R-03 | Verifier rarely rejects, so the loop "never loops" | M | H | Adversarial proposal set in evals; normal runs report real rejection counts; the adversarial set proves a rejection/revision without scripting the demo. |
 | R-04 | Evaluation looks circular (the generator labels its own data) | H | H | Hand-labelled holdout reported separately. |
-| R-05 | Mesh model unavailability or rate limits | M | M | Mesh failover; per-node degradations (FR-59); eval LLM outputs cached by input hash, with cache use disclosed. |
+| R-05 | Model unavailability or rate limits | M | M | Per-tier fallback model; per-node degradations (FR-59); eval LLM outputs cached by input hash, with cache use disclosed. |
 | R-06 | LLM puts invented numbers in narrative | M | H | Numeral post-check (FR-42, FR-49) and server-side hydration. |
 | R-07 | CI critical checks fail at submission | L | H | CI set up in Stage 0 (`10`) and green on every deploy. |
 | R-08 | Scope breadth vs one builder and the 20 Oct deadline (≈ 283 h of mandatory-stage work + ≈ 70 h Tier 2 vs ≈ 85–100 h available, `10` §2) | H | H | Single stream in score order; feature flags (ship only when green); daily deploys; `submittable-N` tags from 16 Oct; freeze 19 Oct 12:00; unfinished work listed as "Not shipped (planned)". The owner chose full scope as the target with a staged release. |
@@ -461,7 +461,7 @@ The MVP is successful when **all** of the following are true on a fresh clone **
 
 1. **CI**: all 4 critical Agent Arena checks pass on `main`.
 2. **Single-account path**: dropping the P1 Monzo CSV completes the 3 steps (one gap question: today's balance) and lands on Home built from live engine output.
-3. **Orchestration**: one P1 run produces a `run_` whose `AgentStep`s include all 5 specialist agents and the Coordinator, with real Mesh calls (non-zero tokens).
+3. **Orchestration**: one P1 run produces a `run_` whose `AgentStep`s include all 5 specialist agents and the Coordinator, with real model calls (non-zero tokens).
 4. **Core loop**: the actual graph rejects and revises an explicitly injected bad proposal, and normal P1 runs report observed revisions without forcing a predetermined draft. The adversarial-set rejection rate is *measured and reported* (target 100% for deterministic defect types and ≥95% overall, `09` §9.3; the actual number is reported whatever it is).
 5. **Forecast**: backtest results for P1 and P2 committed (P3 when Stage 4(a) ships) (MAE/MAPE, P10–P90 coverage, both naive baselines).
 6. **Categorisation**: accuracy and macro-F1 committed for the generated set and the hand-labelled holdout, with rules-only and LLM-only baselines.

@@ -24,7 +24,7 @@ def _now() -> datetime:
 
 @dataclass(frozen=True)
 class RunCost:
-    """The timeline's cost block (docs/08 §5.10): only ever from Mesh usage × the price table."""
+    """The timeline's cost block (docs/08 §5.10): only ever from usage × the price table."""
 
     model_calls: int
     tokens: int

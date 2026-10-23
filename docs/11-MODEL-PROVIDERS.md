@@ -1,6 +1,6 @@
 # 11 — Model providers after the hackathon (evaluation, 16 Oct 2026)
 
-> Status: **superseded in part, 20 Oct 2026** (`00` §12 item 14). Foresight left the hackathon, and the owner chose **OpenAI directly for every tier**, the Verifier judge on a different OpenAI model from the Advisor, rather than the split recommended below. The cost and terms evaluation below still stands. Under all-OpenAI, the Advisor's caching saving depends on OpenAI's automatic prompt caching (cached input at a tenth of the price), measured after the switch.
+> Status: **superseded in part, 20 Oct 2026** (`00` §12 item 14); Mesh was removed from the code on 23 Oct 2026. Foresight left the hackathon, and the owner chose **OpenAI directly for every tier**, the Verifier judge on a different OpenAI model from the Advisor, rather than the split recommended below. The cost and terms evaluation below still stands. Under all-OpenAI, the Advisor's caching saving depends on OpenAI's automatic prompt caching (cached input at a tenth of the price), measured after the switch.
 
 ## Recommendation
 

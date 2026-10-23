@@ -1,6 +1,6 @@
-"""Project-wide daily spend guard for live Mesh calls (owner decision, 13 Oct 2026).
+"""Project-wide daily spend guard for live model calls (owner decision, 13 Oct 2026).
 
-Model spend for the current UTC day is the sum of `AgentStep.cost_estimate_usd` (Mesh `usage` × the
+Model spend for the current UTC day is the sum of `AgentStep.cost_estimate_usd` (`usage` × the
 price table) over every workspace, read at most once a minute; calls made since the last read are
 added in process so a burst can't overshoot. Once it reaches `MESH_DAILY_BUDGET_USD`, AI answers
 pause (`AiAvailability` reports `unavailable`, live calls are refused) until the next UTC day.

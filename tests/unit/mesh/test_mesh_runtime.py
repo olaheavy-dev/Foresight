@@ -60,9 +60,7 @@ def test_transport_errors_are_retried_twice_with_backoff() -> None:
 def test_fallback_model_after_primary_retries() -> None:
     calls = ScriptedCompletions(connection_error(), connection_error(), connection_error(), ok())
     result = client(calls).complete(tier=ModelTier.FAST, messages=MSG)
-    assert [c["model"] for c in calls.calls] == ["openai/gpt-6-luna"] * 3 + [
-        "anthropic/claude-haiku-5.5"
-    ]
+    assert [c["model"] for c in calls.calls] == ["gpt-6-luna"] * 3 + ["gpt-6-sol"]
     assert result.used_fallback is True
     assert result.attempts == 4
 
@@ -79,12 +77,6 @@ def test_no_balance_stops_at_once_without_fallback() -> None:
     with pytest.raises(MeshSpendLimitError):
         client(calls).complete(tier=ModelTier.FAST, messages=MSG)
     assert len(calls.calls) == 1
-
-
-def test_spend_limit_reported_as_a_400_is_still_a_spend_limit() -> None:
-    calls = ScriptedCompletions(bad_request("spend_limit_exceeded"))
-    with pytest.raises(MeshSpendLimitError):
-        client(calls).complete(tier=ModelTier.FAST, messages=MSG)
 
 
 def test_per_tier_timeouts_are_sent() -> None:
@@ -161,7 +153,7 @@ def test_gpt6_model_gets_json_schema_and_no_temperature() -> None:
     assert out.result.temperature is None
 
 
-def test_anthropic_model_never_gets_temperature() -> None:
+def test_a_model_without_temperature_support_never_gets_it() -> None:
     calls = ScriptedCompletions(json_ok({"category": "groceries", "confidence": 0.9}))
     out = client(calls).structured(
         tier=ModelTier.REASONING, messages=MSG, output=Category, name="categorise"
@@ -170,7 +162,7 @@ def test_anthropic_model_never_gets_temperature() -> None:
     assert out.result.temperature is None  # recorded as "model default"
 
 
-def test_anthropic_tool_path_uses_auto_tool_choice() -> None:
+def test_a_rejected_json_schema_moves_on_to_forced_tool_calls() -> None:
     calls = ScriptedCompletions(
         bad_request(),  # json_schema rejected
         ok(None, tool_arguments='{"category": "groceries", "confidence": 0.8}'),
@@ -179,22 +171,9 @@ def test_anthropic_tool_path_uses_auto_tool_choice() -> None:
         tier=ModelTier.REASONING, messages=MSG, output=Category, name="categorise"
     )
     tool_call = calls.calls[1]
-    assert tool_call["tool_choice"] == "auto"
+    assert "response_format" not in tool_call
+    assert tool_call["tool_choice"] == {"type": "function", "function": {"name": "categorise"}}
     assert "temperature" not in tool_call
-    assert out.strategy == "tools"
-
-
-def test_gemini_pro_uses_forced_tool_calls_instead_of_json_schema() -> None:
-    s = settings(mesh_model_verifier="google/gemini-3.1-pro", mesh_model_reasoning_fallback="")
-    calls = ScriptedCompletions(
-        ok(None, tool_arguments='{"category": "groceries", "confidence": 0.7}')
-    )
-    out = client(calls, settings=s).structured(
-        tier=ModelTier.VERIFIER, messages=MSG, output=Category, name="categorise"
-    )
-    sent = calls.calls[0]
-    assert "response_format" not in sent
-    assert sent["tool_choice"] == {"type": "function", "function": {"name": "categorise"}}
     assert out.strategy == "tools"
 
 

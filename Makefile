@@ -21,7 +21,7 @@ lint:
 typecheck:
 	mypy
 
-imports:  ## Mesh-only and module-boundary contracts (docs/05 §3.1)
+imports:  ## One-gateway and module-boundary contracts (docs/05 §3.1)
 	lint-imports
 
 check: lint typecheck imports test

@@ -1,4 +1,4 @@
-"""Circuit breaker for Mesh (docs/05 §6.4).
+"""Circuit breaker for model calls (docs/05 §6.4).
 
 Opens after 5 consecutive failures, or when more than half of the calls in the last 60 s failed
 (with at least 4 calls in the window). While open, callers skip straight to their degraded path

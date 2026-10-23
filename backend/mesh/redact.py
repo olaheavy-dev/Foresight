@@ -1,4 +1,4 @@
-"""Payload redaction before anything is sent to Mesh (docs/05 §7.3, §7.4a layer L2).
+"""Payload redaction before anything is sent to the model provider (docs/05 §7.3, §7.4a layer L2).
 
 `redact(payload, locale_pack=...)` walks a JSON-like payload and masks identifiers in every string
 value. Keys, numbers and booleans are left alone (amounts travel as bands, never as identifiers).

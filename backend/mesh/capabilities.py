@@ -1,14 +1,8 @@
-"""What each configured model accepts through Mesh, read from `models.yaml` (configuration).
+"""What each configured model accepts, read from `models.yaml` (configuration).
 
-The observations behind the file's values (live probes, 13 Oct 2026):
-
-- Anthropic models (Bedrock upstream) reject `temperature` ("temperature is deprecated for this
-  model") and a forced `tool_choice`; they accept `response_format` json_schema with temperature
-  omitted, and tool_choice "auto". Their steps record the temperature as "model default".
-- google/gemini-3.1-pro returned unparseable content for json_schema; its tool calls work, so it
-  uses the tool-call path.
-- openai/gpt-6-luna, openai/gpt-6.1-sol and google/gemini-3.8-flash accept both json_schema
-  (strict) and a forced tool choice.
+The observations behind the file's values are noted in it: the OpenAI models accept json_schema
+(strict) and a forced tool choice, and the GPT-6 models only their default temperature (probed
+21 Oct 2026). Anthropic and Google models, used through Mesh until 23 Oct 2026, are not listed.
 
 An unlisted model gets the conservative default: no temperature, no forced tool choice,
 json_schema first.

@@ -224,7 +224,7 @@ def run(fast: bool = False) -> dict[str, Any]:
         )
     errors = [r.case["id"] for r in runs if r.error]
     if errors:
-        notes.append(f"Mesh errors on {len(errors)} cases: {errors[:10]}")
+        notes.append(f"model errors on {len(errors)} cases: {errors[:10]}")
     headline = full or det
     metrics = {
         "cases": len(runs),

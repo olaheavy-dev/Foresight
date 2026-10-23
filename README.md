@@ -61,7 +61,7 @@ Features ship behind flags ([`features.yaml`](features.yaml)). A feature is list
 
 ## Model calls go through one gateway
 
-Every model call goes through [`backend/mesh/mesh_client.py`](backend/mesh/mesh_client.py), which calls OpenAI (`https://api.openai.com/v1`, `MODEL_PROVIDER=openai`; the earlier Mesh route is kept until it is removed). No other module may import an AI SDK, and the base URLs are fixed in code. An import-linter contract and `tests/unit/test_mesh_only.py` enforce this. There are no embeddings, no OCR and no client-side AI: the web app never calls a model.
+Every model call goes through [`backend/mesh/mesh_client.py`](backend/mesh/mesh_client.py), which calls OpenAI (`https://api.openai.com/v1`). No other module may import an AI SDK, and the base URL is fixed in code. (The module keeps the name of the Mesh gateway it called until 23 Oct 2026.) An import-linter contract and `tests/unit/test_mesh_only.py` enforce this. There are no embeddings, no OCR and no client-side AI: the web app never calls a model.
 
 ## Run it
 
