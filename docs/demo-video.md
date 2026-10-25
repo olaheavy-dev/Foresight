@@ -1,24 +1,24 @@
 # Demo video: recording, voice-over and updates
 
-The two-minute narrated demo is made from three parts:
+The three-minute narrated demo opens straight on the app (no presenter introduction), shows how it's built, demos each feature and lets the agents' process play out in real time. It is made from four parts:
 
 1. **The walkthrough recording.** `frontend/e2e/walkthrough.spec.ts` drives the live app on the fictional demo profile and records video. It asks one real question and runs one proactive check, so **each recording costs about $0.10 of OpenAI credit**.
-2. **The narration.** `tools/demo/script.md`, one `## <scene>` section per scene, rendered by `tools/demo/narrate.py` in a cloned voice.
-3. **The edit.** `tools/demo/build.py` fits each scene's video to its narration, speeds up the agent waits with an on-screen label, adds captions and writes an MP4.
+2. **The stack card.** `tools/demo/stack.html`, shown in the recording by the spec (scene `02-stack`) in the app's own fonts.
+3. **The narration.** `tools/demo/script.md`, one `## <scene>` section per scene, rendered by `tools/demo/narrate.py` in a cloned voice.
+4. **The edit.** `tools/demo/build.py` fits each scene's video to its narration, labels the agent waits, adds captions and writes an MP4.
 
 Everything runs locally. The voice recording, the cloned audio and the video stay in `tools/demo/voice/` and `tools/demo/out/`, which git ignores. **Never commit a voice recording**: a short sample is enough for anyone to clone the voice.
 
 ## Saved videos
 
-In `docs/assets/demo/`, all from the walkthrough recorded on 25 Oct 2026 and narrated in the first cloned voice:
+In `docs/assets/demo/`, from the walkthrough recorded on 25 Oct 2026 (second take of the day) and narrated in the first cloned voice. The viewer notes that go with the video, with the detail cut from the three minutes (stack, results, limits, what's fictional), are in [`docs/assets/demo/README.md`](assets/demo/README.md).
 
 | File | What |
 |---|---|
-| `foresight-demo-real-time.mp4` | 2:05. The agent waits play at their real speed (25 s and 16 s), labelled. **Use this one** when latency matters. |
-| `foresight-demo-sped-up.mp4` | 1:36. The same, with the two waits sped up 3× and 5×, labelled. |
-| `walkthrough-2026-10-25.webm` | The raw, silent recording. Rebuild from it with no new recording (and no model spend): `build.py --video docs/assets/demo/walkthrough-2026-10-25.webm --timings tools/demo/timings.json`. |
+| `foresight-demo.mp4` | 2:54. Built with `--real-time`: the two agent waits (33 s and 22 s) play at their real speed, labelled, with narration explaining what the agents are doing. |
+| `walkthrough-2026-10-25-b.webm` | The raw, silent recording. Rebuild from it with no new recording (and no model spend): `build.py --real-time --video docs/assets/demo/walkthrough-2026-10-25-b.webm --log docs/assets/demo/walkthrough-2026-10-25-b.log`. |
 
-A fuller walkthrough that scrolls through each answer and narrates it in detail is a follow-up: #82.
+The first, two-minute version (with a presenter introduction) was replaced on 25 Oct 2026. A longer 5–6 minute tour is a follow-up: #82.
 
 ## One-time setup (macOS, Apple Silicon)
 
@@ -48,7 +48,7 @@ ffmpeg -y -hide_banner -loglevel error -f avfoundation -i ":2" -t 20 -ac 1 -ar 2
 
 Read naturally, in the tone you want the narration to have. Use a quiet room, with the microphone 20–30 cm away. The original reading was:
 
-> Hi, I'm Sunkanmi. I build products from idea to production, with AI built in. Foresight is a personal-finance workspace I designed and built myself. It forecasts where your money is heading, and every number has a receipt.
+> Any natural paragraph of about 20 seconds works; it is never played in the video. The original reading introduced the builder and Foresight in a few sentences.
 
 Check that it isn't silent (`mean_volume` around −30 dB is good, −91 dB means nothing was recorded), then trim the silence and even out the level:
 
@@ -65,9 +65,9 @@ ffmpeg -y -hide_banner -loglevel error -i tools/demo/voice/raw.wav \
 tools/demo/.venv/bin/python tools/demo/narrate.py --voice tools/demo/voice/reference.wav
 ```
 
-This writes `tools/demo/out/audio/<scene>.wav`, about 20 seconds of generation per 10 seconds of speech. Listen with `afplay tools/demo/out/audio/01-intro.wav`.
+This writes `tools/demo/out/audio/<scene>.wav`, about 20 seconds of generation per 10 seconds of speech. Listen with `afplay tools/demo/out/audio/01-open.wav`.
 
-- **Change a line:** edit `tools/demo/script.md`, then render only that scene again with `--only 05-answer`.
+- **Change a line:** edit `tools/demo/script.md`, then render only that scene again with `--only 07-answer`.
 - **Mispronounced word:** spell it the way it sounds in the script (for example "Fore-sight") and render that scene again.
 - **Delivery:** the defaults are the "calmer" settings chosen on 25 Oct 2026 (`--exaggeration 0.4 --cfg 0.3`). Raise `--exaggeration` (up to about 0.7) for more expression. Raise `--cfg` (0.5 is Chatterbox's default) for faster, tighter speech.
 
@@ -92,11 +92,11 @@ open tools/demo/out/foresight-demo.mp4
 
 What the build does:
 - **Agent waits** are sped up just enough for the narration and labelled "Agents working · sped up N×". They are never cut or faked.
-  With `--real-time` they play at their real speed, labelled "Agents working · real time, N s", which shows the real latency. The video is then about 2 minutes 5 seconds. Use this version when real latency matters to the viewer.
+  With `--real-time` (the saved video) they play at their real speed, labelled "Agents working · real time, N s", and the narration of those scenes explains what each agent is doing.
 - **Short scenes:** a scene shorter than its narration plays up to 2× slower, then holds its last frame.
 - **Captions:** every frame carries "AI-narrated in my voice · Demo data is fictional". Keep that caption whenever the voice is cloned.
 
-To check the scene times by eye, write a contact sheet (one frame every 2 seconds) with `build.py --sheet`. For a recording made before the spec printed scene marks, pass hand-read times with `--timings tools/demo/timings.json` (the 25 Oct 2026 recording).
+To check the scene times by eye, write a contact sheet (one frame every 2 seconds) with `build.py --sheet`. For a recording made before the spec printed scene marks, pass hand-read times as JSON with `--timings` (`{"scenes": [{"name", "start", "end", "wait"}]}`).
 
 ## Updating the voice later
 
@@ -106,6 +106,7 @@ To check the scene times by eye, write a contact sheet (one frame every 2 second
 | Use your own voice, not a clone | Record each scene's line to `tools/demo/out/audio/<scene>.wav` (24 kHz mono WAV) instead of step 2, then step 4. Change the caption in `build.py` (`NOTE`) to "Demo data is fictional". |
 | Use a stock voice | Any engine works, as long as it writes the same per-scene WAV files. Kokoro (Apache 2.0) and macOS Premium voices (`say -v "Jamie (Premium)"`) were tried on 25 Oct 2026. Change `NOTE` to "AI narration · Demo data is fictional". |
 | Change what's said | Edit `script.md`, then steps 2 (`--only` the changed scenes) and 4. |
-| Show a newer version of the app | Steps 3 and 4. If the walkthrough's steps change, keep its `mark("scene …")` names in line with the `## <scene>` headings in `script.md`. |
+| Show a newer version of the app | Steps 3 and 4. If the walkthrough's steps change, keep its `mark("scene …")` names in line with the `## <scene>` headings in `script.md`. A live run can approve or reject the holiday advice: check what it did and keep `07-answer` and the viewer notes true to it. |
+| Change the stack card | Edit `tools/demo/stack.html` (1280×800), then steps 3 and 4. |
 
-Keep every claim in the script true of the repository (numbers from the engine, 20 Verifier rules, 17 evaluation suites, fictional demo data). If one stops being true, change the line before publishing.
+Keep every claim in the script, the stack card and the viewer notes true of the repository (numbers from the engine, five specialist agents, 20 Verifier rules, 17 evaluation suites, 500 simulated paths, fictional demo data). If one stops being true, change the line before publishing.

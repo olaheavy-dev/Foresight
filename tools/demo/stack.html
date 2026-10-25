@@ -1,0 +1,95 @@
+<!doctype html>
+<!-- The demo video's stack card (scene 02-stack), shown by e2e/walkthrough.spec.ts with
+     page.setContent at 1280×800. The spec swaps FONT_INTER and FONT_SERIF for the app's own fonts
+     (frontend/app/fonts) as data URLs. Colours and type follow frontend/app/tokens.css. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Foresight · how it's built</title>
+<style>
+  @font-face { font-family: "Inter"; src: url(FONT_INTER) format("woff2"); font-weight: 100 900; }
+  @font-face { font-family: "Source Serif 4"; src: url(FONT_SERIF) format("woff2"); font-weight: 200 900; }
+  :root {
+    --canvas: #EEF2F8; --surface: #FFFFFF; --well: #F6F8FC; --ink: #0E1A3A; --muted: #4A5570;
+    --faint: #5E6880; --hairline: #E4E9F2; --accent: #1F5EF0; --tint: #EAF0FE; --violet: #A63DB5;
+    --violet-tint: #F3E8F7;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    width: 1280px; height: 800px; overflow: hidden; background: var(--canvas); color: var(--ink);
+    font: 15px/1.45 "Inter", system-ui, sans-serif; padding: 56px 72px 72px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .kicker { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); font-weight: 600; }
+  h1 { font: 600 40px/1.15 "Source Serif 4", Georgia, serif; margin: 10px 0 6px; letter-spacing: -.01em; }
+  .lede { color: var(--muted); font-size: 18px; max-width: 900px; }
+  .lede b { color: var(--ink); font-weight: 600; }
+  .flow { display: grid; grid-template-columns: 1fr 36px 1fr 36px 1.25fr; align-items: stretch; margin-top: 40px; }
+  .arrow { display: flex; align-items: center; justify-content: center; color: var(--faint); font-size: 22px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--hairline); border-radius: 14px; padding: 22px 24px;
+    box-shadow: 0 1px 2px rgba(14, 26, 58, .04);
+  }
+  .card h2 { font: 600 20px/1.2 "Source Serif 4", Georgia, serif; margin-bottom: 4px; }
+  .card .role { color: var(--muted); font-size: 14px; margin-bottom: 14px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { background: var(--well); border: 1px solid var(--hairline); border-radius: 999px; padding: 4px 12px; font-size: 14px; font-weight: 500; }
+  .chip.blue { background: var(--tint); border-color: transparent; color: #1644B3; }
+  .chip.violet { background: var(--violet-tint); border-color: transparent; color: #7E2B8B; }
+  .agents { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; margin: 4px 0 14px; font-size: 14px; }
+  .agents span::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--violet); margin-right: 8px; vertical-align: 1px; }
+  .lower { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
+  .lower .card { display: flex; gap: 18px; align-items: flex-start; }
+  .dot { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; }
+  .dot.blue { background: var(--tint); color: var(--accent); }
+  .dot.violet { background: var(--violet-tint); color: var(--violet); }
+  .lower p { color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .foot { margin-top: 26px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; color: var(--faint); font-size: 14px; }
+</style>
+</head>
+<body>
+  <p class="kicker">How it's built</p>
+  <h1>Numbers come from code. Words come from models.</h1>
+  <p class="lede">Every figure on screen is computed by a <b>deterministic engine</b>; agents explain it and suggest changes, and <b>a second model checks</b> the advice.</p>
+
+  <div class="flow">
+    <section class="card">
+      <h2>Web app</h2>
+      <p class="role">What you see</p>
+      <div class="chips"><span class="chip">Next.js 16</span><span class="chip">React 19</span><span class="chip">TypeScript</span><span class="chip">Generated UI contracts</span></div>
+    </section>
+    <div class="arrow" aria-hidden="true">→</div>
+    <section class="card">
+      <h2>API</h2>
+      <p class="role">Sessions, data, live run steps</p>
+      <div class="chips"><span class="chip">FastAPI</span><span class="chip">PostgreSQL 16</span><span class="chip">Python</span></div>
+    </section>
+    <div class="arrow" aria-hidden="true">→</div>
+    <section class="card">
+      <h2>Agents</h2>
+      <p class="role">LangGraph: a coordinator and five specialists</p>
+      <div class="agents"><span>Ledger</span><span>Analyst</span><span>Forecaster</span><span>Advisor</span><span>Verifier · 20 rules</span></div>
+      <div class="chips"><span class="chip violet">One model gateway</span><span class="chip violet">OpenAI</span></div>
+    </section>
+  </div>
+
+  <div class="lower">
+    <section class="card">
+      <div class="dot blue" aria-hidden="true">£</div>
+      <div>
+        <h2>Finance engine</h2>
+        <p>Deterministic and seeded. Integer money, a 90-day forecast from 500 simulated paths, what-ifs and goals on the same paths.</p>
+      </div>
+    </section>
+    <section class="card">
+      <div class="dot violet" aria-hidden="true">✓</div>
+      <div>
+        <h2>Checked before it ships</h2>
+        <p>17 evaluation suites run in CI; a feature switches on only when its suites pass.</p>
+      </div>
+    </section>
+  </div>
+
+  <p class="foot"><span class="chip">Docker</span><span class="chip">GitHub Actions</span><span>· Demo data is fictional</span></p>
+</body>
+</html>

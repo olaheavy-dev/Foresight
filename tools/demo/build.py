@@ -1,7 +1,7 @@
 """Cut the walkthrough recording into scenes, fit each to its narration, caption it, and join it.
 
     python tools/demo/build.py --log out/walkthrough.log     # scene times from the run's MARK lines
-    python tools/demo/build.py --timings tools/demo/timings.json
+    python tools/demo/build.py --timings times.json            # hand-read scene times
     python tools/demo/build.py --sheet                        # a contact sheet, one frame per 2 s
 
 Per scene: an agent wait inside it is sped up and labelled on screen with the factor (never cut or
@@ -154,7 +154,7 @@ def main() -> None:
     parser.add_argument("--out", type=Path, default=HERE / "out" / "foresight-demo.mp4")
     times = parser.add_mutually_exclusive_group(required=True)
     times.add_argument("--log", type=Path, help="the walkthrough run's output, with MARK lines")
-    times.add_argument("--timings", type=Path, help="scene times as JSON (timings.json)")
+    times.add_argument("--timings", type=Path, help="scene times as JSON (docs/demo-video.md)")
     times.add_argument("--sheet", action="store_true", help="only write a contact sheet")
     parser.add_argument(
         "--real-time", action="store_true", help="keep the agent waits at their real speed"
