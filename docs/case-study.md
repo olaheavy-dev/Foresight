@@ -76,6 +76,7 @@ flowchart LR
 
 ## Assets
 
+- Demo video: `docs/assets/demo/foresight-demo.mp4` (4:37, recorded on the live app on 25 Oct 2026 with the fictional demo profile; AI-narrated in the builder's cloned voice, captioned on every frame). Timestamped scene guide and sources: `docs/assets/demo/README.md`
 - Walkthrough GIF: `docs/assets/foresight-walkthrough.gif` (recorded on the live app with the fictional demo profile)
 - Screenshots: `docs/screenshots/01-landing.png` to `09-activity.png`
 - Architecture: `docs/05-SYSTEM-ARCHITECTURE.md` §2 and the diagram above

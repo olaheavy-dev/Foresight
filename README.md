@@ -5,12 +5,13 @@
 An agent-native personal-finance workspace, built by one person as a portfolio project (started for the Agent Arena 2026 hackathon).
 
 - **Live app:** https://foresight.olaheavy.dev (deployed continuously; the demo profile is fictional data)
+- **Demo video (4:37):** [`docs/assets/demo/foresight-demo.mp4`](docs/assets/demo/foresight-demo.mp4), a narrated walkthrough of the live app: the stack, each feature, and the agents working (waits labelled on screen). Scene guide, results and limits: [viewer notes](docs/assets/demo/README.md)
 - **Design and plan:** [`docs/README.md`](docs/README.md) (start here), canonical decisions in [`docs/00-DECISION-REGISTER.md`](docs/00-DECISION-REGISTER.md)
 - **Status:** everything under "Built" is live. Nothing is claimed until its evaluation is green.
 
 ![Foresight in a minute: the demo profile's Home, a checked answer in the AI Workspace with how it was checked, the Decision Lab, a goal, a finding's transactions and Activity](docs/assets/foresight-walkthrough.gif)
 
-<sub>Recorded on the live app with the fictional demo profile (`frontend/e2e/walkthrough.spec.ts`); the wait while the agents check an answer is sped up.</sub>
+<sub>Recorded on the live app with the fictional demo profile (20 Oct 2026, an earlier version of `frontend/e2e/walkthrough.spec.ts`); the wait while the agents check an answer is sped up. The narrated demo video above is the fuller tour.</sub>
 
 ## Screenshots
 
