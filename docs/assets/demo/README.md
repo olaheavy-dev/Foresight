@@ -1,22 +1,24 @@
 # Foresight demo: viewer notes
 
-Notes to go with the three-minute demo video, `foresight-demo.mp4`. The video goes straight into the app, so the detail that doesn't fit is here. How the video is made and updated: [`docs/demo-video.md`](../../demo-video.md).
+Notes to go with the demo video, `foresight-demo.mp4` (4:37). The video goes straight into the app and explains each feature as an engineer would walk a customer through it; these notes add the detail and the sources. How the video is made and updated: [`docs/demo-video.md`](../../demo-video.md).
 
 - **Live app:** https://foresight.olaheavy.dev. "Explore the live demo" opens a private copy of the same fictional profile.
 - **Code:** https://github.com/olaheavy-dev/Foresight
-- **What's real:** the video was recorded on the live site on 25 Oct 2026. The question, the proactive check and their agent runs are real model calls, and both agent waits play at their real speed (labelled on screen). The demo profile (Amara, one current account, Leeds) and every transaction are fictional. The narration is AI-generated from a recording of the builder's voice, and the caption says so on every frame.
+- **What's real:** the video was recorded on the live site on 25 Oct 2026. The question, the proactive check and their agent runs are real model calls. The two agent waits play almost at their real speed: the proactive check (28.5 s) at 1.1× and the question (25.9 s) at 1.4×, labelled on screen, so each fits the narration that explains it. The figures quoted in the narration are the ones on screen in this recording. The demo profile (Amara, one current account, Leeds) and every transaction are fictional. The narration is AI-generated from a recording of the builder's voice, and the caption says so on every frame.
 
 ## What the video shows
 
-| Scene | What to look for |
-|---|---|
-| Home | A 90-day forecast of the lowest balance before each payday, with a likely range (P10–P90) from 500 simulated paths. Below it, findings the engine detected, such as food delivery up 39%. |
-| How it's built | The stack card. More detail [below](#stack). |
-| Proactive check | The agents run in real time: findings in, a drafted change, the Verifier's checks, and only checked advice out. "How it was checked" lists every rule the advice passed. |
-| AI Workspace | "Can I afford a £1,200 holiday in December?" The steps stream live. In this take the Verifier rejected both drafted recommendations, so the answer shows the forecast effect with no recommendation. That's the system working as designed: a weak recommendation is never published. |
-| Decision Lab, Goals | A purchase spread over three payments, and a savings goal, each tested on the same simulated paths as the forecast. |
-| Evidence, Activity | A finding opens the exact transactions it counts. Activity shows every agent run as a trace (agent, model, time, tokens, estimated cost) and a log of every change. |
-| Quality | The evaluation results the app ships with, including what's missed. |
+| Time | Scene | What to look for |
+|---|---|---|
+| 0:00 | The problem | Will I be short before payday? The landing page, on a fictional profile. |
+| 0:15 | Home | A private copy of the demo per visitor. Amara's low before payday is £211, below her £500 buffer. |
+| 0:34 | How it's built | The stack card. More detail [below](#stack). |
+| 0:57 | Forecast and findings | 500 simulated paths, the middle path with a likely range (P10–P90), and the low before each payday. Findings: food delivery up 39%, two overlapping streaming services. |
+| 1:24 | Proactive check | The agents run live: the Advisor drafts a change, the engine works out its effect, and the Verifier (a different model) checks it against 20 rules. "How it was checked" lists every rule passed. |
+| 2:12 | AI Workspace | "Can I afford a £1,200 holiday in December?" The steps stream live. The answer: about £463 overdrawn before the 18 Dec payday, each figure cited. In this take the Verifier rejected every drafted recommendation, so none is shown. That's by design: a recommendation is never published unchecked. |
+| 3:12 | Decision Lab, Goals | A £900 purchase spread over three payments, and a £1,500 goal by April (about a 1% chance), both on the same simulated paths, with no model involved. |
+| 3:42 | Evidence, Activity | The transactions behind a finding. Every agent run as a trace (agent, model, time, tokens, estimated cost). A hash-chained log of every change. |
+| 4:11 | Quality | 17 evaluation suites and the misses, published. |
 
 ## Stack
 

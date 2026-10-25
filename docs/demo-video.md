@@ -1,24 +1,26 @@
 # Demo video: recording, voice-over and updates
 
-The three-minute narrated demo opens straight on the app (no presenter introduction), shows how it's built, demos each feature and lets the agents' process play out in real time. It is made from four parts:
+The narrated demo (about 4½ minutes) opens straight on the app with no presenter introduction. It shows how Foresight is built, explains each feature in detail in an engineer's voice (the problem, then why it's built that way), and lets the agents' process play out while the narration explains it. It is made from four parts:
 
 1. **The walkthrough recording.** `frontend/e2e/walkthrough.spec.ts` drives the live app on the fictional demo profile and records video. It asks one real question and runs one proactive check, so **each recording costs about $0.10 of OpenAI credit**.
-2. **The stack card.** `tools/demo/stack.html`, shown in the recording by the spec (scene `02-stack`) in the app's own fonts.
-3. **The narration.** `tools/demo/script.md`, one `## <scene>` section per scene, rendered by `tools/demo/narrate.py` in a cloned voice.
-4. **The edit.** `tools/demo/build.py` fits each scene's video to its narration, labels the agent waits, adds captions and writes an MP4.
+2. **The stack card.** `tools/demo/stack.html`, shown in the recording by the spec (scene `03-stack`) in the app's own fonts.
+3. **The narration.** `tools/demo/script.md`, one `## <scene>` section per beat (one line over one action), rendered by `tools/demo/narrate.py` in a cloned voice.
+4. **The edit.** `tools/demo/build.py` lays each line over its scene, labels the agent waits, adds captions and writes an MP4.
+
+**The video is recorded to the narration.** Render the narration first: `narrate.py` writes each scene's length to `tools/demo/out/audio/durations.json`, and the walkthrough holds every scene until its line has been said before it moves on. Voice and screen then stay in step beat by beat, with nothing stretched in the edit. The spec refuses to record without that file.
 
 Everything runs locally. The voice recording, the cloned audio and the video stay in `tools/demo/voice/` and `tools/demo/out/`, which git ignores. **Never commit a voice recording**: a short sample is enough for anyone to clone the voice.
 
 ## Saved videos
 
-In `docs/assets/demo/`, from the walkthrough recorded on 25 Oct 2026 (second take of the day) and narrated in the first cloned voice. The viewer notes that go with the video, with the detail cut from the three minutes (stack, results, limits, what's fictional), are in [`docs/assets/demo/README.md`](assets/demo/README.md).
+In `docs/assets/demo/`, from the walkthrough recorded on 25 Oct 2026 and narrated in the first cloned voice. The viewer notes that go with the video (scene guide, stack, results, limits, what's fictional) are in [`docs/assets/demo/README.md`](assets/demo/README.md).
 
 | File | What |
 |---|---|
-| `foresight-demo.mp4` | 2:54. Built with `--real-time`: the two agent waits (33 s and 22 s) play at their real speed, labelled, with narration explaining what the agents are doing. |
-| `walkthrough-2026-10-25-b.webm` | The raw, silent recording. Rebuild from it with no new recording (and no model spend): `build.py --real-time --video docs/assets/demo/walkthrough-2026-10-25-b.webm --log docs/assets/demo/walkthrough-2026-10-25-b.log`. |
+| `foresight-demo.mp4` | 4:37. The proactive check (28.5 s) plays at 1.1× and the question (25.9 s) at 1.4×, each labelled on screen, so they fit the lines that explain them. |
+| `walkthrough-2026-10-25.webm`, `.log` | The raw, silent recording and its scene marks. Rebuild from them with no new recording (and no model spend), after rendering the narration: `build.py --video docs/assets/demo/walkthrough-2026-10-25.webm --log docs/assets/demo/walkthrough-2026-10-25.log`. |
 
-The first, two-minute version (with a presenter introduction) was replaced on 25 Oct 2026. A longer 5–6 minute tour is a follow-up: #82.
+The earlier versions of 25 Oct 2026 (two minutes with a presenter introduction, then a three-minute cut) were replaced by this one.
 
 ## One-time setup (macOS, Apple Silicon)
 
@@ -59,7 +61,7 @@ ffmpeg -y -hide_banner -loglevel error -i tools/demo/voice/raw.wav \
   -ar 24000 -ac 1 tools/demo/voice/reference.wav
 ```
 
-## 2. Render the narration
+## 2. Render the narration (before recording)
 
 ```bash
 tools/demo/.venv/bin/python tools/demo/narrate.py --voice tools/demo/voice/reference.wav
@@ -67,7 +69,8 @@ tools/demo/.venv/bin/python tools/demo/narrate.py --voice tools/demo/voice/refer
 
 This writes `tools/demo/out/audio/<scene>.wav`, about 20 seconds of generation per 10 seconds of speech. Listen with `afplay tools/demo/out/audio/01-open.wav`.
 
-- **Change a line:** edit `tools/demo/script.md`, then render only that scene again with `--only 07-answer`.
+- **Change a line:** edit `tools/demo/script.md`, then render only those scenes again, for example `--only 02-home 11-answer`. A line that gets more than about a second longer or shorter means recording again, because the walkthrough held its scene for the old length.
+- **Figures said aloud** (the low before payday, the holiday answer) move with the day and time of a recording. Check them against each new video and render those lines again.
 - **Mispronounced word:** spell it the way it sounds in the script (for example "Fore-sight") and render that scene again.
 - **Delivery:** the defaults are the "calmer" settings chosen on 25 Oct 2026 (`--exaggeration 0.4 --cfg 0.3`). Raise `--exaggeration` (up to about 0.7) for more expression. Raise `--cfg` (0.5 is Chatterbox's default) for faster, tighter speech.
 
@@ -81,7 +84,7 @@ WALKTHROUGH=1 npx playwright test -c playwright.walkthrough.config.ts --reporter
 cd ..
 ```
 
-The video lands in `frontend/test-results/walkthrough/walkthrough-Foresight-in-three-minutes/video.webm`. The log has a `MARK <seconds> scene <name>` line for each scene and `wait-start`/`wait-end` lines around the two agent waits. Set `BASE_URL` to record another deployment.
+The video lands in `frontend/test-results/walkthrough/walkthrough-Foresight-walkthrough/video.webm`. It takes about 5 minutes: each scene lasts as long as its line. The log has a `MARK <seconds> scene <name>` line for each scene and `wait-start`/`wait-end` lines around the two agent waits. Set `BASE_URL` to record another deployment.
 
 ## 4. Build the video
 
@@ -91,9 +94,8 @@ open tools/demo/out/foresight-demo.mp4
 ```
 
 What the build does:
-- **Agent waits** are sped up just enough for the narration and labelled "Agents working · sped up N×". They are never cut or faked.
-  With `--real-time` (the saved video) they play at their real speed, labelled "Agents working · real time, N s", and the narration of those scenes explains what each agent is doing.
-- **Short scenes:** a scene shorter than its narration plays up to 2× slower, then holds its last frame.
+- **Agent waits** play at their real speed, labelled "Agents working · real time, N s", when the line explaining them is at least as long. A longer wait is sped up just enough to fit, labelled "Agents working · sped up N×" (with a decimal, so even 1.1× is said). They are never cut or faked. The script narrates about 30 s and 20 s for the two waits. `--real-time` keeps every wait at its real speed, leaving silence where a wait outlasts its line.
+- **Short scenes:** a scene shorter than its line (rare, since the spec holds each scene for its line) plays up to 2× slower, then holds its last frame.
 - **Captions:** every frame carries "AI-narrated in my voice · Demo data is fictional". Keep that caption whenever the voice is cloned.
 
 To check the scene times by eye, write a contact sheet (one frame every 2 seconds) with `build.py --sheet`. For a recording made before the spec printed scene marks, pass hand-read times as JSON with `--timings` (`{"scenes": [{"name", "start", "end", "wait"}]}`).

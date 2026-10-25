@@ -5,7 +5,10 @@ neither the reference recording nor the text leaves the machine. Every output ca
 inaudible Perth watermark, so it can be identified as generated. See docs/demo-video.md.
 
     python tools/demo/narrate.py --voice tools/demo/voice/reference.wav    # every scene
-    python tools/demo/narrate.py --voice ... --only 05-answer               # one scene again
+    python tools/demo/narrate.py --voice ... --only 05-answer 06-lab        # some scenes again
+
+It also writes out/audio/durations.json, each scene's length, which the walkthrough reads to hold
+every scene for exactly its line: render the narration before recording.
 
 Run it in the demo environment (tools/demo/requirements.txt), not the app's.
 """
@@ -13,6 +16,7 @@ Run it in the demo environment (tools/demo/requirements.txt), not the app's.
 from __future__ import annotations
 
 import argparse
+import json
 import re
 from pathlib import Path
 from typing import Any
@@ -76,10 +80,16 @@ def main() -> None:
             parser.error(f"no such scene: {', '.join(sorted(unknown))}")
         todo = {name: todo[name] for name in args.only}
     args.out.mkdir(parents=True, exist_ok=True)
+    # Each scene's length, read by the walkthrough so it holds every scene for its line (the video
+    # is recorded to the narration, not the other way round).
+    lengths_file = args.out / "durations.json"
+    lengths = json.loads(lengths_file.read_text()) if lengths_file.exists() else {}
     model = load_model()
     for name, text in todo.items():
         seconds = render(model, text, args.voice, args.out / f"{name}.wav", args.exaggeration,
                          args.cfg)  # fmt: skip
+        lengths[name] = round(seconds, 2)
+        lengths_file.write_text(json.dumps(lengths, indent=2, sort_keys=True) + "\n")
         print(f"{name}: {seconds:.1f}s", flush=True)
 
 

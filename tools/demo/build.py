@@ -22,7 +22,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 RECORDING = (
     HERE.parents[1]
-    / "frontend/test-results/walkthrough/walkthrough-Foresight-in-three-minutes/video.webm"
+    / "frontend/test-results/walkthrough/walkthrough-Foresight-walkthrough/video.webm"
 )
 W, H, FPS = 1280, 800, 30
 LEAD, TAIL = 0.3, 0.7  # silence before and after each narration line
@@ -99,10 +99,11 @@ def scene_clip(
         if real_time:
             factor = 1.0
         parts = [(start, wait[0], 1.0), (wait[0], wait[1], 1 / factor), (wait[1], end, 1.0)]
-        if real_time:
+        # Every wait is labelled: at its real length, or with its speed-up however small.
+        if factor <= 1.02:
             label = f"Agents working  ·  real time, {int(wait[1] - wait[0] + 0.5)} s"  # half up
         else:
-            label = f"Agents working  ·  sped up {factor:.0f}×" if factor >= 1.5 else None
+            label = f"Agents working  ·  sped up {factor:.1f}×".replace(".0×", "×")
     else:
         parts = [(start, end, min(2.0, max(1.0, target / (end - start))))]
     pieces = []
