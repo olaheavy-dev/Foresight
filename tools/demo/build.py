@@ -5,9 +5,10 @@
     python tools/demo/build.py --sheet                        # a contact sheet, one frame per 2 s
 
 Per scene: an agent wait inside it is sped up and labelled on screen with the factor (never cut or
-faked), a scene shorter than its narration is slowed up to 2x and then holds its last frame, and
-the narration starts 0.3 s in. Captions are PNGs drawn with Pillow, because the Homebrew ffmpeg
-build has no drawtext. Needs ffmpeg and ffprobe on PATH. See docs/demo-video.md.
+faked), or with --real-time kept at 1x and labelled with its real length; a scene shorter than its
+narration is slowed up to 2x and then holds its last frame; the narration starts 0.3 s in.
+Captions are PNGs drawn with Pillow, because the Homebrew ffmpeg build has no drawtext. Needs
+ffmpeg and ffprobe on PATH. See docs/demo-video.md.
 """
 
 from __future__ import annotations
@@ -85,7 +86,9 @@ def pill(text: str, path: Path, size: int) -> None:
     img.save(path)
 
 
-def scene_clip(video: Path, audio: Path, work: Path, note: Path, scene: Scene) -> Path:
+def scene_clip(
+    video: Path, audio: Path, work: Path, note: Path, scene: Scene, real_time: bool
+) -> Path:
     name, start, end, wait = scene
     narration = audio / f"{name}.wav"
     target = duration(narration) + LEAD + TAIL
@@ -93,8 +96,13 @@ def scene_clip(video: Path, audio: Path, work: Path, note: Path, scene: Scene) -
     if wait:
         before, after = wait[0] - start, end - wait[1]
         factor = max(1.0, (wait[1] - wait[0]) / max(2.5, target - before - after))
+        if real_time:
+            factor = 1.0
         parts = [(start, wait[0], 1.0), (wait[0], wait[1], 1 / factor), (wait[1], end, 1.0)]
-        label = f"Agents working  ·  sped up {factor:.0f}×" if factor >= 1.5 else None
+        if real_time:
+            label = f"Agents working  ·  real time, {int(wait[1] - wait[0] + 0.5)} s"  # half up
+        else:
+            label = f"Agents working  ·  sped up {factor:.0f}×" if factor >= 1.5 else None
     else:
         parts = [(start, end, min(2.0, max(1.0, target / (end - start))))]
     pieces = []
@@ -148,8 +156,13 @@ def main() -> None:
     times.add_argument("--log", type=Path, help="the walkthrough run's output, with MARK lines")
     times.add_argument("--timings", type=Path, help="scene times as JSON (timings.json)")
     times.add_argument("--sheet", action="store_true", help="only write a contact sheet")
+    parser.add_argument(
+        "--real-time", action="store_true", help="keep the agent waits at their real speed"
+    )
     args = parser.parse_args()
 
+    # ffmpeg's concat lists resolve relative paths against the list's folder: use absolute ones.
+    args.out, args.video, args.audio = (p.resolve() for p in (args.out, args.video, args.audio))
     work = args.out.parent / "build"
     work.mkdir(parents=True, exist_ok=True)
     if args.sheet:
@@ -168,7 +181,7 @@ def main() -> None:
     scenes = from_log(args.log, args.video) if args.log else from_json(args.timings)
     note = work / "note.png"
     pill(NOTE, note, 20)
-    clips = [scene_clip(args.video, args.audio, work, note, s) for s in scenes]
+    clips = [scene_clip(args.video, args.audio, work, note, s, args.real_time) for s in scenes]
     listing = work / "all.txt"
     listing.write_text("".join(f"file '{c}'\n" for c in clips))
     run("ffmpeg", "-y", "-hide_banner", "-f", "concat", "-safe", "0", "-i", str(listing),

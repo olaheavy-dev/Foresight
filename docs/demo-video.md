@@ -80,6 +80,7 @@ open tools/demo/out/foresight-demo.mp4
 
 What the build does:
 - **Agent waits** are sped up just enough for the narration and labelled "Agents working · sped up N×". They are never cut or faked.
+  With `--real-time` they play at their real speed, labelled "Agents working · real time, N s", which shows the real latency. The video is then about 2 minutes 5 seconds. Use this version when real latency matters to the viewer.
 - **Short scenes:** a scene shorter than its narration plays up to 2× slower, then holds its last frame.
 - **Captions:** every frame carries "AI-narrated in my voice · Demo data is fictional". Keep that caption whenever the voice is cloned.
 
