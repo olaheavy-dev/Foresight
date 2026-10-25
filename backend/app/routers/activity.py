@@ -7,6 +7,7 @@ never a prompt or a model's output, and only for the session's own profile.
 
 from __future__ import annotations
 
+from itertools import takewhile
 from typing import Any
 
 from fastapi import APIRouter, Query
@@ -70,11 +71,23 @@ def _events(ctx: Any, limit: int) -> list[ActivityEvent]:
     """Newest first. Consecutive identical actions collapse into one line, except corrections:
     those collapse only within one batch (one correction applied to every payment from a payee),
     so two separate corrections stay two lines."""
+    window = limit * 20
     rows = ctx.session.scalars(
-        ctx.select(m.AuditEvent).order_by(m.AuditEvent.seq.desc()).limit(limit * 20)
+        ctx.select(m.AuditEvent).order_by(m.AuditEvent.seq.desc()).limit(window)
     ).all()
     out: list[ActivityEvent] = []
     group: list[m.AuditEvent] = []
+
+    def joins(row: m.AuditEvent) -> bool:
+        """Whether an older row belongs to the group being collected."""
+        if not group or row.action != group[0].action or row.actor != group[0].actor:
+            return False
+        if row.action == "income_decision":
+            return False
+        if row.action == "txn.recategorised":
+            batch = (row.after or {}).get("batch")
+            return batch is not None and batch == (group[0].after or {}).get("batch")
+        return True
 
     def flush() -> None:
         if group:
@@ -91,15 +104,25 @@ def _events(ctx: Any, limit: int) -> list[ActivityEvent]:
             group.clear()
 
     for row in rows:
-        same = group and row.action == group[0].action and row.actor == group[0].actor
-        if same and row.action == "txn.recategorised":
-            batch = (row.after or {}).get("batch")
-            same = batch is not None and batch == (group[0].after or {}).get("batch")
-        if group and (not same or row.action == "income_decision"):
+        if group and not joins(row):
             flush()
         group.append(row)
         if len(out) >= limit:
             break
+    else:
+        # The window ran out mid-group (a long run, e.g. one correction applied to a big payee):
+        # read on until that group closes, so its count is the change's, not the window's (#52).
+        while len(rows) == window and group:
+            rows = ctx.session.scalars(
+                ctx.select(m.AuditEvent)
+                .where(m.AuditEvent.seq < group[-1].seq)
+                .order_by(m.AuditEvent.seq.desc())
+                .limit(window)
+            ).all()
+            more = list(takewhile(joins, rows))
+            group.extend(more)
+            if len(more) < len(rows):
+                break
     flush()
     return out[:limit]
 
@@ -186,5 +209,5 @@ def activity(ctx: Profile, limit: int = Query(default=20, ge=1, le=50)) -> Activ
         ],
         events=_events(ctx, limit=40),
         audit_events=int(total or 0),
-        audit_chain_intact=ctx.audit_chain_valid(),
+        audit_chain_intact=ctx.audit_chain_valid(incremental=True),
     )
