@@ -13,17 +13,22 @@ Two parts, both from code, never from the model:
 
 from __future__ import annotations
 
+import dataclasses
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 from typing import Any
 
 from backend.agents.advice.models import InterventionProposal
 from backend.agents.advice.world import AdviceWorld
-from backend.finance_core.simulate import ScenarioError, check_cycle_closes, simulate
+from backend.finance_core.simulate import (
+    ScenarioError,
+    check_cycle_closes,
+    horizon_covering,
+    simulate,
+)
 from backend.finance_core.types import ScenarioModifier, ScenarioSpec
 
 TIMING_ACTIONS = frozenset({"move_purchase_date", "defer_purchase", "reschedule_transfer"})
-USUAL_HORIZON_DAYS = 90  # the forecast's own horizon; what-ifs may extend it to 180
 
 
 @dataclass(frozen=True)
@@ -116,13 +121,6 @@ def monthly_impact(p: InterventionProposal, world: AdviceWorld) -> tuple[int | N
     return 0, "timing_only"
 
 
-def _in_horizon(d: date, world: AdviceWorld) -> bool:
-    inputs = world.forecast_inputs
-    return inputs is not None and world.as_of < d <= world.as_of + timedelta(
-        days=inputs.horizon_days
-    )
-
-
 def _transfer_mods(p: InterventionProposal, world: AdviceWorld) -> tuple[ScenarioModifier, ...]:
     key = str(p.params.get("recurring_id") or "")
     ob = world.obligation(key)
@@ -134,18 +132,15 @@ def _transfer_mods(p: InterventionProposal, world: AdviceWorld) -> tuple[Scenari
     found = world.occurrences(key, start - timedelta(days=4), start + timedelta(days=4))
     if not found:
         raise ScenarioError(f"no {ob.label} payment around {start.isoformat()}")
-    mods = [
+    # Paid on its new date, however late: the impact's horizon reaches it (#57).
+    return (
         ScenarioModifier(
             type="one_off_inflow", date=found[0], amount_minor=amount, label=f"{ob.label} moved"
-        )
-    ]
-    if _in_horizon(end, world):
-        mods.append(
-            ScenarioModifier(
-                type="one_off_outflow", date=end, amount_minor=amount, label=f"{ob.label} moved"
-            )
-        )
-    return tuple(mods)
+        ),
+        ScenarioModifier(
+            type="one_off_outflow", date=end, amount_minor=amount, label=f"{ob.label} moved"
+        ),
+    )
 
 
 def proposal_modifiers(p: InterventionProposal, world: AdviceWorld) -> tuple[ScenarioModifier, ...]:
@@ -188,14 +183,11 @@ def proposal_modifiers(p: InterventionProposal, world: AdviceWorld) -> tuple[Sce
         if start == end:
             return ()
         label = str(params.get("label") or "purchase")
-        mods = [
-            ScenarioModifier(type="one_off_inflow", date=start, amount_minor=amount, label=label)
-        ]
-        if _in_horizon(end, world):  # paid after the horizon: it leaves this forecast
-            mods.append(
-                ScenarioModifier(type="one_off_outflow", date=end, amount_minor=amount, label=label)
-            )
-        return tuple(mods)
+        # Paid on its new date, however late: the impact's horizon reaches it (#57).
+        return (
+            ScenarioModifier(type="one_off_inflow", date=start, amount_minor=amount, label=label),
+            ScenarioModifier(type="one_off_outflow", date=end, amount_minor=amount, label=label),
+        )
     if p.action in ("set_aside_amount", "build_buffer"):
         amount = _int(params, "amount_minor")
         if amount is None:
@@ -226,14 +218,16 @@ def recompute_impact(p: InterventionProposal, world: AdviceWorld) -> Impact:
     pending = tuple(world.pending_scenario)
     try:
         mods = proposal_modifiers(p, world)
-        before = simulate(inputs, ScenarioSpec("before", inputs.currency, pending))
         after_spec = ScenarioSpec("after", inputs.currency, (*pending, *mods))
+        # Before and after run through the first payday after the latest change, so a payment
+        # moved to or past the forecast's last payday is paid in a reported low instead of
+        # vanishing from it; one whose cycle can't close within 180 days is refused (#57).
+        horizon = horizon_covering(inputs, after_spec)
+        if horizon != inputs.horizon_days:
+            inputs = dataclasses.replace(inputs, horizon_days=horizon)
+        before = simulate(inputs, ScenarioSpec("before", inputs.currency, pending))
         after = simulate(inputs, after_spec)
-        if inputs.horizon_days > USUAL_HORIZON_DAYS:
-            # On a horizon a what-if extended (#55), a payment moved to its closing payday sits
-            # in no reported low, so its improvement would be the payment vanishing: refused
-            # before verification. The usual 90-day forecast's case is #57.
-            check_cycle_closes(inputs, after_spec, after)
+        check_cycle_closes(inputs, after_spec, after)
     except ScenarioError as exc:
         return Impact(monthly, basis, error=str(exc))
     return Impact(

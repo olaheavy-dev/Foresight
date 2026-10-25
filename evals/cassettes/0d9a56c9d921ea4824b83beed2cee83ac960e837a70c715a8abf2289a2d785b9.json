@@ -1,7 +1,8 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T12:43:12+00:00",
+  "provider": "openai",
+  "recorded_at": "2026-10-25T03:59:07+00:00",
   "request": {
     "max_tokens": 700,
     "messages": [
@@ -10,7 +11,7 @@
         "role": "system"
       },
       {
-        "content": "{\"data\": {\"proposal\": {\"title\": \"Book the holiday after the November payday\", \"rationale\": \"Paying on {{from_date}} takes the late-November low below your buffer; paying after payday keeps it above.\", \"action\": \"move_purchase_date\", \"params\": {\"amount_minor\": 120000, \"from_date\": \"2026-11-06\", \"label\": \"Holiday\", \"to_date\": \"2026-12-01\"}, \"cited\": [{\"kind\": \"forecast\", \"id\": \"fc:baseline\", \"role\": \"trigger\"}]}, \"evidence\": [{\"id\": \"fc:baseline\", \"kind\": \"forecast\", \"summary\": \"Baseline cash-flow forecast for the coming pay cycles, including the lowest balance before each payday and the chance of going below the buffer.\"}], \"deterministic_checks\": [\"V-01\", \"V-02\", \"V-03\", \"V-04\", \"V-05\", \"V-06\", \"V-07\", \"V-08\", \"V-09\", \"V-10\", \"V-14\", \"V-15\", \"V-16\", \"V-17\", \"V-18\", \"V-19\", \"V-20\"], \"context\": {\"joint\": false, \"betting\": false, \"betting_opt_in\": false}}}",
+        "content": "{\"data\": {\"proposal\": {\"title\": \"Cap food delivery at {{cap}} a month\", \"rationale\": \"Food delivery spending is above its usual level. This cap keeps more cash in hand before payday.\", \"action\": \"cap_category\", \"params\": {\"category_key\": \"food.delivery\", \"monthly_cap_minor\": 20310}, \"cited\": [{\"kind\": \"finding\", \"id\": \"fnd:category_spike:food.delivery\", \"role\": \"trigger\"}]}, \"evidence\": [{\"id\": \"fnd:category_spike:food.delivery\", \"kind\": \"finding\", \"type\": \"category_spike\", \"about\": \"food.delivery\", \"summary\": \"Spending in food.delivery over the last 30 days is well above its usual level for the previous three months.\"}], \"deterministic_checks\": [\"V-01\", \"V-02\", \"V-03\", \"V-04\", \"V-05\", \"V-06\", \"V-07\", \"V-08\", \"V-09\", \"V-10\", \"V-14\", \"V-15\", \"V-16\", \"V-17\", \"V-18\", \"V-19\", \"V-20\"], \"context\": {\"joint\": false, \"betting\": false, \"betting_opt_in\": false}}}",
         "role": "user"
       }
     ],
@@ -75,15 +76,17 @@
     "temperature": 0.0,
     "tier": "verifier"
   },
-  "request_hash": "12402982ec06e4d1d2f6fddfd664f668d72cdd128da078fbdc5a949b09d9ba57",
+  "request_hash": "0d9a56c9d921ea4824b83beed2cee83ac960e837a70c715a8abf2289a2d785b9",
   "response": {
-    "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast supports the buffer-impact rationale, with the purchase-date impact already recomputed by deterministic checks.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The action specifies moving the Holiday purchase from 2026-11-06 to 2026-12-01.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, and its future claims stay within the cash-flow forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Rescheduling a holiday purchase is within scope and does not advise on restricted financial products or tax steps.\"}]}",
-    "provider_response_id": "chatcmpl-EYW8NUFamsgWblXJ3YIciqgDxVDTN",
+    "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports elevated food-delivery spending, and a cap directly limits that spending.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and specifies a clear monthly spending cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, without unsupported guarantees about the future.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal is limited to a spending cap and contains no restricted financial advice or recommendations.\"}]}",
+    "cost_estimate_usd": 0.003088,
+    "latency_ms": 2788,
     "model": "gpt-6.1-sol",
+    "provider_response_id": "chatcmpl-EcjfsqIxEaKW8WpmrJd4JLXzRghof",
     "tool_arguments": null,
     "usage": {
-      "completion_tokens": 151,
-      "prompt_tokens": 905
+      "completion_tokens": 128,
+      "prompt_tokens": 904
     }
   }
 }

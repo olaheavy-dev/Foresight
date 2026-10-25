@@ -153,35 +153,52 @@ def test_scn_scoring_ignores_labels_and_unscored_one_off_categories() -> None:
     assert score_case(case, Parsed())["exact"] is True
 
 
-def test_moving_a_purchase_onto_the_last_payday_is_refused_before_verification() -> None:
-    """#55 review: on a horizon a what-if extended past 90 days, a payment moved to its closing
-    payday sits in no reported low, so its impact would show the payment vanishing. The impact
-    check refuses it; a move into a closed cycle still works."""
+@pytest.mark.parametrize("horizon", [90, 140])  # the usual forecast, and one a what-if extended
+def test_a_purchase_moved_onto_or_past_the_last_payday_is_paid_in_a_reported_low(
+    horizon: int,
+) -> None:
+    """#57 (and #55 review): a payment moved to the forecast's last payday, or past its horizon,
+    used to sit in no reported low, so its impact showed the payment vanishing and the
+    improvement could be approved. The impact now runs through the next payday, so the payment
+    is in a reported low; a move whose cycle can't close within 180 days is refused."""
     import dataclasses
     from datetime import timedelta
 
     from backend.agents.advice.impact import recompute_impact
-    from backend.finance_core.simulate import simulate
-    from backend.finance_core.types import ScenarioSpec
+    from backend.finance_core.simulate import MAX_HORIZON_DAYS, simulate
+    from backend.finance_core.types import ScenarioModifier, ScenarioSpec
 
     base = case_world(CASE)
     assert base.forecast_inputs is not None
-    inputs = dataclasses.replace(base.forecast_inputs, horizon_days=140)  # extended by a what-if
+    inputs = dataclasses.replace(base.forecast_inputs, horizon_days=horizon)
     world = dataclasses.replace(base, forecast_inputs=inputs)
-    cycles = simulate(inputs, ScenarioSpec("b", inputs.currency, ())).baseline.pay_cycles
-    last = cycles[-1].payday
+    last = simulate(inputs, ScenarioSpec("b", inputs.currency, ())).baseline.pay_cycles[-1].payday
+    start = inputs.as_of + timedelta(3)
 
     def move(to: Any) -> Any:
         return recompute_impact(
             _proposal(
                 action="move_purchase_date",
-                params={"amount_minor": 50_000, "from_date": str(inputs.as_of + timedelta(3)),
-                        "to_date": str(to), "label": "Laptop"},
+                params={"amount_minor": 50_000, "from_date": str(start), "to_date": str(to),
+                        "label": "Laptop"},
             ),
             world,
         )  # fmt: skip
 
-    refused = move(last).error
+    for to in (last, inputs.as_of + timedelta(days=horizon + 10)):
+        impact = move(to)
+        assert impact.error is None, impact.error
+        assert impact.after[-1].payday > to  # the cycle it's paid in closes
+        # Had the payment vanished, some reported low would be higher than it is.
+        refund = ScenarioModifier(
+            type="one_off_inflow", date=start, amount_minor=50_000, label="Laptop"
+        )
+        horizon_used = (impact.after[-1].payday - inputs.as_of).days
+        vanished = simulate(
+            dataclasses.replace(inputs, horizon_days=max(horizon_used, horizon)),
+            ScenarioSpec("v", inputs.currency, (refund,)),
+        ).simulated.pay_cycles
+        assert any(a.low_p50 < v.low.p50 for a, v in zip(impact.after, vanished, strict=False))
+    refused = move(inputs.as_of + timedelta(days=MAX_HORIZON_DAYS)).error
     assert refused is not None
-    assert "forecast ends before the pay cycle" in refused
     assert move(last - timedelta(days=3)).error is None

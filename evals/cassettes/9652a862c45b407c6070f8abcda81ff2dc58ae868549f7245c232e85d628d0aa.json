@@ -1,7 +1,8 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-20T21:04:41+00:00",
+  "provider": "openai",
+  "recorded_at": "2026-10-25T03:58:34+00:00",
   "request": {
     "max_tokens": 700,
     "messages": [
@@ -10,7 +11,7 @@
         "role": "system"
       },
       {
-        "content": "{\"data\": {\"proposal\": {\"title\": \"Bring food delivery back to its usual level\", \"rationale\": \"Cap food delivery at {{cap}} a month. Recent spending was above its usual level, so this keeps more cash in hand before payday.\", \"action\": \"cap_category\", \"params\": {\"category_key\": \"food.delivery\", \"monthly_cap_minor\": 20310}, \"cited\": [{\"kind\": \"finding\", \"id\": \"fnd:category_spike:food.delivery\", \"role\": \"trigger\"}]}, \"evidence\": [{\"id\": \"fnd:category_spike:food.delivery\", \"kind\": \"finding\", \"type\": \"category_spike\", \"about\": \"food.delivery\", \"summary\": \"Spending in food.delivery over the last 30 days is well above its usual level for the previous three months.\"}], \"deterministic_checks\": [\"V-01\", \"V-02\", \"V-03\", \"V-04\", \"V-05\", \"V-06\", \"V-07\", \"V-08\", \"V-09\", \"V-10\", \"V-14\", \"V-15\", \"V-16\", \"V-17\", \"V-18\", \"V-19\", \"V-20\"], \"context\": {\"joint\": false, \"betting\": false, \"betting_opt_in\": false}}}",
+        "content": "{\"data\": {\"proposal\": {\"title\": \"Cap food delivery at {{cap}} a month\", \"rationale\": \"Food delivery spending is above its usual level. Keeping it to {{cap}} would leave {{saving}} more cash in hand each month, based on recent spending.\", \"action\": \"cap_category\", \"params\": {\"category_key\": \"food.delivery\", \"monthly_cap_minor\": 20310}, \"cited\": [{\"kind\": \"finding\", \"id\": \"fnd:category_spike:food.delivery\", \"role\": \"trigger\"}, {\"kind\": \"forecast\", \"id\": \"fc:baseline\", \"role\": \"context\"}]}, \"evidence\": [{\"id\": \"fnd:category_spike:food.delivery\", \"kind\": \"finding\", \"type\": \"category_spike\", \"about\": \"food.delivery\", \"summary\": \"Spending in food.delivery over the last 30 days is well above its usual level for the previous three months.\"}, {\"id\": \"fc:baseline\", \"kind\": \"forecast\", \"summary\": \"Baseline cash-flow forecast for the coming pay cycles, including the lowest balance before each payday and the chance of going below the buffer.\"}], \"deterministic_checks\": [\"V-01\", \"V-02\", \"V-03\", \"V-04\", \"V-05\", \"V-06\", \"V-07\", \"V-08\", \"V-09\", \"V-10\", \"V-14\", \"V-15\", \"V-16\", \"V-17\", \"V-18\", \"V-19\", \"V-20\"], \"context\": {\"joint\": false, \"betting\": false, \"betting_opt_in\": false}}}",
         "role": "user"
       }
     ],
@@ -75,17 +76,17 @@
     "temperature": 0.0,
     "tier": "verifier"
   },
-  "request_hash": "b15892a9f5e02d00f7f9eef23534152c27183d2812fd631000a6a977f932c3cb",
+  "request_hash": "9652a862c45b407c6070f8abcda81ff2dc58ae868549f7245c232e85d628d0aa",
   "response": {
-    "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports that recent food-delivery spending exceeded its usual level, grounding the proposed cap.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and specifies a monthly cap that can be applied today.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported guarantee about the future.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation is limited to a spending cap and contains no restricted financial advice or recommendations.\"}]}",
-    "cost_estimate_usd": 0.003164,
-    "latency_ms": 5206,
-    "provider_response_id": "chatcmpl-EbBIa4bQuecTIXWrnIkNdUmR8VW2m",
+    "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited category-spike finding supports elevated food-delivery spending, and the savings impact has been recomputed.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and specifies a concrete monthly cap and clear action.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported claims beyond the forecast.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation is a spending cap and contains no restricted financial advice or recommendations.\"}]}",
+    "cost_estimate_usd": 0.003294,
+    "latency_ms": 2446,
     "model": "gpt-6.1-sol",
+    "provider_response_id": "chatcmpl-EcjfMEOqlNumm6r2318Wfu2p0CkvX",
     "tool_arguments": null,
     "usage": {
-      "completion_tokens": 134,
-      "prompt_tokens": 912
+      "completion_tokens": 133,
+      "prompt_tokens": 982
     }
   }
 }
