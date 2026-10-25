@@ -38,17 +38,20 @@ def transactions(
     q: str | None = Query(default=None, max_length=80, description="Search narration and payee"),
     review: bool = Query(default=False, description="Only rows to review (docs/01 F-07)"),
     finding: str | None = Query(
-        default=None, max_length=32, description="Only the rows a finding counts (evidence chain)"
+        default=None,
+        max_length=32,
+        description="Only the rows a finding counts (evidence chain): a finding id for its "
+        "current rows, or the calc id a stored answer froze them under",
     ),
     limit: int = Query(default=100, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
 ) -> TransactionPage:
     ids = None
     if finding is not None:
-        found = ctx.get(m.Finding, finding)
+        found = views.finding_rows(ctx, finding)
         if found is None:  # another profile's finding is not found, never forbidden
             raise HTTPException(status.HTTP_404_NOT_FOUND, "No such finding in this profile.")
-        ids = [t.id for t in views.finding_transactions(ctx, found.txn_query or {})]
+        ids = [t.id for t in found]
     total, rows = ctx.transaction_page(
         ids=ids,
         date_from=date_from,

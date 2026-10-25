@@ -46,7 +46,7 @@ from backend.app.ui_contracts.primitives import (
     Scope,
     Tone,
 )
-from backend.finance_core.calc import content_hash
+from backend.finance_core.calc import content_hash, record
 from backend.finance_core.types import ForecastInputs, ForecastResult, ScenarioSpec
 from backend.storage import models as m
 from backend.storage.repositories import WorkspaceContext
@@ -394,6 +394,50 @@ def finding_link(finding_id: str) -> str:
     return f"/transactions?finding={finding_id}"
 
 
+FINDING_ROWS_VERSION = "finding-rows-1"
+
+
+def snapshot_finding_rows(
+    ctx: WorkspaceContext, finding: m.Finding, txns: list[m.Transaction]
+) -> str:
+    """Freeze the rows a finding counts right now as a calculation, so a stored answer's "See
+    these transactions" keeps listing the rows its evidence describes after a findings refresh
+    rewrites the finding's `txn_query` (#63). The same rows map to the same id."""
+    ids = sorted(t.id for t in txns)
+    params = {"finding_id": finding.id, "data_version": int(ctx.workspace.data_version or 0)}
+    calc = record("finding_rows", ids, params, {"transaction_ids": ids}, FINDING_ROWS_VERSION)
+    if ctx.calculation(calc.id) is None:
+        ctx.add(
+            m.Calculation(
+                id=calc.id,
+                kind=calc.kind,
+                inputs_hash=calc.inputs_hash,
+                params=calc.params,
+                result=calc.result,
+                engine_version=FINDING_ROWS_VERSION,
+                data_version=params["data_version"],
+            )
+        )
+        ctx.session.flush()
+    return calc.id
+
+
+def finding_rows(ctx: WorkspaceContext, ref: str) -> list[m.Transaction] | None:
+    """The rows behind a `?finding=` link: a finding's current rows (`fnd_…`, Home), or the rows
+    a stored answer froze (`calc_…`, #63). None when the ref isn't in this workspace."""
+    if ref.startswith("calc_"):
+        calc = ctx.calculation(ref)
+        if calc is None or calc.kind != "finding_rows":
+            return None
+        ids = sorted((calc.result or {}).get("transaction_ids") or [])
+        if not ids:
+            return []
+        rows = ctx.select(m.Transaction).where(m.Transaction.id.in_(ids))
+        return list(ctx.session.scalars(rows))
+    found = ctx.get(m.Finding, ref)
+    return None if found is None else finding_transactions(ctx, found.txn_query or {})
+
+
 def finding_transactions(ctx: WorkspaceContext, query: dict[str, Any]) -> list[m.Transaction]:
     """The transactions a finding counts (its `txn_query`): a category over a window, or the
     payments of one or more recurring bills. The Evidence drawer shows these as its source."""
@@ -439,12 +483,17 @@ EVIDENCE_ITEMS = 8  # EvidencePanel.items max_length
 
 
 def recommendation_evidence(
-    ctx: WorkspaceContext, cards: Sequence[InterventionCard], limit: int = EVIDENCE_ITEMS
+    ctx: WorkspaceContext,
+    cards: Sequence[InterventionCard],
+    limit: int = EVIDENCE_ITEMS,
+    *,
+    snapshot: bool = False,
 ) -> list[EvidenceItem]:
     """The chain behind shown recommendations (docs/06 §10.2, mandatory F), from stored records
     only: each card's Verifier item first (its citation must resolve), then the findings that
     triggered them, with the transactions each counts and the imports they came from; at most
-    `limit` items, so a panel always validates (#62 review)."""
+    `limit` items, so a panel always validates (#62 review). With `snapshot` (a stored answer),
+    each finding's link lists the rows counted now, not whatever the finding counts later (#63)."""
     checks = [c for c in (_verification_item(ctx, card) for card in cards) if c is not None]
     findings: list[EvidenceItem] = []
     seen: set[str] = set()
@@ -453,7 +502,7 @@ def recommendation_evidence(
             fid = ref.split("#")[0]
             if fid.startswith("fnd_") and fid not in seen:
                 seen.add(fid)
-                item = _finding_item(ctx, fid)
+                item = _finding_item(ctx, fid, snapshot=snapshot)
                 if item is not None:
                     findings.append(item)
     return [*checks, *findings][:limit]
@@ -492,7 +541,9 @@ def _verification_item(ctx: WorkspaceContext, card: InterventionCard) -> Evidenc
     )
 
 
-def _finding_item(ctx: WorkspaceContext, finding_id: str) -> EvidenceItem | None:
+def _finding_item(
+    ctx: WorkspaceContext, finding_id: str, *, snapshot: bool = False
+) -> EvidenceItem | None:
     finding = ctx.get(m.Finding, finding_id)
     headline = finding_text(finding.headline, ctx) if finding else None
     if finding is None or not headline:
@@ -527,7 +578,7 @@ def _finding_item(ctx: WorkspaceContext, finding_id: str) -> EvidenceItem | None
             else None
         ),
         source_chain=chain,
-        link=finding_link(finding.id),
+        link=finding_link(snapshot_finding_rows(ctx, finding, txns) if snapshot else finding.id),
     )
 
 
