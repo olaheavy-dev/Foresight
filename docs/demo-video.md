@@ -8,6 +8,18 @@ The two-minute narrated demo is made from three parts:
 
 Everything runs locally. The voice recording, the cloned audio and the video stay in `tools/demo/voice/` and `tools/demo/out/`, which git ignores. **Never commit a voice recording**: a short sample is enough for anyone to clone the voice.
 
+## Saved videos
+
+In `docs/assets/demo/`, all from the walkthrough recorded on 25 Oct 2026 and narrated in the first cloned voice:
+
+| File | What |
+|---|---|
+| `foresight-demo-real-time.mp4` | 2:05. The agent waits play at their real speed (25 s and 16 s), labelled. **Use this one** when latency matters. |
+| `foresight-demo-sped-up.mp4` | 1:36. The same, with the two waits sped up 3× and 5×, labelled. |
+| `walkthrough-2026-10-25.webm` | The raw, silent recording. Rebuild from it with no new recording (and no model spend): `build.py --video docs/assets/demo/walkthrough-2026-10-25.webm --timings tools/demo/timings.json`. |
+
+A fuller walkthrough that scrolls through each answer and narrates it in detail is a follow-up: #82.
+
 ## One-time setup (macOS, Apple Silicon)
 
 ```bash
