@@ -8,7 +8,11 @@ So copies are seeded ahead of time in one separate worker process and kept unown
 and refills wait until claims have been quiet for REFILL_DELAY_SECONDS: a seed is a burst of
 database writes, and running it while a guest loads their first pages made those pages time out
 on a small machine. If the pool is empty, the request waits for the worker (the guest sees
-"Opening the demo…") rather than seeding in the API process.
+"Opening the demo…") rather than seeding in the API process: it takes the first copy any pending
+seed makes, rather than queueing one more seed behind them. Under steady traffic claims are
+never quiet, so a claim that empties the pool starts one seed at once (one at a time, in the
+worker): otherwise every later visitor waits for a seed of their own, and "Reset demo", which
+needs a second copy, ran past 30 s in the post-deploy smoke (23 Oct 2026).
 
 `DEMO_POOL_SIZE=0` turns the pool off and seeds inline (tests).
 """
@@ -18,7 +22,8 @@ from __future__ import annotations
 import logging
 import multiprocessing
 import threading
-from concurrent.futures import Future, ProcessPoolExecutor
+import time
+from concurrent.futures import FIRST_COMPLETED, Future, ProcessPoolExecutor, wait
 
 from sqlalchemy import Select, func, select
 from sqlalchemy.orm import Session
@@ -35,7 +40,7 @@ UNOWNED = {"owner_user_id": None, "owner_session_id": None}
 
 _lock = threading.Lock()
 _executor: ProcessPoolExecutor | None = None
-_pending: dict[str, int] = {}
+_pending: dict[str, set[Future[str]]] = {}
 _refills: dict[str, threading.Timer] = {}
 
 
@@ -65,15 +70,16 @@ def _pool() -> ProcessPoolExecutor:
 
 
 def _submit(persona: str) -> Future[str]:
-    _pending[persona] = _pending.get(persona, 0) + 1
+    """Queue one seed (the caller holds _lock)."""
 
     def done(fut: Future[str]) -> None:
         with _lock:
-            _pending[persona] -= 1
+            _pending[persona].discard(fut)
         if fut.exception() is not None:
             log.warning("demo pool: seeding %s failed: %s", persona, fut.exception())
 
     fut = _pool().submit(seed_unowned, get_settings().database_url, persona)
+    _pending.setdefault(persona, set()).add(fut)
     fut.add_done_callback(done)
     return fut
 
@@ -93,28 +99,37 @@ def top_up(db: Session, persona: str) -> None:
         return
     ready = db.scalar(select(func.count()).select_from(_unowned(persona).subquery())) or 0
     with _lock:
-        for _ in range(get_settings().demo_pool_size - ready - _pending.get(persona, 0)):
+        for _ in range(get_settings().demo_pool_size - ready - len(_pending.get(persona, ()))):
             _submit(persona)
 
 
+def _take(db: Session, persona: str) -> m.Workspace | None:
+    stmt = _unowned(persona).order_by(m.Workspace.created_at).limit(1)
+    return db.scalars(stmt.with_for_update(skip_locked=True)).first()
+
+
 def claim(db: Session, persona: str, owner: dict[str, str | None]) -> m.Workspace | None:
-    """Give one pooled copy to `owner` (the caller commits). Waits for the worker if the pool is
-    empty; seeds inline only when the pool is turned off."""
+    """Give one pooled copy to `owner` (the caller commits). If the pool is empty, waits for the
+    first copy a pending seed makes (starting one if none is pending), up to SEED_WAIT_SECONDS,
+    then raises TimeoutError. Seeds inline only when the pool is turned off."""
     if not enabled():
         spec = next(p for p in PERSONAS if p.key == persona)
         report = seed_persona(db, dataset_root(), spec, owner=owner)
         seeded: m.Workspace | None = db.get(m.Workspace, report.workspace_id)
         return seeded
-    stmt = _unowned(persona).order_by(m.Workspace.created_at).limit(1)
-    ws = db.scalars(stmt.with_for_update(skip_locked=True)).first()
-    if ws is None:
+    deadline = time.monotonic() + SEED_WAIT_SECONDS
+    while (ws := _take(db, persona)) is None:
         with _lock:
-            fut = _submit(persona)
-        fresh = fut.result(timeout=SEED_WAIT_SECONDS)
-        stmt = _unowned(persona).where(m.Workspace.id == fresh)
-        ws = db.scalars(stmt.with_for_update(skip_locked=True)).first()
-    if ws is None:
-        return None
+            seeds = set(_pending.get(persona, ())) or {_submit(persona)}
+        left = deadline - time.monotonic()
+        if left <= 0 or not wait(seeds, timeout=left, return_when=FIRST_COMPLETED)[0]:
+            raise TimeoutError(f"no {persona} demo copy within {SEED_WAIT_SECONDS} s")
+    if persona in POOLED:
+        # Keep one coming: the copy just taken is still unowned (and locked) until this commits.
+        ready = db.scalar(select(func.count()).select_from(_unowned(persona).subquery())) or 0
+        with _lock:
+            if ready <= 1 and not _pending.get(persona):
+                _submit(persona)
     ws.owner_user_id = owner["owner_user_id"]
     ws.owner_session_id = owner["owner_session_id"]
     return ws
