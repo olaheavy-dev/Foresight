@@ -77,11 +77,13 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
   const [problem, setProblem] = useState<string | null>(null);
   const [result, setResult] = useState<{ view: SimulationView; name: string } | null>(null);
   // The forecast's date (null if it couldn't load); a spread waits for it, never using today.
+  // Fetched once, when a spread is first chosen or run: no other change needs it, and after a
+  // ledger change it builds a fresh forecast (#49).
   const asOf = useRef<Promise<string | null> | null>(null);
   const latest = useRef(0);
+  const forecastDate = () => (asOf.current ??= fetchForecast().then((f) => f?.chart.as_of ?? null));
 
   useEffect(() => {
-    asOf.current = fetchForecast().then((f) => f?.chart.as_of ?? null);
     void fetchDetected().then((f) => {
       setFlows(f);
       setRecurring(f?.recurring[0]?.recurring_id ?? "");
@@ -158,7 +160,7 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
     const ticket = ++latest.current; // only the latest submission may publish its outcome
     setResult(null); // a new run never shows the last one's figures beside its own outcome
     setBusy(true); // locked from here, including while a spread waits for the forecast's date
-    const built = build(kind === "spread" ? ((await asOf.current) ?? null) : null);
+    const built = build(kind === "spread" ? await forecastDate() : null);
     if (ticket !== latest.current) return;
     if (typeof built === "string") {
       setBusy(false);
@@ -189,6 +191,7 @@ export function DecisionLab({ currency, locale, timeZone }: { currency: string; 
     setProblem(null);
     if (next === "income") setPct("-10");
     if (next === "cut") setPct("20");
+    if (next === "spread") void forecastDate(); // ready by the time the form is filled in
   };
 
   const block: ScenarioComparison | null = result
