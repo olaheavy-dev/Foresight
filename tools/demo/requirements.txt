@@ -1,0 +1,5 @@
+# The demo video's voice-over and editing (docs/demo-video.md). Not app dependencies: install them
+# in their own Python 3.11 environment, never in the app's.
+chatterbox-tts==0.1.7
+setuptools<81  # resemble-perth (Chatterbox's watermark) still imports pkg_resources
+pillow

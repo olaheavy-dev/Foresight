@@ -18,6 +18,7 @@ async function glide(page: Page, y: number) {
 
 test("Foresight in three minutes", async ({ page }) => {
   // Landing, then the demo: a private copy of a fictional profile.
+  mark("scene 01-intro"); // scene names match tools/demo/script.md
   await page.context().clearCookies();
   await page.goto("/");
   await beat(page, 2_500);
@@ -28,10 +29,12 @@ test("Foresight in three minutes", async ({ page }) => {
   await beat(page, 2_500);
 
   // Home: the forecast with its pay-cycle lows, then the findings.
+  mark("scene 02-forecast");
   await glide(page, 500);
   await glide(page, 500);
 
   // A proactive check: findings in, checked advice out, and how it was checked.
+  mark("scene 03-proactive");
   const check = page.getByRole("button", { name: "Run the proactive check" });
   if (await check.isVisible()) {
     await check.scrollIntoViewIfNeeded();
@@ -51,6 +54,7 @@ test("Foresight in three minutes", async ({ page }) => {
   }
 
   // The AI Workspace: one question, its checks as they happen, then the answer.
+  mark("scene 04-ask");
   await page.goto("/workspace");
   await beat(page, 1_500);
   await page.getByLabel("Ask a question").fill("Can I afford a £1,200 holiday in December?");
@@ -62,6 +66,7 @@ test("Foresight in three minutes", async ({ page }) => {
     timeout: 120_000,
   });
   mark("wait-end answer");
+  mark("scene 05-answer");
   await beat(page, 3_000);
   await glide(page, 500);
   await glide(page, -500);
@@ -75,6 +80,7 @@ test("Foresight in three minutes", async ({ page }) => {
   }
 
   // The Decision Lab: spread a purchase, on the same simulated paths.
+  mark("scene 06-lab");
   await page.goto("/lab");
   await beat(page, 1_500);
   await page.getByRole("radio", { name: /Spread a purchase/ }).check();
@@ -85,6 +91,7 @@ test("Foresight in three minutes", async ({ page }) => {
   await beat(page, 3_000);
 
   // Goals: save by a date, from what's spare above the buffer.
+  mark("scene 07-goals");
   const add = page.getByRole("form", { name: "Add goal" });
   await add.scrollIntoViewIfNeeded();
   await add.getByLabel("Goal").fill("Trip home");
@@ -98,6 +105,7 @@ test("Foresight in three minutes", async ({ page }) => {
   await beat(page, 3_000);
 
   // A finding's exact transactions, then Activity: every agent run as a trace.
+  mark("scene 08-evidence");
   await page.goto("/home");
   await beat(page, 1_000);
   const rows = page.getByRole("link", { name: /See the transactions/ }).first();
@@ -107,6 +115,7 @@ test("Foresight in three minutes", async ({ page }) => {
     await page.waitForURL("**/transactions**");
     await beat(page, 3_000);
   }
+  mark("scene 09-close");
   await page.goto("/activity");
   await beat(page, 2_000);
   await glide(page, 500);
