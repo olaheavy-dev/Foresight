@@ -1,0 +1,1624 @@
+{
+  "duration_s": 0.58,
+  "error": null,
+  "metrics": {
+    "ctx1_followup_intent_accuracy": 0.9556,
+    "ctx2_followup_slot_exact_match": 0.6444,
+    "ctx3_standalone_adequacy": 0.8889,
+    "ctx4_paraphrase_cache_hit_rate": 0.9,
+    "ctx5_near_miss_false_hits": 0,
+    "ctx6": {
+      "model_calls_per_cache_hit_after_understand": 0,
+      "model_calls_per_cache_miss": 1,
+      "recorded_tokens_total": 447216,
+      "replay_seconds": 0.58
+    },
+    "detail": [
+      {
+        "case": "CTX-C001",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "Can I afford a \u00a31,200 holiday in November?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C001",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "Can I afford an \u00a3800 holiday in November?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C001",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford an \u00a3800 holiday in December instead?",
+        "standalone_alone_same": true,
+        "turn": 3
+      },
+      {
+        "case": "CTX-C002",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 6 Nov?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C002",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "Can I afford to pay \u00a31,200 for a holiday after payday?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C003",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,500 holiday on 1 Dec?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C003",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,000 holiday on 1 Dec?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C004",
+        "intent": "spending_breakdown",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "Where does my money go?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C004",
+        "intent": "transaction_lookup",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "Show me the transactions that make up where my money goes.",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C005",
+        "intent": "trend_or_change",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "Why is food delivery up?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C005",
+        "intent": "transaction_lookup",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "Which food delivery orders?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C005",
+        "intent": "advice_request",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "What should I do about the increase in my food delivery spending?",
+        "standalone_alone_same": true,
+        "turn": 3
+      },
+      {
+        "case": "CTX-C006",
+        "intent": "trend_or_change",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Has eating out gone up?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C006",
+        "intent": "trend_or_change",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Has spending on taxis gone up?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C007",
+        "intent": "spending_breakdown",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "How much on groceries last month?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C007",
+        "intent": "spending_breakdown",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "How much did I spend on groceries in August 2026?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C008",
+        "intent": "subscription_review",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Which subscriptions am I paying for?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C008",
+        "intent": "subscription_review",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Do any of my subscriptions overlap?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C008",
+        "intent": "scenario",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "What if I cancel Sky?",
+        "standalone_alone_same": true,
+        "turn": 3
+      },
+      {
+        "case": "CTX-C009",
+        "intent": "subscription_review",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "Did Spotify get more expensive?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C009",
+        "intent": "subscription_review",
+        "intent_ok": false,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "When did Spotify get more expensive?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C010",
+        "intent": "risk_check",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "Am I OK this month?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C010",
+        "intent": "explain_recommendation",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Why am I not OK this month?",
+        "standalone_alone_same": false,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C010",
+        "intent": "advice_request",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "What can I do about not being OK this month?",
+        "standalone_alone_same": true,
+        "turn": 3
+      },
+      {
+        "case": "CTX-C011",
+        "intent": "risk_check",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Will I get through to payday?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C011",
+        "intent": "risk_check",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "Will I get through to payday next month?",
+        "standalone_alone_same": false,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C012",
+        "intent": "scenario",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "What if my pay is 10 days late?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C012",
+        "intent": "scenario",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "What if my pay is two weeks late?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C012",
+        "intent": "scenario",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "What if my pay is two weeks late every month?",
+        "standalone_alone_same": true,
+        "turn": 3
+      },
+      {
+        "case": "CTX-C013",
+        "intent": "scenario",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "What if rent goes up to \u00a31,300 from February 2027?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C013",
+        "intent": "scenario",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "What if rent goes up to \u00a31,350 from February 2027?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C014",
+        "intent": "scenario",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "What if I lose my job for two months?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C014",
+        "intent": "advice_request",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "What should I cut if I lose my job for two months?",
+        "standalone_alone_same": false,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C015",
+        "intent": "goal_status",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Am I on track for my emergency fund?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C015",
+        "intent": "scenario",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "What if I add \u00a350 a month to my emergency fund?",
+        "standalone_alone_same": false,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C016",
+        "intent": "explain_recommendation",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "Why did you recommend moving my savings transfer?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C016",
+        "intent": "explain_recommendation",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "What did you reject first when recommending moving my savings transfer?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C017",
+        "intent": "transaction_lookup",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Show my Deliveroo orders",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C017",
+        "intent": "transaction_lookup",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Show my Deliveroo orders over \u00a315.",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C018",
+        "intent": "transaction_lookup",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "List payments over \u00a3100 this month.",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C018",
+        "intent": "transaction_lookup",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "List payments over \u00a3100 last month.",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C019",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "Can I buy a \u00a3350 phone?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C019",
+        "intent": "affordability",
+        "intent_ok": false,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I buy a \u00a3350 phone on Klarna in 3 instalments?",
+        "standalone_alone_same": false,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C020",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "Can I afford Christmas presents of \u00a3400?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C020",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": false,
+        "standalone": "Can I afford Christmas presents of \u00a3600?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C021",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 6 Nov?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C021",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a3900 holiday on 6 November 2026?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C022",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,000 holiday on 6 Nov?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C022",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a3700 holiday on 6 November 2026?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C023",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a3600 holiday on 6 November 2026?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C023",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a3450 holiday on 6 November 2026?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C024",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a32,000 holiday on 6 Nov?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C024",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,500 holiday on 6 November?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C025",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a3500 holiday on 6 November 2026?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C025",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a3300 holiday on 6 November 2026?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C026",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a3900 holiday on 6 November 2026?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C026",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 6 November 2026?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C027",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a3300 holiday on 6 Nov?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C027",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a3250 holiday on 6 Nov?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C028",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,500 holiday on 6 Nov?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C028",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,100 holiday on 6 Nov?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C029",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a3750 holiday on 6 Nov?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C029",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a3950 holiday on 6 Nov?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C030",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a3400 holiday on 6 Nov?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C030",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a3550 holiday on 6 Nov?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C031",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 6 Nov?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C031",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 28 November 2026 instead?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C032",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 6 Nov?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C032",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 1 December instead?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C033",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 6 Nov?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C033",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 18 December 2026 instead?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C034",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 6 Nov?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C034",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 20 November instead?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C035",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 6 Nov?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C035",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 5 December 2026?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C036",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 6 Nov?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C036",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 29 November instead?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C037",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 6 Nov?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C037",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 10 December 2026 instead?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C038",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 6 Nov?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C038",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 30 November instead?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C039",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 6 Nov?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C039",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 19 December instead?",
+        "standalone_alone_same": true,
+        "turn": 2
+      },
+      {
+        "case": "CTX-C040",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 6 Nov?",
+        "turn": 1
+      },
+      {
+        "case": "CTX-C040",
+        "intent": "affordability",
+        "intent_ok": true,
+        "recorded": true,
+        "slots_ok": true,
+        "standalone": "Can I afford a \u00a31,200 holiday on 27 November instead?",
+        "standalone_alone_same": true,
+        "turn": 2
+      }
+    ],
+    "followup_turns_scored": 45,
+    "mode": "replay",
+    "not_recorded": 0,
+    "pairs": [
+      {
+        "a": [
+          "affordability",
+          {
+            "amount_minor": 120000,
+            "date": "2026-11-06",
+            "purpose": "holiday"
+          }
+        ],
+        "b": [
+          "affordability",
+          {
+            "amount_minor": 120000,
+            "date": "2026-11-06",
+            "purpose": "trip"
+          }
+        ],
+        "case": "CTX-P001",
+        "hit": true,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "scenario",
+          {
+            "days": 10,
+            "modifier": "income_delay"
+          }
+        ],
+        "b": [
+          "scenario",
+          {
+            "days": 10,
+            "modifier": "income_delay"
+          }
+        ],
+        "case": "CTX-P002",
+        "hit": true,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "spending_breakdown",
+          {}
+        ],
+        "b": [
+          "spending_breakdown",
+          {}
+        ],
+        "case": "CTX-P003",
+        "hit": true,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "trend_or_change",
+          {
+            "category_key": "food.delivery"
+          }
+        ],
+        "b": [
+          "trend_or_change",
+          {
+            "category_key": "food.delivery"
+          }
+        ],
+        "case": "CTX-P004",
+        "hit": true,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "subscription_review",
+          {}
+        ],
+        "b": [
+          "subscription_review",
+          {}
+        ],
+        "case": "CTX-P005",
+        "hit": true,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "risk_check",
+          {
+            "period": "this_month"
+          }
+        ],
+        "b": [
+          "risk_check",
+          {
+            "window": "to_next_payday"
+          }
+        ],
+        "case": "CTX-P006",
+        "hit": false,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "scenario",
+          {
+            "amount_minor": 130000,
+            "date": "2027-02-01",
+            "modifier": "recurring_change",
+            "purpose": "rent"
+          }
+        ],
+        "b": [
+          "scenario",
+          {
+            "amount_minor": 130000,
+            "date": "2027-02-01",
+            "modifier": "recurring_change",
+            "purpose": "rent"
+          }
+        ],
+        "case": "CTX-P007",
+        "hit": true,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "transaction_lookup",
+          {
+            "category_key": "food.delivery",
+            "merchant": "Deliveroo"
+          }
+        ],
+        "b": [
+          "transaction_lookup",
+          {
+            "merchant": "Deliveroo"
+          }
+        ],
+        "case": "CTX-P008",
+        "hit": false,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "subscription_review",
+          {
+            "focus": "overlap"
+          }
+        ],
+        "b": [
+          "subscription_review",
+          {
+            "focus": "overlap"
+          }
+        ],
+        "case": "CTX-P009",
+        "hit": true,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "advice_request",
+          {}
+        ],
+        "b": [
+          "advice_request",
+          {}
+        ],
+        "case": "CTX-P010",
+        "hit": true,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "scenario",
+          {
+            "modifier": "income_change_pct",
+            "months": 2,
+            "pct": -100
+          }
+        ],
+        "b": [
+          "scenario",
+          {
+            "modifier": "income_change_pct",
+            "months": 2,
+            "pct": -100
+          }
+        ],
+        "case": "CTX-P011",
+        "hit": true,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "affordability",
+          {
+            "amount_minor": 80000,
+            "date": "2026-11-06",
+            "purpose": "trip"
+          }
+        ],
+        "b": [
+          "affordability",
+          {
+            "amount_minor": 80000,
+            "date": "2026-11-06",
+            "purpose": "trip"
+          }
+        ],
+        "case": "CTX-P012",
+        "hit": true,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "trend_or_change",
+          {
+            "category_key": "food.eating_out"
+          }
+        ],
+        "b": [
+          "trend_or_change",
+          {
+            "category_key": "food.eating_out"
+          }
+        ],
+        "case": "CTX-P013",
+        "hit": true,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "subscription_review",
+          {
+            "focus": "price_change",
+            "merchant": "Spotify"
+          }
+        ],
+        "b": [
+          "subscription_review",
+          {
+            "focus": "price_change",
+            "merchant": "Spotify"
+          }
+        ],
+        "case": "CTX-P014",
+        "hit": true,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "spending_breakdown",
+          {
+            "category_key": "groceries",
+            "period": "last_month"
+          }
+        ],
+        "b": [
+          "spending_breakdown",
+          {
+            "category_key": "groceries",
+            "period": "last_month"
+          }
+        ],
+        "case": "CTX-P015",
+        "hit": true,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "risk_check",
+          {
+            "window": "to_next_payday"
+          }
+        ],
+        "b": [
+          "risk_check",
+          {
+            "window": "to_next_payday"
+          }
+        ],
+        "case": "CTX-P016",
+        "hit": true,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "affordability",
+          {
+            "amount_minor": 35000,
+            "date": "2026-10-20",
+            "purpose": "phone"
+          }
+        ],
+        "b": [
+          "affordability",
+          {
+            "amount_minor": 35000,
+            "date": "2026-10-20",
+            "purpose": "phone"
+          }
+        ],
+        "case": "CTX-P017",
+        "hit": true,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "scenario",
+          {
+            "merchant": "Sky",
+            "modifier": "recurring_cancel"
+          }
+        ],
+        "b": [
+          "scenario",
+          {
+            "merchant": "Sky",
+            "modifier": "recurring_cancel"
+          }
+        ],
+        "case": "CTX-P018",
+        "hit": true,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "affordability",
+          {
+            "amount_minor": 40000,
+            "date": "2026-12-12",
+            "purpose": "christmas_present"
+          }
+        ],
+        "b": [
+          "affordability",
+          {
+            "amount_minor": 40000,
+            "date": "2026-12-12",
+            "purpose": "present"
+          }
+        ],
+        "case": "CTX-P019",
+        "hit": true,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "goal_status",
+          {
+            "goal": "emergency_fund"
+          }
+        ],
+        "b": [
+          "goal_status",
+          {
+            "goal": "emergency_fund"
+          }
+        ],
+        "case": "CTX-P020",
+        "hit": true,
+        "kind": "paraphrase_pair"
+      },
+      {
+        "a": [
+          "affordability",
+          {
+            "amount_minor": 120000,
+            "date": "2026-11-06",
+            "purpose": "holiday"
+          }
+        ],
+        "b": [
+          "affordability",
+          {
+            "amount_minor": 80000,
+            "date": "2026-11-06",
+            "purpose": "holiday"
+          }
+        ],
+        "case": "CTX-N001",
+        "hit": false,
+        "kind": "near_miss_pair"
+      },
+      {
+        "a": [
+          "affordability",
+          {
+            "amount_minor": 120000,
+            "date": "2026-11-06",
+            "purpose": "holiday"
+          }
+        ],
+        "b": [
+          "affordability",
+          {
+            "amount_minor": 120000,
+            "date": "2026-11-28",
+            "purpose": "holiday"
+          }
+        ],
+        "case": "CTX-N002",
+        "hit": false,
+        "kind": "near_miss_pair"
+      },
+      {
+        "a": [
+          "scenario",
+          {
+            "days": 10,
+            "modifier": "income_delay"
+          }
+        ],
+        "b": [
+          "scenario",
+          {
+            "days": 14,
+            "modifier": "income_delay"
+          }
+        ],
+        "case": "CTX-N003",
+        "hit": false,
+        "kind": "near_miss_pair"
+      },
+      {
+        "a": [
+          "trend_or_change",
+          {
+            "category_key": "food.delivery"
+          }
+        ],
+        "b": [
+          "trend_or_change",
+          {
+            "category_key": "food.eating_out"
+          }
+        ],
+        "case": "CTX-N004",
+        "hit": false,
+        "kind": "near_miss_pair"
+      },
+      {
+        "a": [
+          "spending_breakdown",
+          {
+            "category_key": "groceries",
+            "period": "last_month"
+          }
+        ],
+        "b": [
+          "spending_breakdown",
+          {
+            "category_key": "groceries",
+            "period": "this_month"
+          }
+        ],
+        "case": "CTX-N005",
+        "hit": false,
+        "kind": "near_miss_pair"
+      },
+      {
+        "a": [
+          "scenario",
+          {
+            "amount_minor": 130000,
+            "date": "2027-02-01",
+            "modifier": "recurring_change",
+            "purpose": "rent"
+          }
+        ],
+        "b": [
+          "scenario",
+          {
+            "amount_minor": 130000,
+            "date": "2027-03-01",
+            "modifier": "recurring_change",
+            "purpose": "rent"
+          }
+        ],
+        "case": "CTX-N006",
+        "hit": false,
+        "kind": "near_miss_pair"
+      },
+      {
+        "a": [
+          "scenario",
+          {
+            "amount_minor": 130000,
+            "date": "2027-02-01",
+            "modifier": "recurring_change",
+            "purpose": "rent"
+          }
+        ],
+        "b": [
+          "scenario",
+          {
+            "amount_minor": 135000,
+            "modifier": "recurring_change"
+          }
+        ],
+        "case": "CTX-N007",
+        "hit": false,
+        "kind": "near_miss_pair"
+      },
+      {
+        "a": [
+          "transaction_lookup",
+          {
+            "category_key": "food.delivery",
+            "merchant": "Deliveroo"
+          }
+        ],
+        "b": [
+          "transaction_lookup",
+          {
+            "category_key": "food.delivery",
+            "merchant": "Uber Eats"
+          }
+        ],
+        "case": "CTX-N008",
+        "hit": false,
+        "kind": "near_miss_pair"
+      },
+      {
+        "a": [
+          "affordability",
+          {
+            "amount_minor": 35000,
+            "date": "2026-10-20",
+            "purpose": "phone"
+          }
+        ],
+        "b": [
+          "affordability",
+          {
+            "amount_minor": 35000,
+            "date": "2026-11-20",
+            "purpose": "phone"
+          }
+        ],
+        "case": "CTX-N009",
+        "hit": false,
+        "kind": "near_miss_pair"
+      },
+      {
+        "a": [
+          "trend_or_change",
+          {
+            "category_key": "food.eating_out"
+          }
+        ],
+        "b": [
+          "trend_or_change",
+          {
+            "category_key": "transport.taxi"
+          }
+        ],
+        "case": "CTX-N010",
+        "hit": false,
+        "kind": "near_miss_pair"
+      },
+      {
+        "a": [
+          "scenario",
+          {
+            "merchant": "Sky",
+            "modifier": "recurring_cancel"
+          }
+        ],
+        "b": [
+          "scenario",
+          {
+            "merchant": "Netflix",
+            "modifier": "recurring_cancel"
+          }
+        ],
+        "case": "CTX-N011",
+        "hit": false,
+        "kind": "near_miss_pair"
+      },
+      {
+        "a": [
+          "affordability",
+          {
+            "amount_minor": 40000,
+            "date": "2026-12-12",
+            "purpose": "christmas_present"
+          }
+        ],
+        "b": [
+          "affordability",
+          {
+            "amount_minor": 60000,
+            "date": "2026-12-12",
+            "purpose": "christmas_present"
+          }
+        ],
+        "case": "CTX-N012",
+        "hit": false,
+        "kind": "near_miss_pair"
+      },
+      {
+        "a": [
+          "transaction_lookup",
+          {
+            "min_amount_minor": 10000,
+            "period": "this_month"
+          }
+        ],
+        "b": [
+          "transaction_lookup",
+          {
+            "min_amount_minor": 5000,
+            "period": "this_month"
+          }
+        ],
+        "case": "CTX-N013",
+        "hit": false,
+        "kind": "near_miss_pair"
+      },
+      {
+        "a": [
+          "scenario",
+          {
+            "modifier": "income_change_pct",
+            "months": 2,
+            "pct": -100
+          }
+        ],
+        "b": [
+          "scenario",
+          {
+            "modifier": "income_change_pct",
+            "months": 3,
+            "pct": -100
+          }
+        ],
+        "case": "CTX-N014",
+        "hit": false,
+        "kind": "near_miss_pair"
+      },
+      {
+        "a": [
+          "risk_check",
+          {
+            "window": "to_next_payday"
+          }
+        ],
+        "b": [
+          "risk_check",
+          {
+            "period": "2026-11"
+          }
+        ],
+        "case": "CTX-N015",
+        "hit": false,
+        "kind": "near_miss_pair"
+      },
+      {
+        "a": [
+          "affordability",
+          {
+            "amount_minor": 120000,
+            "date": "2026-11-06",
+            "purpose": "holiday"
+          }
+        ],
+        "b": [
+          "affordability",
+          {
+            "amount_minor": 120000,
+            "date": "2026-11-06",
+            "purpose": "holiday"
+          }
+        ],
+        "case": "CTX-N016",
+        "hit": false,
+        "kind": "near_miss_pair"
+      },
+      {
+        "a": [
+          "spending_breakdown",
+          {}
+        ],
+        "b": [
+          "spending_breakdown",
+          {}
+        ],
+        "case": "CTX-N017",
+        "hit": false,
+        "kind": "near_miss_pair"
+      },
+      {
+        "a": [
+          "risk_check",
+          {
+            "period": "this_month"
+          }
+        ],
+        "b": [
+          "risk_check",
+          {
+            "period": "this_month"
+          }
+        ],
+        "case": "CTX-N018",
+        "hit": false,
+        "kind": "near_miss_pair"
+      },
+      {
+        "a": [
+          "subscription_review",
+          {}
+        ],
+        "b": [
+          "subscription_review",
+          {}
+        ],
+        "case": "CTX-N019",
+        "hit": false,
+        "kind": "near_miss_pair"
+      },
+      {
+        "a": [
+          "advice_request",
+          {}
+        ],
+        "b": [
+          "advice_request",
+          {}
+        ],
+        "case": "CTX-N020",
+        "hit": false,
+        "kind": "near_miss_pair"
+      }
+    ],
+    "pairs_scored": 40,
+    "requests": 210
+  },
+  "name": "conversation",
+  "notes": [
+    "Real Understand prompt and schema through the product's model client, replay mode; every request recorded.",
+    "Targets are Stage 2: reported, not gating the Stage 1 build (stage1=false)."
+  ],
+  "suite": "E-CTX",
+  "targets": [
+    {
+      "dataset": "45 follow-up turns",
+      "id": "CTX-1",
+      "label": "Follow-up intent accuracy (turn \u2265 2)",
+      "met": true,
+      "stage1": false,
+      "target": ">= 0.9",
+      "value": 0.9556
+    },
+    {
+      "dataset": "45 follow-up turns",
+      "id": "CTX-2",
+      "label": "Follow-up slot exact match",
+      "met": false,
+      "stage1": false,
+      "target": ">= 0.85",
+      "value": 0.6444
+    },
+    {
+      "dataset": "45 rewrites",
+      "id": "CTX-3",
+      "label": "Standalone rewrite adequacy",
+      "met": false,
+      "stage1": false,
+      "target": ">= 0.9",
+      "value": 0.8889
+    },
+    {
+      "dataset": "20 pairs",
+      "id": "CTX-4",
+      "label": "Cache hit rate, paraphrase pairs",
+      "met": true,
+      "stage1": false,
+      "target": ">= 0.9",
+      "value": 0.9
+    },
+    {
+      "dataset": "20 pairs",
+      "id": "CTX-5",
+      "label": "False cache hits, near-miss pairs",
+      "met": true,
+      "stage1": false,
+      "target": "== 0",
+      "value": 0.0
+    }
+  ]
+}

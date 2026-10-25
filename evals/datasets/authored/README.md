@@ -37,7 +37,7 @@ Synthetic / fictional. Written before any prompt or Verifier rule is tuned, then
 
 The 30-day windows end on `as_of`; feasibility (V-04) compares the cap with the median of three consecutive 30-day windows. `basis` records the numbers used, so a runner whose `recompute_impact` disagrees shows up as a definitional difference, not a silent miss.
 
-**`immaterial_timing`** (added 13 Oct 2026): a date move the engine shows doesn't reduce the chance of going below the buffer (V-05). GP-039 and GP-040 keep their IDs for traceability.
+**`immaterial_timing`** (added 13 Oct 2026): a date move the engine shows doesn't reduce the chance of going below the buffer (V-05). GP-039 and GP-040 keep their IDs for traceability, as do GP-030 to GP-032 (relabelled 25 Oct 2026, #57: once the moved holiday is paid in a reported low, December stays below the buffer).
 
 **`expected_rules`** lists the rules that should reject the proposal. Any one of them firing counts as a correct rejection (for example V-08 or V-17 for a goal-delaying savings move).
 

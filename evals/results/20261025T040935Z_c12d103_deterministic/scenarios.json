@@ -1,0 +1,422 @@
+{
+  "duration_s": 0.26,
+  "error": null,
+  "metrics": {
+    "cases": 80,
+    "clarification_precision": 0.7692,
+    "clarification_recall": 1.0,
+    "detail": {
+      "misses": [
+        {
+          "clarify_expected": false,
+          "clarify_got": false,
+          "exact": false,
+          "field_lists": {
+            "amount": [
+              true
+            ],
+            "date": [
+              true
+            ],
+            "target": [
+              false
+            ],
+            "type": [
+              true
+            ]
+          },
+          "fields": {
+            "amount": true,
+            "date": true,
+            "target": false,
+            "type": true
+          },
+          "gold": [
+            {
+              "amount_minor": 40000,
+              "category_key": "shopping.general",
+              "date": "2026-12-12",
+              "type": "one_off_outflow"
+            }
+          ],
+          "got": [
+            {
+              "amount_minor": 40000,
+              "category_key": "gifts",
+              "date": "2026-12-12",
+              "type": "one_off_outflow"
+            }
+          ],
+          "id": "SCN-008",
+          "tier": "fast"
+        },
+        {
+          "clarify_expected": false,
+          "clarify_got": false,
+          "exact": false,
+          "field_lists": {
+            "amount": [
+              true
+            ],
+            "date": [
+              true
+            ],
+            "target": [
+              false
+            ],
+            "type": [
+              true
+            ]
+          },
+          "fields": {
+            "amount": true,
+            "date": true,
+            "target": false,
+            "type": true
+          },
+          "gold": [
+            {
+              "amount_minor": 200000,
+              "category_key": "shopping.general",
+              "date": "2026-11-15",
+              "type": "one_off_outflow"
+            }
+          ],
+          "got": [
+            {
+              "amount_minor": 200000,
+              "category_key": "shopping.home",
+              "date": "2026-11-15",
+              "type": "one_off_outflow"
+            }
+          ],
+          "id": "SCN-014",
+          "tier": "fast"
+        },
+        {
+          "clarify_expected": false,
+          "clarify_got": false,
+          "exact": false,
+          "field_lists": {
+            "amount": [
+              true
+            ],
+            "date": [
+              true
+            ],
+            "duration": [
+              false
+            ],
+            "type": [
+              true
+            ]
+          },
+          "fields": {
+            "amount": true,
+            "date": true,
+            "duration": false,
+            "type": true
+          },
+          "gold": [
+            {
+              "amount_minor": 24000,
+              "cadence": "biweekly",
+              "instalments": 4,
+              "start_date": "2026-10-15",
+              "type": "split_outflow"
+            }
+          ],
+          "got": [
+            {
+              "amount_minor": 24000,
+              "cadence": "fortnightly",
+              "instalments": 4,
+              "start_date": "2026-10-15",
+              "type": "split_outflow"
+            }
+          ],
+          "id": "SCN-024",
+          "tier": "fast"
+        },
+        {
+          "clarify_expected": false,
+          "clarify_got": false,
+          "exact": false,
+          "field_lists": {
+            "duration": [
+              false
+            ],
+            "target": [
+              true
+            ],
+            "type": [
+              true
+            ]
+          },
+          "fields": {
+            "duration": false,
+            "target": true,
+            "type": true
+          },
+          "gold": [
+            {
+              "days": 3,
+              "income_stream_id": "inc_salary",
+              "occurrences": "all",
+              "type": "income_delay"
+            }
+          ],
+          "got": [
+            {
+              "days": 3,
+              "income_stream_id": "inc_salary",
+              "occurrences": 1,
+              "type": "income_delay"
+            }
+          ],
+          "id": "SCN-027",
+          "tier": "fast"
+        },
+        {
+          "clarify_expected": false,
+          "clarify_got": true,
+          "exact": false,
+          "fields": {},
+          "id": "SCN-030",
+          "tier": "fast"
+        },
+        {
+          "clarify_expected": false,
+          "clarify_got": false,
+          "exact": false,
+          "field_lists": {
+            "amount": [
+              false
+            ],
+            "date": [
+              false
+            ],
+            "target": [
+              false
+            ],
+            "type": [
+              false
+            ]
+          },
+          "fields": {
+            "amount": false,
+            "date": false,
+            "target": false,
+            "type": false
+          },
+          "gold": [
+            {
+              "amount_minor": 132500,
+              "from_date": "2027-04-01",
+              "recurring_id": "rob_rent",
+              "type": "recurring_change"
+            }
+          ],
+          "got": [
+            {
+              "category_key": "housing.rent",
+              "from_date": "2027-04-01",
+              "pct": -6,
+              "type": "category_cut_pct"
+            }
+          ],
+          "id": "SCN-035",
+          "tier": "reasoning"
+        },
+        {
+          "clarify_expected": false,
+          "clarify_got": true,
+          "exact": false,
+          "fields": {},
+          "id": "SCN-048",
+          "tier": "fast"
+        },
+        {
+          "clarify_expected": false,
+          "clarify_got": true,
+          "exact": false,
+          "fields": {},
+          "id": "SCN-057",
+          "tier": "fast"
+        },
+        {
+          "clarify_expected": false,
+          "clarify_got": false,
+          "exact": false,
+          "field_lists": {
+            "amount": [
+              true,
+              true
+            ],
+            "date": [
+              true,
+              false
+            ],
+            "target": [
+              true,
+              true
+            ],
+            "type": [
+              true,
+              true
+            ]
+          },
+          "fields": {
+            "amount": true,
+            "date": false,
+            "target": true,
+            "type": true
+          },
+          "gold": [
+            {
+              "from_date": "2026-12-01",
+              "income_stream_id": "inc_salary",
+              "pct": -100,
+              "type": "income_change_pct"
+            },
+            {
+              "category_key": "food.eating_out",
+              "from_date": "2026-12-01",
+              "pct": 50,
+              "type": "category_cut_pct"
+            }
+          ],
+          "got": [
+            {
+              "from_date": "2026-12-01",
+              "income_stream_id": "inc_salary",
+              "pct": -100,
+              "type": "income_change_pct"
+            },
+            {
+              "category_key": "food.eating_out",
+              "from_date": "2026-10-11",
+              "pct": 50,
+              "type": "category_cut_pct"
+            }
+          ],
+          "id": "SCN-064",
+          "tier": "reasoning"
+        },
+        {
+          "clarify_expected": false,
+          "clarify_got": false,
+          "exact": false,
+          "field_lists": {
+            "amount": [
+              true,
+              true
+            ],
+            "date": [
+              true,
+              true
+            ],
+            "target": [
+              false
+            ],
+            "type": [
+              true,
+              true
+            ]
+          },
+          "fields": {
+            "amount": true,
+            "date": true,
+            "target": false,
+            "type": true
+          },
+          "gold": [
+            {
+              "amount_minor": 30000,
+              "date": "2026-11-10",
+              "type": "one_off_inflow"
+            },
+            {
+              "amount_minor": 40000,
+              "category_key": "shopping.general",
+              "date": "2026-12-12",
+              "type": "one_off_outflow"
+            }
+          ],
+          "got": [
+            {
+              "amount_minor": 30000,
+              "date": "2026-11-10",
+              "type": "one_off_inflow"
+            },
+            {
+              "amount_minor": 40000,
+              "category_key": "gifts",
+              "date": "2026-12-12",
+              "type": "one_off_outflow"
+            }
+          ],
+          "id": "SCN-067",
+          "tier": "reasoning"
+        }
+      ]
+    },
+    "errors": 0,
+    "exact_match": 0.8571,
+    "field_accuracy": {
+      "amount": 0.9839,
+      "date": 0.971,
+      "duration": 0.875,
+      "target": 0.9322,
+      "type": 0.987
+    },
+    "scored": 80,
+    "tiers": {
+      "fast": 65,
+      "reasoning": 15
+    }
+  },
+  "name": "scenarios",
+  "notes": [
+    "mode: replay"
+  ],
+  "suite": "E-SCN",
+  "targets": [
+    {
+      "dataset": "80 prompts",
+      "id": "SCN-exact",
+      "label": "Exact match of the ScenarioSpec",
+      "met": true,
+      "stage1": true,
+      "target": ">= 0.85",
+      "value": 0.8571
+    },
+    {
+      "dataset": "80 prompts",
+      "id": "SCN-amount",
+      "label": "Amount field accuracy",
+      "met": true,
+      "stage1": true,
+      "target": ">= 0.95",
+      "value": 0.9839
+    },
+    {
+      "dataset": "80 prompts",
+      "id": "SCN-date",
+      "label": "Date field accuracy",
+      "met": true,
+      "stage1": true,
+      "target": ">= 0.95",
+      "value": 0.971
+    },
+    {
+      "dataset": "10 ambiguous prompts",
+      "id": "SCN-clarify-R",
+      "label": "Clarification recall",
+      "met": true,
+      "stage1": true,
+      "target": ">= 0.8",
+      "value": 1.0
+    }
+  ]
+}

@@ -1,7 +1,8 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-13T12:43:02+00:00",
+  "provider": "openai",
+  "recorded_at": "2026-10-25T03:58:56+00:00",
   "request": {
     "max_tokens": 700,
     "messages": [
@@ -10,7 +11,7 @@
         "role": "system"
       },
       {
-        "content": "{\"data\": {\"proposal\": {\"title\": \"Book the holiday after the November payday\", \"rationale\": \"Paying on {{from_date}} takes the late-November low below your buffer; paying after payday keeps it above.\", \"action\": \"move_purchase_date\", \"params\": {\"amount_minor\": 120000, \"from_date\": \"2026-11-06\", \"label\": \"Holiday\", \"to_date\": \"2026-11-28\"}, \"cited\": [{\"kind\": \"forecast\", \"id\": \"fc:baseline\", \"role\": \"trigger\"}]}, \"evidence\": [{\"id\": \"fc:baseline\", \"kind\": \"forecast\", \"summary\": \"Baseline cash-flow forecast for the coming pay cycles, including the lowest balance before each payday and the chance of going below the buffer.\"}], \"deterministic_checks\": [\"V-01\", \"V-02\", \"V-03\", \"V-04\", \"V-05\", \"V-06\", \"V-07\", \"V-08\", \"V-09\", \"V-10\", \"V-14\", \"V-15\", \"V-16\", \"V-17\", \"V-18\", \"V-19\", \"V-20\"], \"context\": {\"joint\": false, \"betting\": false, \"betting_opt_in\": false}}}",
+        "content": "{\"data\": {\"proposal\": {\"title\": \"Bring food delivery back toward its usual spend\", \"rationale\": \"Cap food delivery at {{cap}} a month. Recent spending is above its usual level, so this could keep more cash in hand before payday.\", \"action\": \"cap_category\", \"params\": {\"category_key\": \"food.delivery\", \"monthly_cap_minor\": 20310}, \"cited\": [{\"kind\": \"finding\", \"id\": \"fnd:category_spike:food.delivery\", \"role\": \"trigger\"}, {\"kind\": \"forecast\", \"id\": \"fc:baseline\", \"role\": \"context\"}]}, \"evidence\": [{\"id\": \"fnd:category_spike:food.delivery\", \"kind\": \"finding\", \"type\": \"category_spike\", \"about\": \"food.delivery\", \"summary\": \"Spending in food.delivery over the last 30 days is well above its usual level for the previous three months.\"}, {\"id\": \"fc:baseline\", \"kind\": \"forecast\", \"summary\": \"Baseline cash-flow forecast for the coming pay cycles, including the lowest balance before each payday and the chance of going below the buffer.\"}], \"deterministic_checks\": [\"V-01\", \"V-02\", \"V-03\", \"V-04\", \"V-05\", \"V-06\", \"V-07\", \"V-08\", \"V-09\", \"V-10\", \"V-14\", \"V-15\", \"V-16\", \"V-17\", \"V-18\", \"V-19\", \"V-20\"], \"context\": {\"joint\": false, \"betting\": false, \"betting_opt_in\": false}}}",
         "role": "user"
       }
     ],
@@ -75,15 +76,17 @@
     "temperature": 0.0,
     "tier": "verifier"
   },
-  "request_hash": "e82edf5565691621338030554ba289dde90983c9963cd290aee3fd0965839524",
+  "request_hash": "f2ca16c7f63fac1c3a351ac0784e8834d27df6f3a8b0c5267fed1c5191c00e62",
   "response": {
-    "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited cash-flow forecast and passed impact recomputation support the purchase-timing claim about the buffer.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal specifies moving the Holiday purchase from 6 November to 28 November 2026.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with future claims limited to the forecasted cash-flow impact.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"Rescheduling a holiday purchase does not involve restricted financial advice or recommendations.\"}]}",
-    "provider_response_id": "chatcmpl-EYW8AI64H7wfDDrpSUig2GUvJ24cV",
+    "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding confirms elevated food-delivery spending, and the cash-flow forecast supports the before-payday context.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and specifies a monthly cap as a clear action.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with a qualified rather than guaranteed future benefit.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The proposal concerns a spending cap and contains no restricted financial advice or recommendations.\"}]}",
+    "cost_estimate_usd": 0.003296,
+    "latency_ms": 2799,
     "model": "gpt-6.1-sol",
+    "provider_response_id": "chatcmpl-EcjfiFg4hCT5bu7tQvWcKFiU9zFGY",
     "tool_arguments": null,
     "usage": {
-      "completion_tokens": 195,
-      "prompt_tokens": 905
+      "completion_tokens": 134,
+      "prompt_tokens": 978
     }
   }
 }

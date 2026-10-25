@@ -1,7 +1,8 @@
 {
   "format": "foresight-cassette/1",
   "live_run_sha": "local",
-  "recorded_at": "2026-10-20T21:04:26+00:00",
+  "provider": "openai",
+  "recorded_at": "2026-10-25T03:58:03+00:00",
   "request": {
     "max_tokens": 700,
     "messages": [
@@ -10,7 +11,7 @@
         "role": "system"
       },
       {
-        "content": "{\"data\": {\"proposal\": {\"title\": \"Bring food delivery back to its usual monthly level\", \"rationale\": \"Food delivery spending is above its usual level. A cap of {{cap}} keeps more cash in hand before payday.\", \"action\": \"cap_category\", \"params\": {\"category_key\": \"food.delivery\", \"monthly_cap_minor\": 20310}, \"cited\": [{\"kind\": \"finding\", \"id\": \"fnd:category_spike:food.delivery\", \"role\": \"trigger\"}, {\"kind\": \"forecast\", \"id\": \"fc:baseline\", \"role\": \"context\"}]}, \"evidence\": [{\"id\": \"fnd:category_spike:food.delivery\", \"kind\": \"finding\", \"type\": \"category_spike\", \"about\": \"food.delivery\", \"summary\": \"Spending in food.delivery over the last 30 days is well above its usual level for the previous three months.\"}, {\"id\": \"fc:baseline\", \"kind\": \"forecast\", \"summary\": \"Baseline cash-flow forecast for the coming pay cycles, including the lowest balance before each payday and the chance of going below the buffer.\"}], \"deterministic_checks\": [\"V-01\", \"V-02\", \"V-03\", \"V-04\", \"V-05\", \"V-06\", \"V-07\", \"V-08\", \"V-09\", \"V-10\", \"V-14\", \"V-15\", \"V-16\", \"V-17\", \"V-18\", \"V-19\", \"V-20\"], \"context\": {\"joint\": false, \"betting\": false, \"betting_opt_in\": false}}}",
+        "content": "{\"data\": {\"proposal\": {\"title\": \"Cap food delivery at {{cap}} a month\", \"rationale\": \"Food delivery spending is above its usual level. Bringing it back to {{cap}} keeps more cash in hand before payday.\", \"action\": \"cap_category\", \"params\": {\"category_key\": \"food.delivery\", \"monthly_cap_minor\": 20310}, \"cited\": [{\"kind\": \"finding\", \"id\": \"fnd:category_spike:food.delivery\", \"role\": \"trigger\"}, {\"kind\": \"forecast\", \"id\": \"fc:baseline\", \"role\": \"context\"}]}, \"evidence\": [{\"id\": \"fnd:category_spike:food.delivery\", \"kind\": \"finding\", \"type\": \"category_spike\", \"about\": \"food.delivery\", \"summary\": \"Spending in food.delivery over the last 30 days is well above its usual level for the previous three months.\"}, {\"id\": \"fc:baseline\", \"kind\": \"forecast\", \"summary\": \"Baseline cash-flow forecast for the coming pay cycles, including the lowest balance before each payday and the chance of going below the buffer.\"}], \"deterministic_checks\": [\"V-01\", \"V-02\", \"V-03\", \"V-04\", \"V-05\", \"V-06\", \"V-07\", \"V-08\", \"V-09\", \"V-10\", \"V-14\", \"V-15\", \"V-16\", \"V-17\", \"V-18\", \"V-19\", \"V-20\"], \"context\": {\"joint\": false, \"betting\": false, \"betting_opt_in\": false}}}",
         "role": "user"
       }
     ],
@@ -75,17 +76,17 @@
     "temperature": 0.0,
     "tier": "verifier"
   },
-  "request_hash": "51945ad5d7eea53a4177d42257cccd52122ba35ac5c5f6c6ef8f0f79e8f26a2c",
+  "request_hash": "c56010795541a983960b6b5d5511cd788c068dba30344e786b25fd2a4160fe70",
   "response": {
-    "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited finding supports elevated food-delivery spending, and the forecast provides the before-payday cash-flow context.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal specifies food delivery and a concrete monthly spending cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported promises about the future.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation is a spending-category cap and contains no out-of-scope financial advice.\"}]}",
-    "cost_estimate_usd": 0.003266,
-    "latency_ms": 4683,
-    "provider_response_id": "chatcmpl-EbBINyIYuWpCTmuOmoeOfoUGCteHh",
+    "content": "{\"criteria\":[{\"rule\":\"V-11\",\"passed\":true,\"reason\":\"The cited spending spike supports the rationale, and the cash-flow forecast provides relevant payday context.\"},{\"rule\":\"V-12\",\"passed\":true,\"reason\":\"The proposal names food delivery and specifies a concrete monthly spending cap.\"},{\"rule\":\"V-13\",\"passed\":true,\"reason\":\"The wording is neutral and respectful, with no unsupported promises about future outcomes.\"},{\"rule\":\"V-14\",\"passed\":true,\"reason\":\"The recommendation is limited to a spending-category cap and contains no out-of-scope financial advice.\"}]}",
+    "cost_estimate_usd": 0.003258,
+    "latency_ms": 2715,
     "model": "gpt-6.1-sol",
+    "provider_response_id": "chatcmpl-EcjeqKxoFQ94FLJscAggmeb9j8lV1",
     "tool_arguments": null,
     "usage": {
-      "completion_tokens": 132,
-      "prompt_tokens": 973
+      "completion_tokens": 131,
+      "prompt_tokens": 974
     }
   }
 }

@@ -28,7 +28,7 @@ def _refs(row: dict[str, Any]) -> list[EvidenceRef]:
 
 def test_set_is_frozen_and_counted() -> None:
     assert verify_manifest() == []
-    assert (len(ROWS), len(GOOD)) == (96, 34)
+    assert (len(ROWS), len(GOOD)) == (96, 31)
 
 
 @pytest.mark.parametrize("row", GOOD, ids=lambda r: r["id"])
@@ -70,7 +70,9 @@ def test_good_proposals_pass_every_deterministic_rule(row: dict[str, Any]) -> No
 
 
 def test_relabelled_timing_moves_fail_materiality() -> None:
-    for case_id in ("GP-039", "GP-040"):
+    # GP-030–GP-032 (#57): paid on its new date, the holiday leaves December's low below the
+    # buffer, so the move barely changes the worst cycle's risk.
+    for case_id in ("GP-030", "GP-031", "GP-032", "GP-039", "GP-040"):
         row = BY_ID[case_id]
         assert (row["expected"], row["defect"]) == ("REJECT", "immaterial_timing")
         p = InterventionProposal.model_validate(row["proposal"])

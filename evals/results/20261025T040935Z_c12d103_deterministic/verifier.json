@@ -1,0 +1,116 @@
+{
+  "duration_s": 16.38,
+  "error": null,
+  "metrics": {
+    "cases": 96,
+    "deterministic_arm": {
+      "attribution": {
+        "deterministic": 60,
+        "missed": 5
+      },
+      "bad": 65,
+      "by_defect": {
+        "cross_currency_arithmetic": 1.0,
+        "cut_commitment": 1.0,
+        "dangling_evidence": 1.0,
+        "generic_advice": 1.0,
+        "goal_contradiction": 1.0,
+        "immaterial_timing": 1.0,
+        "impact_mismatch": 1.0,
+        "infeasible_cut": 1.0,
+        "non_neutral_betting": 1.0,
+        "nonexistent_target": 1.0,
+        "unsafe_or_regulated": 1.0,
+        "wrong_evidence": 0.0
+      },
+      "catch_rate": 0.9231,
+      "catch_rate_deterministic_types": 1.0,
+      "expected_rule_fired": 0.8769,
+      "false_rejection_rate": 0.0,
+      "false_rejections": [],
+      "good": 31,
+      "missed": [
+        "BP-008",
+        "BP-009",
+        "BP-010",
+        "BP-011",
+        "BP-012"
+      ]
+    },
+    "full_arm": {
+      "attribution": {
+        "deterministic": 60,
+        "judge": 5
+      },
+      "bad": 65,
+      "by_defect": {
+        "cross_currency_arithmetic": 1.0,
+        "cut_commitment": 1.0,
+        "dangling_evidence": 1.0,
+        "generic_advice": 1.0,
+        "goal_contradiction": 1.0,
+        "immaterial_timing": 1.0,
+        "impact_mismatch": 1.0,
+        "infeasible_cut": 1.0,
+        "non_neutral_betting": 1.0,
+        "nonexistent_target": 1.0,
+        "unsafe_or_regulated": 1.0,
+        "wrong_evidence": 1.0
+      },
+      "catch_rate": 1.0,
+      "catch_rate_deterministic_types": 1.0,
+      "expected_rule_fired": 0.9538,
+      "false_rejection_rate": 0.0,
+      "false_rejections": [],
+      "good": 31,
+      "missed": []
+    },
+    "headline_arm": "full",
+    "loop": {
+      "outcomes": {
+        "1_revision(s)": 61,
+        "2_revision(s)": 2,
+        "withdrawn": 2
+      },
+      "rejected_in_round_1": 65,
+      "revisable": 44,
+      "revision_success": 0.9545,
+      "unrevisable": 21,
+      "withdraw_correctness": 1.0
+    }
+  },
+  "name": "verifier",
+  "notes": [
+    "mode: replay"
+  ],
+  "suite": "E-VER",
+  "targets": [
+    {
+      "dataset": "65 bad",
+      "id": "VER-catch",
+      "label": "Bad proposals caught",
+      "met": true,
+      "stage1": true,
+      "target": ">= 0.95",
+      "value": 1.0
+    },
+    {
+      "dataset": "deterministic defect types",
+      "id": "VER-catch-det",
+      "label": "Caught, deterministic defect types",
+      "met": true,
+      "stage1": true,
+      "target": "== 1.0",
+      "value": 1.0
+    },
+    {
+      "dataset": "31 good",
+      "id": "VER-false-rej",
+      "label": "Good proposals falsely rejected",
+      "met": true,
+      "stage1": true,
+      "target": "<= 0.1",
+      "value": 0.0
+    }
+  ]
+}
