@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import threading
+from collections import OrderedDict
 from collections.abc import Collection, Iterable, Sequence
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
@@ -24,6 +26,12 @@ from backend.storage.ids import new_id
 Row = TypeVar("Row", bound=m.Base)
 
 GENESIS_HASH = "0" * 64
+
+# The last audit row this process verified per workspace, as (seq, hash), so the Activity feed
+# re-hashes only rows appended since (#51). Bounded; a missing entry means a full check.
+_AUDIT_CHECKPOINTS: OrderedDict[str, tuple[int, str]] = OrderedDict()
+_AUDIT_CHECKPOINTS_MAX = 2048
+_AUDIT_CHECKPOINTS_LOCK = threading.Lock()
 
 
 class WorkspaceNotFound(LookupError):
@@ -394,16 +402,48 @@ class WorkspaceContext:
         )
         return int(count or 0)
 
-    def audit_chain_valid(self) -> bool:
-        events = self.session.scalars(self.select(m.AuditEvent).order_by(m.AuditEvent.seq))
-        prev = GENESIS_HASH
-        for expected_seq, event in enumerate(events, start=1):
+    def audit_chain_valid(self, *, incremental: bool = False) -> bool:
+        """Whether the workspace's audit log is an unbroken hash chain. With `incremental` (the
+        Activity feed, on every read), rows up to the last checkpoint this process verified are
+        taken as checked and only later rows are re-hashed, so the cost follows what's new, not
+        the whole history (#51). The checkpoint row itself is re-read, so rewriting it still fails;
+        a full check (the default) re-hashes everything."""
+        last_seq, prev = 0, GENESIS_HASH
+        if incremental:
+            with _AUDIT_CHECKPOINTS_LOCK:
+                checkpoint = _AUDIT_CHECKPOINTS.get(self.workspace_id)
+            if checkpoint is not None:
+                seq, digest = checkpoint
+                row = self.session.scalars(
+                    self.select(m.AuditEvent).where(m.AuditEvent.seq == seq)
+                ).first()
+                if row is None or row.hash != digest:
+                    _forget_checkpoint(self.workspace_id)
+                    return False
+                last_seq, prev = seq, digest
+        events = self.session.scalars(
+            self.select(m.AuditEvent).where(m.AuditEvent.seq > last_seq).order_by(m.AuditEvent.seq)
+        )
+        for expected_seq, event in enumerate(events, start=last_seq + 1):
             if event.seq != expected_seq or event.prev_hash != prev:
+                _forget_checkpoint(self.workspace_id)
                 return False
             if audit_hash(prev, _audit_body(event)) != event.hash:
+                _forget_checkpoint(self.workspace_id)
                 return False
-            prev = event.hash
+            last_seq, prev = event.seq, event.hash
+        if incremental and last_seq:
+            with _AUDIT_CHECKPOINTS_LOCK:
+                _AUDIT_CHECKPOINTS[self.workspace_id] = (last_seq, prev)
+                _AUDIT_CHECKPOINTS.move_to_end(self.workspace_id)
+                while len(_AUDIT_CHECKPOINTS) > _AUDIT_CHECKPOINTS_MAX:
+                    _AUDIT_CHECKPOINTS.popitem(last=False)
         return True
+
+
+def _forget_checkpoint(workspace_id: str) -> None:
+    with _AUDIT_CHECKPOINTS_LOCK:
+        _AUDIT_CHECKPOINTS.pop(workspace_id, None)
 
 
 def create_workspace(
