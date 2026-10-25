@@ -41,17 +41,35 @@ def _is_forbidden(module: str) -> bool:
     return any(module == f or module.startswith(f + ".") for f in FORBIDDEN)
 
 
+def _sources(root: Path) -> list[Path]:
+    """The project's Python files: not hidden folders such as a virtual environment inside
+    `tools/` (docs/demo-video.md puts one at `tools/demo/.venv`), which hold other people's code."""
+    return [
+        path
+        for top in SCANNED
+        for path in (root / top).rglob("*.py")
+        if not any(part.startswith(".") for part in path.relative_to(root).parts)
+    ]
+
+
 def test_no_ai_sdk_outside_model_client() -> None:
     offenders = []
-    for top in SCANNED:
-        for path in (ROOT / top).rglob("*.py"):
-            if ALLOWED_DIR in path.parents:
-                continue
-            tree = ast.parse(path.read_text(encoding="utf-8"))
-            bad = sorted(m for m in _imported_modules(tree) if _is_forbidden(m))
-            if bad:
-                offenders.append(f"{path.relative_to(ROOT)}: {', '.join(bad)}")
+    for path in _sources(ROOT):
+        if ALLOWED_DIR in path.parents:
+            continue
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        bad = sorted(m for m in _imported_modules(tree) if _is_forbidden(m))
+        if bad:
+            offenders.append(f"{path.relative_to(ROOT)}: {', '.join(bad)}")
     assert offenders == []
+
+
+def test_the_scan_skips_virtual_environments_but_not_project_code(tmp_path: Path) -> None:
+    """Regression: a venv at tools/demo/.venv made the scan parse third-party files and crash."""
+    (tmp_path / "tools/demo/.venv/lib").mkdir(parents=True)
+    (tmp_path / "tools/demo/.venv/lib/big5.py").write_bytes(b"# -*- coding: big5 -*-\n# \xa4@\n")
+    (tmp_path / "tools/demo/narrate.py").write_text("import openai\n")
+    assert _sources(tmp_path) == [tmp_path / "tools/demo/narrate.py"]
 
 
 def test_the_provider_address_cannot_be_overridden(monkeypatch: pytest.MonkeyPatch) -> None:

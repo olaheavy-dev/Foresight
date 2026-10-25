@@ -61,6 +61,10 @@ jobs:
         with:
           fail-on-severity: low
           comment-summary-in-pr: on-failure
+          # setuptools <83 (sdist MANIFEST.in bypass) is pinned below 81 only in tools/demo, the
+          # offline voice-over environment: Chatterbox's watermark still imports pkg_resources,
+          # removed in 81, and the tool never builds an sdist. The app doesn't depend on setuptools.
+          allow-ghsas: GHSA-h35f-9h28-mq5c
 
   python-deps:
     runs-on: ubuntu-24.04

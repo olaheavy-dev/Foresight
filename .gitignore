@@ -55,3 +55,7 @@ frontend/playwright-report/
 # Design-review captures stay local (CI keeps them as Playwright artifacts); the curated final
 # set for the README lives in docs/screenshots/.
 .design/foresight/screenshots/review-*
+
+# Demo video (docs/demo-video.md): your voice recording and every generated file stay local
+tools/demo/voice/
+tools/demo/out/
