@@ -21,6 +21,7 @@ from backend.agents.prompting import active_canary
 from backend.agents.runner import ask
 from backend.agents.runtime import NodeOutput, NodeSpec, RunContext
 from backend.agents.state import ForesightState
+from backend.app import views
 from backend.app.ui_contracts.response import AgentResponse
 from backend.app.ui_contracts.validation import check_currency, check_skeleton, visible_tabs
 from backend.finance_core.types import ScenarioModifier, ScenarioSpec
@@ -690,11 +691,35 @@ def test_a_recommendations_evidence_reaches_its_checks_finding_and_source_rows(
     assert found["ref"] == finding.id
     assert "{{" not in found["title"]  # filled from its calculation, as on Home
     assert found["inputs"]["transaction_count"] > 0
-    assert found["link"] == f"/transactions?finding={finding.id}"  # exactly its rows
+    # Exactly its rows, frozen with the answer (#63): the link names a snapshot, not the finding.
+    snap = found["link"].removeprefix("/transactions?finding=")
+    assert snap.startswith("calc_")
+    counted = sorted(t.id for t in views.finding_rows(p1.ctx, finding.id) or [])
+    assert len(counted) == found["inputs"]["transaction_count"]
+    # A findings refresh reuses the row and rewrites what it counts; the answer's link doesn't move.
+    finding.txn_query = {"txn_ids": counted[:1]}
+    p1.ctx.session.flush()
+    assert [t.id for t in views.finding_rows(p1.ctx, finding.id) or []] == counted[:1]
+    assert sorted(t.id for t in views.finding_rows(p1.ctx, snap) or []) == counted
     source = found["source_chain"]
     assert source["filename"]
     assert source["importer"] == "csv_statement"
     assert check_skeleton(AgentResponse.model_validate(body).blocks) == []
+
+
+def test_a_frozen_finding_link_resolves_only_in_its_own_profile(p1: AgentStore) -> None:
+    """A stored answer's snapshot (#63) is a workspace-scoped calculation: another profile gets
+    nothing for it, and a calc that isn't a finding's rows is never read as one."""
+    finding = next(f for f in p1.ctx.all(m.Finding) if f.txn_query)
+    rows = views.finding_rows(p1.ctx, finding.id) or []
+    snap = views.snapshot_finding_rows(p1.ctx, finding, rows)
+    assert views.snapshot_finding_rows(p1.ctx, finding, rows) == snap  # same rows, same id
+    other = demo_workspace(p1.ctx.session, "P2")
+    assert other is not None
+    assert views.finding_rows(WorkspaceContext.open(p1.ctx.session, other.id), snap) is None
+    forecast = p1.ctx.latest_calculation("forecast")
+    assert forecast is not None
+    assert views.finding_rows(p1.ctx, forecast.id) is None
 
 
 def test_the_evidence_chain_fits_the_panel_with_every_cards_check_first(p1: AgentStore) -> None:

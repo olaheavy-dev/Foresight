@@ -955,7 +955,9 @@ class Composer:
 
     def evidence_panel(self) -> EvidencePanel | None:
         # Every shown card's chain first (its citation must resolve), within the panel's 8.
-        items = views.recommendation_evidence(self.ctx, self.sources.recommendations[:3])
+        items = views.recommendation_evidence(
+            self.ctx, self.sources.recommendations[:3], snapshot=True
+        )
         for calc in list(self.sources.calcs.values())[: max(0, 8 - len(items))]:
             kind = "forecast" if calc.kind in {"forecast", "simulation"} else "calculation"
             items.append(
