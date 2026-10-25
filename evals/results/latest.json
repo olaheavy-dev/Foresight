@@ -1,22 +1,22 @@
 {
   "durations_s": {
-    "E-ANOM": 0.8,
-    "E-AUD": 8.61,
-    "E-CAT": 0.43,
-    "E-CTX": 0.53,
+    "E-ANOM": 0.83,
+    "E-AUD": 7.82,
+    "E-CAT": 0.44,
+    "E-CTX": 0.58,
     "E-EFF": 0.0,
-    "E-FC": 10.03,
-    "E-GRD": 6.89,
-    "E-INC": 0.76,
-    "E-ING": 0.65,
-    "E-LOC": 0.31,
-    "E-ORC": 26.48,
-    "E-REC": 0.41,
+    "E-FC": 10.7,
+    "E-GRD": 7.18,
+    "E-INC": 0.83,
+    "E-ING": 0.7,
+    "E-LOC": 0.33,
+    "E-ORC": 21.59,
+    "E-REC": 0.42,
     "E-SCN": 0.26,
-    "E-SEC": 0.27,
-    "E-SIM": 25.85,
-    "E-UI": 24.07,
-    "E-VER": 15.24
+    "E-SEC": 0.28,
+    "E-SIM": 27.35,
+    "E-UI": 18.95,
+    "E-VER": 16.38
   },
   "engine_version": "fc-1.3.0",
   "errors": {},
@@ -170,26 +170,26 @@
   },
   "generator_version": "gen-1.1.0",
   "git_dirty": false,
-  "git_sha": "680a4918d38aad95e004ede1e6d36075aa586f0e",
+  "git_sha": "c12d1032e6eb1db4e5d7b534fce3c4f93078c3e0",
   "holdout_version": null,
   "home_currency_primary": "GBP",
   "layout_set_version": null,
-  "locales": [
-    "uk"
-  ],
-  "mesh_models": {
+  "llm_models": {
     "advisor": null,
     "coordinator": null,
     "ledger": null,
     "verifier": null
   },
+  "locales": [
+    "uk"
+  ],
   "mode": "deterministic",
   "notes": [
     "Deterministic suites only: every LLM arm (hybrid/llm-only categorisation, profile proposals, Verifier, orchestration, grounding, UI) is Stage 2+ and null here.",
     "null = not run. Gates: a suite that did not run is 'fail'; see gate_detail.rule."
   ],
   "prompt_versions": {},
-  "run_id": "evalrun_20261022T100645Z_680a491",
+  "run_id": "evalrun_20261025T040935Z_c12d103",
   "schema_version": "1.1",
   "seeds": [
     1729
@@ -282,7 +282,7 @@
           "flow_class_accuracy": null,
           "llm_call_rate": null,
           "macro_f1": null,
-          "note": "not measured: no recorded Mesh response (CassetteMiss); re-record with MESH_CASSETTE_MODE=record"
+          "note": "not measured: no recorded model response (CassetteMiss); re-record with MODEL_CASSETTE_MODE=record"
         },
         "majority_class": {
           "accuracy": 0.2048,
@@ -347,7 +347,7 @@
         "model_calls_per_cache_hit_after_understand": 0,
         "model_calls_per_cache_miss": 1,
         "recorded_tokens_total": 447216,
-        "replay_seconds": 0.53
+        "replay_seconds": 0.58
       },
       "followup_turns_scored": 45,
       "mode": "replay",
@@ -1100,12 +1100,12 @@
           "count": 13,
           "degraded_left_out": 0,
           "first_step_p95_s": 0.02,
-          "latency_estimated_p50_s": 15.57,
-          "latency_estimated_p95_s": 35.07,
+          "latency_estimated_p50_s": 15.2,
+          "latency_estimated_p95_s": 34.71,
           "latency_measured": 13,
-          "latency_p50_s": 15.57,
-          "latency_p50_s_measured_only": 15.57,
-          "latency_p95_s": 35.07
+          "latency_p50_s": 15.2,
+          "latency_p50_s_measured_only": 15.2,
+          "latency_p95_s": 34.71
         },
         "all": {
           "cost_mean_usd": 0.00442,
@@ -1113,12 +1113,12 @@
           "count": 60,
           "degraded_left_out": 0,
           "first_step_p95_s": 0.02,
-          "latency_estimated_p50_s": 3.41,
-          "latency_estimated_p95_s": 21.65,
+          "latency_estimated_p50_s": 3.29,
+          "latency_estimated_p95_s": 21.29,
           "latency_measured": 60,
-          "latency_p50_s": 3.41,
-          "latency_p50_s_measured_only": 3.41,
-          "latency_p95_s": 21.65
+          "latency_p50_s": 3.29,
+          "latency_p50_s_measured_only": 3.29,
+          "latency_p95_s": 21.29
         },
         "simple": {
           "cost_mean_usd": 0.00051,
@@ -1126,12 +1126,12 @@
           "count": 47,
           "degraded_left_out": 0,
           "first_step_p95_s": 0.02,
-          "latency_estimated_p50_s": 2.23,
-          "latency_estimated_p95_s": 7.19,
+          "latency_estimated_p50_s": 2.2,
+          "latency_estimated_p95_s": 7.1,
           "latency_measured": 47,
-          "latency_p50_s": 2.23,
-          "latency_p50_s_measured_only": 2.23,
-          "latency_p95_s": 7.19
+          "latency_p50_s": 2.2,
+          "latency_p50_s_measured_only": 2.2,
+          "latency_p95_s": 7.1
         }
       },
       "by_tier": {
@@ -1615,7 +1615,7 @@
         "tool_calls_outside_allow_list": []
       },
       "mode": "replay",
-      "seconds": 26.5
+      "seconds": 21.6
     },
     "recurring": {
       "council_tax_months_exact": true,
@@ -1797,16 +1797,16 @@
     "verifier": {
       "deterministic_arm": {
         "attribution": {
-          "deterministic": 56,
-          "missed": 6
+          "deterministic": 60,
+          "missed": 5
         },
-        "bad": 62,
+        "bad": 65,
         "by_defect": {
           "cross_currency_arithmetic": 1.0,
           "cut_commitment": 1.0,
           "dangling_evidence": 1.0,
           "generic_advice": 1.0,
-          "goal_contradiction": 0.75,
+          "goal_contradiction": 1.0,
           "immaterial_timing": 1.0,
           "impact_mismatch": 1.0,
           "infeasible_cut": 1.0,
@@ -1815,27 +1815,26 @@
           "unsafe_or_regulated": 1.0,
           "wrong_evidence": 0.0
         },
-        "catch_rate": 0.9032,
+        "catch_rate": 0.9231,
         "catch_rate_deterministic_types": 1.0,
-        "expected_rule_fired": 0.871,
+        "expected_rule_fired": 0.8769,
         "false_rejection_rate": 0.0,
         "false_rejections": [],
-        "good": 34,
+        "good": 31,
         "missed": [
           "BP-008",
           "BP-009",
           "BP-010",
           "BP-011",
-          "BP-012",
-          "BP-049"
+          "BP-012"
         ]
       },
       "full_arm": {
         "attribution": {
-          "deterministic": 56,
-          "judge": 6
+          "deterministic": 60,
+          "judge": 5
         },
-        "bad": 62,
+        "bad": 65,
         "by_defect": {
           "cross_currency_arithmetic": 1.0,
           "cut_commitment": 1.0,
@@ -1852,22 +1851,22 @@
         },
         "catch_rate": 1.0,
         "catch_rate_deterministic_types": 1.0,
-        "expected_rule_fired": 0.9516,
+        "expected_rule_fired": 0.9538,
         "false_rejection_rate": 0.0,
         "false_rejections": [],
-        "good": 34,
+        "good": 31,
         "missed": []
       },
       "headline_arm": "full",
       "loop": {
         "outcomes": {
-          "1_revision(s)": 58,
+          "1_revision(s)": 61,
           "2_revision(s)": 2,
           "withdrawn": 2
         },
-        "rejected_in_round_1": 62,
-        "revisable": 41,
-        "revision_success": 0.9512,
+        "rejected_in_round_1": 65,
+        "revisable": 44,
+        "revision_success": 0.9545,
         "unrevisable": 21,
         "withdraw_correctness": 1.0
       }
@@ -2128,7 +2127,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 10.0",
-        "value": 2.23
+        "value": 2.2
       },
       {
         "dataset": "13 advice answers",
@@ -2137,7 +2136,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 35.0",
-        "value": 15.57
+        "value": 15.2
       },
       {
         "dataset": "13 advice answers",
@@ -2146,7 +2145,7 @@
         "met": true,
         "stage1": false,
         "target": "<= 60.0",
-        "value": 35.07
+        "value": 34.71
       }
     ],
     "E-FC": [
@@ -2753,7 +2752,7 @@
     ],
     "E-VER": [
       {
-        "dataset": "62 bad",
+        "dataset": "65 bad",
         "id": "VER-catch",
         "label": "Bad proposals caught",
         "met": true,
@@ -2771,7 +2770,7 @@
         "value": 1.0
       },
       {
-        "dataset": "34 good",
+        "dataset": "31 good",
         "id": "VER-false-rej",
         "label": "Good proposals falsely rejected",
         "met": true,
@@ -2781,5 +2780,5 @@
       }
     ]
   },
-  "timestamp_utc": "2026-10-22T10:06:45Z"
+  "timestamp_utc": "2026-10-25T04:09:35Z"
 }
