@@ -31,6 +31,7 @@ Other artifacts:
 - **Diagrams** — agent architecture & workflows (05, 06), user journeys (03), ER diagram (07), dependency graph (10). All Mermaid; they render on GitHub.
 - **Feature prioritisation matrix** — 01 §6.
 - **Portfolio case study** — `case-study.md`: the source for the olaheavy.dev case study, every figure linked to where it's measured.
+- **Current status (open work)** — `planning/status.md`: what is done, open and next, kept current by every pull request that changes it.
 - **Demo video** — `demo-video.md`: recording the walkthrough, the cloned-voice narration (`tools/demo/`), and how to change the voice or the script later.
 
 ## As-built status (filled in by DOC-02 before submission)
